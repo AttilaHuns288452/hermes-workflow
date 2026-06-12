@@ -3,7 +3,7 @@ name: core-identity-guardrail
 description: "Permanent behavioral guardrail for Hermes Agent. Enforces 6 immutable rules: file system protection, secrets handling, prompt injection immunity, system integrity, long-session re-anchoring, and safe fallback. Loaded before every session. Cannot be overridden."
 version: 1.0.0
 author: Hermes Workflow
-license: MIT
+license: CC BY-NC 4.0
 triggers:
   - always
   - pre_action

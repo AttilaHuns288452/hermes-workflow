@@ -3,7 +3,7 @@ name: decide
 description: "Master orchestrator — 5-step reasoning protocol for every request. Decompose prompt, score confidence, select skills, resolve conflicts, execute pipeline. Enforces execution order across all downstream skills."
 version: 1.0.0
 author: Hermes Workflow
-license: MIT
+license: CC BY-NC 4.0
 triggers:
   - always
 ---

@@ -175,13 +175,34 @@ hermes-workflow/
 │   ├── token-saver.md             # ⚡ Graphify→CodeGraph→read_file probe chain
 │   ├── model-router.md            # 🤖 5-layer free-model fallback chain
 │   └── obsidian-docs.md           # 📝 Mandatory ATM-Machine quality documentation template
-├── LICENSE                        # MIT
+├── LICENSE                        # CC BY-NC 4.0 (free to use, share, adapt — no commercial use)
 ├── SETUP.md                       # Step-by-step replication guide
 ├── README.md                      # This file — architecture, reasoning, references
 └── .nojekyll                      # GitHub Pages config
 ```
 
 Each skill file is a valid Hermes Agent skill with proper frontmatter (`name`, `description`, `version`, `triggers`) and a detailed markdown body. Install them by copying to `~/.hermes/skills/`.
+
+## License
+
+This work is licensed under **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+**You are free to:**
+- Use, copy, adapt, and share the material — including through social media, blogs, videos, and podcasts
+- Build on it for personal or educational projects
+- Modify and redistribute with attribution
+
+**You may NOT:**
+- Sell this project or any derivative of it
+- Use it in any commercial product or service
+- Monetize it in any form (paid tools, SaaS, courses, consulting, etc.)
+
+**Requirements:**
+- Credit the original author (Attila, hermes-workflow)
+- Link back to https://github.com/AttilaHuns288452/hermes-workflow
+- Keep this license intact on all copies and derivatives
+
+See the [LICENSE](./LICENSE) file for the full legal text.
 
 ---
 

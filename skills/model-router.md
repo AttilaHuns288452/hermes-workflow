@@ -3,7 +3,7 @@ name: model-router
 description: "5-layer free-model routing chain. Always default to free. Probe before commit. Layer 1: OpenCode. Layer 2: Freebuff. Layer 3: FreeLLMAPI (110+ models, 16 providers). Layer 4: OpenRouter (29+ free, 50 req/day). Layer 5: Paid BYOK (last resort)."
 version: 1.0.0
 author: Hermes Workflow
-license: MIT
+license: CC BY-NC 4.0
 triggers:
   - model_selection
   - pre_query

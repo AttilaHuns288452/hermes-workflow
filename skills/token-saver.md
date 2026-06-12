@@ -3,7 +3,7 @@ name: token-saver
 description: "Pre-file-read probe chain. Before reading any file, probe Graphify query → Graphify explain → Graphify path → CodeGraph query → CodeGraph callers/callees/impact. Only read files as last resort. Target: 56× token reduction (benchmark verified)."
 version: 1.0.0
 author: Hermes Workflow
-license: MIT
+license: CC BY-NC 4.0
 triggers:
   - pre_read_file
   - pre_query

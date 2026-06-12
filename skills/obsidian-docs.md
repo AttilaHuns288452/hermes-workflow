@@ -3,7 +3,7 @@ name: obsidian-docs
 description: "Mandatory post-project documentation for Obsidian vault. ATM-Machine quality template: Overview, Architecture, Code Patterns, Mermaid graph, wikilinks. Triggers KG refresh after every write."
 version: 1.0.0
 author: Hermes Workflow
-license: MIT
+license: CC BY-NC 4.0
 triggers:
   - post_execution
   - documentation
