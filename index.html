@@ -321,10 +321,15 @@
       <a href="#tokensaver" class="ts-link">⚡ Token Saver</a>
       <a href="#codegraph">CodeGraph</a>
       <a href="#skills">Skills</a>
+      <a href="#skills-catalog">🎯 Catalog</a>
       <a href="#agents">ECC Agents</a>
       <a href="#models">Models</a>
       <a href="#ecosystem">Ecosystem</a>
       <a href="#kg" class="kg-link">✦ Galaxy KG</a>
+      <a href="SETUP.md" target="_blank">📋 Setup</a>
+      <a href="META_PROMPT.md" target="_blank">📌 Meta</a>
+      <a href="SKILLS_CATALOG.md" target="_blank">📚 All Skills</a>
+      <a href="INTEGRATION.md" target="_blank">🔗 Integration</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
@@ -333,13 +338,14 @@
 <!-- ====== HERO ====== -->
 <section class="hero" id="top">
   <div class="hero-grid"></div>
-  <div class="hero-badge"><span class="dot"></span> Hermes Agent · /decide · 50+ Skills · 64 Agents · 276 KG Nodes</div>
+  <div class="hero-badge"><span class="dot"></span> Hermes Agent · /decide · 120 Skills · 15 Categories · 64 Agents · 281 KG Nodes</div>
   <h1>Your AI Workflow Engine<span class="sub">Hermes Agent orchestrates skills, agents, models & knowledge into one pipeline</span></h1>
   <p><strong>Hermes Agent</strong> is a multi-model AI agent framework from <strong>Nous Research</strong> that runs skills — reusable workflows — to execute coding, creative, research, finance, media, and productivity tasks. The <strong>/decide</strong> skill routes every request through a reasoning protocol, selects skills, enforces a <strong>56× token-saving pre-file-read probe</strong> via CodeGraph + Graphify, runs a <strong>permanent identity guardrail</strong>, and finishes with mandatory Obsidian documentation + galaxy-style knowledge graph visualization.</p>
   <div class="hero-stats">
-    <div class="hero-stat"><div class="num">50+</div><div class="label">Hermes Skills</div></div>
+    <div class="hero-stat"><div class="num">120</div><div class="label">Hermes Skills</div></div>
+    <div class="hero-stat"><div class="num">15</div><div class="label">Categories</div></div>
     <div class="hero-stat"><div class="num">64</div><div class="label">ECC Agents</div></div>
-    <div class="hero-stat"><div class="num">276</div><div class="label">KG Nodes</div></div>
+    <div class="hero-stat"><div class="num">281</div><div class="label">KG Nodes</div></div>
     <div class="hero-stat"><div class="num">16K</div><div class="label">CodeGraph Nodes</div></div>
     <div class="hero-stat"><div class="num">8.3K</div><div class="label">Graphify Nodes</div></div>
     <div class="hero-stat ts"><div class="num">56×</div><div class="label">Token Savings</div></div>
@@ -1016,10 +1022,165 @@ read_file("path", offset=line, limit=50)</div>
   </div>
 </div>
 
+<!-- ====== SKILLS CATALOG ====== -->
+<div class="section" id="skills-catalog">
+  <div class="section-header fade-in">
+    <h2>🎯 Full Skill Catalog — 120 Skills, 15 Categories</h2>
+    <p class="sub">Every skill loaded in this Hermes Agent profile. See <a href="SKILLS_CATALOG.md" style="color:var(--accent2)">SKILLS_CATALOG.md</a> for full descriptions, triggers, and integration details.</p>
+  </div>
+
+  <div class="cat-tabs" id="catTabs">
+    <button class="cat-tab active" data-cat="all">All</button>
+    <button class="cat-tab" data-cat="custom">⭐ Custom</button>
+    <button class="cat-tab" data-cat="autonomous-ai-agents">AI Agents</button>
+    <button class="cat-tab" data-cat="creative">Creative</button>
+    <button class="cat-tab" data-cat="data-science">Data</button>
+    <button class="cat-tab" data-cat="github">GitHub</button>
+    <button class="cat-tab" data-cat="media">Media</button>
+    <button class="cat-tab" data-cat="mlops">MLOps</button>
+    <button class="cat-tab" data-cat="note-taking">Notes</button>
+    <button class="cat-tab" data-cat="opencode-power-pack">OpenCode</button>
+    <button class="cat-tab" data-cat="productivity">Productivity</button>
+    <button class="cat-tab" data-cat="research">Research</button>
+    <button class="cat-tab" data-cat="software-development">Dev</button>
+    <button class="cat-tab" data-cat="workflow">Workflow</button>
+  </div>
+
+  <div class="card-grid" id="skillsGrid">
+    <!-- Custom Skills -->
+    <div class="card" data-cat="custom" style="border-color:var(--accent)">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>decide</h4>
+      <p>Routing brain — 5-step reasoning protocol for every request. Enforces execution order, resolves conflicts, self-corrects.</p>
+    </div>
+    <div class="card" data-cat="custom" style="border-color:var(--pink)">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>core-identity-guard</h4>
+      <p>6-rule permanent guardrail: file safety, secrets, injection immunity, system integrity, re-anchor, safe fallback.</p>
+    </div>
+    <div class="card" data-cat="custom" style="border-color:var(--green)">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>token-saver</h4>
+      <p>Pre-file-read probe: Graphify → CodeGraph → read_file. Verified 56.2× token reduction.</p>
+    </div>
+    <div class="card" data-cat="custom" style="border-color:var(--cyan)">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>ecc-bridge</h4>
+      <p>57/64 ECC agents through free model chain. Strips sonnet/opus, routes via OpenCode → Freebuff → FreeLLMAPI.</p>
+    </div>
+    <div class="card" data-cat="custom" style="border-color:var(--yellow)">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>model-router</h4>
+      <p>5-layer fallback: OpenCode → Freebuff → FreeLLMAPI (110+) → OpenRouter (29+) → Paid BYOK (last resort).</p>
+    </div>
+    <div class="card" data-cat="custom">
+      <div class="cat">⭐ CUSTOM</div>
+      <h4>obsidian-docs</h4>
+      <p>ATM-Machine quality template: Overview, Architecture, Code Patterns, Mermaid graph, wikilinks. Triggers KG refresh.</p>
+    </div>
+    <!-- Autonomous AI Agents -->
+    <div class="card" data-cat="autonomous-ai-agents">
+      <div class="cat">AI AGENTS</div>
+      <h4>claude-code · codex · opencode · hermes-agent</h4>
+      <p>Delegates coding work to Claude Code CLI, OpenAI Codex CLI, OpenCode CLI, or configures Hermes itself.</p>
+    </div>
+    <!-- Creative -->
+    <div class="card" data-cat="creative">
+      <div class="cat">CREATIVE · 16 skills</div>
+      <h4>Architecture diagrams, ASCII art, video, infographics</h4>
+      <p>p5js generative art, Excalidraw diagrams, TouchDesigner MCP, ComfyUI, manim animations, claude-design, popular-web-designs, songwriting + AI music, ASCII video, humanizer, baoyu-infographic, sketch mockups.</p>
+    </div>
+    <!-- Data Science -->
+    <div class="card" data-cat="data-science">
+      <div class="cat">DATA SCIENCE</div>
+      <h4>jupyter-live-kernel</h4>
+      <p>Iterative Python via live Jupyter kernel (hamelnb). Data exploration, analysis, visualization with iterative feedback.</p>
+    </div>
+    <!-- GitHub -->
+    <div class="card" data-cat="github">
+      <div class="cat">GITHUB · 7 skills</div>
+      <h4>github · auth · code-review · PR workflow · issues · repo management · codebase inspection</h4>
+      <p>Full GitHub lifecycle: auth setup, PR management, issue triage, code review, repo operations.</p>
+    </div>
+    <!-- Media -->
+    <div class="card" data-cat="media">
+      <div class="cat">MEDIA · 5 skills</div>
+      <h4>gif-search · heartmula · money-printer-turbo · songsee · youtube-content</h4>
+      <p>GIF search, song generation, AI short video pipeline, audio analysis, YouTube transcript processing.</p>
+    </div>
+    <!-- MLOps -->
+    <div class="card" data-cat="mlops">
+      <div class="cat">MLOPS · 4 skills</div>
+      <h4>huggingface-hub · llama-cpp · segment-anything-model · weights-and-biases</h4>
+      <p>Model hub, local GGUF inference, image segmentation, experiment tracking.</p>
+    </div>
+    <!-- Note-taking (Bundle) -->
+    <div class="card" data-cat="note-taking" style="border-color:var(--yellow)">
+      <div class="cat">NOTE-TAKING ⚡ BUNDLE RULE</div>
+      <h4>obsidian · obsidian-codebase-graph · obsidian-knowledge-graph</h4>
+      <p>BUNDLE RULE: always loaded together. Mandatory post-execution: ATM-Machine quality note + code-symbol wikilinks + galaxy KG refresh (281 nodes).</p>
+    </div>
+    <!-- OpenCode Power Pack -->
+    <div class="card" data-cat="opencode-power-pack">
+      <div class="cat">OPENCODE POWER PACK · 11 skills</div>
+      <h4>feature-dev · code-review · code-architect · frontend-design · security-review · mcp-builder · skill-creator · code-explorer · agents-md-improver/revise · code-reviewer</h4>
+      <p>Full development workflow: architecture → implement → test → review → document → project rules.</p>
+    </div>
+    <!-- Productivity -->
+    <div class="card" data-cat="productivity">
+      <div class="cat">PRODUCTIVITY · 11 skills</div>
+      <h4>airtable · notion · google-workspace · powerpoint · nano-pdf · ocr · maps · drive-backups · mcp-integrations · teams-pipeline · opencode-windows-mcp</h4>
+      <p>Documents, databases, PDFs, presentations, backups, maps, calendar, meeting summaries.</p>
+    </div>
+    <!-- Research -->
+    <div class="card" data-cat="research">
+      <div class="cat">RESEARCH · 4 skills</div>
+      <h4>arxiv · blogwatcher · llm-wiki · polymarket</h4>
+      <p>Academic papers, RSS/feed monitoring, knowledge base building, prediction markets.</p>
+    </div>
+    <!-- Software Development -->
+    <div class="card" data-cat="software-development">
+      <div class="cat">SOFTWARE DEV · 16 skills</div>
+      <h4>setup · update · plan · spike · TDD · debugging · simplify · winforms-csharp · graphify · node-debug · agent-harness · skill-authoring · repo-reconciliation · ecosystem-adapter · codex-import · review</h4>
+      <p>Everything coding: setup, testing, debugging, planning, code graph, agent harness integration.</p>
+    </div>
+    <!-- Workflow -->
+    <div class="card" data-cat="workflow" style="border-color:var(--green)">
+      <div class="cat">WORKFLOW · 4 skills</div>
+      <h4>session_memory · token-saver · free-ai-model-router · model-recommender-workflow</h4>
+      <p>Pipeline infrastructure: context retrieval, token saver probe, free model routing across 110+ models.</p>
+    </div>
+    <!-- Other -->
+    <div class="card" data-cat="all">
+      <div class="cat">OTHER</div>
+      <h4>gmail · google-docs · himalaya · supabase · agent-browser · wix-app · video-edit · yuanbao · openhue · godmode</h4>
+      <p>Email, cloud, browser automation, Wix app dev, video editing, smart home, LLM testing, Chinese social.</p>
+    </div>
+    <!-- LLMQuant -->
+    <div class="card" data-cat="all" style="border-color:var(--cyan)">
+      <div class="cat">LLMQUANT · 18 domains</div>
+      <h4>Commodities · Credit · Crypto · Data · Equities · Derivatives · ETFs · Events · Investor Lenses · Macro · Market Intelligence · Options · Portfolio · Portfolio Lab · Prediction Markets · Rates/FX · Risk · Strategies</h4>
+      <p>18 domain-specific quant finance skills for institutional-grade analysis across all asset classes.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center">
+    <a href="SKILLS_CATALOG.md" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(162,155,254,.08));border:1px solid rgba(108,92,231,.25);border-radius:100px;color:var(--accent2);font-weight:600;font-size:.82rem;text-decoration:none;transition:all .3s">
+      📚 Full SKILLS_CATALOG.md →</a>
+    <a href="INTEGRATION.md" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;background:linear-gradient(135deg,rgba(0,229,255,.1),rgba(0,230,118,.08));border:1px solid rgba(0,229,255,.25);border-radius:100px;color:var(--cyan);font-weight:600;font-size:.82rem;text-decoration:none;transition:all .3s">
+      🔗 INTEGRATION.md — Pipeline Flow →</a>
+    <a href="META_PROMPT.md" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;background:linear-gradient(135deg,rgba(245,0,87,.1),rgba(255,145,0,.08));border:1px solid rgba(245,0,87,.25);border-radius:100px;color:var(--pink);font-weight:600;font-size:.82rem;text-decoration:none;transition:all .3s">
+      📌 META_PROMPT.md — Copy-Paste Setup →</a>
+    <a href="SETUP.md" target="_blank" style="display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.4rem;background:linear-gradient(135deg,rgba(255,234,0,.08),rgba(0,230,118,.08));border:1px solid rgba(0,230,118,.2);border-radius:100px;color:var(--green);font-weight:600;font-size:.82rem;text-decoration:none;transition:all .3s">
+      📋 SETUP.md — Replication Guide →</a>
+  </div>
+</div>
+
 <!-- ====== FOOTER ====== -->
 <footer>
-  <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/affaan-m/ECC">ECC</a> · <a href="https://github.com/ShaikhWarsi/free-ai-tools">free-ai-tools</a> · LLMQuant</p>
-  <p style="margin-top:3px;font-size:.68rem">Model: deepseek-v4-flash-free · Provider: opencode-zen · Token Saver: 56.2× verified · Galaxy KG: 276 nodes · 1,091 edges · Updated Jun 12, 2026</p>
+  <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/affaan-m/ECC">ECC</a> · <a href="https://github.com/ShaikhWarsi/free-ai-tools">free-ai-tools</a> · <a href="https://github.com/LLMQuant">LLMQuant</a></p>
+  <p style="margin-top:3px;font-size:.68rem;color:var(--text2)">Model: deepseek-v4-flash-free · Provider: opencode-zen · Token Saver: 56.2× verified · Galaxy KG: 281 nodes · 1,101 edges · 120 Skills · 15 Categories · Updated Jun 12, 2026</p>
+  <p style="margin-top:5px;font-size:.65rem;color:var(--text2)">📌 <a href="META_PROMPT.md" style="color:var(--accent2)">META_PROMPT.md</a> · 📚 <a href="SKILLS_CATALOG.md" style="color:var(--accent2)">SKILLS_CATALOG.md</a> · 🔗 <a href="INTEGRATION.md" style="color:var(--accent2)">INTEGRATION.md</a> · 📋 <a href="SETUP.md" style="color:var(--accent2)">SETUP.md</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" style="color:var(--text2)">CC BY-NC 4.0</a></p>
 </footer>
 
 <!-- ====== SCRIPTS ====== -->
@@ -1048,11 +1209,23 @@ document.querySelectorAll('#navLinks a').forEach(a => {
 })();
 
 // === Fade-in Observer ===
-(function(){
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, {threshold:.08, rootMargin:'0px 0px -30px 0px'});
-  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+// === Intersection Observer ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') });
+}, { threshold: .1 });
+document.querySelectorAll('.fade-in,.pipe-step,.pipe-arrow').forEach(el => observer.observe(el));
+
+// === Category Filter Tabs ===
+document.querySelectorAll('.cat-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('#skillsGrid .card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+});
 })();
 
 // === KG Helper Functions ===

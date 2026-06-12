@@ -176,10 +176,19 @@ hermes-workflow/
 │   ├── model-router.md            # 🤖 5-layer free-model fallback chain
 │   └── obsidian-docs.md           # 📝 Mandatory ATM-Machine quality documentation template
 ├── LICENSE                        # CC BY-NC 4.0 (free to use, share, adapt — no commercial use)
-├── SETUP.md                       # Step-by-step replication guide
+├── SETUP.md                       # Step-by-step replication guide (10 steps)
+├── META_PROMPT.md                 # Copy-paste prompt showing full Hermes setup
+├── SKILLS_CATALOG.md              # Full catalog: all 120 skills with use cases
+├── INTEGRATION.md                 # Pipeline flow, data flow, network diagrams
 ├── README.md                      # This file — architecture, reasoning, references
 └── .nojekyll                      # GitHub Pages config
 ```
+
+**New files explain the full ecosystem:**
+- [`META_PROMPT.md`](./META_PROMPT.md) — A comprehensive prompt you can copy-paste into a fresh Hermes Agent session to load the complete skill ecosystem, model chain, guardrail, and pipeline. Designed for sharing your setup with others or restoring it on a new machine.
+- [`SKILLS_CATALOG.md`](./SKILLS_CATALOG.md) — Every skill (120 total, 15 categories) with trigger conditions, use cases, and pipeline integration. Includes the BUNDLE RULE for Obsidian, guardrail enforcement, and model routing flow.
+- [`INTEGRATION.md`](./INTEGRATION.md) — Full architecture diagram (ASCII), 8-step data flow with tool-level detail, cross-skill integration points, environment wiring, session learning → self-correction, and common request→pipeline trace table.
+- [`SETUP.md`](./SETUP.md) — 10-step guide to replicate the stack from scratch. Covers Hermes Agent, Graphify, CodeGraph, OpenCode, FreeLLMAPI, Obsidian, MCP wiring, pipeline verification, and troubleshooting.
 
 Each skill file is a valid Hermes Agent skill with proper frontmatter (`name`, `description`, `version`, `triggers`) and a detailed markdown body. Install them by copying to `~/.hermes/skills/`.
 
