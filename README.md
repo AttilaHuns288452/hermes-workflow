@@ -48,7 +48,7 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 graph TD
     User[User Request] --> SM[session_memory]
     SM --> CIG[Core Identity Guardrail]
-    CIG --> Decide[/decide Routing Brain]
+    CIG --> Decide["/decide Routing Brain"]
     Decide --> TS[Token Saver Probe]
     TS --> G[Graphify - Code Graph]
     TS --> C[CodeGraph MCP]
