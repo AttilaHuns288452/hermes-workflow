@@ -71,7 +71,7 @@ Step 8 — Galaxy Knowledge Graph Refresh
    Skills: note-taking/obsidian-knowledge-graph
 
 ================================================================================
- SKILL ECOSYSTEM (120 Skills, 15 Categories)
+ SKILL ECOSYSTEM (135 Skills, 50+ Categories)
 ================================================================================
 
 --- CUSTOM SKILLS (Authored by me) ---
@@ -380,7 +380,7 @@ Contains:
   - Skill files: decide.md, core-identity-guardrail.md, token-saver.md,
     model-router.md, obsidian-docs.md
   - Full setup guide (SETUP.md) — 10 steps
-  - Skill catalog (SKILLS_CATALOG.md) — all 120 skills with use cases
+  - Skill catalog (SKILLS_CATALOG.md) — all 135 skills with use cases
   - Integration docs (INTEGRATION.md) — pipeline flow
   - This meta prompt (META_PROMPT.md)
   - License: CC BY-NC 4.0

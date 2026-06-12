@@ -169,16 +169,27 @@ This repo is a working reference, not just a showcase. Every file is real and us
 ```
 hermes-workflow/
 ├── index.html                     # Static website (the live site)
-├── skills/
-│   ├── decide.md                  # /decide — 5-step routing brain
-│   ├── core-identity-guardrail.md # 🛡️ Permanent safety guardrail (6 rules)
-│   ├── token-saver.md             # ⚡ Graphify→CodeGraph→read_file probe chain
-│   ├── model-router.md            # 🤖 5-layer free-model fallback chain
-│   └── obsidian-docs.md           # 📝 Mandatory ATM-Machine quality documentation template
-├── LICENSE                        # CC BY-NC 4.0 (free to use, share, adapt — no commercial use)
+├── skills/                        # ⭐ Mirror of actual Hermes Agent install (135 SKILL.md)
+│   ├── decide/                    # /decide — routing brain
+│   ├── core-identity-guard/       # 🛡️ Permanent safety guardrail
+│   ├── ecc-bridge/                # 🔗 ECC agent integration (57/64 agents)
+│   ├── autonomous-ai-agents/      # claude-code, codex, hermes-agent, opencode
+│   ├── creative/                  # 16 creative skills (p5js, excalidraw, comfyui, etc.)
+│   ├── workflow/                  # 4 skills: session_memory, token-saver, model routers
+│   ├── note-taking/               # 3 skills: obsidian + codebase-graph + knowledge-graph
+│   ├── opencode-power-pack/       # 11 dev workflow skills
+│   ├── software-development/      # 17 skills (setup, TDD, debugging, graphify, etc.)
+│   ├── llmquant-*/               # 18 domain-specific quant finance skills
+│   ├── github/                    # 7 skills (PR, issues, review, auth, etc.)
+│   ├── productivity/              # 11 skills (airtable, notion, google-workspace, etc.)
+│   ├── mlops/                     # 8 skills (hf-hub, llama.cpp, sam, w&b, etc.)
+│   ├── research/                  # 5 skills (arxiv, blogwatcher, polymarket, etc.)
+│   ├── media/                     # 5 skills (gif, music, youtube, video, audio)
+│   └── ...                        # 50+ more categories
+├── LICENSE                        # CC BY-NC 4.0
 ├── SETUP.md                       # Step-by-step replication guide (10 steps)
 ├── META_PROMPT.md                 # Copy-paste prompt showing full Hermes setup
-├── SKILLS_CATALOG.md              # Full catalog: all 120 skills with use cases
+├── SKILLS_CATALOG.md              # Full catalog: all skills with use cases
 ├── INTEGRATION.md                 # Pipeline flow, data flow, network diagrams
 ├── README.md                      # This file — architecture, reasoning, references
 └── .nojekyll                      # GitHub Pages config

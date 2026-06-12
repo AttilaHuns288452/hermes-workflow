@@ -1,6 +1,6 @@
 # Skill Catalog — Full Hermes Agent Ecosystem
 
-**120 skills · 15 categories · 1 integrated pipeline**
+**135 skills · 50+ categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 Each entry shows: skill name, what it does, what triggers it, and how it
