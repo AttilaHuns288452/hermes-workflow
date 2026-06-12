@@ -1,6 +1,6 @@
 # Hermes Workflow
 
-**AI Agent Workflow Engine** — 90+ skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, and mandatory Obsidian knowledge graph documentation.
+**AI Agent Workflow Engine** — 97 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
 
 ## 🌙 Overview
 
@@ -19,8 +19,9 @@ The system centers on the **`/decide`** skill, a master orchestrator that:
 
 The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-workflow/](https://attilahuns288452.github.io/hermes-workflow/)** showcases:
 
-- **90+ Skills** — categorized tab grid with descriptions
+- **92+ Skills** — categorized tab grid with descriptions (15 categories)
 - **64 ECC Agents** — searchable, filterable library with free-model compatibility badges
+- **Live Dashboard** — ecosystem overview: 16 projects, 97 skills, 26K APIs, 8K+16K graph nodes, model layers, MCP servers
 - **Model Routing Chain** — 5-layer fallback chain visualization
 - **Token Saver** — 56.2× verified token reduction via CodeGraph + Graphify probe
 - **Core Identity Guardrail** — 6 permanent safety rules
@@ -33,14 +34,18 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 
 | Metric | Value |
 |--------|-------|
-| Skills | 90+ across 14 categories |
+| Skills | 97 across 15 categories |
 | ECC Agents | 64 (57 free-compatible via ecc-bridge) |
+| Projects | 16 (3 with Graphify graphs) |
+| API Mega List | 26,005 APIs across 18 categories |
 | CodeGraph MCP | 945 files / 16,092 nodes / 43,795 edges |
 | Graphify | 8,267 nodes / 13,225 edges / 775 communities |
 | Token Savings | 56.2× average (up to 157.7× per query) |
 | Knowledge Graph | 276 nodes / 1,091 edges |
-| Free Models | 110+ across 5 routing layers |
+| Free Models | 156 across 5 routing layers |
+| MCP Servers | 6 wired (CodeGraph, Graphify, VS Code, LLMQuant, Obsidian KG, agentmemory) |
 | LLMQuant Domains | 18 quant-finance workflows |
+| Obsidian Project Notes | 8 (ATM-Machine quality standard) |
 
 ## 🏗️ Architecture
 

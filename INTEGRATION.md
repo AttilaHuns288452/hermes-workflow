@@ -1,6 +1,6 @@
 # Integration — How Everything Connects
 
-This document maps the full Hermes Agent integration — how all 120 skills,
+This document maps the full Hermes Agent integration — how all 121 skills,
 tools, model layers, and data sources wire together into a single pipeline.
 
 ---
@@ -347,7 +347,8 @@ repeated — they're encoded into routing rules.
 || "Create a design" | session_memory → guardrail → /decide → creative/claude-design → model-router (best creative model) → obsidian bundle → KG refresh |
 || "Debug this error" | session_memory → guardrail → /decide → token-saver → systematic-debugging → node-inspect-debugger → model-router (debug model) → (obsidian only if new finding) |
 || "Research X" | session_memory → guardrail → /decide → research/arxiv + research/blogwatcher + session_memory (lore) → obsidian bundle → KG refresh |
-|| **"Find an API for X"** | **session_memory → guardrail → /decide → productivity/api-mega-list** → grep category → if MCP → mcp-integrations / if scraper → ecc-bridge → (no obsidian, no KG) → result |
+||| **"Find an API for X"** | **session_memory → guardrail → /decide → productivity/api-mega-list** → grep category → if MCP → mcp-integrations / if scraper → ecc-bridge → (no obsidian, no KG) → result |
+||| "View dashboard" | session_memory → guardrail → /decide → dashboard → (direct HTML, no further pipeline) |
 || "Simple question" | session_memory → guardrail → /decide → (no domain skill needed) → model-router (fast model) → (no obsidian) |
 
 ---

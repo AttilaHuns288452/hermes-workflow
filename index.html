@@ -344,7 +344,8 @@
       <a href="#pipeline">Pipeline</a>
       <a href="#skills">Skills</a>
       <a href="#agents">ECC Agents</a>
-      <a href="#models">Models</a>
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="#models">🤖 Models</a>
       <a href="#tokensaver" class="ts-link">⚡ Token Saver</a>
       <a href="#guardrail" class="guard-link">🛡️ Guardrail</a>
       <a href="#kg" class="kg-link">✦ Galaxy KG</a>
@@ -480,13 +481,14 @@
 <div class="section" id="skills">
   <div class="section-header fade-in">
     <h2>📦 Skill Library</h2>
-    <p class="sub">90+ reusable workflows organized into 14 categories — every task has a dedicated skill for consistent, efficient execution.</p>
+    <p class="sub">90+ reusable workflows organized into 15 categories — every task has a dedicated skill for consistent, efficient execution.</p>
   </div>
   <div class="cat-tabs" id="catTabs">
     <button class="cat-tab active" data-cat="all">All (90+)</button>
     <button class="cat-tab" data-cat="software-development">💻 Dev</button>
     <button class="cat-tab" data-cat="creative">🎨 Creative</button>
     <button class="cat-tab" data-cat="opencode-power-pack">⚡ OpenCode</button>
+    <button class="cat-tab" data-cat="dashboard">📊 Dashboard</button>
     <button class="cat-tab" data-cat="productivity">📋 Productivity</button>
     <button class="cat-tab" data-cat="github">🐙 GitHub</button>
     <button class="cat-tab" data-cat="research">🔬 Research</button>
@@ -963,6 +965,7 @@ const SKILLS = [
   {n:'Repo Integ Reconciliation',c:'software-development',d:'Audit existing skills when setting up new repos; resolve overlaps.'},
   {n:'Node Inspect Debugger',c:'software-development',d:'Debug Node.js via --inspect + Chrome DevTools Protocol.'},
   {n:'Core Identity Guardrail',c:'workflow',d:'Permanent behavioral guard: file safety, secrets, injection immunity. Always loaded first.'},
+  {n:'Hermes Dashboard',c:'dashboard',d:'Local live stats — 16 projects, 97 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model ecosystem, MCP status & more.'},
   {n:'Token Saver',c:'workflow',d:'Pre-file-read probe via CodeGraph + Graphify. Verified 56.2× token reduction.'},
   {n:'Claude Design',c:'creative',d:'Design one-off HTML artifacts: landing pages, prototypes, motion studies.'},
   {n:'Architecture Diagram',c:'creative',d:'Dark-themed SVG architecture/cloud/infra diagrams as HTML.'},
@@ -1197,7 +1200,7 @@ function filterAgents(){renderAgents(currentFilter,document.getElementById('sear
 // === Skill Categories ===
 const CAT_NAMES = {
   'software-development':'💻 Dev','creative':'🎨 Creative','opencode-power-pack':'⚡ OpenCode',
-  'productivity':'📋 Productivity','github':'🐙 GitHub','research':'🔬 Research',
+  'dashboard':'📊 Dashboard','productivity':'📋 Productivity','github':'🐙 GitHub','research':'🔬 Research',
   'mlops':'🤖 MLOps','media':'🎬 Media','note-taking':'📝 Notes',
   'workflow':'⚙️ Workflow','autonomous-ai-agents':'🤖 Agents','email':'✉️ Email',
   'data-science':'📊 Data','smart-home':'🏠 Smart','red-teaming':'🔴 Red'

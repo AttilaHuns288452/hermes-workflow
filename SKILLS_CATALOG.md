@@ -1,6 +1,6 @@
 # Skill Catalog — Full Hermes Agent Ecosystem
 
-**136 skills · 50+ categories · 1 integrated pipeline**
+**137 skills · 50+ categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 Each entry shows: skill name, what it does, what triggers it, and how it
@@ -468,9 +468,27 @@ Advanced development workflow skills from the OpenCode ecosystem.
 - **Pipeline:** Step 5 — /decide routes API-search/find queries here.
   MCP Server queries also route to `mcp-integrations` for wiring.
   Scraper queries also route to `ecc-bridge` for ECC agent cross-reference.
-- **Integration:** grep across category READMEs. Links to Apify marketplace
+|- **Integration:** grep across category READMEs. Links to Apify marketplace
   (affiliate). Complements mcp-integrations and ecc-bridge for full pipeline
   from API discovery → setup → agent integration.
+
+### hermes-dashboard
+- **What:** **LOCAL LIVE ECOSYSTEM DASHBOARD** — Single-file HTML (no server
+  needed) that visualizes the entire Hermes Agent ecosystem: 16 projects, 97
+  skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model ecosystem
+  (5 layers, 156 models), 6 wired MCP servers, 64 ECC agents, 49 skill
+  categories. Interactive vis-network force-directed graph of the node map.
+  Dark moonlight theme matching the hermes-workflow site.
+- **Trigger:** "Dashboard", "show me the ecosystem", "what projects exist",
+  "graphify stats", "codegraph stats", "how many models", "how many skills",
+  "API count", "node map".
+- **Pipeline:** Step 1 — /decide routes dashboard/view-ecosystem queries here.
+  Direct HTML rendering — no further pipeline steps needed.
+- **Integration:** [Open via GH Pages](https://attilahuns288452.github.io/hermes-workflow/dashboard.html)
+  or locally via file:// or `python -m http.server 8765` in
+  `~/Documents/Projects/hermes-dashboard/`.
+  Reduces context overhead by providing a single-pane overview instead of
+  multiple read_file calls across projects, skills, and configs.
 
 ### drive-backups
 - **What:** Automated Google Drive backup using rclone — archive, upload,

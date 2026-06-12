@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent Dashboard — Local</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#060a18;
+    --surface:#0b1024;
+    --surface2:#111836;
+    --surface3:#18234a;
+    --border:#1e2a52;
+    --text:#d4dcec;
+    --text2:#8892b8;
+    --text3:#5a6a94;
+    --accent:#c8d0e8;
+    --accent2:#8ba0d4;
+    --moon:#e8ecf4;
+    --moon-glow:#7b9ce0;
+    --moon-halo:#6bc5e8;
+    --moon-lavender:#b8a8d8;
+    --moon-gold:#c8a84e;
+    --star:#e8ecf4;
+    --green:#6bc5a8;
+    --orange:#d4a847;
+    --red:#e06060;
+    --cyan:#6bc5e8;
+    --pink:#d4a0c0;
+    --card-w:280px;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--surface)}
+  ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+
+  /* Particle canvas background */
+  #particles{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    z-index:0;pointer-events:none;
+    opacity:0.3;
+  }
+
+  .container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:20px 24px 80px}
+
+  /* Header */
+  .header{
+    text-align:center;padding:40px 0 30px;
+    border-bottom:1px solid var(--border);margin-bottom:30px;
+  }
+  .header h1{
+    font-size:2.4rem;font-weight:800;
+    background:linear-gradient(135deg,var(--moon-glow),var(--moon-halo),var(--moon-lavender));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:-0.5px;
+  }
+  .header .sub{
+    color:var(--text2);font-size:.9rem;margin-top:8px;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .header .sub .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .dot.green{background:var(--green);box-shadow:0 0 8px var(--green)}
+  .dot.orange{background:var(--orange);box-shadow:0 0 8px var(--orange)}
+
+  /* Stat Cards */
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:14px;margin-bottom:32px;
+  }
+  .stat-card{
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:12px;padding:18px 16px;text-align:center;
+    transition:transform .2s,border-color .2s;
+  }
+  .stat-card:hover{transform:translateY(-2px);border-color:var(--moon-glow)}
+  .stat-card .num{
+    font-size:2rem;font-weight:800;
+    background:linear-gradient(135deg,var(--moon-glow),var(--moon-halo));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1;
+  }
+  .stat-card .label{font-size:.75rem;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .stat-card .detail{font-size:.7rem;color:var(--text2);margin-top:4px}
+
+  /* Section Headers */
+  .section-title{
+    font-size:1.3rem;font-weight:700;margin:36px 0 16px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .section-title .icon{font-size:1.4rem}
+  .section-title .count-badge{
+    font-size:.7rem;background:var(--surface3);color:var(--text2);
+    padding:2px 10px;border-radius:20px;font-weight:600;
+  }
+
+  /* Project Grid */
+  .project-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));
+    gap:12px;
+  }
+  .project-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;
+    transition:border-color .2s;
+  }
+  .project-card:hover{border-color:var(--accent2)}
+  .project-card .name{font-weight:600;font-size:.9rem;margin-bottom:6px}
+  .project-card .name .git-icon{opacity:.5;margin-left:6px}
+  .project-card .meta{font-size:.7rem;color:var(--text3);display:flex;gap:6px;flex-wrap:wrap}
+  .project-card .badge{
+    display:inline-block;padding:1px 8px;border-radius:10px;font-size:.65rem;font-weight:600;
+  }
+  .badge-git{background:rgba(107,197,168,.15);color:var(--green)}
+  .badge-obsidian{background:rgba(200,168,78,.15);color:var(--moon-gold)}
+  .badge-graph{background:rgba(107,197,232,.15);color:var(--cyan)}
+  .badge-ungraph{background:rgba(96,96,96,.15);color:var(--text3)}
+
+  /* Graph container */
+  #network-container{
+    width:100%;height:520px;background:var(--surface);
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    margin-bottom:10px;
+  }
+  .graph-legend{
+    display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:.75rem;
+  }
+  .graph-legend .leg-item{display:flex;align-items:center;gap:6px}
+  .graph-legend .leg-dot{width:10px;height:10px;border-radius:50%}
+
+  /* Model Cards */
+  .model-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:12px;margin-bottom:10px;
+  }
+  .model-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:14px 16px;
+  }
+  .model-card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .model-card .name{font-weight:600;font-size:.85rem}
+  .model-card .count{font-weight:700;font-size:1.2rem;color:var(--moon-glow)}
+  .model-card .meta{font-size:.7rem;color:var(--text3)}
+  .model-card .bar-wrap{height:4px;background:var(--surface2);border-radius:2px;margin-top:6px;overflow:hidden}
+  .model-card .bar-fill{height:100%;border-radius:2px;transition:width 1s}
+
+  /* API Explorer */
+  .api-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:10px;margin-bottom:10px;
+  }
+  .api-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;cursor:pointer;
+    transition:border-color .2s;
+  }
+  .api-card:hover{border-color:var(--accent2)}
+  .api-card .name{font-weight:600;font-size:.8rem;margin-bottom:4px}
+  .api-card .count{font-size:1.1rem;font-weight:700;color:var(--moon-glow)}
+  .api-card .category{font-size:.65rem;color:var(--text3)}
+  .api-search{
+    width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+    background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;
+    font-size:.85rem;margin-bottom:12px;outline:none;
+  }
+  .api-search:focus{border-color:var(--moon-glow)}
+
+  /* ECC / MCP Grids */
+  .info-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:10px;
+  }
+  .info-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;
+  }
+  .info-card .name{font-weight:600;font-size:.8rem;margin-bottom:4px}
+  .info-card .meta{font-size:.7rem;color:var(--text3)}
+
+  /* Skills breakdown */
+  .skill-cats{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:8px;
+  }
+  .skill-cat{
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:8px;padding:10px 12px;text-align:center;
+  }
+  .skill-cat .name{font-size:.75rem;font-weight:600;color:var(--text2)}
+  .skill-cat .count{font-size:1.2rem;font-weight:700;color:var(--moon-glow)}
+
+  /* Power stats */
+  .power-stats{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:10px;margin-bottom:10px;
+  }
+  .power-stat{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:16px;text-align:center;
+  }
+  .power-stat .num{font-size:1.8rem;font-weight:800;color:var(--moon-glow);line-height:1}
+  .power-stat .label{font-size:.7rem;color:var(--text3);margin-top:4px}
+
+  /* Refresh btn */
+  .refresh-btn{
+    position:fixed;bottom:24px;right:24px;z-index:10;
+    background:var(--surface3);border:1px solid var(--border);color:var(--text);
+    padding:10px 18px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;
+    font-size:.8rem;transition:background .2s;
+  }
+  .refresh-btn:hover{background:var(--border)}
+
+  /* Timeline */
+  .project-timeline{margin:20px 0}
+  .tl-item{
+    display:flex;align-items:center;gap:10px;padding:6px 0;
+    border-bottom:1px solid rgba(30,42,82,.4);
+  }
+  .tl-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .tl-item .name{font-size:.8rem;font-weight:500;flex:1}
+  .tl-item .desc{font-size:.7rem;color:var(--text3)}
+
+  @media(max-width:600px){
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .project-grid{grid-template-columns:1fr}
+    .header h1{font-size:1.5rem}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🌙 Hermes Agent Dashboard</h1>
+    <div class="sub">
+      <span class="dot green"></span> Local Live
+      <span style="color:var(--text3)">|</span>
+      <span>Last updated: <span id="update-time">just now</span></span>
+      <span style="color:var(--text3)">|</span>
+      <span><span id="total-projects-header">0</span> projects · <span id="total-skills-header">0</span> skills</span>
+    </div>
+  </div>
+
+  <!-- Top Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Graphify + CodeGraph Network -->
+  <div class="section-title">
+    <span class="icon">🕸️</span> Graphify + CodeGraph Node Map
+    <span class="count-badge" id="graph-total-badge">loading…</span>
+  </div>
+  <div class="graph-legend" id="graph-legend"></div>
+  <div id="network-container"></div>
+
+  <!-- Power Stats Row -->
+  <div class="section-title"><span class="icon">⚡</span> Ecosystem at a Glance</div>
+  <div class="power-stats" id="power-stats"></div>
+
+  <!-- Projects -->
+  <div class="section-title">
+    <span class="icon">📁</span> Projects
+    <span class="count-badge" id="project-count-badge">0</span>
+  </div>
+  <div class="project-grid" id="project-grid"></div>
+
+  <!-- Free Model Ecosystem -->
+  <div class="section-title">
+    <span class="icon">🤖</span> Free AI Model Ecosystem
+    <span class="count-badge" id="model-count-badge">0 total</span>
+  </div>
+  <div class="model-grid" id="model-grid"></div>
+
+  <!-- API Mega List Explorer -->
+  <div class="section-title">
+    <span class="icon">🔌</span> API Mega List Explorer
+    <span class="count-badge" id="api-total-badge">0 APIs</span>
+  </div>
+  <input class="api-search" id="api-search" type="text" placeholder="Search 26,005 APIs by keyword…" oninput="filterAPIs(this.value)">
+  <div class="api-grid" id="api-grid"></div>
+
+  <!-- MCP Servers + ECC Agents -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px">
+    <div>
+      <div class="section-title" style="margin-top:0">
+        <span class="icon">🔗</span> MCP Servers Wired
+        <span class="count-badge">6</span>
+      </div>
+      <div class="info-grid" id="mcp-grid"></div>
+    </div>
+    <div>
+      <div class="section-title" style="margin-top:0">
+        <span class="icon">🧠</span> ECC Agents
+        <span class="count-badge">64</span>
+      </div>
+      <div class="info-grid" id="ecc-grid"></div>
+    </div>
+  </div>
+
+  <!-- Skills by Category -->
+  <div class="section-title">
+    <span class="icon">📦</span> Skills by Category
+    <span class="count-badge" id="skill-total-badge">0</span>
+  </div>
+  <div class="skill-cats" id="skill-cats"></div>
+
+  <!-- Observability -->
+  <div class="section-title" style="margin-top:30px">
+    <span class="icon">👁️</span> Observability & Memory
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px" id="obs-grid"></div>
+</div>
+
+<button class="refresh-btn" onclick="location.reload()">⟳ Refresh</button>
+
+<script>
+// ===== DATA =====
+const DATA = {
+  projects: [
+    {name:'graphify',git:true,obsidian:true,graph:true,desc:'Code knowledge graph engine (8,267 nodes, 774 communities)',color:'#7b9ce0'},
+    {name:'hermes-workflow',git:true,obsidian:true,graph:false,desc:'GH Pages ecosystem docs & website',color:'#c8a84e'},
+    {name:'free-llm-api',git:true,obsidian:false,graph:false,desc:'110+ free local LLM proxy server',color:'#6bc5a8'},
+    {name:'API-mega-list',git:true,obsidian:true,graph:false,desc:'26,005 Apify APIs / 18 categories',color:'#d4a0c0'},
+    {name:'ECC',git:true,obsidian:false,graph:false,desc:'64 ECC agent prompts bridge',color:'#6bc5e8'},
+    {name:'free-ai-tools',git:true,obsidian:false,graph:false,desc:'550+ free AI tools catalog',color:'#d4a847'},
+    {name:'atm-machine',git:false,obsidian:true,graph:false,desc:'ATM Machine — Obsidian template origin',color:'#e06060'},
+    {name:'atm-crypto-bank',git:false,obsidian:false,graph:false,desc:'Crypto ATM — polished UI demo',color:'#e06060'},
+    {name:'ecosystem-test',git:false,obsidian:false,graph:true,desc:'Small graphify test project (16 nodes)',color:'#8892b8'},
+    {name:'task-manager-cli',git:false,obsidian:false,graph:true,desc:'CLI task manager — Graphify (60 nodes)',color:'#8892b8'},
+    {name:'freebuff-test',git:false,obsidian:false,graph:false,desc:'Freebuff cloud model test (Kimi, MiniMax)',color:'#5a6a94'},
+    {name:'countdown-timer',git:false,obsidian:false,graph:false,desc:'Countdown timer project',color:'#5a6a94'},
+    {name:'unit-converter',git:false,obsidian:false,graph:false,desc:'Unit converter project',color:'#5a6a94'},
+    {name:'MoneyPrinterTurbo',git:true,obsidian:false,graph:false,desc:'AI short video generation (86.1k⭐)',color:'#d4a0c0'},
+    {name:'Hermes Skills',git:false,obsidian:false,graph:false,desc:'Local skill reference directory',color:'#5a6a94'},
+    {name:'hw-new',git:true,obsidian:false,graph:false,desc:'Temp worktree for hermes-workflow',color:'#5a6a94'},
+  ],
+  graphify: {
+    totalNodes: 8343,
+    totalEdges: 13225,
+    projects: {
+      graphify: {nodes:8267, edges:13225, communities:774},
+      'ecosystem-test': {nodes:16, edges:0, communities:5},
+      'task-manager-cli': {nodes:60, edges:0, communities:13},
+      'graphify/worked/httpx': {nodes:144, edges:0, communities:0},
+      'graphify/worked/karpathy-repos': {nodes:177, edges:0, communities:0},
+      'graphify/worked/mixed-corpus': {nodes:22, edges:0, communities:0},
+      'graphify/worked/rsl-siege-manager': {nodes:1886, edges:0, communities:0}
+    }
+  },
+  codegraph: {
+    totalNodes: 16092,
+    totalEdges: 43795,
+    indexedFiles: 945
+  },
+  models: [
+    {name:'OpenCode (Bundled)',count:5,desc:'Big Pickle, MiniMax M2.5 Free, DeepSeek V2 Lite',pct:4,tier:1,color:'#7b9ce0'},
+    {name:'Freebuff (Cloud)',count:6,desc:'Kimi K2.6, MiniMax M3, DeepSeek V4, Gemini Flash',pct:5,tier:2,color:'#6bc5a8'},
+    {name:'FreeLLMAPI (Local)',count:110,desc:'16 providers — 110+ free models on localhost:3001',pct:82,tier:3,color:'#d4a0c0'},
+    {name:'OpenRouter :free',count:29,desc:'29+ free models, 50 req/day limit',pct:22,tier:4,color:'#d4a847'},
+    {name:'Paid BYOK',count:6,desc:'Claude, GPT-4, Gemini Pro — last resort',pct:5,tier:5,color:'#e06060'}
+  ],
+  apis: [
+    {name:'Agents & Scrapers',count:697,cat:'agents-apis-697'},
+    {name:'AI & LLM',count:1208,cat:'ai-apis-1208'},
+    {name:'Automation',count:4825,cat:'automation-apis-4825'},
+    {name:'Business',count:2,cat:'business-apis-2'},
+    {name:'Developer Tools',count:2652,cat:'developer-tools-apis-2652'},
+    {name:'E-commerce',count:2440,cat:'ecommerce-apis-2440'},
+    {name:'Integrations',count:890,cat:'integrations-apis-890'},
+    {name:'Jobs & Recruitment',count:848,cat:'jobs-apis-848'},
+    {name:'Lead Generation',count:3452,cat:'lead-generation-apis-3452'},
+    {name:'MCP Servers',count:131,cat:'mcp-servers-apis-131'},
+    {name:'News',count:590,cat:'news-apis-590'},
+    {name:'Open Source',count:768,cat:'open-source-apis-768'},
+    {name:'Other',count:1297,cat:'other-apis-1297'},
+    {name:'Real Estate',count:851,cat:'real-estate-apis-851'},
+    {name:'SEO Tools',count:710,cat:'seo-tools-apis-710'},
+    {name:'Social Media',count:3268,cat:'social-media-apis-3268'},
+    {name:'Travel',count:397,cat:'travel-apis-397'},
+    {name:'Videos',count:979,cat:'videos-apis-979'}
+  ],
+  mcps: [
+    {name:'CodeGraph',desc:'Live code knowledge — query, callers, impact, deps'},
+    {name:'Graphify',desc:'AST code graph — 8,267 node BFS queries'},
+    {name:'VS Code',desc:'Two-way Hermes ↔ VS Code via npx'},
+    {name:'LLMQuant Data',desc:'SEC filings, 13F holders, macro data'},
+    {name:'Obsidian KG',desc:'Vault knowledge graph MCP bridge'},
+    {name:'agentmemory',desc:'Cross-session agent memory persistence'}
+  ],
+  ecc: {
+    total:64, free:57, paid:7,
+    top:[
+      'silent-failure-hunter','comment-analyzer','code-simplifier',
+      'database-reviewer','design-to-code','api-adapter',
+      'test-writer','dependency-checker','security-auditor'
+    ]
+  },
+  skills: {
+    total:97, categories:49,
+    breakdown:{
+      'llmquant':17,'software-development':16,'creative':16,'opencode-power-pack':11,
+      'productivity':12,'github':7,'media':5,'research':4,'workflow':4,
+      'autonomous-ai-agents':4,'mlops':4,'note-taking':3,'data-science':1,'email':1,
+      'gmail':1,'google-drive':1,'red-teaming':1,'smart-home':1,'supabase':1,
+      'vercel':1,'video-edit':1,'wix':1,'yuanbao':1,'apple':1,'decide':1,'do':1,
+      'dogfood':1,'ecc-bridge':1,'devops':1,'core-identity-guard':1,'social-media':1,'last30days':1
+    }
+  },
+  obsidian: {
+    notes:7,
+    vaultGraphNodes:276,
+    vaultGraphEdges:1091
+  }
+};
+
+// Compute totals
+DATA.apisTotal = DATA.apis.reduce((s,c)=>s+c.count,0);
+DATA.projectCount = DATA.projects.filter(p=>!['hw-new','Hermes Skills'].includes(p.name)).length;
+DATA.freeModelTotal = DATA.models.reduce((s,m)=>s+m.count,0);
+
+// ===== RENDER FUNCTIONS =====
+
+function renderStats(){
+  const g = document.getElementById('stats-grid');
+  const cards = [
+    {num:DATA.skills.total,label:'Skills',detail:`${DATA.skills.categories} categories`},
+    {num:DATA.projectCount,label:'Projects',detail:`${DATA.projects.filter(p=>p.git).length} git-tracked`},
+    {num:DATA.freeModelTotal,label:'Free Models',detail:'5-layer routing chain'},
+    {num:(DATA.apisTotal/1000).toFixed(1)+'K',label:'APIs Available',detail:'18 categories'},
+    {num:DATA.graphify.totalNodes.toLocaleString(),label:'Graphify Nodes',detail:`${DATA.graphify.totalEdges.toLocaleString()} edges`},
+    {num:DATA.codegraph.totalNodes.toLocaleString(),label:'CodeGraph Nodes',detail:`${DATA.codegraph.indexedFiles} indexed files`},
+    {num:DATA.obsidian.vaultGraphNodes,label:'KG Graph Nodes',detail:`${DATA.obsidian.vaultGraphEdges} edges`},
+    {num:DATA.ecc.total,label:'ECC Agents',detail:`${DATA.ecc.free} free-compatible`},
+  ];
+  g.innerHTML = cards.map(c=>`
+    <div class="stat-card">
+      <div class="num">${c.num}</div>
+      <div class="label">${c.label}</div>
+      <div class="detail">${c.detail}</div>
+    </div>
+  `).join('');
+  
+  document.getElementById('total-projects-header').textContent = DATA.projectCount;
+  document.getElementById('total-skills-header').textContent = DATA.skills.total;
+  document.getElementById('project-count-badge').textContent = DATA.projectCount;
+  document.getElementById('skill-total-badge').textContent = DATA.skills.total;
+  document.getElementById('api-total-badge').textContent = DATA.apisTotal.toLocaleString() + ' APIs';
+  document.getElementById('model-count-badge').textContent = DATA.freeModelTotal + ' total';
+}
+
+function renderProjects(){
+  const g = document.getElementById('project-grid');
+  // Show only meaningful projects, sorted
+  const sorted = [...DATA.projects].sort((a,b)=>{
+    if(a.graph !== b.graph) return a.graph ? -1 : 1;
+    if(a.git !== b.git) return a.git ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+  g.innerHTML = sorted.map(p => `
+    <div class="project-card" style="border-left:3px solid ${p.color}">
+      <div class="name">
+        ${p.name}
+        ${p.git ? '<span class="git-icon">📦</span>' : ''}
+      </div>
+      <div class="meta">
+        ${p.git ? '<span class="badge badge-git">git</span>' : ''}
+        ${p.obsidian ? '<span class="badge badge-obsidian">obsidian</span>' : ''}
+        ${p.graph ? '<span class="badge badge-graph">graphify</span>' : '<span class="badge badge-ungraph">no-graph</span>'}
+      </div>
+      <div style="font-size:.7rem;color:var(--text2);margin-top:6px">${p.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderNetwork(){
+  // Build nodes and edges for vis-network
+  const colors = {
+    graphify:'#7b9ce0',project:'#6bc5e8',model:'#d4a0c0',
+    api:'#d4a847',skill:'#c8a84e',mcp:'#6bc5a8',ecc:'#e06060'
+  };
+  
+  const nodes = [];
+  const edges = [];
+  let id = 0;
+  const nid = ()=>++id;
+  
+  // Core node
+  nodes.push({id:nid(),label:'Hermes\nAgent',shape:'star',size:35,color:{background:'#7b9ce0',border:'#c8d0e8'},font:{color:'#e8ecf4',size:14,face:'Inter'}});
+  const hermesId = 1;
+  
+  // Graphify node
+  nodes.push({id:nid(),label:'Graphify\n8,343 nodes',shape:'hexagon',size:25,color:{background:colors.graphify,border:'#8892b8'},font:{color:'#d4dcec',size:11,face:'Inter'}});
+  edges.push({from:hermesId,to:2,color:{color:'#7b9ce0',opacity:.6},width:2,title:'Token Saver Probe'});
+  
+  // CodeGraph node
+  nodes.push({id:nid(),label:'CodeGraph\n16K nodes',shape:'hexagon',size:25,color:{background:colors.graphify,border:'#8892b8'},font:{color:'#d4dcec',size:11,face:'Inter'}});
+  edges.push({from:hermesId,to:3,color:{color:'#6bc5e8',opacity:.6},width:2,title:'MCP live index'});
+  
+  // /decide node
+  nodes.push({id:nid(),label:'/decide\nRouting',shape:'diamond',size:22,color:{background:'#c8a84e',border:'#d4a847'},font:{color:'#d4dcec',size:11,face:'Inter'}});
+  edges.push({from:hermesId,to:4,color:{color:'#c8a84e',opacity:.6},width:2});
+  
+  // Key projects
+  const projNodes = [
+    {id:nid(),label:'API-mega-list\n26K APIs',value:26,color:colors.api},
+    {id:nid(),label:'ECC\n64 agents',value:64,color:colors.ecc},
+    {id:nid(),label:'FreeLLMAPI\n110 models',value:110,color:colors.model},
+    {id:nid(),label:'hermes-workflow\nGH Pages',value:1,color:colors.project},
+    {id:nid(),label:'free-ai-tools\n550+ tools',value:550,color:colors.project},
+    {id:nid(),label:'MoneyPrinter\nTurbo',value:1,color:colors.project},
+  ];
+  projNodes.forEach((n,i)=>{
+    nodes.push({
+      id:n.id,label:n.label,shape:'dot',size:Math.max(10,Math.min(25,Math.sqrt(n.value)*2)),
+      color:{background:n.color,border:'#fff'},font:{color:'#d4dcec',size:10,face:'Inter'}
+    });
+    edges.push({from:hermesId,to:n.id,color:{color:n.color,opacity:.4},width:1,dashes:true});
+  });
+  
+  // Skill categories
+  const skillNodes = [
+    {id:nid(),label:'16 Dev\nSkills',color:colors.skill},
+    {id:nid(),label:'16 Creative',color:colors.skill},
+    {id:nid(),label:'12 Productivity',color:colors.skill},
+    {id:nid(),label:'17 LLMQuant',color:colors.skill},
+  ];
+  skillNodes.forEach(n=>{
+    nodes.push({
+      id:n.id,label:n.label,shape:'square',size:12,
+      color:{background:n.color,border:'#fff'},font:{color:'#d4dcec',size:9,face:'Inter'}
+    });
+    edges.push({from:4,to:n.id,color:{color:'#c8a84e',opacity:.3},width:1});
+  });
+  
+  // MCP servers
+  const mcpNodes = ['CodeGraph','Graphify','VS Code','LLMQuant','Obsidian KG','agentmemory'];
+  mcpNodes.forEach((m,i)=>{
+    const mid = nid();
+    nodes.push({
+      id:mid,label:m,shape:'box',size:10,
+      color:{background:colors.mcp,border:'#fff'},font:{color:'#d4dcec',size:9,face:'Inter'}
+    });
+    edges.push({from:hermesId,to:mid,color:{color:'#6bc5a8',opacity:.4},width:1,dashes:true});
+  });
+  
+  // Graphify project cluster
+  const gfCluster = [
+    {id:nid(),label:'graphify\n8,267 nodes'},
+    {id:nid(),label:'ecosystem-test\n16 nodes'},
+    {id:nid(),label:'task-manager\n60 nodes'},
+  ];
+  gfCluster.forEach((n,i)=>{
+    nodes.push({
+      id:n.id,label:n.label,shape:'dot',size:10,
+      color:{background:'#7b9ce0',border:'#5a6a94'},font:{color:'#d4dcec',size:8,face:'Inter'}
+    });
+    edges.push({from:2,to:n.id,color:{color:'#7b9ce0',opacity:.3},width:1});
+  });
+  
+  // Physics options
+  const options = {
+    physics:{
+      solver:'forceAtlas2Based',
+      forceAtlas2Based:{gravitationalConstant:-80,centralGravity:.01,springLength:120,springConstant:.02,damping:.4},
+      stabilization:{iterations:100}
+    },
+    edges:{smooth:{type:'continuous'},arrows:{to:{enabled:false}}},
+    interaction:{hover:true,tooltipDelay:200},
+    height:'100%'
+  };
+  
+  const container = document.getElementById('network-container');
+  const network = new vis.Network(container, {nodes,edges}, options);
+  
+  // Legend
+  const legend = document.getElementById('graph-legend');
+  legend.innerHTML = `
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.graphify}"></span>Graphify</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.mcp}"></span>MCP Servers</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.api}"></span>API Directory</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.model}"></span>Free Models</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.ecc}"></span>ECC Agents</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.skill}"></span>Skill Categories</div>
+    <div class="leg-item"><span class="leg-dot" style="background:${colors.project}"></span>Projects</div>
+  `;
+  
+  document.getElementById('graph-total-badge').textContent =
+    `${DATA.graphify.totalNodes.toLocaleString()} GF + ${DATA.codegraph.totalNodes.toLocaleString()} CG`;
+}
+
+function renderPowerStats(){
+  const g = document.getElementById('power-stats');
+  g.innerHTML = [
+    {num:'56.2×',label:'Token Savings (avg)',desc:'up to 157.7× max per query'},
+    {num:DATA.obsidian.notes,label:'Obsidian Project Notes',desc:'ATM-Machine quality standard'},
+    {num:DATA.obsidian.vaultGraphNodes,label:'Vault KG Nodes',desc:`${DATA.obsidian.vaultGraphEdges.toLocaleString()} edges`},
+    {num:DATA.codegraph.indexedFiles,label:'CodeGraph Indexed Files',desc:'Auto-watched for changes'},
+    {num:6,label:'MCP Servers Wired',desc:'CodeGraph, Graphify, VS Code, +3'},
+    {num:DATA.ecc.paid,label:'ECC Paid-Only Agents',desc:'7 agents need Opus/Sonnet'},
+  ].map(s=>`
+    <div class="power-stat">
+      <div class="num">${s.num}</div>
+      <div class="label">${s.label}</div>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:2px">${s.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderModels(){
+  const g = document.getElementById('model-grid');
+  const maxCount = Math.max(...DATA.models.map(m=>m.count));
+  g.innerHTML = DATA.models.map((m,i)=>`
+    <div class="model-card">
+      <div class="top">
+        <span class="name">${m.name}</span>
+        <span class="count">${m.count}</span>
+      </div>
+      <div class="meta">${m.desc}</div>
+      <div class="meta" style="margin-top:2px;color:var(--text3)">Layer ${m.tier}${i==0?' (primary)':i==4?' (last resort)':''}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${(m.count/maxCount*100).toFixed(0)}%;background:${m.color}"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderAPIs(){
+  const g = document.getElementById('api-grid');
+  const maxApi = Math.max(...DATA.apis.map(a=>a.count));
+  g.innerHTML = DATA.apis.map(a => `
+    <div class="api-card" onclick="alert('Search: grep -i \\\"<term>\\\" ~/Documents/Projects/API-mega-list/${a.cat}/README.md\\n\\n${a.count} APIs in ${a.name}')">
+      <div class="name">${a.name}</div>
+      <div class="count">${a.count.toLocaleString()}</div>
+      <div class="category">${a.cat}</div>
+      <div class="bar-wrap" style="margin-top:4px"><div class="bar-fill" style="width:${(a.count/maxApi*100).toFixed(0)}%;background:var(--moon-glow);opacity:.5"></div></div>
+    </div>
+  `).join('');
+}
+
+function filterAPIs(val){
+  const cards = document.querySelectorAll('#api-grid .api-card');
+  const q = val.toLowerCase();
+  cards.forEach(c=>{
+    c.style.display = c.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function renderMCPs(){
+  const g = document.getElementById('mcp-grid');
+  g.innerHTML = DATA.mcps.map(m=>`
+    <div class="info-card">
+      <div class="name">🔗 ${m.name}</div>
+      <div class="meta">${m.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderECC(){
+  const g = document.getElementById('ecc-grid');
+  g.innerHTML = `
+    <div class="info-card">
+      <div class="name">🧠 ECC Agents</div>
+      <div class="meta">${DATA.ecc.total} total · ${DATA.ecc.free} free-compatible · ${DATA.ecc.paid} paid-only</div>
+      <div style="margin-top:6px;">
+        <div class="bar-wrap"><div class="bar-fill" style="width:${(DATA.ecc.free/DATA.ecc.total*100).toFixed(0)}%;background:var(--green)"></div></div>
+        <div style="font-size:.65rem;color:var(--text3);margin-top:2px">${(DATA.ecc.free/DATA.ecc.total*100).toFixed(0)}% free-compatible</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="name">🏆 Top Agents</div>
+      <div class="meta" style="line-height:1.6">${DATA.ecc.top.join(' · ')}</div>
+    </div>
+  `;
+}
+
+function renderSkillsByCategory(){
+  const g = document.getElementById('skill-cats');
+  const sorted = Object.entries(DATA.skills.breakdown)
+    .sort((a,b)=>b[1]-a[1]);
+  g.innerHTML = sorted.map(([cat,count])=>`
+    <div class="skill-cat">
+      <div class="count">${count}</div>
+      <div class="name">${cat}</div>
+    </div>
+  `).join('');
+}
+
+function renderObs(){
+  const g = document.getElementById('obs-grid');
+  g.innerHTML = [
+    {label:'Session DB Files',value:'5 (default + codingprofile + finance + snapshots)'},
+    {label:'Memory Files',value:'2 (MEMORY.md + USER.md)'},
+    {label:'Config MCP Servers',value:'6 wired'},
+    {label:'Helpscout Docs Indexed',value:'—'},
+  ].map(o=>`
+    <div class="info-card">
+      <div class="name">${o.label}</div>
+      <div class="meta">${o.value}</div>
+    </div>
+  `).join('');
+}
+
+// ===== PARTICLES BACKGROUND =====
+function initParticles(){
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let w,h,particles=[];
+  function resize(){w=c.width=window.innerWidth;h=c.height=document.body.scrollHeight}
+  window.addEventListener('resize',resize);resize();
+  
+  for(let i=0;i<80;i++) particles.push({
+    x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+.5,
+    dx:(Math.random()-.5)*.3,dy:(Math.random()-.5)*.3,o:Math.random()*.5+.2
+  });
+  
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{
+      p.x+=p.dx;p.y+=p.dy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,208,232,${p.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ===== INIT =====
+document.getElementById('update-time').textContent = new Date().toLocaleTimeString();
+renderStats();
+renderProjects();
+renderNetwork();
+renderPowerStats();
+renderModels();
+renderAPIs();
+renderMCPs();
+renderECC();
+renderSkillsByCategory();
+renderObs();
+initParticles();
+</script>
+</body>
+</html>
