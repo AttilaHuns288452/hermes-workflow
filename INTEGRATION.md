@@ -143,6 +143,8 @@ Before any read_file():
   ├─ Media:      media/* + video-edit
   ├─ MLOps:      mlops/* + workflow/model-router
   ├─ Finance:    llmquant-* + data-science/jupyter
+  ├─ API Search: productivity/api-mega-list (10,498 Apify Actors)
+  ├─ MCP Setup:  productivity/mcp-integrations (from API list finds)
   └─ Email:      email/himalaya + gmail
 
 Each skill runs with full access to the tools listed in its SKILL.md.
@@ -230,6 +232,17 @@ obsidian-codebase-graph creates wikilinked notes from Graphify output:
   - Graphify query results feed into Obsidian note content
   - obsidian-knowledge-graph refresh includes code-symbol nodes
   - Galaxy graph shows both document-level and code-level relationships
+```
+
+### API Mega List + MCP Integration Pipeline
+```
+api-mega-list feeds into mcp-integrations and ecc-bridge:
+  - User asks "find an MCP server for X"
+  - /decide routes to productivity/api-mega-list
+  - Skill greps mcp-servers-apis-131/README.md for matches
+  - If MCP Server found → route to productivity/mcp-integrations for wiring
+  - If scraper/agent API found → route to ecc-bridge for ECC alternatives
+  - Completes: API discovery → config wiring → agent integration
 ```
 
 ### Model Router + Skill Recommendations
@@ -329,12 +342,13 @@ repeated — they're encoded into routing rules.
 
 | Request | Execution Path |
 |---------|---------------|
-| "Setup new repo" | session_memory → guardrail → /decide → token-saver → setup → graphify-integrate → model-router (for tests) → obsidian bundle → KG refresh |
-| "Review this PR" | session_memory → guardrail → /decide → deps (github) → github-code-review → (no obsidian unless project doc is missing) |
-| "Create a design" | session_memory → guardrail → /decide → creative/claude-design → model-router (best creative model) → obsidian bundle → KG refresh |
-| "Debug this error" | session_memory → guardrail → /decide → token-saver → systematic-debugging → node-inspect-debugger → model-router (debug model) → (obsidian only if new finding) |
-| "Research X" | session_memory → guardrail → /decide → research/arxiv + research/blogwatcher + session_memory (lore) → obsidian bundle → KG refresh |
-| "Simple question" | session_memory → guardrail → /decide → (no domain skill needed) → model-router (fast model) → (no obsidian) |
+|| "Setup new repo" | session_memory → guardrail → /decide → token-saver → setup → graphify-integrate → model-router (for tests) → obsidian bundle → KG refresh |
+|| "Review this PR" | session_memory → guardrail → /decide → deps (github) → github-code-review → (no obsidian unless project doc is missing) |
+|| "Create a design" | session_memory → guardrail → /decide → creative/claude-design → model-router (best creative model) → obsidian bundle → KG refresh |
+|| "Debug this error" | session_memory → guardrail → /decide → token-saver → systematic-debugging → node-inspect-debugger → model-router (debug model) → (obsidian only if new finding) |
+|| "Research X" | session_memory → guardrail → /decide → research/arxiv + research/blogwatcher + session_memory (lore) → obsidian bundle → KG refresh |
+|| **"Find an API for X"** | **session_memory → guardrail → /decide → productivity/api-mega-list** → grep category → if MCP → mcp-integrations / if scraper → ecc-bridge → (no obsidian, no KG) → result |
+|| "Simple question" | session_memory → guardrail → /decide → (no domain skill needed) → model-router (fast model) → (no obsidian) |
 
 ---
 
@@ -404,7 +418,7 @@ repeated — they're encoded into routing rules.
     ├── note-taking/       → 3 skills (bundle)
     ├── software-development/ → 16 skills
     ├── opencode-power-pack/  → 11 skills
-    ├── productivity/      → 11 skills
+    ├── productivity/      → 12 skills (api-mega-list, airtable, maps, etc.)
     ├── media/             → 5 skills
     ├── github/            → 7 skills
     ├── research/          → 4 skills

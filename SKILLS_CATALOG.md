@@ -1,6 +1,6 @@
 # Skill Catalog — Full Hermes Agent Ecosystem
 
-**135 skills · 50+ categories · 1 integrated pipeline**
+**136 skills · 50+ categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 Each entry shows: skill name, what it does, what triggers it, and how it
@@ -455,6 +455,22 @@ Advanced development workflow skills from the OpenCode ecosystem.
 - **What:** Airtable REST API via curl. Records CRUD, filters, upserts,
   and table management.
 - **Trigger:** Database operations, spreadsheet-like data management.
+
+### api-mega-list
+- **What:** **SEARCH 10,498 READY-TO-USE APIs** — grep-based directory of
+  Apify Actors across 18 categories (AI, Social Media, E-commerce, Lead Gen,
+  Developer Tools, MCP Servers, Jobs, SEO, Real Estate, News, Travel, Videos,
+  Automation, Agents, Integrations, Open Source, Business, Other). Local clone
+  at ~/Documents/Projects/API-mega-list/.
+- **Trigger:** "Find an API that can/for", "search APIs for", "API directory",
+  "Apify actor", "scraper for X", "MCP server for X", "lead gen API",
+  "social media API", "web scraping API".
+- **Pipeline:** Step 5 — /decide routes API-search/find queries here.
+  MCP Server queries also route to `mcp-integrations` for wiring.
+  Scraper queries also route to `ecc-bridge` for ECC agent cross-reference.
+- **Integration:** grep across category READMEs. Links to Apify marketplace
+  (affiliate). Complements mcp-integrations and ecc-bridge for full pipeline
+  from API discovery → setup → agent integration.
 
 ### drive-backups
 - **What:** Automated Google Drive backup using rclone — archive, upload,
