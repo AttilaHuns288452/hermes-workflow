@@ -160,7 +160,28 @@ Model availability changes constantly. Free models deprecate, rate limits reset,
 | **OpenRouter** | — | Multi-model API gateway (free tier) | [openrouter.ai](https://openrouter.ai/) |
 | **Obsidian** | — | Knowledge vault with graph visualization | [obsidian.md](https://obsidian.md/) |
 | **LLMQuant** | — | 18-domain quant-finance skills for AI agents | [LLMQuant](https://github.com/LLMQuant) |
-| **This website** | — | Single-file static HTML/CSS/JS, no build tools | [AttilaHuns288452/hermes-workflow](https://github.com/AttilaHuns288452/hermes-workflow) |
+| **This repo** | — | Single-file static HTML + 5 Hermes skills + setup guide | [AttilaHuns288452/hermes-workflow](https://github.com/AttilaHuns288452/hermes-workflow) |
+
+## Repository Structure
+
+This repo is a working reference, not just a showcase. Every file is real and usable:
+
+```
+hermes-workflow/
+├── index.html                     # Static website (the live site)
+├── skills/
+│   ├── decide.md                  # /decide — 5-step routing brain
+│   ├── core-identity-guardrail.md # 🛡️ Permanent safety guardrail (6 rules)
+│   ├── token-saver.md             # ⚡ Graphify→CodeGraph→read_file probe chain
+│   ├── model-router.md            # 🤖 5-layer free-model fallback chain
+│   └── obsidian-docs.md           # 📝 Mandatory ATM-Machine quality documentation template
+├── LICENSE                        # MIT
+├── SETUP.md                       # Step-by-step replication guide
+├── README.md                      # This file — architecture, reasoning, references
+└── .nojekyll                      # GitHub Pages config
+```
+
+Each skill file is a valid Hermes Agent skill with proper frontmatter (`name`, `description`, `version`, `triggers`) and a detailed markdown body. Install them by copying to `~/.hermes/skills/`.
 
 ---
 
