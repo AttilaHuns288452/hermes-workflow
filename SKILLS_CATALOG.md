@@ -34,7 +34,7 @@ of the routing and safety system.
   downstream steps.
 - **Integration:** Routes to domain skills → model router → obsidian docs →
   KG refresh. Self-corrects by patching its own routing rules.
-- **Repository:** `skills/decide.md`
+- **File:** `skills/decide/SKILL.md`
 
 ### core-identity-guard
 - **What:** Permanent safety guardrail. 6 immutable rules: file system
@@ -44,7 +44,7 @@ of the routing and safety system.
 - **Pipeline:** Step 2 (immediately after session_memory, before /decide).
 - **Integration:** Re-anchors every 10 exchanges. All downstream skills run
   within its constraints.
-- **Repository:** `skills/core-identity-guardrail.md`
+- **File:** `skills/core-identity-guard/SKILL.md`
 
 ### ecc-bridge
 - **What:** Wires 57 of 64 ECC (Everything Claude Code) agents through the
@@ -68,7 +68,7 @@ of the routing and safety system.
 - **Pipeline:** Step 4 (after /decide routes, before domain skills execute).
 - **Integration:** Verified 56.2× token reduction. Skips unavailable graph
   tools gracefully.
-- **Repository:** `skills/token-saver.md`
+- **File:** `skills/workflow/token-saver/SKILL.md`
 
 ### session_memory (workflow/)
 - **What:** Retrieves missing context from prior session histories via

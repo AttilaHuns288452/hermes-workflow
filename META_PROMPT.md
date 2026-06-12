@@ -377,8 +377,10 @@ https://github.com/AttilaHuns288452/hermes-workflow
 
 Contains:
   - Static website: https://attilahuns288452.github.io/hermes-workflow/
-  - Skill files: decide.md, core-identity-guardrail.md, token-saver.md,
-    model-router.md, obsidian-docs.md
+  - Skill files: skills/decide/SKILL.md, skills/core-identity-guard/SKILL.md,
+    skills/workflow/token-saver/SKILL.md,
+    skills/workflow/session_memory/SKILL.md
+  - Model router: skills/workflow/free-ai-model-router/SKILL.md
   - Full setup guide (SETUP.md) — 10 steps
   - Skill catalog (SKILLS_CATALOG.md) — all 135 skills with use cases
   - Integration docs (INTEGRATION.md) — pipeline flow

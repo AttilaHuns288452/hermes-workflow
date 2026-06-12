@@ -316,16 +316,16 @@
       <a href="#hermes">What is Hermes</a>
       <a href="#decide">/decide</a>
       <a href="#pipeline">Pipeline</a>
-      <a href="#kg">Knowledge Graph</a>
-      <a href="#guardrail" class="guard-link">🛡️ Guardrail</a>
-      <a href="#tokensaver" class="ts-link">⚡ Token Saver</a>
+      <a href="#kg">✦ Galaxy KG</a>
+      <a href="#guardrail">Guard</a>
+      <a href="#tokensaver">⚡TSaver</a>
       <a href="#codegraph">CodeGraph</a>
-      <a href="#skills">Skills</a>
-      <a href="#skills-catalog">🎯 Catalog</a>
+      <a href="#skills-catalog">🎯 Skills</a>
       <a href="#agents">ECC Agents</a>
       <a href="#models">Models</a>
+      <a href="#llmquant">📈 Quant</a>
+      <a href="#obsidian">📝 Docs</a>
       <a href="#ecosystem">Ecosystem</a>
-      <a href="#kg" class="kg-link">✦ Galaxy KG</a>
       <a href="SETUP.md" target="_blank">📋 Setup</a>
       <a href="META_PROMPT.md" target="_blank">📌 Meta</a>
       <a href="SKILLS_CATALOG.md" target="_blank">📚 All Skills</a>
@@ -343,7 +343,7 @@
   <p><strong>Hermes Agent</strong> is a multi-model AI agent framework from <strong>Nous Research</strong> that runs skills — reusable workflows — to execute coding, creative, research, finance, media, and productivity tasks. The <strong>/decide</strong> skill routes every request through a reasoning protocol, selects skills, enforces a <strong>56× token-saving pre-file-read probe</strong> via CodeGraph + Graphify, runs a <strong>permanent identity guardrail</strong>, and finishes with mandatory Obsidian documentation + galaxy-style knowledge graph visualization.</p>
   <div class="hero-stats">
     <div class="hero-stat"><div class="num">135</div><div class="label">Hermes Skills</div></div>
-    <div class="hero-stat"><div class="num">15</div><div class="label">Categories</div></div>
+    <div class="hero-stat"><div class="num">50+</div><div class="label">Categories</div></div>
     <div class="hero-stat"><div class="num">64</div><div class="label">ECC Agents</div></div>
     <div class="hero-stat"><div class="num">281</div><div class="label">KG Nodes</div></div>
     <div class="hero-stat"><div class="num">16K</div><div class="label">CodeGraph Nodes</div></div>
@@ -365,7 +365,7 @@
       <h3>Multi-Model Agent Framework</h3>
       <p>Hermes Agent is an open-source (MIT) agent framework by <strong>Nous Research</strong> that runs on your desktop, in the terminal, or as a server. It bundles <strong>skills</strong> (reusable workflows), <strong>tools</strong> (terminal, web, file, GitHub, browser, image generation), and <strong>model routing</strong> — so every task gets the best available model automatically.</p>
       <p>The <strong>/decide</strong> skill is the master orchestrator. It reads every prompt, decomposes it into sub-tasks, maps each to the right skill, loads context from prior sessions via <code>session_memory</code>, and enforces a <strong>Core Identity Guardrail</strong> at the start and a <strong>Token Saver probe</strong> before every file read — then finishes with mandatory documentation + knowledge graph refresh cycle.</p>
-      <p>Key features: <strong>Skills</strong> (50+ reusable workflows), <strong>Tools</strong> (terminal, web, file, browser automation, image/video gen), <strong>MCP integration</strong> (CodeGraph live code indexing — 16,092 nodes, LLMQuant Data), <strong>multi-model routing</strong> (free → paid), <strong>token-saving pre-read probe</strong> (56× reduction), and <strong>permanent identity guardrail</strong>.</p>
+      <p>Key features: <strong>Skills</strong> (135 across 50+ categories), <strong>Tools</strong> (terminal, web, file, browser automation, image/video gen), <strong>MCP integration</strong> (CodeGraph live code indexing — 16,092 nodes, LLMQuant Data), <strong>multi-model routing</strong> (free → paid), <strong>token-saving pre-read probe</strong> (56× reduction), and <strong>permanent identity guardrail</strong>.</p>
     </div>
     <div class="right fade-in">
       <h4>🚀 Quick Start</h4>
@@ -375,7 +375,7 @@
       <span class="cmd">hermes config set model ...</span>
       <span class="cmd">hermes status</span>
       <div class="hermes-features">
-        <div class="f"><span class="ck">✓</span>50+ pre-built skills</div>
+        <div class="f"><span class="ck">✓</span>135 skills across 50+ categories</div>
         <div class="f"><span class="ck">✓</span>CodeGraph MCP (16K nodes real-time)</div>
         <div class="f"><span class="ck">✓</span>Graphify (8.3K nodes code graph)</div>
         <div class="f"><span class="ck">✓</span>ECC agent bridge (64 agents)</div>
@@ -1180,7 +1180,7 @@ read_file("path", offset=line, limit=50)</div>
 <footer>
   <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/affaan-m/ECC">ECC</a> · <a href="https://github.com/ShaikhWarsi/free-ai-tools">free-ai-tools</a> · <a href="https://github.com/LLMQuant">LLMQuant</a></p>
   <p style="margin-top:3px;font-size:.68rem;color:var(--text2)">Model: deepseek-v4-flash-free · Provider: opencode-zen · Token Saver: 56.2× verified · Galaxy KG: 281 nodes · 1,101 edges · 135 Skills · 50+ Categories · Updated Jun 12, 2026</p>
-  <p style="margin-top:5px;font-size:.65rem;color:var(--text2)">📌 <a href="META_PROMPT.md" style="color:var(--accent2)">META_PROMPT.md</a> · 📚 <a href="SKILLS_CATALOG.md" style="color:var(--accent2)">SKILLS_CATALOG.md</a> · 🔗 <a href="INTEGRATION.md" style="color:var(--accent2)">INTEGRATION.md</a> · 📋 <a href="SETUP.md" style="color:var(--accent2)">SETUP.md</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" style="color:var(--text2)">CC BY-NC 4.0</a></p>
+  <p style="margin-top:5px;font-size:.65rem;color:var(--text2)">📖 <a href="README.md" style="color:var(--accent2)">README.md</a> · 📌 <a href="META_PROMPT.md" style="color:var(--accent2)">META_PROMPT.md</a> · 📚 <a href="SKILLS_CATALOG.md" style="color:var(--accent2)">SKILLS_CATALOG.md</a> · 🔗 <a href="INTEGRATION.md" style="color:var(--accent2)">INTEGRATION.md</a> · 📋 <a href="SETUP.md" style="color:var(--accent2)">SETUP.md</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" style="color:var(--text2)">CC BY-NC 4.0</a></p>
 </footer>
 
 <!-- ====== SCRIPTS ====== -->
