@@ -61,13 +61,14 @@ of the routing and safety system.
 - **Repository:** `skills/ecc-bridge` (managed by Hermes)
 
 ### token-saver (workflow/)
-- **What:** Pre-file-read probe chain. Before reading any file, probes
-  Graphify query → Graphify explain → Graphify path → CodeGraph query →
-  callers → callees → impact. Only reads files as last resort.
-- **Trigger:** Every read_file() call. Every code query.
+- **What:** Enforced 4-step probe chain before any file read:
+  Step A — detect project | Step B — CodeGraph MCP query (~300t) |
+  Step C — Graphify query (~300t) | Step D — read_file (last resort).
+  14/16 code projects have Graphify indices including ECC (34MB, 5,821 files).
+- **Trigger:** Every read_file() call. Every code query. Enforced by /decide Rule #4.
 - **Pipeline:** Step 4 (after /decide routes, before domain skills execute).
-- **Integration:** Verified 56.2× token reduction. Skips unavailable graph
-  tools gracefully.
+- **Integration:** Verified 50× to 1,233× token savings in session audit.
+  ECC index built and working (previously too large).
 - **File:** `skills/workflow/token-saver/SKILL.md`
 
 ### session_memory (workflow/)

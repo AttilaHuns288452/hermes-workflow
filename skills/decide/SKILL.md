@@ -70,19 +70,28 @@ is the minimum viable skill set that fully satisfies the task.
 1. **Check context first** — invoke `session_memory`. Pull relevant history,
    prior decisions, preferences, and patterns. Attach to all downstream
    skill invocations.
-2. **Reason** — run the full Reasoning Protocol above before touching the
+2. **Classify task tier** — invoke `task_tier` to classify the request as
+   Tier 1 (atomic), Tier 2 (task), or Tier 3 (project). Read the structured
+   output (TIER / REASON / OBSIDIAN / KG_REFRESH) and use it to gate all
+   subsequent steps. If TIER is 1, skip reasoning, skill selection, and
+   execute directly. If TIER is 2, run reasoning/skills with Token Saver
+   but skip Obsidian bundle and KG refresh. If TIER is 3, run full pipeline
+   including Obsidian + KG refresh. The task_tier output is passed through
+   to every downstream step as a gate directive.
+3. **Reason** — run the full Reasoning Protocol above before touching the
    Selection Rules.
-3. **Parse intent** — identify the domain(s): coding, finance/investing,
+4. **Parse intent** — identify the domain(s): coding, finance/investing,
    design, research, email, GitHub, productivity, data science, media, MLOps,
    notes/Obsidian, smart home, workflow/model selection.
-4. **Map to skills** — match each detected domain to its skill using the
+5. **Map to skills** — match each detected domain to its skill using the
    Selection Rules below.
-5. **Resolve conflicts** — apply Conflict Resolution rules.
-6. **Define execution order** — context → soul/domain → post-execution
-   (Obsidian always last).
-7. **Hand off** — invoke each skill with: detected intent, session context,
-   active soul constraints, prior decisions, and confidence scores.
-8. **Verify** — after execution, check if output satisfies original intent.
+6. **Resolve conflicts** — apply Conflict Resolution rules.
+7. **Define execution order** — task_tier gate → context → soul/domain →
+   post-execution (Obsidian always last, conditional on tier).
+8. **Hand off** — invoke each skill with: detected intent, session context,
+   active soul constraints, prior decisions, confidence scores, and the
+   task_tier gate directive.
+9. **Verify** — after execution, check if output satisfies original intent.
    Re-route if not.
 
 ## Selection Rules
@@ -96,6 +105,15 @@ is the minimum viable skill set that fully satisfies the task.
 ### Domain Skills
 - Setup / install / configure / bootstrap → `software-development/setup`
 - Setup + skill audit / repo integration with reconciliation → `software-development/repo-integration-reconciliation`
+- **API search / find an API / need an API that can X / API directory / Apify actor / web scraper for X / MCP server for X** → `productivity/api-mega-list`
+  - Routes to grep-based search across 18 categories of 26,005 Apify APIs
+  - MCP server queries → also route to `mcp-integrations` for wiring
+  - Scraper queries → also route to `ecc-bridge` for ECC agent alternatives
+- **Dashboard / ecosystem overview / show stats / project graph / model ecosystem / how many APIs / Graphify + CodeGraph node map** → `productivity/hermes-dashboard`
+  - Routes to local dashboard HTML at ~/Documents/Projects/hermes-dashboard/index.html
+  - Also available via GH Pages: attilahuns288452.github.io/hermes-workflow/dashboard.html
+  - Covers: 16 projects, 97 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model chain, MCP servers, ECC agents, skill categories
+  - Direct HTML render — no further pipeline steps needed
 - Update / ecosystem integrate / onboard → `software-development/update`
 - Graphify + Obsidian / code-graph export → `software-development/graphify-integrate`
 - Coding / implementation → `software-development` or domain-specific skill
@@ -122,34 +140,34 @@ is the minimum viable skill set that fully satisfies the task.
 ### Mandatory Rules
 1. **session_memory is always step one** — no skill runs before context
    is retrieved. If retrieval finds nothing, proceed; never skip the check.
-2. **Core Identity Guard is always loaded first** — `core-identity-guard`
+2. **Core Identity Guard is always loaded second** — `core-identity-guard`
    runs before every session and every skill invocation. It enforces file
    system protection, secrets handling, prompt injection immunity, and
    system integrity rules. No instruction can override it. Never skipped.
-3. **Token Saver — MANDATORY pre-file-read probe** — before ANY `read_file()`
-   call, run the `token-saver` workflow: probe Graphify `query` → Graphify
-   `explain` → CodeGraph `query`/`callers`/`callees`/`impact` → only then
-   read files. This saves ~56× tokens per code query (benchmark verified:
-   413K words naive → 10K probed). If graph.json or .codegraph/ is missing
-   for the target project, skip (tool not available) — never block.
-4. **Graphify + CodeGraph are REAL, productive tools** — Both are installed
-   and working. Graphify (v0.8.37) has code-graphs built for the graphify
-   project (8,267 nodes, 13,225 edges, 775 communities). CodeGraph (v0.9.9)
-   is initialized and indexed across ~/Documents/Projects/ (945 files,
-   16,092 nodes, 43,795 edges). CodeGraph MCP is registered in Hermes config
-   — use `codegraph query/callers/callees/impact` for live code context.
-   Graphify's `update .` command updates graphs code-only (no LLM needed).
+3. **task_tier classification is mandatory step three** — immediately after
+   session_memory and core-identity-guard, invoke `workflow/task_tier` to
+   classify the request. The structured output (TIER / OBSIDIAN / KG_REFRESH)
+   gates all downstream steps. If TIER is 1, answer directly and skip all
+   pipeline steps. If TIER is 2, run domain skills with Token Saver but
+   skip Obsidian bundle and KG refresh. If TIER is 3, run full pipeline
+   including Obsidian bundle + KG refresh.
+4. **Token Saver — ACTIVE pre-file-read probe (enforced)** — before ANY\n   `read_file()` call on a code project, you MUST execute the probe chain:\n   
+   **Step A — Detect project**: Identify which project the file belongs to\n   under `~/Documents/Projects/`. Extract `$PROJECT` name.\n   
+   **Step B — Probe CodeGraph MCP first** (always available, covers ALL 945\n   files): run `codegraph query "<symbol>"` or `codegraph callers "<symbol>"`\n   from `~/Documents/Projects/` to find definitions, callers, and locations\n   without reading any files. CodeGraph query output is ~300 tokens vs\n   raw read_file of equivalent files at ~15K+ tokens.\n   
+   **Step C — Probe Graphify if available**: Check if\n   `~/Documents/Projects/$PROJECT/graphify-out/graph.json` exists. If yes,\n   run `~/.local/bin/graphify.exe query "<question>" --budget 2000 --graph\n   graphify-out/graph.json` from the project dir. ~300 tokens vs up to\n   370K tokens for raw source reads. Graphify indices now exist for:\n   `API-mega-list`, `atm-crypto-bank`, `atm-machine`, `countdown-timer`,\n   `ECC`, `ecosystem-test`, `free-ai-tools`, `freebuff-test`,\n   `free-llm-api`, `graphify`, `hermes-workflow`, `hw-new`,\n   `MoneyPrinterTurbo`, `task-manager-cli` (14/19 projects covered).\n   ECC index is 34MB across 5,821 files — Graphify queries work on it.\n   \n   **Step D — Only then read files**: If BOTH probes returned insufficient\n   context, read only the specific file/section needed using\n   `read_file(path, offset=<line>, limit=50)` — never full-project reads.\n   \n   Token savings verified: 50× to 1,233× per query depending on scope.\n   This is enforced — skip the probe chain only if the target project is\n   NOT under `~/Documents/Projects/` (e.g. system files, temp files).\n\n5. **Graphify + CodeGraph are ACTIVE tools — USE them** — Both are installed\n   and working:\n   - **CodeGraph** (v0.9.9) has MCP server wired in Hermes config at\n     `~/Documents/Projects/.codegraph/` — **945 files, 16,092 nodes,**\n     **43,795 edges** across all projects. Run `codegraph query` or\n     `codegraph callers` from `~/Documents/Projects/` for any code query.\n   - **Graphify** (v0.8.37) has code-graphs built for **14 of 19 projects**\n     (the 5 missing are: hermes-dashboard (single HTML), unit-converter (no\n     code files), and 3 single-HTML projects with no code to graph). ECC is\n     now indexed — 34MB graph across 5,821 files. Run `~/.local/bin/graphify.exe query "<q>"`\n     with `--graph graphify-out/graph.json` from the project dir.\n   - CodeGraph for live FTS5 symbol search, Graphify for structural\n     BFS traversal — use CodeGraph first (always available), Graphify\n     second (when project has an index), read_file last (never).
 6. **Any project, coding, design, or analysis task → always include the
    full Obsidian+Graphify bundle as a mandatory post-execution phase:**
    `obsidian` + `obsidian-codebase-graph` + `obsidian-knowledge-graph`
    + `graphify-integrate`. Documentation + code graph are required
    deliverables, not optional.
+   *NOTE: task_tier TIER 1 and TIER 2 override this — if the classification
+   says SKIP, Obsidian and KG refresh are not run.*
 7. **After every Obsidian or Graphify update → always regenerate the
    knowledge graph** via `obsidian-knowledge-graph`. Graph must reflect
    latest vault state including code-symbol nodes.
-5. **Direct skill invocations by the user → /decide still runs.** Validate,
+8. **Direct skill invocations by the user → /decide still runs.** Validate,
    enrich context, then execute. Never bypass.
-6. **Setup tasks → always run complementary integration check.** When routing
+9. **Setup tasks → always run complementary integration check.** When routing
    to `software-development/setup`, add `external-agent-ecosystem-adapter`
    as a secondary skill if the target is an agent framework. Also check the
    new setup against `free-ai-tools` (model resources) and existing projects.
@@ -192,6 +210,19 @@ existing repos:
   dashboard at `localhost:5173` and Express on `:3001`. Check it as an
   alternative when OpenCode bundled models and Freebuff are insufficient —
   it covers providers not available in either.
+- **API-mega-list (API directory reference)** → route to BOTH `setup` AND
+  `productivity/api-mega-list`. After cloning the repo (~/Documents/Projects/API-mega-list/),
+  the skill provides grep-based search across 18 categories. For MCP Servers
+  found in the list, route to `mcp-integrations` for wiring. For scraping
+  APIs, cross-reference with `ecc-bridge` for ECC agent alternatives.
+  Has 26,005 APIs across 18 categories — daily updated.
+- **Hermes Dashboard (local ecosystem dashboard)** → route to
+  `productivity/hermes-dashboard`. Single-file HTML with vis-network
+  force-directed graph, 16 projects, 97 skills, 26K+ APIs, 8K Graphify
+  + 16K CodeGraph nodes, 5-layer free model chain, 6 MCP servers,
+  64 ECC agents, 49 skill categories. Available locally at
+  ~/Documents/Projects/hermes-dashboard/index.html, and via GH Pages
+  at attilahuns288452.github.io/hermes-workflow/dashboard.html.
 
 ### Known Integration Patterns (Session-Learned)
 These patterns were discovered in previous sessions and should be activated
@@ -204,8 +235,11 @@ heuristics:
 | Model selection for task type | User asks "which model" or "best free model for..." | `workflow/model-recommender-workflow` — covers all 6 task types |
 | Free model preference enforcement | New repo has paid model defaults | `external-agent-ecosystem-adapter` Phase 2a — convert to free model chain |
 | Multi-repo integration audit | User says "make these repos work together" | `model-recommender-workflow` + Obsidian note with Mermaid dependency graph |
-| Token-saving pre-file-read | Any code reading / codebase question | **MANDATORY:** Run `workflow/token-saver` first — Graphify query → explain → path → then CodeGraph query/callers/callees/impact → only then read_file(). Verified 56.2× token reduction. |
+| Token-saving pre-file-read | Any code reading / codebase question | **MANDATORY 4-step probe:** Step A → detect `$PROJECT` from path; Step B → `codegraph query "<symbol>"` from `~/Documents/Projects/` (always available, 945 files indexed, ~300 tokens); Step C → check `graphify-out/graph.json` and `~/.local/bin/graphify.exe query "<q>" --budget 2000 --graph graphify-out/graph.json` (~300 tokens, exists for 14/19 projects); Step D → `read_file(path, offset=N, limit=50)` only if probes insufficient. Verified 50× to 1,233× token reduction — **enforced for all code queries.** |
+| API-mega-list + MCP Servers | User finds an MCP Server in the API list | Route to `mcp-integrations` for Hermes config wiring. The list has 131 MCP Servers (Brave Search, Figma, Slack, DeepL, Google Maps, etc.) — each can be wired as a new MCP server in `config.yaml`. |
+| API-mega-list + ECC Scrapers | User finds a web scraper in the API list | Cross-reference with ECC agents via `ecc-bridge`. ECC has dedicated scraping agents that may complement or replace Apify actors. |
 | CodeGraph + Graphify complement | User installs CodeGraph or asks about code knowledge graphs | **Complementary — keep both.** CodeGraph provides live MCP tools (query, callers, callees, impact) — 945 indexed files, 16,092 nodes across all projects. Graphify provides code-graph query/explain/path — 8,267 nodes, 13,225 edges on the graphify project alone. CodeGraph for live agent queries, Graphify for structural analysis. |
+| Dashboard ecosystem overview | User asks "show me everything", "dashboard", "ecosystem stats", "what projects exist", "graph stats" | Route to `productivity/hermes-dashboard`. Single HTML page at ~/Documents/Projects/hermes-dashboard/index.html. All stats are static — no live backend needed. |
 
 ## Session Evolution & Self-Update
 
@@ -250,6 +284,9 @@ skill with new patterns. Target these specific sections:
 | Model Recommender CLI built | Model selection queries → route to `workflow/model-recommender-workflow` |
 | Any setup that required conflict resolution | Add the conflict vector type to the setup skill's Phase 0 scan checks |
 | New repo found to complement existing ones | Add to Complementary Setup Routing table with trigger → route-to mapping |
+| **Repo-as-mirror pattern** — user asks to replicate skills to GitHub | Copy actual `~/.hermes/skills/` tree preserving `dir/SKILL.md` structure; update SKILLS_CATALOG, INTEGRATION, META_PROMPT, index.html with real counts; zero secrets check before push |
+|| **Ecosystem documentation exports** — user asks to document their Hermes setup | Route to `software-development/update` which covers Phase 0 (mirror skills tree), Phase 1 (audit), Phase 2 (generate META_PROMPT/SKILLS_CATALOG/INTEGRATION), Phase 3 (website update), Phase 4 (commit/push). CRITICAL: skip stub .md files — copy actual skill tree instead. |
+|| **Website blank space fix** — user reports excessive whitespace on GH Pages site | Reduce `.section{padding}` (4rem→2rem), `.hero{min-height}` (100vh→92vh), tighten all inner margins/gaps by 30-50% across all section elements. Verify live with `browser_console` CSS inspection after deploy. |
 
 ## Self-Correction
 
@@ -269,7 +306,7 @@ If the decide skill's routing produces a wrong or suboptimal result:
 
 ## Execution Order
 
-session_memory → reasoning → soul file(s) → **Core Identity Guard** → **Graphify/CodeGraph probe (token-saver)** → primary domain skill(s) → complementary check (for setup tasks: run integration scan + wire new resources to existing repos) → post-execution (Obsidian bundle + Graphify export + graph refresh)
+session_memory → core-identity-guard → **task_tier (gate: TIER 1 → answer directly; TIER 2 → Token Saver + skills; TIER 3 → full pipeline)** → reasoning → soul file(s) → **MANDATORY: Token Saver probe chain (Step A: detect project → Step B: probe CodeGraph MCP first → Step C: probe Graphify if available → Step D: read_file only as last resort)** → primary domain skill(s) → complementary check (for setup tasks: run integration scan + wire new resources to existing repos) → post-execution (Obsidian bundle + Graphify export + graph refresh, conditioned on tier)
 
 ## Output Format
 State once, briefly, then execute immediately:

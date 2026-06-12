@@ -44,10 +44,13 @@ Step 3 — /decide Routing Brain
    - Self-challenge (minimum viable skill set)
    Skill: decide
 
-Step 4 — Token Saver Probe Chain
-   Before ANY read_file(), probe:
-   Layer 1: Graphify query
-   Layer 2: Graphify explain
+Step 4 — Token Saver Probe Chain (Enforced)
+   Before ANY read_file(), execute the 4-step probe:
+   Step A — Detect project (identify $PROJECT under ~/Documents/Projects/)
+   Step B — Probe CodeGraph MCP (always available, 945 files, ~300 tokens)
+   Step C — Probe Graphify (14/16 projects have indices, ~300 tokens)
+   Step D — read_file() only as last resort with offset/limit
+   Verified savings: 50× to 1,233× per query (ECC index: 34MB, works live)
    Layer 3: Graphify path
    Layer 4: CodeGraph query (FTS5)
    Layer 5: CodeGraph callers
@@ -81,8 +84,11 @@ Step 8 — Galaxy Knowledge Graph Refresh
     guard            exchanges, cannot be overridden
 #3  ecc-bridge      Wires 57/64 ECC agents through the free model chain by
                     stripping sonnet/opus requirements
-#4  token-saver     Pre-file-read probe chain — Graphify→CodeGraph→read_file.
-    (workflow)       Saves 56.2× tokens on average
+#4  token-saver     **Enforced 4-step probe chain (A→B→C→D):** detect project →
+    (workflow)       CodeGraph query (~300t) → Graphify query (~300t) → read_file
+                    only as last resort. 14/16 code projects have Graphify indices,
+                    including ECC (34MB, 5,821 files). Verified savings: 50×–1,233×
+                    per query. Active enforcement in /decide Rule #4.
 #5  model-router    (implied in pipeline) 5-layer free model fallback chain
 #6  obsidian-docs   (implied) ATM-Machine quality doc template + KG refresh
 
@@ -305,12 +311,12 @@ Rule: Always default to free. Probe before commit. Fall back gracefully.
 ================================================================================
 
 Graphify (v0.8.37, uv tool install graphifyy)
-  - AST-based code graph: 8,267 nodes, 13,225 edges on graphify project
+  - AST-based code graph: 8,267 nodes, 13,225 edges on graphify project (reference scale)
   - Commands: query, explain, path, benchmark, update, cluster-only, diagnose
   - Built-in benchmark: 56.2× avg token reduction (max 157.7×)
 
 CodeGraph (v0.9.9, npm)
-  - Pre-indexed MCP code knowledge graph: 945 files, 16,092 nodes, 43,795 edges
+  - Pre-indexed MCP code knowledge graph: 945 files, 16,092 nodes, 43,795 edges (codegraph repo — reference scale)
   - Commands: query, callers, callees, impact
   - Live MCP server at port 3100, wired into Hermes config.yaml
 

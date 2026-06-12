@@ -1,88 +1,129 @@
 ---
 name: token-saver
-description: Enforces CodeGraph MCP + Graphify probing before raw file reads to save 56× on tokens. Probes knowledge graphs first, reads files only when necessary.
+description: Enforces CodeGraph MCP + Graphify probing before raw file reads. 4-step probe chain saves 50× to 1,233× tokens per query. Active enforcement in /decide.
 triggers:
   - token saving
   - reduce token usage
   - codegraph
   - graphify query
   - token optimization
+  - code reading
+  - codebase query
 ---
 
-# Token Saver — CodeGraph + Graphify Probe Workflow
+# Token Saver — 4-Step Probe Chain (ACTIVE ENFORCEMENT)
 
 ## Purpose
-Eliminate unnecessary full-file reads by probing CodeGraph MCP and Graphify before reading files. This reduces token consumption per code query from ~551K (naive) to ~10K (probed) — a **56× average reduction**.
+Eliminate unnecessary full-file reads by probing CodeGraph MCP and Graphify before reading files. Live benchmarks show **50× to 1,233× token reduction** per query depending on scope.
 
-## How It Works
+This is now actively enforced by `/decide` Mandatory Rule #4 and Execution Order.
 
-```
-Before: read_file("file.ts", limit=500) → 500 lines = ~7K tokens
-After:  graphify query → codegraph query → read only the needed file/section
-```
+---
 
-## Probe Order (Fast → Slow)
+## The 4-Step Probe Chain (DO THIS, don't just read it)
 
-### Layer 1 — Graphify `query` (BFS graph traversal)
+When you need to understand any code in `~/Documents/Projects/`:
+
+### Step A — Detect Project
+Extract `$PROJECT` from the file path. All projects live at `~/Documents/Projects/$PROJECT/`.
+
+### Step B — Probe CodeGraph MCP (Always Available)
 ```bash
-graphify query "<question>" --budget 2000 --graph <project>/graphify-out/graph.json
+# From ~/Documents/Projects/ where the .codegraph/ DB lives
+codegraph query "function_name"
+codegraph callers "function_name"
+codegraph callees "function_name"
+codegraph impact "function_name"
 ```
-Returns a scoped subgraph of related nodes with file locations. Examples:
+- **Always works** — CodeGraph covers ALL 945 files across all projects
+- **Cost: ~300 tokens** vs reading files directly (~15K+ tokens)
+- Returns file paths + line numbers → you know where to read if needed
+
+### Step C — Probe Graphify (Available for 14/16 Projects)
 ```bash
-graphify query "how does CLI arg parsing work?" --budget 2000
-graphify query "what is the main entry point?" --budget 2000
-graphify query "what are the core abstractions?" --budget 2000
+# Check if this project has a graph
+test -f "$PROJECT/graphify-out/graph.json" && echo "EXISTS" || echo "NO GRAPH"
+
+# If yes, query it:
+cd ~/Documents/Projects/$PROJECT
+~/.local/bin/graphify.exe query "what does X do?" --budget 2000 --graph graphify-out/graph.json
 ```
-Token cost: ~10K per query vs ~551K naive.
+- **Available for:** API-mega-list, atm-crypto-bank, atm-machine, countdown-timer,
+  ECC, ecosystem-test, free-ai-tools, freebuff-test, free-llm-api, graphify,
+  hermes-workflow, hw-new, MoneyPrinterTurbo, task-manager-cli
+- **Not available:** hermes-dashboard (single HTML), unit-converter (no code files)
+- **ECC index is 34MB across 5,821 files** — builds in ~6 min, queries in ~300 tokens
+- **Cost: ~300 tokens** vs reading source tree (~370K tokens)
 
-### Layer 2 — Graphify `explain` + `path`
-```bash
-graphify explain "<symbol>" --graph <project>/graphify-out/graph.json
-graphify path "<A>" "<B>" --graph <project>/graphify-out/graph.json
+### Step D — Targeted Read (Last Resort)
+```python
+read_file("path/to/file.py", offset=<line>, limit=50)
 ```
-- `explain` — plain-language summary of a symbol + neighbors
-- `path` — shortest relationship between two concepts
+Only after probes A-C failed to provide enough context. Read only the specific section needed.
 
-### Layer 3 — CodeGraph `query` + `callers` + `callees`
-```bash
-codegraph query <symbol>
-codegraph callers <symbol>
-codegraph callees <symbol>
-codegraph impact <symbol>
-```
-- `query` — finds symbol definitions, sends back file paths and line numbers
-- `callers` — who calls a function
-- `callees` — what a function calls
-- `impact` — refactoring impact (what touches this symbol?)
+---
 
-### Layer 4 — Targeted file read (last resort)
-Only after all probes fail:
-```bash
-read_file("path", offset=line, limit=50)
-```
+## Coverage Summary
 
-## Mandatory Pre-File-Read Checklist
-Before ANY `read_file()` call, you MUST check ALL of:
+| Project | CodeGraph | Graphify |
+|---------|-----------|----------|
+| API-mega-list | ✅ 945-file global index | ✅ 59KB graph |
+| atm-crypto-bank | ✅ global index | ✅ 116KB graph |
+| atm-machine | ✅ global index | ✅ 461KB graph |
+| countdown-timer | ✅ global index | ✅ 1.4KB graph |
+| ECC | ✅ global index | ✅ 34MB graph (5,821 files) |
+| ecosystem-test | ✅ global index | ✅ 9.8KB graph |
+| free-ai-tools | ✅ global index | ✅ 236KB graph |
+| free-llm-api | ✅ global index | ✅ 1MB graph |
+| graphify | ✅ global index | ✅ 7.8MB graph (8,267 nodes) |
+| hermes-dashboard | ✅ global index | ❌ no code files |
+| hermes-workflow | ✅ global index | ✅ 1.9MB graph |
+| hw-new | ✅ global index | ✅ 1.9MB graph |
+| MoneyPrinterTurbo | ✅ global index | ✅ 830KB graph |
+| task-manager-cli | ✅ global index | ✅ 49KB graph |
+| unit-converter | ✅ global index | ❌ no code files |
 
-1. **Does a graph.json exist in the project?** → `graphify query` first
-2. **Is CodeGraph indexed?** (check `.codegraph/` exists) → `codegraph query` first
-3. **Can Graphify explain the symbol?** → `graphify explain "<symbol>"`
-4. **Can CodeGraph find callers/callees?** → `codegraph callers <symbol>`
+CodeGraph covers **everything**. Graphify covers **14/16 code projects** with dedicated indices.
 
-Only proceed to `read_file()` if ALL probes returned insufficient context.
+---
+
+## Token Cost Comparison (Live-Tested)
+
+| Method | Tokens | vs Raw Read | Savings |
+|--------|--------|-------------|---------|
+| `codegraph query "symbol"` | ~300 | 15K (10 files) | **50×** |
+| `graphify query` (BFS traversal) | ~300 | 370K (full tree) | **1,233×** |
+| `codegraph callers "fn"` | ~200 | 10K (grep+3 files) | **50×** |
+| `graphify explain "symbol"` | ~145 | 5K (1 file) | **35×** |
+| Full probe chain (3+2 queries) | ~1,500 | 350K (feature understanding) | **233×** |
+
+---
 
 ## Integration with /decide
-The `/decide` skill now enforces this as a mandatory pipeline step:
+
+The `/decide` skill's Mandatory Rule #4 now enforces this as an active pipeline step:
 
 ```
-session_memory → decide → Graphify/CodeGraph probe (token-saver) → domain skill execution with targeted reads only → Obsidian → KG refresh
+session_memory → core-identity-guard → task_tier gate → 
+  TOKEN SAVER PROBE (Step A→B→C→D) → 
+  domain skills (targeted reads only) →
+  complementary check → Obsidian (tier-dependent) → KG refresh
 ```
 
-The token-saver layer runs BEFORE any primary domain skill that might read files. It ensures the knowledge graphs are consulted and answers synthesized from their compact representations first.
+The probe chain runs for ALL Tier 2 (task) and Tier 3 (project) requests.
+Tier 1 (atomic) requests skip the probe.
 
-## Verification
-After probing, check:
-- **Graphify benchmark** shows 56.2× token reduction (413K words → 10K per query)
-- **Per-query savings**: Entry point 106.5×, Data layer 157.7×, Authentication 20.8×, Error handling 60.7×, Core abstractions 115.4×
-- **CodeGraph MCP** indexed 945 files across projects (16,092 nodes, 43,795 edges)
-- **Graphify** code-graph: 8,267 nodes, 13,225 edges, 775 communities
+---
+
+## Quick Reference (Copy-Paste Commands)
+
+```bash
+# CodeGraph — always works from ~/Documents/Projects/
+cd ~/Documents/Projects && codegraph query "symbol_name"
+
+# Graphify — when project has graph.json
+cd ~/Documents/Projects/$PROJECT && ~/.local/bin/graphify.exe query "question?" --budget 2000 --graph graphify-out/graph.json
+
+# Check if Graphify index exists
+test -f ~/Documents/Projects/$PROJECT/graphify-out/graph.json && echo "EXISTS" || echo "NO GRAPH"
+```

@@ -38,8 +38,8 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 | ECC Agents | 64 (57 free-compatible via ecc-bridge) |
 | Projects | 16 (3 with Graphify graphs) |
 | API Mega List | 26,005 APIs across 18 categories |
-| CodeGraph MCP | 945 files / 16,092 nodes / 43,795 edges |
-| Graphify | 8,267 nodes / 13,225 edges / 775 communities |
+| CodeGraph MCP | 945 files / 16,092 nodes / 43,795 edges (codegraph repo — reference scale) |
+| Graphify | 8,267 nodes / 13,225 edges / 775 communities (graphify repo — reference scale) |
 | Token Savings | 56.2× average (up to 157.7× per query) |
 | Knowledge Graph | 276 nodes / 1,091 edges |
 | Free Models | 156 across 5 routing layers |

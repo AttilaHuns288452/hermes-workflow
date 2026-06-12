@@ -31,9 +31,13 @@ tools, model layers, and data sources wire together into a single pipeline.
                     └───────────┬─────────────┘
                                 │
                     ┌───────────▼─────────────┐
-                    │  Step 4: Token Saver      │
-                    │  Graphify → CodeGraph →   │
-                    │  read_file (last resort)  │
+                    │  Step 4: Token Saver Probe Chain │
+                    │  (ENFORCED — 4-step A→B→C→D)    │
+                    │  Step A: detect project          │
+                    │  Step B: CodeGraph MCP (~300t)   │
+                    │  Step C: Graphify (~300t)        │
+                    │  Step D: read_file (last resort) │
+                    │  Verified: 50×–1,233× savings    │
                     └───────────┬─────────────┘
                                 │
                     ┌───────────▼─────────────┐
@@ -228,7 +232,7 @@ ecc-bridge strips sonnet/opus → passes to model router:
 ### Obsidian Bundle + Graphify
 ```
 obsidian-codebase-graph creates wikilinked notes from Graphify output:
-  - Graphify builds AST-level code graph (8,267 nodes, 13,225 edges)
+  - Graphify builds AST-level code graph (8,267 nodes, 13,225 edges) [graphify repo — reference scale]
   - Graphify query results feed into Obsidian note content
   - obsidian-knowledge-graph refresh includes code-symbol nodes
   - Galaxy graph shows both document-level and code-level relationships
@@ -266,12 +270,12 @@ Model router respects skill recommendations but routes through free chain:
 ### Graphify → CodeGraph → Token Saver
 ```
 Graphify (v0.8.37): ~/.local/bin/graphify.exe
-  ├─ Graph: 8,267 nodes, 13,225 edges (on graphify project)
+  ├─ Graph: 8,267 nodes, 13,225 edges (on graphify project — reference scale)
   ├─ Config: graphify-out/graph.json
   └─ Skill: software-development/graphify-integrate
 
 CodeGraph (v0.9.9): npx -y @colbymchenry/codegraph
-  ├─ Index: 945 files, 16,092 nodes, 43,795 edges
+  ├─ Index: 945 files, 16,092 nodes, 43,795 edges (on codegraph project — reference scale)
   ├─ MCP: Server at port 3100 → wired in ~/.hermes/config.yaml
   └─ MCP tool: codegraph (query, callers, callees, impact)
 

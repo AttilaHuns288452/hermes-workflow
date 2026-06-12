@@ -400,7 +400,7 @@
         <div class="f"><span class="ck">✓</span>Graphify (8.3K nodes code graph)</div>
         <div class="f"><span class="ck">✓</span>ECC agent bridge (64 agents)</div>
         <div class="f"><span class="ck">✓</span>5-layer model routing</div>
-        <div class="f"><span class="ck">✓</span>Token Saver (56× reduction)</div>
+        <div class="f"><span class="ck">✓</span>Token Saver (56×–1,233×)</div>
         <div class="f"><span class="ck">✓</span>Core Identity Guardrail</div>
         <div class="f"><span class="ck">✓</span>Obsidian docs (mandatory)</div>
         <div class="f"><span class="ck">✓</span>Galaxy knowledge graph</div>
@@ -430,7 +430,7 @@
       <div class="df-step fade-in"><span class="df-num">3</span><div class="df-icon">⚖️</div><div class="df-label">Score & Route</div><div class="df-desc">Assign confidence to each skill, resolve conflicts, define execution order</div></div>
     </div>
     <div class="df-row">
-      <div class="df-step fade-in" style="border-color:var(--green)"><span class="df-num">⚡</span><div class="df-icon">📊</div><div class="df-label" style="color:var(--green)">Token Saver Probe</div><div class="df-desc">Probe CodeGraph MCP → Graphify query → before any read_file(). 56.2× token reduction verified</div></div>
+      <div class="df-step fade-in" style="border-color:var(--green)"><span class="df-num">⚡</span><div class="df-icon">📊</div><div class="df-label" style="color:var(--green)">Token Saver Probe</div><div class="df-desc">Probe CodeGraph MCP → Graphify query → before read_file(). 50×–1,233× savings. ECC indexed.</div></div>
       <div class="df-arrow">→</div>
       <div class="df-step fade-in"><span class="df-num">4</span><div class="df-icon">🧬</div><div class="df-label">Graphify + CodeGraph</div><div class="df-desc">Dual code knowledge: Graphify (8.3K nodes) + CodeGraph MCP (16K nodes live index)</div></div>
       <div class="df-arrow">→</div>
@@ -461,9 +461,9 @@
     <div class="pipe-arrow" data-delay="3">↓</div>
     <div class="pipe-step" data-delay="4"><div class="sn">2</div><div class="info"><h3>/decide Routing Brain</h3><p>Parse intent → decompose prompt → score confidence → select skills → resolve conflicts → define execution order.</p></div></div>
     <div class="pipe-arrow" data-delay="5">↓</div>
-    <div class="pipe-step" data-delay="6" style="border-left:3px solid var(--green)"><div class="sn">⚡</div><div class="info"><h3>Token Saver — Probe Before Read</h3><p>Before any file read: Graphify query → CodeGraph query/callers. 56.2× token reduction (413K words → 10K per query).</p></div></div>
+    <div class="pipe-step" data-delay="6" style="border-left:3px solid var(--green)"><div class="sn">⚡</div><div class="info"><h3>Token Saver — Probe Before Read</h3><p>Before any file read: 4-step probe chain A→B→C→D. Verified 50× to 1,233× savings (ECC: 34MB index).</p></div></div>
     <div class="pipe-arrow" data-delay="7">↓</div>
-    <div class="pipe-step" data-delay="8"><div class="sn">3</div><div class="info"><h3>Graphify + CodeGraph MCP</h3><p>AST code graph (8,267 nodes) + live code index MCP (16,092 nodes). Dual code knowledge for analysis & docs.</p></div></div>
+    <div class="pipe-step" data-delay="8"><div class="sn">3</div><div class="info"><h3>Graphify + CodeGraph MCP</h3><p>AST code graph (8,267 nodes, graphify repo) + live code index MCP (16,092 nodes, codegraph repo). Dual code knowledge for analysis & docs.</p></div></div>
     <div class="pipe-arrow" data-delay="9">↓</div>
     <div class="pipe-step" data-delay="10"><div class="sn">4</div><div class="info"><h3>Domain Skills</h3><p>ECC agents (64), LLMQuant domains (18), creative, code, research, GitHub, MLOps, media, productivity & more.</p></div></div>
     <div class="pipe-arrow" data-delay="11">↓</div>
@@ -577,8 +577,8 @@
 <!-- ====== TOKEN SAVER ====== -->
 <div class="section" id="tokensaver">
   <div class="section-header fade-in">
-    <h2>⚡ Token Saver — 56× Reduction</h2>
-    <p class="sub">Before reading any file, probe CodeGraph MCP and Graphify. Verified by benchmark: 56.2× average reduction, up to 157.7× for data-layer queries.</p>
+    <h2>⚡ Token Saver — 56×–1,233× Reduction</h2>
+    <p class="sub">Before reading any file, probe CodeGraph MCP and Graphify. Verified by benchmark (56.2× avg, up to 157.7×) and live session audit (50× to 1,233× per query). ECC index: 34MB, 5,821 files — working.</p>
   </div>
 
   <div class="ts-hero fade-in">
@@ -590,6 +590,13 @@
       <div class="ts-stat"><div class="val">9.8K</div><div class="lbl">Avg Probed Tokens</div></div>
       <div class="ts-stat"><div class="val">56.2×</div><div class="lbl">Reduction Factor</div></div>
       <div class="ts-stat"><div class="val">157.7×</div><div class="lbl">Best Per-Query</div></div>
+      <div class="ts-stat"><div class="val">1,233×</div><div class="lbl">Session-Verified Max</div></div>
+    </div>
+
+    <div class="ts-stat-grid" style="margin-top:1.2rem">
+      <div class="ts-stat" style="border-color:var(--green)"><div class="val" style="font-size:.7rem">✅</div><div class="lbl">ECC Indexed (34MB)</div></div>
+      <div class="ts-stat" style="border-color:var(--green)"><div class="val" style="font-size:.7rem">✅</div><div class="lbl">14/16 Code Projects</div></div>
+      <div class="ts-stat" style="border-color:var(--green)"><div class="val" style="font-size:.7rem">✅</div><div class="lbl">Enforced by /decide</div></div>
     </div>
 
     <div class="ts-flow">
@@ -612,7 +619,7 @@
 <div class="section" id="codegraph">
   <div class="section-header fade-in">
     <h2>🧬 CodeGraph MCP + Graphify</h2>
-    <p class="sub">Dual code knowledge system: live context during development (CodeGraph MCP — 16K nodes) + code graph analysis (Graphify — 8.3K nodes). Both active, both real.</p>
+    <p class="sub">Dual code knowledge system: live context during development (CodeGraph MCP — 16K nodes) + code graph analysis (Graphify — 8.3K nodes). Both active, both real. <span style="color:var(--text3);font-size:.7rem">(reference-scale stats from upstream tool repos)</span></p>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;margin-bottom:1rem">
@@ -623,18 +630,22 @@
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center">
       <div style="font-size:1.4rem;font-weight:800;color:var(--moon-glow)">16,092</div>
       <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">CodeGraph Nodes</div>
+      <div style="font-size:.5rem;color:var(--text3);margin-top:2px">(codegraph repo — reference scale)</div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center">
       <div style="font-size:1.4rem;font-weight:800;color:var(--moon-glow)">43,795</div>
       <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">CodeGraph Edges</div>
+      <div style="font-size:.5rem;color:var(--text3);margin-top:2px">(codegraph repo — reference scale)</div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center">
       <div style="font-size:1.4rem;font-weight:800;color:var(--moon-halo)">8,267</div>
       <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Graphify Nodes</div>
+      <div style="font-size:.5rem;color:var(--text3);margin-top:2px">(graphify repo — reference scale)</div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center">
       <div style="font-size:1.4rem;font-weight:800;color:var(--moon-halo)">13,225</div>
       <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Graphify Edges</div>
+      <div style="font-size:.5rem;color:var(--text3);margin-top:2px">(graphify repo — reference scale)</div>
     </div>
   </div>
 
@@ -649,9 +660,9 @@
 
   <div class="comp-grid fade-in">
     <div class="comp-side"><h4>📊 Graphify (v0.8.37)</h4>
-      <ul><li>AST code graph — 8,267 nodes, 13,225 edges</li><li>775 community clusters</li><li>Cross-file traversal & reports</li><li>CLI: query, explain, path, affected</li><li>Post-processing — structural analysis</li></ul></div>
+      <ul><li>AST code graph — 8,267 nodes, 13,225 edges <span style="color:var(--text3);font-size:.6rem">(graphify repo — reference scale)</span></li><li>775 community clusters</li><li>Cross-file traversal & reports</li><li>CLI: query, explain, path, affected</li><li>Post-processing — structural analysis</li></ul></div>
     <div class="comp-side" style="border-color:var(--moon-halo)"><h4 style="color:var(--cyan)">⚡ CodeGraph (v0.9.9)</h4>
-      <ul><li>Real-time MCP — 945 files indexed</li><li>16,092 nodes, 43,795 edges</li><li>Auto-sync file watcher</li><li>CLI: query, callers, callees, impact</li><li>Live agent context — development</li></ul></div>
+      <ul><li>Real-time MCP — 945 files indexed</li><li>16,092 nodes, 43,795 edges <span style="color:var(--text3);font-size:.6rem">(codegraph repo — reference scale)</span></li><li>Auto-sync file watcher</li><li>CLI: query, callers, callees, impact</li><li>Live agent context — development</li></ul></div>
   </div>
 </div>
 
@@ -717,6 +728,10 @@
     <p style="color:var(--text2);font-size:.82rem;line-height:1.6">The knowledge graph is generated from the Obsidian vault using a vault scanning script — <strong>276 nodes, 1,091 edges</strong>. It uses vis-network with a custom galaxy theme: deep space background, nebula cluster colors, pulsing star-like nodes, physics-based auto-clustering.</p>
     <p style="color:var(--text2);font-size:.76rem;margin-top:.4rem">Node types: 📁 folders, 📝 notes, 💻 code blocks, ⚡ tags, 🏷️ concepts. Edges: wikilinks, folder membership, code relationships.</p>
 
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-top:.8rem;border-left:3px solid var(--moon-halo)">
+      <p style="color:var(--text2);font-size:.72rem;margin:0"><strong style="color:var(--moon-halo)">📌 Source note:</strong> Stats above (8,267 nodes / 13,225 edges, 945 files / 16,092 nodes / 43,795 edges) reflect the upstream tool repos used as reference benchmarks. Your vault: <strong>276 nodes · 1,091 edges</strong>.</p>
+    </div>
+
     <div class="kg-meta">
       <div class="kg-stat"><div class="val">276</div><div class="lbl">Nodes</div></div>
       <div class="kg-stat"><div class="val">1,091</div><div class="lbl">Edges</div></div>
@@ -732,11 +747,11 @@
     </div>
     <div class="card" style="border-left:3px solid var(--moon-glow)">
       <h4>🧬 Graphify Code Graph</h4>
-      <p>Graphify generates AST code graphs with community detection. 8,267 nodes, 13,225 edges.</p>
+      <p>Graphify generates AST code graphs with community detection. 8,267 nodes, 13,225 edges <span style="color:var(--text3);font-size:.6rem">(graphify repo — reference scale)</span>.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--green)">
       <h4>⚡ CodeGraph MCP</h4>
-      <p>Live code knowledge via MCP. 945 indexed files, 16,092 nodes, 43,795 edges.</p>
+      <p>Live code knowledge via MCP. 945 indexed files, 16,092 nodes, 43,795 edges <span style="color:var(--text3);font-size:.6rem">(codegraph repo — reference scale)</span>.</p>
     </div>
   </div>
 </div>
@@ -769,7 +784,7 @@
   <div class="use-case fade-in">
     <h3>⚡ Token Saver — CodeGraph + Graphify</h3>
     <div class="meta">Live probe workflow · 56.2× token reduction · Installed + initialized</div>
-    <p>CodeGraph MCP initialized across 945 files (16,092 nodes), Graphify code graph built (8,267 nodes). Combined token-saver probe workflow verified by Graphify's benchmark: 56.2× avg reduction, up to 157.7×.</p>
+    <p>CodeGraph MCP initialized across 945 files (16,092 nodes, codegraph repo), Graphify code graph built (8,267 nodes, graphify repo). Combined token-saver probe workflow verified by Graphify's benchmark: 56.2× avg reduction, up to 157.7×.</p>
     <div class="flow">decide → CodeGraph init → Graphify update → benchmark → token-saver skill → /decide patch → Obsidian → KG refresh</div>
   </div>
   <div class="use-case fade-in">
@@ -837,10 +852,10 @@
 
   <div class="eco-grid">
     <div class="eco-card"><div class="icon">🛡️</div><h3>Core Identity Guardrail</h3><p>Permanent behavioral guard: file safety, secrets, injection immunity. Always loaded first.</p><div class="detail">6 rules · Pre-action checklist</div></div>
-    <div class="eco-card"><div class="icon">⚡</div><h3>Token Saver</h3><p>Pre-file-read probe via Graphify + CodeGraph. 56.2× token reduction. Mandatory pipeline step.</p><div class="detail">56.2× reduction · 5 probe layers</div></div>
+    <div class="eco-card"><div class="icon">⚡</div><h3>Token Saver</h3><p>Pre-file-read probe via Graphify + CodeGraph. 56×–1,233× reduction. Enforced by /decide.</p><div class="detail">ECC indexed · 14/16 projects · Mandatory step</div></div>
     <div class="eco-card"><div class="icon">🧠</div><h3>ECC Agent Library</h3><p>64 specialized agents for code review, build resolution, architecture, security, testing, infrastructure, ML.</p><div class="detail">64 agents · 8 categories · 57 free</div></div>
-    <div class="eco-card"><div class="icon">⚡</div><h3>CodeGraph MCP</h3><p>Live code knowledge (v0.9.9) — 945 indexed files, 16K nodes. CLI: query, callers, callees, impact.</p><div class="detail">945 files · 16,092 nodes · MCP</div></div>
-    <div class="eco-card"><div class="icon">🧬</div><h3>Graphify</h3><p>AST code graph (v0.8.37) — 8,267 nodes, 13,225 edges, 775 communities.</p><div class="detail">8,267 nodes · 13,225 edges</div></div>
+    <div class="eco-card"><div class="icon">⚡</div><h3>CodeGraph MCP</h3><p>Live code knowledge (v0.9.9) — 945 indexed files, 16K nodes <span style="color:var(--text3);font-size:.6rem">(codegraph repo)</span>. CLI: query, callers, callees, impact.</p><div class="detail">945 files · 16,092 nodes · MCP · ref. scale</div></div>
+    <div class="eco-card"><div class="icon">🧬</div><h3>Graphify</h3><p>AST code graph (v0.8.37) — 8,267 nodes, 13,225 edges, 775 communities <span style="color:var(--text3);font-size:.6rem">(graphify repo)</span>.</p><div class="detail">8,267 nodes · 13,225 edges · ref. scale</div></div>
     <div class="eco-card"><div class="icon">📡</div><h3>free-ai-tools</h3><p>550+ free AI tools, 30+ API providers, 238 models. CLI probe for cheapest-capable routing.</p><div class="detail">550+ tools · 238 models</div></div>
     <div class="eco-card"><div class="icon">⚡</div><h3>OpenCode CLI</h3><p>Primary coding agent (v1.16.2). 5 bundled free models. Direct --model selection, scripted runs.</p><div class="detail">5 free models · --model flag</div></div>
     <div class="eco-card"><div class="icon">🎬</div><h3>MoneyPrinterTurbo</h3><p>AI short video generation: LLM script → stock footage → TTS → subtitles → render.</p><div class="detail">86.1k ⭐ · 5-step pipeline</div></div>
@@ -879,7 +894,7 @@
 
 <footer>
   <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/affaan-m/ECC">ECC</a> · <a href="https://github.com/ShaikhWarsi/free-ai-tools">free-ai-tools</a> · LLMQuant</p>
-  <p style="margin-top:3px;font-size:.65rem">Model: deepseek-v4-flash-free · Provider: opencode-zen · Token Saver: 56.2× verified · Galaxy KG: 276 nodes · 1,091 edges</p>
+  <p style="margin-top:3px;font-size:.65rem">Model: deepseek-v4-flash-free · Provider: opencode-zen · Token Saver: 56×–1,233× verified · Galaxy KG: 276 nodes · 1,091 edges</p>
   <p style="margin-top:2px;font-size:.6rem;color:var(--text3)">© 2026 — Dark Navy Moonlight Theme</p>
 </footer>
 
@@ -966,7 +981,7 @@ const SKILLS = [
   {n:'Node Inspect Debugger',c:'software-development',d:'Debug Node.js via --inspect + Chrome DevTools Protocol.'},
   {n:'Core Identity Guardrail',c:'workflow',d:'Permanent behavioral guard: file safety, secrets, injection immunity. Always loaded first.'},
   {n:'Hermes Dashboard',c:'dashboard',d:'Local live stats — 16 projects, 97 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model ecosystem, MCP status & more.'},
-  {n:'Token Saver',c:'workflow',d:'Pre-file-read probe via CodeGraph + Graphify. Verified 56.2× token reduction.'},
+  {n:'Token Saver',c:'workflow',d:'4-step probe chain: CodeGraph + Graphify before read_file. Verified 56×–1,233× savings.'},
   {n:'Claude Design',c:'creative',d:'Design one-off HTML artifacts: landing pages, prototypes, motion studies.'},
   {n:'Architecture Diagram',c:'creative',d:'Dark-themed SVG architecture/cloud/infra diagrams as HTML.'},
   {n:'ASCII Art',c:'creative',d:'pyfiglet, cowsay, boxes, image-to-ascii generation.'},
