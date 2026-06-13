@@ -112,7 +112,7 @@ is the minimum viable skill set that fully satisfies the task.
 - **Dashboard / ecosystem overview / show stats / project graph / model ecosystem / how many APIs / Graphify + CodeGraph node map** → `productivity/hermes-dashboard`
   - Routes to local dashboard HTML at ~/Documents/Projects/hermes-dashboard/index.html
   - Also available via GH Pages: attilahuns288452.github.io/hermes-workflow/dashboard.html
-  - Covers: 16 projects, 117 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model chain, MCP servers, ECC agents, skill categories
+  - Covers: 16 projects, 119 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model chain, MCP servers, ECC agents, skill categories
   - Direct HTML render — no further pipeline steps needed
 - Update / ecosystem integrate / onboard → `software-development/update`
 - Graphify + Obsidian / code-graph export → `software-development/graphify-integrate`
@@ -221,7 +221,7 @@ existing repos:
   Has 26,005 APIs across 18 categories — daily updated.
 - **Hermes Dashboard (local ecosystem dashboard)** → route to
   `productivity/hermes-dashboard`. Single-file HTML with vis-network
-  force-directed graph, 16 projects, 117 skills, 26K+ APIs, 8K Graphify
+  force-directed graph, 16 projects, 119 skills, 26K+ APIs, 8K Graphify
   + 16K CodeGraph nodes, 5-layer free model chain, 6 MCP servers,
   64 ECC agents, 49 skill categories. Available locally at
   ~/Documents/Projects/hermes-dashboard/index.html, and via GH Pages
