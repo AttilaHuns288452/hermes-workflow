@@ -1,6 +1,6 @@
 # Hermes Workflow
 
-**AI Agent Workflow Engine** — 97 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
+**AI Agent Workflow Engine** — 117 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
 
 ## 🚀 Plug-and-Play Setup
 
@@ -89,7 +89,7 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 
 - **92+ Skills** — categorized tab grid with descriptions (15 categories)
 - **64 ECC Agents** — searchable, filterable library with free-model compatibility badges
-- **Live Dashboard** — ecosystem overview: 16 projects, 97 skills, 26K APIs, 8K+16K graph nodes, model layers, MCP servers
+- **Live Dashboard** — ecosystem overview: 16 projects, 117 skills, 26K APIs, 8K+16K graph nodes, model layers, MCP servers
 - **Model Routing Chain** — 5-layer fallback chain visualization
 - **Token Saver** — 56.2× verified token reduction via CodeGraph + Graphify probe
 - **Core Identity Guardrail** — 6 permanent safety rules

@@ -2,8 +2,8 @@
 
 ## 🔒 This Repo Has Been Security-Audited
 
-**Last audit:** 2026-06-13
-**Commit:** e62a67d
+**Last audit:** 2026-06-13 (ongoing)
+**Action taken:** Removed `graphify-out/` build artifacts (3.8MB) from git tracking — contained local filesystem paths in AST cache JSON files. Added `.gitignore` to prevent re-occurrence.
 
 This repository is a public mirror of a Hermes Agent skill ecosystem. The following security measures have been taken:
 
