@@ -492,7 +492,7 @@ mcp_servers:
 |----------|------|--------|----------------|
 | **OpenCode (Zen)** | Bundled CLI | `opencode run --model opencode/<name>` | None (bundled) |
 | **Freebuff** | Cloud TUI | `cd project && freebuff` | Free tier (ads) |
-| **FreeLLMAPI** | Local proxy | `localhost:3001/v1` | `hermes auth add freellmapi --type api-key --api-key <key>` |
+| **FreeLLMAPI** | Local proxy | `localhost:3001/v1` (API), `:5173` (dashboard) | `hermes auth add freellmapi --type api-key --api-key <key>` ← Get key from dashboard Settings at `http://localhost:5173` |
 | **OpenRouter** | Remote API | `opencode run --model openrouter/<name>` | API key in OpenCode config |
 | **Paid BYOK** | Remote API | Provider-specific | API keys per provider |
 

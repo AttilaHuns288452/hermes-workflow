@@ -98,11 +98,24 @@ mcp_servers:
 # ---------------------------------------------------------------------------
 # Custom LLM providers — FreeLLMAPI local proxy (free model layer 3)
 # ---------------------------------------------------------------------------
+# FreeLLMAPI aggregates 107 free models from 16 providers behind one
+# OpenAI-compatible endpoint. It runs TWO services:
+#   - API backend:   http://localhost:3001/v1   (for model inference)
+#   - Admin dashboard: http://localhost:5173     (for managing keys/settings)
+#
+# SETUP (first time only):
+#   1. Start FreeLLMAPI: cd ~/Projects/freellmapi && npm run dev
+#   2. Open http://localhost:5173 and create admin account
+#   3. Get your unified API key from the dashboard Settings page
+#   4. Add upstream provider keys via the dashboard Keys page
+#   5. Set the API key below (or via hermes auth add freellmapi --type api-key --api-key <key>)
+#   6. Dashboard login: admin@freellmapi.local / freellmapi-admin (first-run)
+# ---------------------------------------------------------------------------
 custom_providers:
   freellmapi:
     type: openai
     api_base: http://localhost:3001/v1
-    api_key: none
+    api_key: YOUR_FREELLMAPI_UNIFIED_API_KEY_HERE   # ← Get from dashboard Settings page
     default_model: auto
 
 # ---------------------------------------------------------------------------

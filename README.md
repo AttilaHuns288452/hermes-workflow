@@ -45,7 +45,7 @@ source .env
 | **OpenCode** | Free Model Layer 1 | `npm install -g opencode` or [download](https://github.com/opencode-ai/opencode/releases) |
 | **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` |
 | **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` |
-| **FreeLLMAPI** | Free Model Layer 3 | `git clone https://github.com/tashfeenahmed/freellmapi.git && pip install -r requirements.txt` |
+| **FreeLLMAPI** | Free Model Layer 3 | `git clone https://github.com/tashfeenahmed/freellmapi.git && cd freellmapi && npm install` |
 
 ```bash
 # Verify installations

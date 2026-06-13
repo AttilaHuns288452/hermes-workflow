@@ -344,6 +344,28 @@ Layer  — Provider          — Models Available
 Rule: Always default to free. Probe before commit. Fall back gracefully.
 
 ================================================================================
+ FREELLMAPI SETUP (Layer 3 — Must Be Self-Hosted)
+================================================================================
+
+FreeLLMAPI runs TWO services:
+  - API backend:   http://localhost:3001/v1   (OpenAI-compatible model proxy)
+  - Admin dashboard: http://localhost:5173     (manage keys, providers, settings)
+
+First-time setup:
+  1. Clone: git clone https://github.com/tashfeenahmed/freellmapi.git
+  2. Install: cd freellmapi && npm install
+  3. Start: npm run dev (starts both :3001 and :5173)
+  4. Open http://localhost:5173 → sign up as admin
+  5. Settings → copy Unified API Key
+  6. Keys page → add upstream provider keys (Google, Groq, etc.)
+  7. Wire key into Hermes: hermes auth add freellmapi --type api-key --api-key <key>
+     OR set FREELMAPI_API_KEY in ~/.hermes/.env (exactly ONE line, no duplicates)
+  8. Verify: curl -H "Authorization: Bearer $KEY" http://localhost:3001/v1/models
+
+Dashboard login (first-run): admin@freellmapi.local / freellmapi-admin
+Full guide: SETUP.md (Step 6) or skills/workflow/free-ai-model-router/references/freellmapi-setup.md
+
+================================================================================
  CODE KNOWLEDGE TOOLS
 ================================================================================
 
