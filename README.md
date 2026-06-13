@@ -74,7 +74,7 @@ graph TD
 - **free-ai-tools** — 550+ free AI tools, 238 models
 - **OpenCode CLI** — Primary coding agent with 5 free models
 - **Freebuff** — Cloud free model extensions (Kimi K2.6, MiniMax M3, etc.)
-- **FreeLLMAPI** — 110+ local free models
+- **FreeLLMAPI** — 107 models, 84 available (13 provider keys)
 - **API Mega List** — 10,498 ready-to-use Apify APIs across 18 categories (searchable via `productivity/api-mega-list` skill)
 - **MoneyPrinterTurbo** — AI short video generation (86.1k ⭐)
 

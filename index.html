@@ -369,7 +369,7 @@
     <div class="hero-stat"><div class="num">16K</div><div class="label">CodeGraph Nodes</div></div>
     <div class="hero-stat"><div class="num">8.3K</div><div class="label">Graphify Nodes</div></div>
     <div class="hero-stat ts"><div class="num">56×</div><div class="label">Token Savings</div></div>
-    <div class="hero-stat"><div class="num">110+</div><div class="label">Free Models</div></div>
+    <div class="hero-stat"><div class="num">107</div><div class="label">Free Models</div></div>
   </div>
   <div class="scroll-ind" onclick="document.getElementById('hermes').scrollIntoView({behavior:'smooth'})">↓ Explore</div>
 </section>
@@ -467,7 +467,7 @@
     <div class="pipe-arrow" data-delay="9">↓</div>
     <div class="pipe-step" data-delay="10"><div class="sn">4</div><div class="info"><h3>Domain Skills</h3><p>ECC agents (64), LLMQuant domains (18), creative, code, research, GitHub, MLOps, media, productivity & more.</p></div></div>
     <div class="pipe-arrow" data-delay="11">↓</div>
-    <div class="pipe-step" data-delay="12"><div class="sn">5</div><div class="info"><h3>Model Routing</h3><p>OpenCode (5 free) → Freebuff (6 cloud) → FreeLLMAPI (110+ local) → OpenRouter :free → paid safety net.</p></div></div>
+    <div class="pipe-step" data-delay="12"><div class="sn">5</div><div class="info"><h3>Model Routing</h3><p>OpenCode (5 free) → Freebuff (6 cloud) → FreeLLMAPI (107 models, 84 avail.) → OpenRouter :free → paid safety net.</p></div></div>
     <div class="pipe-arrow" data-delay="13">↓</div>
     <div class="pipe-step" data-delay="14"><div class="sn">6</div><div class="info"><h3>Obsidian Docs (Mandatory)</h3><p>ATM-Machine quality: Overview, Architecture, Code Patterns, Mermaid graph, wikilinks. NEVER SKIP.</p></div></div>
     <div class="pipe-arrow" data-delay="15">↓</div>
@@ -536,7 +536,7 @@
     <span class="mv-arrow">→</span>
     <div class="mv" style="border-color:var(--moon-gold)"><span class="mv-num" style="color:var(--moon-gold)">🥈</span>Freebuff<br><span style="font-size:.6rem">6 cloud</span></div>
     <span class="mv-arrow">→</span>
-    <div class="mv" style="border-color:var(--orange)"><span class="mv-num" style="color:var(--orange)">🥉</span>FreeLLMAPI<br><span style="font-size:.6rem">110+ local</span></div>
+    <div class="mv" style="border-color:var(--orange)"><span class="mv-num" style="color:var(--orange)">🥉</span>FreeLLMAPI<br><span style="font-size:.6rem">107 models</span></div>
     <span class="mv-arrow">→</span>
     <div class="mv" style="border-color:var(--red)"><span class="mv-num" style="color:var(--red)">⚠️</span>OpenRouter<br><span style="font-size:.6rem">:free only</span></div>
     <span class="mv-arrow">→</span>
@@ -556,8 +556,8 @@
     </div>
     <div class="mtier t3 fade-in">
       <div class="th"><h3>Layer 3 — FreeLLMAPI Local</h3><span class="badge">Fallback 2</span></div>
-      <div class="tags"><span class="tag">110+ models</span><span class="tag">16 providers</span><span class="tag">localhost:3001/v1</span><span class="tag">Dashboard:5173</span></div>
-      <div class="td">Local Express server proxying 110+ free models. Wired as Hermes custom provider.</div>
+      <div class="tags"><span class="tag">107 models</span><span class="tag">16 providers</span><span class="tag">localhost:3001/v1</span><span class="tag">Dashboard:5173</span></div>
+      <div class="td">Local Express server proxying 107 free models. Wired as Hermes custom provider.</div>
     </div>
     <div class="mtier t4 fade-in">
       <div class="th"><h3>Layer 4 — OpenRouter :free</h3><span class="badge lr">Least Reliable</span></div>
@@ -883,7 +883,7 @@
 │           │                                                          │
 │           ├─ OpenCode (5 models)        ── Layer 1                  │
 │           ├─ Freebuff (6 models)        ── Layer 2                  │
-│           ├─ FreeLLMAPI (110+ models)   ── Layer 3                  │
+│           ├─ FreeLLMAPI (107 models)   ── Layer 3                  │
 │           ├─ OpenRouter :free (2 work)  ── Layer 4                  │
 │           └─ Paid safety net            ── Reserve                  │
 │     │                                                                │

@@ -166,7 +166,7 @@ After skill execution, the response passes through model router:
   
   Layer 1: OpenCode bundled (free, immediate)
   Layer 2: Freebuff API (free, ~30s cold start)
-  Layer 3: FreeLLMAPI (self-hosted proxy, 110+ models)
+  Layer 3: FreeLLMAPI (self-hosted proxy, 107 models)
   Layer 4: OpenRouter free tier (29+ models, 50 req/day)
   Layer 5: Paid BYOK (Claude/GPT/Gemini, only if all free fail)
 ```

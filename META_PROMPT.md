@@ -297,7 +297,7 @@ Use case: Web testing, form filling, browser automation.
 Layer  — Provider          — Models Available
   1      OpenCode (Zen)      Big Pickle, MiniMax M2.5 Free (bundled, free)
   2      Freebuff API        Kimi K2.6, MiniMax M3, MiMo 2.5 Pro (free, ad-supp.)
-  3      FreeLLMAPI          110+ models from 16 providers (self-hosted proxy)
+  3      FreeLLMAPI          107 models from 16 providers (self-hosted proxy)
          localhost:3001/v1   Groq, Cerebras, Together, DeepInfra, Replicate, etc.
   4      OpenRouter          29+ free models, 50 req/day free tier
          free tier           DeepSeek V4, Qwen3.6-Plus, Llama 4 Maverick/Scout
