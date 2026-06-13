@@ -1,6 +1,6 @@
 # Integration — Architecture, Pipeline & Integration Matrix
 
-This document maps the full Hermes Agent integration — how **137 skills across 19 categories**, tools, 5-layer model routing, 2 code knowledge graphs, 64 ECC agents, and data sources wire together into a single execution pipeline.
+This document maps the full Hermes Agent integration — how **139 skills across 19 categories**, tools, 5-layer model routing, 2 code knowledge graphs, 64 ECC agents, and data sources wire together into a single execution pipeline.
 
 ---
 
@@ -47,7 +47,7 @@ This document maps the full Hermes Agent integration — how **137 skills across
                                 │
                     ┌───────────▼─────────────────────────┐
                     │  Step 6 — Domain Skills             │
-                    │  (selected by /decide from 137)      │
+                    │  (selected by /decide from 139)      │
                     │                                     │
                     │  19 categories across 7 domains:     │
                     │  Coding │ GitHub │ Research │ Design │
@@ -217,7 +217,7 @@ User says ambiguous reference → session_search(query)
 
 ### Step 6: Domain Skills Execution
 
-137 skills across 19 categories, selected by `/decide` based on task type.
+139 skills across 19 categories, selected by `/decide` based on task type.
 
 **Category Breakdown:**
 
@@ -402,7 +402,7 @@ Model router respects skill recommendations but routes through free chain:
 
 ```
 hermes-dashboard provides a single-pane HTML overview:
-  ├─ 16 projects, 137 skills, 19 categories
+  ├─ 16 projects, 139 skills, 19 categories
   ├─ 26,005 APIs across 18 categories
   ├─ 8,267 Graphify + 16,092 CodeGraph nodes
   ├─ 156 free models across 5 routing layers

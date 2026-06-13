@@ -112,7 +112,7 @@ is the minimum viable skill set that fully satisfies the task.
 - **Dashboard / ecosystem overview / show stats / project graph / model ecosystem / how many APIs / Graphify + CodeGraph node map** → `productivity/hermes-dashboard`
   - Routes to local dashboard HTML at ~/Documents/Projects/hermes-dashboard/index.html
   - Also available via GH Pages: attilahuns288452.github.io/hermes-workflow/dashboard.html
-  - Covers: 16 projects, 119 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model chain, MCP servers, ECC agents, skill categories
+  - Covers: 16 projects, 139 skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model chain, MCP servers, ECC agents, skill categories
   - Direct HTML render — no further pipeline steps needed
 - Update / ecosystem integrate / onboard → `software-development/update`
 - Graphify + Obsidian / code-graph export → `software-development/graphify-integrate`
@@ -136,6 +136,35 @@ is the minimum viable skill set that fully satisfies the task.
     - `obsidian-codebase-graph` — filesystem → wikilinked markdown notes
     - `obsidian-knowledge-graph` — vault scan → JSON graph → HTML render
 - Workflow / model selection → `workflow`
+
+### Quant & Finance Skills
+These LLMQuant domain skills provide workflow guidance, MCP server integration, and data analysis for specific financial and quantitative domains. Each has a bundled tools/methodology reference. They all depend on the **LLMQuant Data MCP server** (`@llmquant/data-mcp`) configured in ~/.hermes/config.yaml — no additional install needed.
+
+| Trigger Pattern → Route to |
+|---------------------------|
+| **Commodities** (spot / futures curve / inventory / roll yield / macro linkage) → `llmquant-commodities` |
+| **Credit** (credit spreads / CDS / bond yields / credit risk / ratings / default probability) → `llmquant-credit` |
+| **Crypto** (crypto spot / perpetuals / funding rate / on-chain / DeFi / CeFi / market data) → `llmquant-crypto` |
+| **Data query** (fetch financial data / historical prices / fundamental data / option chains) → `llmquant-data` — then pipe to the specific domain skill |
+| **Equities** (stock prices / fundamentals / corporate actions / sector performance) → `llmquant-equities` |
+| **Equity Derivatives** (options chains / greeks / implied volatility / term structure) → `llmquant-equity-derivatives` |
+| **ETFs** (ETF composition / NAV / premium/discount / flows / sector exposure) → `llmquant-etfs` |
+| **Events** (earnings calendar / economic indicators / central bank decisions / corporate events) → `llmquant-events` |
+| **Investor Lenses** (value / growth / momentum / quality / factor analysis / screeners) → `llmquant-investor-lenses` |
+| **Macro** (GDP / CPI / PMI / unemployment / yield curves / FX rates / central bank policy) → `llmquant-macro` |
+| **Market Intelligence** (news sentiment / market summaries / sector rotation / market breadth) → `llmquant-market-intelligence` |
+| **Options** (option pricing / strategies / P&L / Greeks / volatility surface) → `llmquant-options` |
+| **Portfolio** (portfolio construction / allocation / rebalancing / risk parity / optimization) → `llmquant-portfolio` |
+| **Portfolio Lab** (backtesting / scenario analysis / Monte Carlo / factor decomposition) → `llmquant-portfolio-lab` |
+| **Prediction Markets** (Polymarket / election odds / event contracts / market prices) → `llmquant-prediction-markets` |
+| **Rates & FX** (interest rates / swap rates / bond yields / FX spot & forwards / cross-currency basis) → `llmquant-rates-fx` |
+| **Risk** (VaR / CVaR / stress testing / Greeks risk / counterparty risk / risk reporting) → `llmquant-risk` |
+| **Strategies** (trading strategies / signal generation / backtesting / alpha research / execution) → `llmquant-strategies` |
+
+When the user asks about **finance / investing / quant / portfolio / risk** in general, activate `soul_finance` + the relevant LLMQuant domain skill. For **fintech-code** tasks (code that is also finance), activate `soul` + `soul_finance` + the relevant LLMQuant skill.
+
+- Use `llmquant-data` as the **gateway router** — it handles MCP data fetch first, then pipes to the domain skill for analysis/visualization
+- The **LLMQuant Data MCP server** is always available via `npx -y @llmquant/data-mcp` with env `LLMQUANT_API_KEY`
 
 ### Mandatory Rules
 1. **session_memory is always step one** — no skill runs before context
@@ -221,7 +250,7 @@ existing repos:
   Has 26,005 APIs across 18 categories — daily updated.
 - **Hermes Dashboard (local ecosystem dashboard)** → route to
   `productivity/hermes-dashboard`. Single-file HTML with vis-network
-  force-directed graph, 16 projects, 119 skills, 26K+ APIs, 8K Graphify
+  force-directed graph, 16 projects, 139 skills, 26K+ APIs, 8K Graphify
   + 16K CodeGraph nodes, 5-layer free model chain, 6 MCP servers,
   64 ECC agents, 49 skill categories. Available locally at
   ~/Documents/Projects/hermes-dashboard/index.html, and via GH Pages

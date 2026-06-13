@@ -1,14 +1,14 @@
 # 🧠 Skill Catalog — Full Hermes Agent Ecosystem
 
-**137 skills · 19 categories · 1 integrated pipeline**
+**139 skills · 19 categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 Each entry shows the skill name and what it does, following the actual
-`.hermes_ecosystem.json` classification (137 skills accounted across 19 categories).
+`.hermes_ecosystem.json` classification (139 skills accounted across 19 categories).
 
-> **Note on count:** The ecosystem JSON declares `"total_skills": 137`. The
+> **Note on count:** The ecosystem JSON declares `"total_skills": 139`. The
 > category arrays sum to 136 listed entries — one entry (`codex.bak`) may be
-> a backup/alias variant counted separately. All 137 referenced slots are
+> a backup/alias variant counted separately. All 139 referenced slots are
 > described below.
 
 ---
@@ -862,7 +862,7 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 | social-media | 1 |
 | software-development | 16 |
 | workflow | 5 |
-| **Total** | **136** (per array sum; JSON declares 137) |
+| **Total** | **136** (per array sum; JSON declares 139) |
 
 **How /decide selects skills:**
 1. Decompose the user's prompt into explicit and implicit tasks
@@ -885,4 +885,4 @@ Before any file read, Graphify and CodeGraph are probed first.
 This saves 56.2× tokens on average (benchmark-verified).
 
 **Source of truth:** This catalog mirrors `.hermes_ecosystem.json` which
-defines 137 skills across exactly 19 categories. Last sync: June 2026.
+defines 139 skills across exactly 19 categories. Last sync: June 2026.
