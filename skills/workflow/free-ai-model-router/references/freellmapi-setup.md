@@ -1,6 +1,36 @@
 # FreeLLMAPI Setup Reference
 
 ## Quick Start (Docker - Recommended)
+
+## ⚠️ Security: Persistent Credential Leaks
+
+FreeLLMAPI has **two recurring leak vectors** that every setup session should fix immediately:
+
+### 1. `freellmapi_key.txt` — Plaintext Key File
+The `get_key.py` utility writes the unified API key to `freellmapi_key.txt` in the project root. This file is **NOT in `.gitignore`** by default, making it a direct git leak hazard.
+
+**Fix** (run after first key retrieval):
+```bash
+echo "freellmapi_key.txt" >> .gitignore
+rm freellmapi_key.txt
+```
+
+### 2. `get_key.py` — Hardcoded Session Token
+The `get_key.py` script has a dashboard session token hardcoded as a string literal (e.g. `token = "freellmapi_unified_api_key_here"`). If this script is committed or shared, anyone with the token can access the dashboard API.
+
+**Fix**: Replace the hardcoded token with an environment variable:
+```python
+import os
+token = os.environ["DASHBOARD_TOKEN"]  # Never hardcode
+```
+Then add `DASHBOARD_TOKEN=` to `.env` (and `.env` is already git-ignored).
+
+### 3. Verification
+```bash
+# Confirm keyfile is gone and git-ignored
+ls freellmapi_key.txt 2>/dev/null && echo "LEAKS STILL PRESENT" || echo "Keyfile removed"
+git check-ignore freellmapi_key.txt && echo "Git-ignored" || echo "NOT git-ignored — add to .gitignore now"
+```
 ```bash
 curl -fsSL https://freellmapi.co/install.sh | bash
 ```
@@ -222,7 +252,7 @@ Run `curl -H "Authorization: Bearer <key>" http://localhost:3001/v1/models | jq 
 
 ### Fix Applied: Duplicate FREELMAPI_API_KEY in .env
 - **Root cause**: `~/.hermes/.env` had TWO `FREELMAPI_API_KEY=` lines. The second (stale) key overwrote the first (correct) one at shell load time, causing all Hermes requests to FreeLLMAPI to fail with "Invalid API key".
-- **Fix**: Removed the duplicate line.
+- **Fix**: Removed the duplicate line. The correct key (`[REDACTED]`) is now the only one.
 - **Prevention**: When regenerating the unified API key via the dashboard, also update `~/.hermes/.env` to replace the old key (not append a second line).
 - **Verification**: `od -A x -t c ~/.hermes/.env | grep FREELM` should show exactly one occurrence. Test with `curl -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/models | python -c "import sys,json; d=json.load(sys.stdin); print(f'{len([m for m in d[\"data\"] if m.get(\"available\")])} available / {len(d[\"data\"])} total')"`
 - **Project path on Windows**: `C:\Users\Attila\Documents\Projects\freellmapi`

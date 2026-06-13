@@ -63,6 +63,17 @@ OpenCode bundles its own free models under the `opencode/` namespace. These are 
 curl http://localhost:3001/v1/models
 ```
 
+**Running**: `npm run dev` starts both the API server (`:3001`) and the admin dashboard (`:5173`) via concurrently. Run only the server with `npm run dev -w server`.
+
+**⚠️ Security: `freellmapi_key.txt` and `get_key.py`** — The FreeLLMAPI project ships a `get_key.py` utility that:
+- Writes the unified API key to `freellmapi_key.txt` in plaintext
+- Has a dashboard session token hardcoded in the script
+- Neither the keyfile nor the script's token are git-ignored by default
+
+After first use: `echo "freellmapi_key.txt" >> .gitignore && rm freellmapi_key.txt`. Before committing changes to `get_key.py`, replace the hardcoded token with an env variable: `token = os.environ["DASHBOARD_TOKEN"]`.
+
+**⚠️ Hardcoded tokens in reference docs** — This skill's `references/freellmapi-setup.md` contained a real dashboard session token in a code example. Before committing mirrored skills or reference files to a public repo, scan ALL `.md` files in `references/` for real UUIDs, API keys, or session tokens that belong to the local setup. Replace with `"your_token_here"` or an env variable placeholder.
+
 **Integration**: Check FreeLLMAPI as an alternative when:
 - OpenCode bundled models are insufficient for a specific provider/model
 - Freebuff's cloud-managed models don't include the needed capability

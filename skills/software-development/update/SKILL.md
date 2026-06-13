@@ -259,8 +259,10 @@ Where possible, call these scripts instead of manual steps:
 - **No graphify** — if graphify is not installed, the knowledge graph step is skipped. Install with `uv tool install graphifyy` and `uv tool install "graphifyy[mcp]"`
 - **Data-catalog — verify it's not a live service** — Before treating a repo as a data catalog, confirm by running Phase 0.5 checks (see `setup` skill): no API routes, no database, no server-side code. A repo that LOOKS like a directory but is actually an API server needs the code-project path, not the data-catalog path.
 - **GH Pages skill data array format** — When updating index.html's skill data, entries follow `{n:'Skill Name',c:'category',d:'One-line description.'}` with COMMA after each entry. No trailing comma on the last entry. JS engines parse this strictly — a missing comma breaks the entire skills grid.
-- **SKILLS_CATALOG.md table format** — The file uses `||` (double pipes) as leading table delimiters (empty first column in markdown). When patching this file, match the exact table format: `|| "Query" | Execution Path |\n||---------|---------------|\n|| "...`  Using a single `|` instead of `||` will misalign the table.
+- **SKILLS_CATALOG.md table format** — The file uses `||` (double pipes) as leading table delimiters (empty first column in markdown). When patching this file, match the exact table format: `|| "Query" | Execution Path |\\n||---------|---------------|\\n|| "..."`  Using a single `|` instead of `||` will misalign the table.
 - **Website skill count accuracy** — After adding a new skill card to index.html, verify the "117" hero stat is still accurate. If the actual count changes (e.g. 117 → 120), update index.html, README.md, SKILLS_CATALOG.md, and the decide skill's references to match the real count.
+- **Misleading template placeholders** — `api_key: none` in a config template passes every secret scan (it's not a real key) but silently breaks all API calls. Apply the template placeholder verification (Phase 2d) before every commit. Other common offenders: `password: password`, `secret: ""`, `key: ""`, `token: none`.
+- **README install command drift** — After mirroring a tool's install instructions into README.md or SETUP.md, the command can go stale when the upstream project changes build systems (pip→npm, npm→pnpm, setup.py→pyproject.toml). Cross-reference install commands against the actual project's package manifests before each ecosystem doc export.
 
 ## Ecosystem Documentation Export (NEW)
 
@@ -313,21 +315,20 @@ manifest = hermes_skills / ".bundled_manifest"
 if manifest.exists():
     shutil.copy2(manifest, repo_skills / ".bundled_manifest")
 
-# Copy supporting files from custom/authored skills
-support_dirs = ("references", "scripts", "templates")
-for skill_rel in ["decide", "core-identity-guard", "ecc-bridge",
-                  "workflow/token-saver", "workflow/session_memory",
-                  "note-taking/obsidian"]:
-    src_dir = hermes_skills / skill_rel
-    dst_dir = repo_skills / skill_rel
-    if src_dir.exists():
-        for item in src_dir.iterdir():
-            if item.is_dir() and item.name in support_dirs:
-                dst_sub = dst_dir / item.name
-                if dst_sub.exists():
-                    shutil.rmtree(dst_sub)
-                if item.exists():
-                    shutil.copytree(item, dst_sub)
+# Copy supporting files from ALL skills that have them (generic walk)
+support_dirs = {"references", "scripts", "templates", "assets"}
+for root, dirs, files in os.walk(hermes_skills):
+    dirs[:] = [d for d in dirs if not d.startswith('.')]
+    if "SKILL.md" not in files:
+        continue
+    skill_rel = Path(root).relative_to(hermes_skills)
+    for sd in support_dirs:
+        src_dir = hermes_skills / skill_rel / sd
+        dst_dir = repo_skills / skill_rel / sd
+        if src_dir.exists():
+            if dst_dir.exists():
+                shutil.rmtree(dst_dir)
+            shutil.copytree(src_dir, dst_dir)
 ```
 
 **Verify** the copy produced the right structure:
@@ -350,6 +351,63 @@ cd <repo-directory>
 git rm -r --cached skills/ 2>/dev/null   # remove old stub entries
 git add skills/                           # add new properly-structured skills
 ```
+
+### Phase 0.5 — 🔒 Security Audit (Pre-Commit Secret Scan)
+
+**⚠️ Critical**: Mirrored skills can contain real API keys, credentials, and tokens in `references/` files, code examples, and setup transcripts. Before proceeding to documentation generation, run a thorough secret scan.
+
+**Step 1 — Scan all mirrored files for API key patterns**:
+```bash
+cd <repo-root>
+for pattern in \
+  'sk-[A-Za-z0-9]\{20,\}' \
+  'freellmapi-[a-f0-9]\{32,\}' \
+  'ghp_[A-Za-z0-9]\{36,\}' \
+  'gho_[A-Za-z0-9]\{36,\}' \
+  'ghu_[A-Za-z0-9]\{36,\}' \
+  'ghb_[A-Za-z0-9]\{36,\}' \
+  'xox[bpras]-[A-Za-z0-9-]\{10,\}' \
+  'AIza[0-9A-Za-z_-]\{35\}' \
+  'AKIA[0-9A-Z]\{16\}' \
+; do
+  matches=$(grep -rn "$pattern" --include='*.md' --include='*.yaml' --include='*.yml' \
+    --include='*.json' --include='*.py' --include='*.sh' --include='*.example' \
+    --include='*.template' skills/ 2>/dev/null | grep -v '\[REDACTED\]' | head -5)
+  if [ -n "$matches" ]; then
+    echo "🔴 LEAKED: $pattern"
+    echo "$matches"
+  fi
+done
+```
+
+**Step 2 — Check `.env.example` and `config.yaml.template`** for real keys:
+```bash
+grep -v '^#\|^$' .env.example | grep -v 'YOUR_\|CHANGE_ME\|PLACEHOLDER' && echo "⚠️ Real values in .env.example"
+grep -n 'api.key\|api_key\|password\|token\|secret' config.yaml.template 2>/dev/null | grep -v 'CHANGE_ME\|<.*>\|your-' && echo "⚠️ Suspicious values in config.yaml.template"
+```
+
+**Step 3 — Check git history for previously committed secrets**:
+```bash
+for pattern in 'freellmapi-[a-f0-9]\{32,\}' 'sk-[A-Za-z0-9]\{20,\}'; do
+  for commit in $(git log --all --format="%H"); do
+    git show "$commit" --textconv 2>/dev/null | grep -q "$pattern" && \
+      echo "🔴 CRITICAL: '$pattern' found in commit $commit"
+  done
+done
+```
+
+**Remediation workflow** (when secrets are found):
+1. 🔑 **Rotate** the exposed key on the service immediately
+2. 🧹 **Scrub** the key from all local files → replace with `[REDACTED]`
+3. 📝 **Update** `.env` + Hermes auth with the new rotated key
+4. 🗑️ **Amend** git history: `git commit --amend --no-edit` (HEAD) or filter-branch (older)
+5. 📤 **Force push**: `git push --force-with-lease origin <branch>`
+6. ✅ **Verify** the remote shows a clean commit history
+7. 🔄 **Notify** anyone who may have cloned the repo since the leak
+
+**Step 4 — Only proceed** if all scans pass (no real secrets found).
+
+See `references/secret-scan-patterns.md` for additional provider-specific patterns and the full key-rotation workflow script.
 
 ### Phase 1 — Audit the Current Ecosystem
 Before generating reference documentation, scan the actual environment to
@@ -497,9 +555,12 @@ Show which skills depend on which and how data flows between them:
 - token-saver → probes Graphify MCP + CodeGraph MCP → decides if read_file is needed
 - obsidian-docs → writes to vault → triggers KG refresh
 - Model chain → each layer checked before next with fallback rules
+#### 2d — Website Update + Config Templates
 
-#### 2d — Website Update
-Update the repo's index.html to reflect the full ecosystem:
+Update the repo's index.html to reflect the full ecosystem,
+and generate plug-and-play config templates from the live setup:
+
+**Website update:**
 1. **Hero stats** — update skill count, add category count
 2. **Nav links** — add links to SETUP.md, META_PROMPT.md, SKILLS_CATALOG.md, INTEGRATION.md
 3. **Skills section** — browsable skill catalog with:
@@ -522,6 +583,77 @@ Update the repo's index.html to reflect the full ecosystem:
    });
    ```
 
+**Config templates** (for plug-and-play reproduction):
+- Create **`config.yaml.template`** — copy the real `~/.hermes/config.yaml`, replacing user-specific values (API keys, paths) with placeholders marked `# ← CHANGE ME`. Include: MCP server definitions, model provider settings, provider sections, any custom config. If the real config has no model section but `hermes status` shows model settings, document the expected config format.
+- Create **`.env.example`** — document every env var the setup needs: API key names (without values), path overrides, port preferences, model routing options. Use descriptive variable names. Group by category (required auth, optional auth, path overrides, behavior flags).
+- Both files belong at the repo root. Reference them from README.md in the quick-start section.
+
+**Template placeholder verification (critical):** After creating or updating config templates, check for misleading default values that pass security scans but silently break at runtime:
+```bash
+cd <repo-directory>
+# Check for values that look valid but aren't
+grep -n 'api_key: none\|password: password\|secret: ""\|key: ""' config.yaml.template .env.example 2>/dev/null
+# Check for bare 'none' or empty-string placeholders in config values
+grep -nE ':\s+none\s*$|:\s+""\s*$' config.yaml.template 2>/dev/null
+```
+Any match = replace with a proper `YOUR_*_HERE` placeholder marked `# ← CHANGE ME`. Never leave `none` or empty strings as defaults — a new user will try the template verbatim, get silent failures, and not know why.
+
+**Install command verification:** After generating any install/setup instructions for a tool in README.md or SETUP.md, verify the command actually matches the tool's real install method:
+```bash
+# If README says "pip install" but the project uses npm → fix it
+# Check: does the project have package.json? requirements.txt? pyproject.toml?
+ls <project-dir>/package.json 2>/dev/null && echo "npm/yarn project"
+ls <project-dir>/requirements.txt 2>/dev/null && echo "pip project"
+ls <project-dir>/pyproject.toml 2>/dev/null && echo "pip/uv project"
+```
+Cross-reference the README's install instructions against these files. A mismatch (e.g. `pip install` on an npm project) will immediately confuse new users.
+
+#### 2e — Create SETUP.md (Step-by-Step Setup Guide)
+
+Create a step-by-step setup guide at the repo root that walks a first-time user
+through all steps to get the full ecosystem running.
+
+**When to create/update:** This is needed whenever the ecosystem has a complex
+self-hosted component (FreeLLMAPI, Graphify, CodeGraph) that requires manual
+dashboard setup, API key generation, or multi-step wiring. A README with `cp templates`
+is not enough — new users need a numbered walkthrough.
+
+**Structure template:**
+```markdown
+# Hermes Workflow — Full Setup Guide
+
+> **N steps** to get the complete pipeline running.
+
+## Step 1: Install Hermes Agent
+[One-line install command. No prose.]
+
+## Step 2: Clone This Repo
+`git clone https://github.com/USER/REPO.git`
+
+## Step N: Install & Configure [Complex Tool]
+[Detailed sub-steps with copy-paste commands:
+  a. Clone & install
+  b. Start the services
+  c. Open admin dashboard (URL)
+  d. Create admin account (default credentials)
+  e. Get unified API key
+  f. Wire into Hermes (three options: auth CLI, config file, .env)
+  g. Verify with curl]
+...
+```
+
+**Key design principles:**
+- Every step has a concrete, copy-pasteable command
+- The most complex tool gets sub-steps (6a–6g) with dashboard URL, admin account creation, key retrieval
+- Troubleshooting table at the end covers the 3–5 most common failure modes
+- Link back to detailed docs at the bottom
+- Keep each step 2–5 lines — scannable
+
+**After creating:**
+1. Update README.md to add a nav link: `> **Detailed instructions:** See [SETUP.md](SETUP.md)`
+2. Update META_PROMPT.md model routing section to reference SETUP.md for first-time tool setup
+3. Verify with `curl -s -o /dev/null -w "%{http_code}" "$GITHUB_PAGES_URL/SETUP.md"` returns 200 after push
+
 ### Phase 3 — Commit and Verify
 ```bash
 cd <repo-directory>
@@ -542,7 +674,9 @@ After push, verify:
 - **Stats drift**: Skill count, KG nodes, and model count in meta-prompt/website are snapshots. Add "Last updated: [date]".
 - **Website file size**: index.html can grow large (100KB+) with inline CSS+JS. Keep the skills catalog section concise — one card per category group, not per individual skill.
 - **Custom skills in the repo**: The actual SKILL.md files belong in `skills/` subdirectory of the repo, referenced but not duplicated by the catalog.
+- **Security scan: 90+ languages etc.** — The OCR skill's language coverage is a different domain; use `(skills|SKILL).*[0-9]{2,}` to disambiguate.
 - **Skill count accuracy**: Use `find ~/AppData/Local/hermes/skills/ -maxdepth 2 -name "SKILL.md" | wc -l` for an accurate count. Never guess.
+- **Repo count ≠ local count**: The repo's skill count (`find skills/ -name "SKILL.md" | wc -l` inside the repo) may differ from the local install. When updating ecosystem docs (index.html, dashboard.html, decide SKILL.md, SKILLS_CATALOG.md), verify counts against the **repo's own filesystem** — not the local install. The repo can have more skills (e.g., bundled/reference skills) than the active local set.
 - **Meta-prompt paths**: Contains system paths that only make sense on the author's machine. Frame as "this user's setup" rather than a universal template.
 - **Graphify CLI limitations**: On Windows, `graphify export obsidian` doesn't exist (v0.8.37). Don't claim it in documentation — stick to commands that actually work (`query`, `explain`, `path`, `benchmark`, etc.).
 - **Stub .md files trap**: When documenting a Hermes setup, it's tempting to create clean reference stubs (e.g., `decide.md`, `token-saver.md`). **Don't.** The user wants their actual installed skills mirrored verbatim. Copy `~/.hermes/skills/` preserving `dir/SKILL.md` structure — never summarize or flatten into single `.md` files. See Phase 0 above.
