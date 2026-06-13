@@ -105,10 +105,11 @@ is the minimum viable skill set that fully satisfies the task.
 ### Domain Skills
 - Setup / install / configure / bootstrap → `software-development/setup`
 - Setup + skill audit / repo integration with reconciliation → `software-development/repo-integration-reconciliation`
-- **API search / find an API / need an API that can X / API directory / Apify actor / web scraper for X / MCP server for X** → `productivity/api-mega-list`
+- **API search / find an API / need an API that can X / API directory / Apify actor / web scraper for X / MCP server for X / search for data about / find data on / data source for / where to get data about / API for data** → `productivity/api-mega-list`
   - Routes to grep-based search across 18 categories of 26,005 Apify APIs
   - MCP server queries → also route to `mcp-integrations` for wiring
   - Scraper queries → also route to `ecc-bridge` for ECC agent alternatives
+  - **Data search queries** (e.g. "search for data about stocks", "find data on crypto prices", "data source for economic indicators") — the API Mega List likely has scrapers for these; route here first before falling back to web search
 - **Dashboard / ecosystem overview / show stats / project graph / model ecosystem / how many APIs / Graphify + CodeGraph node map** → `productivity/hermes-dashboard`
   - Routes to local dashboard HTML at ~/Documents/Projects/hermes-dashboard/index.html
   - Also available via GH Pages: attilahuns288452.github.io/hermes-workflow/dashboard.html

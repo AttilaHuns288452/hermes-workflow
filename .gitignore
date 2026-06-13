@@ -1,4 +1,10 @@
-# Build artifacts
+# Hermes internal state (local-only, never sync)
+.curator_state
+.usage.json
+.usage.json.lock
+DESCRIPTION.md
+
+# Os building artifacts
 graphify-out/
 
 # OS files
