@@ -2,6 +2,74 @@
 
 **AI Agent Workflow Engine** — 97 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
 
+## 🚀 Plug-and-Play Setup
+
+Get the full pipeline running in 5 minutes.
+
+### 1. Prerequisites
+
+```bash
+# Hermes Agent (required)
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh   # macOS/Linux
+# or: irm https://hermes-agent.nousresearch.com/install.ps1 | iex   # Windows PowerShell
+# or: pip install hermes-agent
+
+# Python 3.10+, Node.js v18+, Git 2.30+
+python3 --version && node --version && git --version
+
+# uv — fast Python package manager
+# https://docs.astral.sh/uv/
+uv --version || curl -fsSL https://astral.sh/uv/install.sh | sh
+```
+
+### 2. Clone & Configure
+
+```bash
+git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+cd hermes-workflow
+
+# Copy and customize the config template → your Hermes profile
+cp config.yaml.template ~/.hermes/config.yaml
+# Edit ~/.hermes/config.yaml — replace YOUR_USERNAME and paths
+
+# Copy and customize environment variables
+cp .env.example .env
+# Edit .env — fill in your API keys and paths
+source .env
+```
+
+### 3. Install Tools (5-Minute Stack)
+
+| Tool | Layer | Install Command |
+|------|-------|----------------|
+| **OpenCode** | Free Model Layer 1 | `npm install -g opencode` or [download](https://github.com/opencode-ai/opencode/releases) |
+| **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` |
+| **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` |
+| **FreeLLMAPI** | Free Model Layer 3 | `git clone https://github.com/tashfeenahmed/freellmapi.git && pip install -r requirements.txt` |
+
+```bash
+# Verify installations
+hermes --version && codegraph --version && graphify --version
+```
+
+### 4. Load Skills & Run
+
+```bash
+# Install bundled skills into your Hermes profile
+hermes skills install ./skills/workflow
+hermes skills install ./skills/decide
+
+# Test the pipeline end-to-end
+hermes run "What does the decide skill do?"
+
+# Full pipeline test (requires Obsidian vault configured)
+hermes run "Summarize this repo structure"
+```
+
+> **Detailed instructions:** See [`SETUP.md`](SETUP.md) for the full 10-step walkthrough.  
+> **Config reference:** [`config.yaml.template`](config.yaml.template) documents every MCP server and setting.  
+> **Environment reference:** [`.env.example`](.env.example) lists all configurable variables.
+
 ## 🌙 Overview
 
 This repository documents the **Hermes Agent** ecosystem — a multi-model AI agent framework from **Nous Research** that runs skills (reusable workflows) to execute coding, creative, research, finance, media, and productivity tasks.

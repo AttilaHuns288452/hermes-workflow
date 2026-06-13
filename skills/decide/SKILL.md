@@ -204,12 +204,15 @@ existing repos:
   to test combined routing. Add Obsidian wikilink from `[[Freebuff]]` to
   existing `[[OpenCode]]` and `[[free-ai-tools]]` notes.
 - **FreeLLMAPI (local free model provider)** → route to `free-ai-model-router`
-  as an additional model source. FreeLLMAPI serves 110+ free models from 16
-  providers at `localhost:3001/v1`, already wired as Hermes custom provider
-  (`provider=custom, model=auto, base_url=localhost:3001/v1`). Includes
-  dashboard at `localhost:5173` and Express on `:3001`. Check it as an
-  alternative when OpenCode bundled models and Freebuff are insufficient —
-  it covers providers not available in either.
+  as an additional model source. FreeLLMAPI serves 107 free models (84 available)
+  from 16 providers. Hermes integration:
+  - `model.provider=custom`, `model.base_url=http://localhost:3001/v1`, `model.default=auto`
+  - Auth: `hermes auth add freellmapi --type api-key --api-key <key> --label "FreeLLMAPI Key"`
+  (creates `custom:freellmapi` credential)
+  Dashboard at `localhost:5173` (login: `admin@freellmapi.local` / `freellmapi-admin`).
+  Check it as an alternative when OpenCode bundled models and Freebuff are insufficient.
+  **ENV CRITICAL**: `~/.hermes/.env` must have exactly ONE `FREELMAPI_API_KEY` line.
+  Duplicate lines cause the second (possibly stale) key to overwrite the first.
 - **API-mega-list (API directory reference)** → route to BOTH `setup` AND
   `productivity/api-mega-list`. After cloning the repo (~/Documents/Projects/API-mega-list/),
   the skill provides grep-based search across 18 categories. For MCP Servers
@@ -240,6 +243,7 @@ heuristics:
 | API-mega-list + ECC Scrapers | User finds a web scraper in the API list | Cross-reference with ECC agents via `ecc-bridge`. ECC has dedicated scraping agents that may complement or replace Apify actors. |
 | CodeGraph + Graphify complement | User installs CodeGraph or asks about code knowledge graphs | **Complementary — keep both.** CodeGraph provides live MCP tools (query, callers, callees, impact) — 945 indexed files, 16,092 nodes across all projects. Graphify provides code-graph query/explain/path — 8,267 nodes, 13,225 edges on the graphify project alone. CodeGraph for live agent queries, Graphify for structural analysis. |
 | Dashboard ecosystem overview | User asks "show me everything", "dashboard", "ecosystem stats", "what projects exist", "graph stats" | Route to `productivity/hermes-dashboard`. Single HTML page at ~/Documents/Projects/hermes-dashboard/index.html. All stats are static — no live backend needed. |
+| **.env duplicate key fix** | FreeLLMAPI returns "Invalid API key" despite correct credentials | Check `~/.hermes/.env` for duplicate `FREELMAPI_API_KEY=*** lines. Remove stale duplicates so only the current key remains. Env files loaded by bash pick the LAST definition, not the first. |
 
 ## Session Evolution & Self-Update
 

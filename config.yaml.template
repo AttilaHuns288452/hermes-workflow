@@ -1,0 +1,119 @@
+# =============================================================================
+# Hermes Workflow — config.yaml.template
+# =============================================================================
+# Copy this file to ~/.hermes/config.yaml and replace all placeholders
+# with your local paths and credentials.
+#
+# Required:
+#   - YOUR_USERNAME        → your Windows/macOS/Linux username
+#   - YOUR_VAULT_PATH      → path to your Obsidian vault (e.g. ~/Documents/Obsidian Vault)
+#   - YOUR_CODEGRAPH_CWD   → directory where CodeGraph should index (e.g. ~/Documents/Projects)
+#   - YOUR_GRAPHIFY_CWD    → path to your graphify repo clone
+#   - LLMQUANT_API_KEY     → your LLMQuant Data API key (if using quant skills)
+#
+# Optional:
+#   - OPENROUTER_API_KEY   → if you have an OpenRouter paid tier
+#   - FREELLMAPI_PORT      → default 3001
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Agent routing — makes /decide the default orchestrator
+# ---------------------------------------------------------------------------
+agent:
+  routing: always
+  default_skill: decide
+  skills_path: ~/.hermes/skills
+
+# ---------------------------------------------------------------------------
+# Skill priority — execution order in the pipeline
+# ---------------------------------------------------------------------------
+skills:
+  workflow/decide:
+    enabled: true
+    priority: 1
+  workflow/core-identity-guardrail:
+    enabled: true
+    priority: 2
+  workflow/token-saver:
+    enabled: true
+    priority: 3
+  workflow/model-router:
+    enabled: true
+    priority: 4
+  workflow/obsidian-docs:
+    enabled: true
+    priority: 5
+
+# ---------------------------------------------------------------------------
+# MCP Servers — knowledge-graph and code-intelligence backends
+# ---------------------------------------------------------------------------
+mcp_servers:
+  # CodeGraph MCP — live symbol search, caller/callee tracing
+  codegraph:
+    command: "codegraph"
+    args: ["serve"]
+    cwd: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects"          # ← CHANGE ME
+    env:
+      PATH: "C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm;%PATH%"  # ← CHANGE ME
+    connect_timeout: 30
+
+  # Graphify MCP — AST-based code knowledge graph
+  graphify:
+    command: "python"
+    args: ["-m", "graphify.serve"]
+    cwd: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects\\graphify"  # ← CHANGE ME
+    env:
+      PATH: "C:\\Users\\YOUR_USERNAME\\.local\\bin;%PATH%"           # ← CHANGE ME
+    connect_timeout: 30
+
+  # VS Code MCP — live editor integration
+  vscode:
+    command: "npx"
+    args: ["-y", "vscode-mcp-server"]
+    connect_timeout: 60
+
+  # LLMQuant Data MCP — financial data feeds (optional)
+  llmquant-data:
+    command: "npx"
+    args: ["-y", "@llmquant/data-mcp"]
+    env:
+      LLMQUANT_API_KEY: "lqd_data_YOUR_API_KEY_HERE"            # ← CHANGE ME
+    connect_timeout: 60
+
+  # Obsidian Knowledge Graph MCP — vault scanning + galaxy render
+  obsidian-kg:
+    command: "python"
+    args: ["-m", "obsidian_kg_mcp"]
+    cwd: "C:\\Users\\YOUR_USERNAME\\.hermes\\tools"               # ← CHANGE ME
+    connect_timeout: 30
+
+  # Agent Memory MCP — persistent cross-session memory
+  agentmemory:
+    command: "npx"
+    args: ["-y", "@agentmemory/agentmemory", "mcp"]
+    connect_timeout: 60
+    env:
+      PATH: "C:\\Users\\YOUR_USERNAME\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm;%PATH%"  # ← CHANGE ME
+
+# ---------------------------------------------------------------------------
+# Custom LLM providers — FreeLLMAPI local proxy (free model layer 3)
+# ---------------------------------------------------------------------------
+custom_providers:
+  freellmapi:
+    type: openai
+    api_base: http://localhost:3001/v1
+    api_key: none
+    default_model: auto
+
+# ---------------------------------------------------------------------------
+# Obsidian vault configuration (used by note-taking skills)
+# ---------------------------------------------------------------------------
+obsidian:
+  vault_path: "C:\\Users\\YOUR_USERNAME\\Documents\\Obsidian Vault"  # ← CHANGE ME
+
+# ---------------------------------------------------------------------------
+# Optional: CodeGraph indexing behaviour
+# ---------------------------------------------------------------------------
+# codegraph:
+#   watch: true
+#   projects_root: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects"

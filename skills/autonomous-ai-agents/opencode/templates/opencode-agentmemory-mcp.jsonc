@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "agentmemory": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@agentmemory/agentmemory", "mcp"],
+      "environment": {
+        "PATH": "C:\\Users\\<user>\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\<user>\\AppData\\Roaming\\npm"
+      }
+    }
+  }
+}

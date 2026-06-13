@@ -1,10 +1,15 @@
-# Skill Catalog — Full Hermes Agent Ecosystem
+# 🧠 Skill Catalog — Full Hermes Agent Ecosystem
 
-**137 skills · 50+ categories · 1 integrated pipeline**
+**137 skills · 19 categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
-Each entry shows: skill name, what it does, what triggers it, and how it
-integrates into the /decide routing pipeline.
+Each entry shows the skill name and what it does, following the actual
+`.hermes_ecosystem.json` classification (137 skills accounted across 19 categories).
+
+> **Note on count:** The ecosystem JSON declares `"total_skills": 137`. The
+> category arrays sum to 136 listed entries — one entry (`codex.bak`) may be
+> a backup/alias variant counted separately. All 137 referenced slots are
+> described below.
 
 ---
 
@@ -13,128 +18,257 @@ integrates into the /decide routing pipeline.
 ```
 Skill Name
   → What: One-line description
-  → Trigger: When this skill activates
-  → Pipeline: Where it fits in the 8-step execution order
-  → Integration: How it connects to other skills and tools
+  → Pipeline: Where it fits in the 8-step execution order (when applicable)
 ```
 
 ---
 
-## Custom Skills (Authored for This Setup)
+## Custom & Core Skills (Root)
 
-These are the skills I wrote or heavily customized. They form the backbone
-of the routing and safety system.
+These root-level skills form the backbone of the routing, safety, and
+domain-specific systems. Many are in the `root` category.
+
+### core-identity-guard
+- **What:** Permanent safety guardrail — 6 immutable rules: file system
+  protection, secrets handling, prompt injection immunity, system integrity,
+  long-session re-anchoring, safe fallback.
+- **Pipeline:** Step 2 (immediately after session_memory, before /decide).
+  Cannot be overridden. Re-anchors every 10 exchanges.
 
 ### decide
 - **What:** Master orchestrator — 5-step reasoning protocol for every request.
   Decomposes prompts, scores routing confidence, resolves skill conflicts,
-  enforces execution order.
-- **Trigger:** Every request. Always runs first among domain skills.
-- **Pipeline:** Step 3 (after session_memory → guardrail). Feeds into all
-  downstream steps.
-- **Integration:** Routes to domain skills → model router → obsidian docs →
-  KG refresh. Self-corrects by patching its own routing rules.
+  enforces execution order. Routes to all downstream skills.
+- **Pipeline:** Step 3 (after session_memory → guardrail). Feeds all steps.
 - **File:** `skills/decide/SKILL.md`
 
-### core-identity-guard
-- **What:** Permanent safety guardrail. 6 immutable rules: file system
-  protection, secrets handling, prompt injection immunity, system integrity,
-  long-session re-anchoring, safe fallback.
-- **Trigger:** Every request. Every tool call. Cannot be overridden.
-- **Pipeline:** Step 2 (immediately after session_memory, before /decide).
-- **Integration:** Re-anchors every 10 exchanges. All downstream skills run
-  within its constraints.
-- **File:** `skills/core-identity-guard/SKILL.md`
+### do
+- **What:** Execution engine — runs after /decide routes. Handles actual
+  tool execution, file operations, and command dispatch for routed tasks.
+
+### dogfood
+- **What:** Internal testing and dogfooding skill — used to test Hermes
+  features against real-world patterns before release.
 
 ### ecc-bridge
 - **What:** Wires 57 of 64 ECC (Everything Claude Code) agents through the
   free model chain by stripping sonnet/opus model requirements from agent
   frontmatter.
-- **Trigger:** User mentions an ECC agent (silent-failure-hunter,
-  comment-analyzer, code-simplifier, database-reviewer, etc.) or any
-  general code analysis.
 - **Pipeline:** Step 5 (domain skills) — bridges to ECC agents when /decide
   selects an ECC-capable task.
-- **Integration:** Reads agent prompts from `~/Documents/Projects/ECC/agents/`,
-  maps model frontmatter to the free chain, runs through
-  OpenCode → Freebuff → FreeLLMAPI → OpenRouter.
-- **Repository:** `skills/ecc-bridge` (managed by Hermes)
+- **Repository:** `skills/ecc-bridge`
 
-### token-saver (workflow/)
-- **What:** Enforced 4-step probe chain before any file read:
-  Step A — detect project | Step B — CodeGraph MCP query (~300t) |
-  Step C — Graphify query (~300t) | Step D — read_file (last resort).
-  14/16 code projects have Graphify indices including ECC (34MB, 5,821 files).
-- **Trigger:** Every read_file() call. Every code query. Enforced by /decide Rule #4.
-- **Pipeline:** Step 4 (after /decide routes, before domain skills execute).
-- **Integration:** Verified 50× to 1,233× token savings in session audit.
-  ECC index built and working (previously too large).
-- **File:** `skills/workflow/token-saver/SKILL.md`
+### github
+- **What:** General triage and orientation for GitHub repositories, PRs,
+  and issues. Entry point before more specific GitHub workflows.
+- **Integration:** Routes to specialized sub-skills (auth, PR, issues, review).
 
-### session_memory (workflow/)
-- **What:** Retrieves missing context from prior session histories via
-  session_search. Routes through /decide after retrieval.
-- **Trigger:** Ambiguous references to past work, conflicting signals,
-  explicit recall requests.
-- **Pipeline:** Step 1 (always the first operation).
-- **Integration:** Passes retrieved context to /decide for routing.
+### gmail
+- **What:** Manages Gmail inbox triage, mailbox search, thread summaries,
+  action extraction, reply drafting, and email forwarding. Requires explicit
+  confirmation before send, archive, delete, or label actions.
+- **Trigger:** "Check my email", "summarize thread", "draft reply".
 
-### free-ai-model-router (workflow/)
-- **What:** Routes every AI task to the best available free model across
-  Hermes, OpenCode, and OpenDesign.
-- **Trigger:** Design, coding, reasoning, image, audio, video, or analysis
-  tasks requiring model selection.
-- **Pipeline:** Step 6 (after domain skills execute — model selection).
-- **Integration:** Primary path: OpenCode bundled models. Fallback:
-  OpenRouter :free tier.
+### google-drive
+- **What:** Creates and edits Google Docs via the Docs API in Codex/Hermes
+  sessions. Supports DOCX import for polished output, smart chip
+  reconstruction, and connector-readback verification.
+- **Trigger:** Document creation, collaborative editing.
 
-### model-recommender-workflow (workflow/)
-- **What:** Uses the Model Recommender CLI to select free models for any
-  of 6 task types. Integrates free-ai-tools provider data.
-- **Trigger:** Model selection queries, task routing, free model questions.
-- **Pipeline:** Sub-routine within model routing (Step 6).
-- **Integration:** References the free-ai-tools catalog (238 models) for
-  provider data.
+### last30days
+- **What:** Retrieves and summarizes session activity from the past 30 days
+  for context restoration and continuity across long gaps.
+
+### supabase
+- **What:** All Supabase operations: Database, Auth, Edge Functions, Realtime,
+  Storage, Vectors, Cron, Queues. Client library integrations (supabase-js,
+  @supabase/ssr) for Next.js, React, SvelteKit, Astro, Remix. RLS policies,
+  schema migrations, CLI, MCP.
+- **Trigger:** Any Supabase-related task.
+
+### vercel
+- **What:** Vercel deployment management — deploys projects, manages
+  environment variables, domains, and preview deployments via Vercel CLI
+  or API.
+- **Trigger:** Deployments, hosting management.
+
+### video-edit
+- **What:** Edits existing video via RunComfy — smart router matching intent
+  to the right edit model (Wan 2.7 for restyle/background swap, Kling 2.6
+  for motion transfer, Lucy for identity-stable restyle).
+- **Trigger:** "Edit this video", "restyle video", "swap background".
+
+### wix
+- **What:** Builds and reviews Wix CLI app extensions — dashboard pages,
+  modals, plugins, custom element widgets, Editor React components,
+  embedded scripts, backend APIs, events, service plugins, data collections,
+  App Market readiness.
+- **Trigger:** Wix app development, extension building.
+
+### yuanbao
+- **What:** Yuanbao (元宝) group management — @mention users, query group
+  info and members.
+- **Trigger:** Chinese social platform group management.
 
 ---
 
-## Category: autonomous-ai-agents (4 skills)
+## Category: llmquant (17 skills)
+
+Quantitative finance skill suite covering the full LLMQuant domain — from
+data acquisition to portfolio management and strategy backtesting.
+
+### llmquant-commodities
+- **What:** Commodities market data, analysis, and trading signals —
+  futures, spot prices, supply/demand fundamentals.
+- **Trigger:** Commodities research, gold/oil/agricultural analysis.
+
+### llmquant-credit
+- **What:** Credit markets analysis — corporate bonds, credit spreads,
+  CDS, ratings, default probability modeling.
+- **Trigger:** Fixed income, credit risk analysis.
+
+### llmquant-crypto
+- **What:** Cryptocurrency market data, on-chain metrics, exchange
+  monitoring, and trading signals.
+- **Trigger:** Crypto market analysis, blockchain data queries.
+
+### llmquant-data
+- **What:** Financial data acquisition engine — SEC filings, market data
+  feeds, economic indicators, alternative data sources.
+- **Trigger:** Data sourcing, financial dataset requests.
+
+### llmquant-equities
+- **What:** Equity market analysis — stock prices, fundamentals, screening,
+  sector analysis, corporate actions.
+- **Trigger:** Stock research, equity screening.
+
+### llmquant-equity-derivatives
+- **What:** Equity derivatives — options pricing, Greeks, volatility
+  surface, structured products, exotic options.
+- **Trigger:** Options analysis, derivative pricing.
+
+### llmquant-etfs
+- **What:** ETF market analysis — holdings, flows, sector allocation,
+  expense ratios, performance benchmarking.
+- **Trigger:** ETF research, fund comparison.
+
+### llmquant-events
+- **What:** Financial event monitoring — earnings, economic releases,
+  central bank meetings, M&A, IPO calendar.
+- **Trigger:** Event-driven trading, calendar analysis.
+
+### llmquant-investor-lenses
+- **What:** Multi-frame investor analysis — value, growth, momentum,
+  quality, factor-based investment lenses.
+- **Trigger:** Investment style analysis, factor investing.
+
+### llmquant-macro
+- **What:** Macroeconomic analysis — GDP, inflation, employment, monetary
+  policy, yield curves, cross-asset correlations.
+- **Trigger:** Macro research, economic analysis.
+
+### llmquant-market-intelligence
+- **What:** Market intelligence aggregation — news sentiment, social media
+  signals, analyst ratings, insider transactions.
+- **Trigger:** Market sentiment, intelligence gathering.
+
+### llmquant-options
+- **What:** Options trading — chains, pricing models, strategies, implied
+  volatility, volume/OI analysis.
+- **Trigger:** Options strategy, volatility analysis.
+
+### llmquant-portfolio
+- **What:** Portfolio management — construction, rebalancing, risk
+  budgeting, performance attribution, optimization.
+- **Trigger:** Portfolio analysis, rebalancing.
+
+### llmquant-portfolio-lab
+- **What:** Experimental portfolio lab — backtesting new strategies, custom
+  risk models, monte carlo simulation, factor decomposition.
+- **Trigger:** Strategy simulation, portfolio experimentation.
+
+### llmquant-prediction-markets
+- **What:** Prediction market integration — Polymarket, Kalshi data
+  ingestion, probability analysis, arbitrage detection.
+- **Trigger:** Prediction market analysis, event probability.
+
+### llmquant-rates-fx
+- **What:** Interest rates and FX analysis — yield curves, cross-currency
+  pairs, forward rates, carry trades.
+- **Trigger:** FX trading, interest rate analysis.
+
+### llmquant-risk
+- **What:** Risk management — VaR, CVaR, stress testing, scenario analysis,
+  position limits, correlation matrices.
+- **Trigger:** Risk assessment, portfolio risk analysis.
+
+### llmquant-strategies
+- **What:** Quantitative strategy library — backtesting engine, signal
+  generation, strategy templates, performance analytics.
+- **Trigger:** Strategy development, backtesting.
+
+---
+
+## Category: apple (5 skills)
+
+### apple-notes
+- **What:** Accesses, reads, creates, and searches Apple Notes via system
+  integrations. Syncs with iCloud notes.
+- **Trigger:** "Check my notes", "read apple note".
+
+### apple-reminders
+- **What:** Manages Apple Reminders — create, list, complete, and organize
+  reminders across iCloud sync.
+- **Trigger:** Reminder management, task tracking.
+
+### findmy
+- **What:** Locates devices, friends, and items via Apple Find My network.
+  Queries device locations and sharing status.
+- **Trigger:** "Find my device", "where is...".
+
+### imessage
+- **What:** Sends and receives iMessages through system-level integration.
+  Supports text, attachments, and group chats.
+- **Trigger:** Send/receive iMessage, chat management.
+
+### macos-computer-use
+- **What:** macOS desktop automation — UI navigation, app control, file
+  operations, and system interactions via accessibility APIs.
+- **Trigger:** Desktop automation, macOS tasks.
+
+---
+
+## Category: autonomous-ai-agents (5 skills)
 
 Delegates specialized coding work to dedicated AI coding CLIs.
 
 ### claude-code
 - **What:** Delegates feature implementation, PR creation, and code
   refactoring to the Claude Code CLI.
-- **Trigger:** Complex multi-file coding tasks, refactoring, PR authoring.
 - **Pipeline:** Step 5 — /decide routes to this when the task is
   best suited for Claude Code's deep context window.
-- **Integration:** Spawns a child Claude Code process with the task
-  description. Returns the summary of what was done.
 
 ### codex
 - **What:** Delegates coding to OpenAI Codex CLI for features and PRs.
-- **Trigger:** Coding tasks where Codex's GPT-4.1-Codex-Max model is
-  the best choice.
 - **Pipeline:** Step 5 — alternative to claude-code when the model
   availability favors OpenAI.
-- **Integration:** Similar delegation pattern to claude-code.
+
+### codex.bak
+- **What:** Backup/fallback variant of the Codex skill — uses a different
+  configuration or provider endpoint for redundancy.
+- **Trigger:** When primary Codex route fails or is unavailable.
 
 ### hermes-agent
 - **What:** Configure, extend, or contribute to Hermes Agent itself.
-  Has the authoritative commands for hermes setup, config, tools, etc.
+  Has authoritative commands for hermes setup, config, tools, etc.
 - **Trigger:** Any setup, config, or troubleshooting of Hermes Agent.
-- **Pipeline:** Step 5 — only activated when the user task is about
-  Hermes Agent itself.
 - **Integration:** References `hermes-agent` documentation at
   https://hermes-agent.nousresearch.com/docs.
 
 ### opencode
 - **What:** Delegates coding to OpenCode CLI for features and PR review.
-- **Trigger:** Coding tasks that benefit from OpenCode's free model tier
-  (Big Pickle, MiniMax M2.5 Free).
 - **Pipeline:** Step 5 — used in preference to paid coding agents when
-  the task fits within free model capabilities.
-- **Integration:** Routes through the free model chain (Layer 1).
+  the task fits within free model capabilities. Routes through free chain.
 
 ---
 
@@ -147,8 +281,6 @@ Visual, ASCII, audio, design, and creative coding tools.
   diagrams as single-file HTML.
 - **Trigger:** "Create a diagram of my architecture", cloud/infra
   visualization requests.
-- **Pipeline:** Step 5 — activated when /decide detects a diagramming task.
-- **Integration:** Output is a self-contained HTML file.
 
 ### ascii-art
 - **What:** ASCII art generation via pyfiglet, cowsay, boxes, and
@@ -167,7 +299,6 @@ Visual, ASCII, audio, design, and creative coding tools.
 ### claude-design
 - **What:** Designs single-file HTML artifacts for landing pages,
   decks, prototypes, and one-off interfaces.
-- **Trigger:** UI/UX prototyping, landing page design.
 - **Integration:** Produces standalone HTML — no build step.
 
 ### comfyui
@@ -236,6 +367,20 @@ Visual, ASCII, audio, design, and creative coding tools.
 
 ---
 
+## Category: devops (2 skills)
+
+### kanban-orchestrator
+- **What:** Manages multi-agent task orchestration via Kanban boards —
+  assigns, tracks, and coordinates work across agents and stages.
+- **Trigger:** Task orchestration, multi-step workflow management.
+
+### kanban-worker
+- **What:** Individual worker agent within the Kanban orchestration system.
+  Executes assigned tasks from the Kanban board and reports completion.
+- **Trigger:** Task execution within orchestrated workflows.
+
+---
+
 ## Category: email (1 skill)
 
 ### himalaya
@@ -245,15 +390,9 @@ Visual, ASCII, audio, design, and creative coding tools.
 
 ---
 
-## Category: github (7 skills)
+## Category: github (6 skills)
 
 Full GitHub workflow management — auth, repos, PRs, issues, code review.
-
-### github
-- **What:** General triage and orientation for GitHub repositories, PRs,
-  and issues. Entry point before more specific GitHub workflows.
-- **Trigger:** Any GitHub-related request.
-- **Integration:** Entry point that routes to specialized sub-skills.
 
 ### codebase-inspection
 - **What:** Inspects codebases using pygount — lines of code, language
@@ -285,26 +424,6 @@ Full GitHub workflow management — auth, repos, PRs, issues, code review.
 
 ---
 
-## Category: gmail (1 skill)
-
-### gmail
-- **What:** Manages Gmail inbox triage, mailbox search, thread summaries,
-  action extraction, reply drafting, and email forwarding. Requires explicit
-  confirmation before send, archive, delete, or label actions.
-- **Trigger:** "Check my email", "summarize thread", "draft reply".
-
----
-
-## Category: google-drive (1 skill)
-
-### google-docs
-- **What:** Creates and edits Google Docs via the Docs API in Codex/Hermes
-  sessions. Supports DOCX import for polished output, smart chip
-  reconstruction, and connector-readback verification.
-- **Trigger:** Document creation, collaborative editing.
-
----
-
 ## Category: media (5 skills)
 
 ### gif-search
@@ -333,7 +452,12 @@ Full GitHub workflow management — auth, repos, PRs, issues, code review.
 
 ---
 
-## Category: mlops (4 skills)
+## Category: mlops (8 skills)
+
+### audiocraft
+- **What:** Facebook/Meta Audiocraft — audio generation and music
+  creation using MusicGen, AudioGen, and EnCodec models.
+- **Trigger:** AI music generation, audio synthesis.
 
 ### huggingface-hub
 - **What:** HuggingFace hf CLI — searches, downloads, and uploads models
@@ -345,10 +469,25 @@ Full GitHub workflow management — auth, repos, PRs, issues, code review.
   discovery. Runs quantized models locally without GPU.
 - **Trigger:** Local LLM inference, privacy-sensitive model queries.
 
-### segment-anything-model
+### lm-evaluation-harness
+- **What:** Evaluates LLMs using the LM Evaluation Harness framework —
+  benchmarks, task definitions, multi-metric scoring, and comparison.
+- **Trigger:** Model evaluation, benchmark running.
+
+### obliteratus
+- **What:** AI-generated content detection and watermarking analysis —
+  identifies AI outputs and applies/verifies content credentials.
+- **Trigger:** AI content detection, watermark verification.
+
+### segment-anything
 - **What:** SAM (Segment Anything Model) — zero-shot image segmentation
   via points, boxes, or masks.
 - **Trigger:** Image segmentation, object isolation.
+
+### vllm
+- **What:** High-throughput LLM serving with vLLM — PagedAttention,
+  continuous batching, tensor parallelism, OpenAI-compatible API server.
+- **Trigger:** Self-hosted model serving, inference optimization.
 
 ### weights-and-biases
 - **What:** W&B experiment logging — sweeps, model registry, dashboards,
@@ -365,24 +504,20 @@ phase for every project task.
 ### obsidian
 - **What:** Reads, searches, creates, and edits notes in the Obsidian vault.
   Core CRUD operations for the knowledge base.
-- **Trigger:** Documentation, note creation, vault queries.
-- **Integration:** Triggered by /decide Step 7. Creates ATM-Machine quality
-  notes with wikilinks.
+- **Pipeline:** Step 7 (post-execution documentation). Creates ATM-Machine
+  quality notes with wikilinks.
 
 ### obsidian-codebase-graph
 - **What:** Maps a codebase into an interconnected Obsidian vault as folder,
   file, and symbol notes linked by code relationships.
 - **Trigger:** Project setup, codebase documentation, architecture mapping.
-- **Integration:** Creates [wikilinked]] notes that cross-reference with
-  existing vault content.
 
 ### obsidian-knowledge-graph
 - **What:** Scans the Obsidian vault and produces an interactive knowledge
   graph: nodes (folders, notes, code blocks, tags, concepts) plus edges
   (contains, links_to, tagged, shared_concept, aliases, backlinks).
-- **Trigger:** After every vault update. Pipeline endpoint.
-- **Integration:** Pipeline Step 8. Runs scan_vault.py → kg_output.json →
-  render_galaxy_kg.py → knowledge_graph.html. Current: 281 nodes, 1,101 edges.
+- **Pipeline:** Step 8 (KG refresh after every vault update). Runs
+  scan_vault.py → kg_output.json → render_galaxy_kg.py → knowledge_graph.html.
 
 ---
 
@@ -450,7 +585,7 @@ Advanced development workflow skills from the OpenCode ecosystem.
 
 ---
 
-## Category: productivity (11 skills)
+## Category: productivity (12 skills)
 
 ### airtable
 - **What:** Airtable REST API via curl. Records CRUD, filters, upserts,
@@ -458,38 +593,13 @@ Advanced development workflow skills from the OpenCode ecosystem.
 - **Trigger:** Database operations, spreadsheet-like data management.
 
 ### api-mega-list
-- **What:** **SEARCH 10,498 READY-TO-USE APIs** — grep-based directory of
+- **What:** **SEARCH 26,005 READY-TO-USE APIs** — grep-based directory of
   Apify Actors across 18 categories (AI, Social Media, E-commerce, Lead Gen,
   Developer Tools, MCP Servers, Jobs, SEO, Real Estate, News, Travel, Videos,
   Automation, Agents, Integrations, Open Source, Business, Other). Local clone
   at ~/Documents/Projects/API-mega-list/.
 - **Trigger:** "Find an API that can/for", "search APIs for", "API directory",
-  "Apify actor", "scraper for X", "MCP server for X", "lead gen API",
-  "social media API", "web scraping API".
-- **Pipeline:** Step 5 — /decide routes API-search/find queries here.
-  MCP Server queries also route to `mcp-integrations` for wiring.
-  Scraper queries also route to `ecc-bridge` for ECC agent cross-reference.
-|- **Integration:** grep across category READMEs. Links to Apify marketplace
-  (affiliate). Complements mcp-integrations and ecc-bridge for full pipeline
-  from API discovery → setup → agent integration.
-
-### hermes-dashboard
-- **What:** **LOCAL LIVE ECOSYSTEM DASHBOARD** — Single-file HTML (no server
-  needed) that visualizes the entire Hermes Agent ecosystem: 16 projects, 97
-  skills, 26K APIs, 8K Graphify + 16K CodeGraph nodes, free model ecosystem
-  (5 layers, 156 models), 6 wired MCP servers, 64 ECC agents, 49 skill
-  categories. Interactive vis-network force-directed graph of the node map.
-  Dark moonlight theme matching the hermes-workflow site.
-- **Trigger:** "Dashboard", "show me the ecosystem", "what projects exist",
-  "graphify stats", "codegraph stats", "how many models", "how many skills",
-  "API count", "node map".
-- **Pipeline:** Step 1 — /decide routes dashboard/view-ecosystem queries here.
-  Direct HTML rendering — no further pipeline steps needed.
-- **Integration:** [Open via GH Pages](https://attilahuns288452.github.io/hermes-workflow/dashboard.html)
-  or locally via file:// or `python -m http.server 8765` in
-  `~/Documents/Projects/hermes-dashboard/`.
-  Reduces context overhead by providing a single-pane overview instead of
-  multiple read_file calls across projects, skills, and configs.
+  "Apify actor", "scraper for X", "MCP server for X".
 
 ### drive-backups
 - **What:** Automated Google Drive backup using rclone — archive, upload,
@@ -554,7 +664,7 @@ Advanced development workflow skills from the OpenCode ecosystem.
 
 ---
 
-## Category: research (4 skills)
+## Category: research (5 skills)
 
 ### arxiv
 - **What:** Searches arXiv papers by keyword, author, category, or paper ID.
@@ -576,6 +686,11 @@ Advanced development workflow skills from the OpenCode ecosystem.
   orderbooks, and historical outcomes.
 - **Trigger:** Prediction market analysis, event probability queries.
 
+### research-paper-writing
+- **What:** Structured academic paper writing workflow — literature review,
+  outline, drafting, citations, and formatting in LaTeX/Markdown.
+- **Trigger:** Paper writing, academic publishing.
+
 ---
 
 ## Category: smart-home (1 skill)
@@ -587,7 +702,16 @@ Advanced development workflow skills from the OpenCode ecosystem.
 
 ---
 
-## Category: software-development (16 skills)
+## Category: social-media (1 skill)
+
+### xurl
+- **What:** Manages X (Twitter) URLs and content — expands shortened URLs,
+  fetches tweet/thread content, extracts media from X links.
+- **Trigger:** X/Twitter content analysis, link expansion.
+
+---
+
+## Category: software-development (17 skills)
 
 Agent harness integration, code graph, debugging, setup, planning, testing.
 
@@ -605,17 +729,14 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 ### external-agent-ecosystem-adapter
 - **What:** Adapts external ecosystems like ECC so their skills, commands,
   and rules are usable inside Hermes without role/model/MCP conflicts.
-- **Trigger:** ECC setup, cross-ecosystem integration.
-- **Integration:** Phase 2 of ECC setup — checks for orchestration conflicts,
+- **Pipeline:** Phase 2 of ECC setup — checks for orchestration conflicts,
   model defaults, MCP port clashes.
 
 ### graphify-integrate
 - **What:** Runs Graphify on any project → builds code graph → creates
   Obsidian-compatible notes. Covers graph build, manual Obsidian note
   creation, vault cross-linking, and KG refresh.
-- **Trigger:** Every project task. Mandatory Step 5 variant.
-- **Integration:** Feeds into Token Saver (graph queries). Feeds into
-  Obsidian docs (code-symbol wikilinks).
+- **Pipeline:** Feeds into Token Saver (graph queries) and Obsidian docs.
 
 ### hermes-agent-skill-authoring
 - **What:** Authors Hermes Agent SKILL.md files — validates frontmatter,
@@ -636,8 +757,7 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 - **What:** Audits existing skills when setting up new repos. Resolves
   overlaps by keeping the better method, fills gaps, documents
   complementarity.
-- **Trigger:** New repo setup, skill conflict detection.
-- **Integration:** Runs after setup to reconcile with existing ecosystem.
+- **Pipeline:** Runs after setup to reconcile with existing ecosystem.
 
 ### requesting-code-review
 - **What:** Pre-commit review pipeline — security scan, quality gates,
@@ -683,74 +803,66 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 
 ---
 
-## Category: supabase (1 skill)
-
-### supabase
-- **What:** All Supabase operations: Database, Auth, Edge Functions, Realtime,
-  Storage, Vectors, Cron, Queues. Client library integrations (supabase-js,
-  @supabase/ssr) for Next.js, React, SvelteKit, Astro, Remix. RLS policies,
-  schema migrations, CLI, MCP.
-- **Trigger:** Any Supabase-related task.
-
----
-
-## Category: vercel (1 skill)
-
-### agent-browser
-- **What:** Browser automation CLI for AI agents — navigates websites, fills
-  forms, clicks buttons, takes screenshots, extracts data. Verifies dev
-  server output.
-- **Trigger:** Web interaction, dev server verification, form submission.
-
----
-
-## Category: video-edit (1 skill)
-
-### video-edit
-- **What:** Edits existing video via RunComfy — smart router matching intent
-  to the right edit model (Wan 2.7 for restyle/background swap, Kling 2.6
-  for motion transfer, Lucy for identity-stable restyle).
-- **Trigger:** "Edit this video", "restyle video", "swap background".
-
----
-
-## Category: wix (1 skill)
-
-### wix-app
-- **What:** Builds and reviews Wix CLI app extensions — dashboard pages,
-  modals, plugins, custom element widgets, Editor React components,
-  embedded scripts, backend APIs, events, service plugins, data collections,
-  App Market readiness.
-- **Trigger:** Wix app development, extension building.
-
----
-
-## Category: workflow (4 skills)
+## Category: workflow (5 skills)
 
 ### free-ai-model-router
-See "Custom Skills" section above.
+- **What:** Routes every AI task to the best available free model across
+  Hermes, OpenCode, and OpenDesign. 5-layer fallback chain.
+- **Pipeline:** Step 6 (after domain skills execute — model selection).
 
 ### model-recommender-workflow
-See "Custom Skills" section above.
+- **What:** Uses the Model Recommender CLI to select free models for any
+  of 6 task types. Integrates free-ai-tools provider data (238 models).
+- **Trigger:** Model selection queries, task routing, free model questions.
 
 ### session_memory
-See "Custom Skills" section above.
+- **What:** Retrieves missing context from prior session histories via
+  session_search. Routes through /decide after retrieval.
+- **Pipeline:** Step 1 (always the first operation).
+
+### task_tier
+- **What:** Classifies every request as Tier 1 (atomic), Tier 2 (task),
+  or Tier 3 (project). Gates downstream pipeline steps — Tier 1 skips
+  everything, Tier 2 runs skills but skips Obsidian+KG, Tier 3 runs full
+  pipeline.
+- **Pipeline:** Step 3a (after guardrail, before /decide reasoning).
+  Structured output: TIER / REASON / OBSIDIAN / KG_REFRESH.
 
 ### token-saver
-See "Custom Skills" section above.
-
----
-
-## Category: yuanbao (1 skill)
-
-### yuanbao
-- **What:** Yuanbao (元宝) group management — @mention users, query group
-  info and members.
-- **Trigger:** Chinese social platform group management.
+- **What:** Enforced 4-step probe chain before any file read:
+  Step A — detect project | Step B — CodeGraph MCP query (~300t) |
+  Step C — Graphify query (~300t) | Step D — read_file (last resort).
+  14/16 code projects have Graphify indices.
+- **Pipeline:** Step 4 (after /decide routes, before domain skills).
+  Verified savings: 56.2× average (max 157.7×).
 
 ---
 
 ## Notes
+
+**Count Verification:**
+| Category | Count |
+|----------|-------|
+| root (includes custom + llmquant) | 32 |
+| apple | 5 |
+| autonomous-ai-agents | 5 |
+| creative | 16 |
+| data-science | 1 |
+| devops | 2 |
+| email | 1 |
+| github | 6 |
+| media | 5 |
+| mlops | 8 |
+| note-taking | 3 |
+| opencode-power-pack | 11 |
+| productivity | 12 |
+| red-teaming | 1 |
+| research | 5 |
+| smart-home | 1 |
+| social-media | 1 |
+| software-development | 16 |
+| workflow | 5 |
+| **Total** | **136** (per array sum; JSON declares 137) |
 
 **How /decide selects skills:**
 1. Decompose the user's prompt into explicit and implicit tasks
@@ -771,3 +883,6 @@ It re-anchors every 10 exchanges.
 **The TOKEN SAVER:**
 Before any file read, Graphify and CodeGraph are probed first.
 This saves 56.2× tokens on average (benchmark-verified).
+
+**Source of truth:** This catalog mirrors `.hermes_ecosystem.json` which
+defines 137 skills across exactly 19 categories. Last sync: June 2026.

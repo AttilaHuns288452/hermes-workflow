@@ -43,17 +43,20 @@ OpenCode bundles its own free models under the `opencode/` namespace. These are 
 
 **Limits**: 5 sessions/day, ~42 min/session, ads always enabled.
 
-## FreeLLMAPI (Local Free Model Provider — 110+ Models)
+## FreeLLMAPI (Local Free Model Provider — 107 Models, 84 Available)
 
-**FreeLLMAPI** runs a local Express server that proxies 110+ free models from 16 providers. Already wired into Hermes as a custom provider.
+**FreeLLMAPI** runs a local Express server that proxies 107 free models from 16 providers. **84 models are currently available** (June 2026) with 13 upstream provider API keys configured.
 
 | Detail | Value |
 |--------|-------|
 | API Base | `http://localhost:3001/v1` |
 | Providers | 16 (covers models not in OpenCode or Freebuff) |
-| Models | 110+ |
+| Models (total) | 107 (84 available, 23 unavailable) |
+| Provider keys stored | 13 (healthy: google, groq, openrouter, huggingface, opencode, github, cerebras, nvidia, mistral, cohere, zhipu, ollama, llm7) |
 | Dashboard | `http://localhost:5173` |
-| Hermes config | `provider=custom, model=auto, base_url=localhost:3001/v1` |
+| Dashboard login | `admin@freellmapi.local` / `freellmapi-admin` |
+| Hermes provider config | `model.provider=custom`, `model.base_url=http://localhost:3001/v1`, `model.default=auto` via `hermes config set` |
+| Hermes auth credential | `custom:freellmapi` (api_key stored via `hermes auth add freellmapi --type api-key --api-key <key>`) |
 
 **Usage via Hermes**: The custom provider is already configured — models are selectable through Hermes' normal model routing. For direct API calls:
 ```bash
@@ -68,7 +71,7 @@ curl http://localhost:3001/v1/models
 **Four-layer model ecosystem** (priority order):
 1. **OpenCode bundled** (5 free models, most reliable)
 2. **Freebuff** (6 cloud-managed models, TUI-based)
-3. **FreeLLMAPI** (110+ models, 16 providers, local proxy)
+3. **FreeLLMAPI** (107 models, 16 providers, local proxy)
 4. **OpenRouter :free** (2 working models, least reliable)
 5. **Paid safety net** (claude-sonnet-4 via OpenRouter)
 
@@ -161,7 +164,7 @@ Free models on OpenRouter change frequently. When a routing-table model fails, *
 3. **Fallback chain** (try in order, skip immediately on error):
    - `opencode/deepseek-v4-flash-free` → `opencode/mimo-v2.5-free` → `opencode/nemotron-3-ultra-free`
    - If all opencode models fail → try `freebuff` CLI in project directory (gives access to Kimi K2.6, MiniMax M3, MiMo 2.5 Pro)
-   - If Freebuff unavailable → try FreeLLMAPI at `localhost:3001/v1` (110+ models, 16 providers)
+   - If Freebuff unavailable → try FreeLLMAPI at `localhost:3001/v1` (107 models, 16 providers)
    - If all local/opencode/Freebuff/FreeLLMAPI fail → `openrouter/openai/gpt-oss-120b:free` → `openrouter/nex-agi/nex-n2-pro:free`
    - If all free fail → `openrouter/anthropic/claude-sonnet-4` (paid)
 4. **Never retry a failed model** — move to the next immediately.
@@ -414,3 +417,5 @@ Trigger this skill on:
 - `references/opencode-model-availability.md` — concrete model-testing results across OpenCode bundled and OpenRouter free tier (last updated June 2026)
 - `references/atm-machine-note-example.md` — reference ATM Machine note structure for quality comparison
 - `references/model-probe-methodology.md` — three-step probe pattern (discover → smoke-test → verify) used to confirm working models
+- `references/freellmapi-setup.md` — FreeLLMAPI local proxy setup: build from source, dashboard auth, unified API key, upstream provider keys, Hermes integration, troubleshooting
+- `scripts/verify-freellmapi.py` — verification script: `python scripts/verify-freellmapi.py --key freellmapi-xxx [--test-chat]`

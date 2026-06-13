@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Hermes MCP Discovery Check</title>
+  <style>
+    body { font-family: Consolas, "Courier New", monospace; }
+    pre { background: #f6f8fa; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Hermes MCP Discovery Check</h1>
+  <p>
+    Run this after restarting Hermes to confirm MCP tool discovery.<br />
+    Open the browser DevTools Console and paste the snippet. If prefixed tools appear,
+    the server is connected and registered.
+  </p>
+  <pre id="snippet">(() => {
+    try {
+      // Hermes runtime tree isn't guaranteed across versions, so probe the registry shape first.
+      const registry = window.__hermes?.toolRegistry ?? window.__hermes__?.toolRegistry;
+      if (!registry) return 'No detectable runtime registry object (expected window.__hermes.toolRegistry or window.__hermes__.toolRegistry)';
+      const names = Object.keys(registry.tools || registry.entries || registry).sort();
+      const mcp = names.filter(n => /^mcp_(llmquant|vscode|obsidian)_/.test(n));
+      if (!mcp.length) return 'No MCP tools found.';
+      return (
+        'Found ' + mcp.length + ' MCP tools:\n' +
+        mcp.map(n => '- ' + n).join('\n')
+      );
+    } catch (e) {
+      return 'Error: ' + (e && e.message);
+    }
+  })()</pre>
+</body>
+</html>

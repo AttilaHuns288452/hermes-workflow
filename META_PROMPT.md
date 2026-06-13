@@ -74,7 +74,7 @@ Step 8 — Galaxy Knowledge Graph Refresh
    Skills: note-taking/obsidian-knowledge-graph
 
 ================================================================================
- SKILL ECOSYSTEM (135 Skills, 50+ Categories)
+ SKILL ECOSYSTEM (137 Skills, 19 Categories)
 ================================================================================
 
 --- CUSTOM SKILLS (Authored by me) ---
@@ -92,7 +92,7 @@ Step 8 — Galaxy Knowledge Graph Refresh
 #5  model-router    (implied in pipeline) 5-layer free model fallback chain
 #6  obsidian-docs   (implied) ATM-Machine quality doc template + KG refresh
 
---- CATEGORY: autonomous-ai-agents (4 skills) ---
+--- CATEGORY: autonomous-ai-agents (5 skills) ---
 Delegates coding work to specialized AI coding CLIs.
 
   claude-code      Delegate to Claude Code CLI (features, PRs)
@@ -131,10 +131,29 @@ Use case: Any visual design, diagram, creative coding, music, or art task.
 
 Use case: Data exploration, analysis, visualization with iterative feedback.
 
+--- CATEGORY: devops (2 skills) ---
+Kanban-style task orchestration for multi-agent workflows.
+
+  kanban-orchestrator   Coordinate distributed agent tasks via Kanban boards
+  kanban-worker         Execute individual tasks from Kanban orchestration queue
+
+Use case: Parallel agent execution, task queue management, multi-step pipelines.
+
 --- CATEGORY: email (1 skill) ---
   himalaya              IMAP/SMTP email from terminal via Himalaya CLI
 
 Use case: Send, receive, search, and manage email from the terminal.
+
+--- CATEGORY: apple (5 skills) ---
+Apple ecosystem tools — Notes, Reminders, iMessage, Find My, macOS automation.
+
+  apple-notes           Create, search, read Apple Notes via CLI
+  apple-reminders       Manage Apple Reminders lists and tasks
+  findmy                Locate Apple devices and contacts via Find My network
+  imessage              Send/receive iMessages from terminal
+  macos-computer-use    Automate macOS desktop interactions programmatically
+
+Use case: macOS/iOS productivity, device tracking, messaging automation.
 
 --- CATEGORY: github (6 skills) ---
 GitHub workflow management — repos, PRs, issues, auth, code review.
@@ -167,12 +186,17 @@ Use case: Email management through connected Gmail data source.
 
 Use case: Media creation, search, and analysis — GIFs, songs, videos, audio.
 
---- CATEGORY: mlops (4 skills) ---
+--- CATEGORY: mlops (8 skills) ---
   huggingface-hub       HuggingFace hf CLI: search/download/upload models
   llama-cpp             Local GGUF inference + HF Hub model discovery
   segment-anything-     SAM: zero-shot image segmentation
     model
   weights-and-biases    W&B experiment logging, sweeps, model registry
+  audiocraft            Meta's AudioCraft: music/audio generation models
+  lm-evaluation-        LM Evaluation Harness: standardized model benchmarking
+    harness
+  obliteratus           Model pruning/quantization for local deployment
+  vllm                  High-throughput LLM inference server (vLLM)
 
 Use case: ML model deployment, inference, experiment tracking, dataset handling.
 
@@ -205,8 +229,9 @@ Advanced project development workflow skills.
 
 Use case: Full-stack development workflow — from architecture to review.
 
---- CATEGORY: productivity (10 skills) ---
+--- CATEGORY: productivity (12 skills) ---
   airtable              Airtable REST API via curl — records CRUD, filters, upserts
+  api-mega-list         Collection of free public APIs for integration/testing
   drive-backups         Google Drive backup with rclone — archive, retention
   google-workspace      Gmail, Calendar, Drive, Docs, Sheets via gws CLI/Python
   maps                  Geocode, POIs, routes, timezones via OpenStreetMap/OSRM
@@ -224,18 +249,28 @@ Use case: Document processing, data management, calendar, PDFs, presentations.
 --- CATEGORY: red-teaming (1 skill) ---
   godmode               LLM jailbreak testing: Parseltongue, GODMODE, ULTRAPLINIAN
 
---- CATEGORY: research (4 skills) ---
+--- CATEGORY: research (5 skills) ---
   arxiv                 Search arXiv papers by keyword, author, category, ID
   blogwatcher           Monitor blogs and RSS/Atom feeds via blogwatcher-cli
   llm-wiki              Karpathy's LLM Wiki: build/query interlinked markdown KB
   polymarket            Query Polymarket: markets, prices, orderbooks, history
+  research-paper-       AI-assisted academic paper writing with templates
 
 Use case: Academic research, market monitoring, feed aggregation.
 
 --- CATEGORY: smart-home (1 skill) ---
   openhue               Control Philips Hue lights, scenes, rooms via CLI
 
---- CATEGORY: software-development (16 skills) ---
+Use case: Control Philips Hue lights, scenes, rooms via CLI.
+
+--- CATEGORY: social-media (1 skill) ---
+Social media interaction and URL sharing.
+
+  xurl                  Share URLs to X/Twitter with metadata and formatting
+
+Use case: Posting links and content to social media platforms.
+
+--- CATEGORY: software-development (17 skills) ---
 Agent harness integration, code graph, debug, setup, planning, testing.
 
   agent-harness-        ECC/config layers onto Claude Code, OpenCode, Hermes, etc
@@ -248,6 +283,7 @@ Agent harness integration, code graph, debug, setup, planning, testing.
     authoring
   node-inspect-debugger Debug Node.js via --inspect + Chrome DevTools Protocol
   plan                  Write actionable markdown plans — no execution
+  python-debugpy        Debug Python via debugpy with VS Code/IDE integration
   repo-integration-     Audit existing skills when setting up new repos
     reconciliation
   requesting-code-      Pre-commit review: security scan, quality gates
@@ -280,11 +316,12 @@ Use case: Web testing, form filling, browser automation.
   wix-app               Build/review Wix CLI app extensions — dashboard pages,
                         widgets, plugins, backend APIs, App Market readiness
 
---- CATEGORY: workflow (4 skills) ---
+--- CATEGORY: workflow (5 skills) ---
   free-ai-model-router  Route every AI task to the best free model
   model-recommender-    Select free models for any task type using CLI + catalog
     workflow
   session_memory        Retrieve missing context from prior sessions via session_search
+  task_tier             Tier tasks by complexity for appropriate model routing
   token-saver           Enforce CodeGraph MCP + Graphify probing before raw file reads
 
 --- CATEGORY: yuanbao (1 skill) ---
@@ -388,7 +425,7 @@ Contains:
     skills/workflow/session_memory/SKILL.md
   - Model router: skills/workflow/free-ai-model-router/SKILL.md
   - Full setup guide (SETUP.md) — 10 steps
-  - Skill catalog (SKILLS_CATALOG.md) — all 135 skills with use cases
+  - Skill catalog (SKILLS_CATALOG.md) — all 137 skills with use cases
   - Integration docs (INTEGRATION.md) — pipeline flow
   - This meta prompt (META_PROMPT.md)
   - License: CC BY-NC 4.0

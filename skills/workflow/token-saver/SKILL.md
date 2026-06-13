@@ -115,7 +115,10 @@ Tier 1 (atomic) requests skip the probe.
 
 ---
 
-## Quick Reference (Copy-Paste Commands)
+## Support Files
+
+- `references/live-benchmarks.md` — Live token savings benchmarks (35×–1,233×), 4-step probe commands, Graphify coverage table
+- `references/graphify-index-building.md` — Large project build patterns (ECC 34MB/5,821 files), background mode, skip logic
 
 ```bash
 # CodeGraph — always works from ~/Documents/Projects/

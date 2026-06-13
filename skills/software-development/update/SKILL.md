@@ -56,13 +56,74 @@ cd "$PROJECT_PATH"
 Identify what kind of project this is:
 - **Agent framework**? (check for AGENTS.md, CLAUDE.md, skills/, agents/ directories)
 - **Model/resource catalog**? (check for model lists, provider configs, API references)
+- **Data catalog / directory / reference repo**? (check for a flat structure of data-files/ or category-dirs with README-based listings; the project IS a directory of things, not a tool to run; no package.json, no build scripts, nothing to install)
 - **Tool/library**? (check for CLI entry point, library code)
 - **Graph/visualization**? (check for graph, viz, or diagram keywords)
 - **Other**?
 
-This determines which complementary integration checks to run in Step 4.
+This determines which complementary integration checks to run in Step 4 and which workflow branch to follow — data-catalog repos skip Graphify and follow a **skill-creation + website-update** path instead (see Step 4 variant below).
 
-### Step 3 — Install Dependencies
+### Step 3 — Data-Catalog Branch (Skip Install + Graphify)
+
+If the project was classified as **Data catalog / directory / reference repo** in Step 2, skip Steps 3–4 and follow this branch instead:
+
+**3a. Analyze the data structure** — determine what data the catalog provides:
+```bash
+# Count items per category
+for dir in */; do
+  catname=$(echo "$dir" | sed 's/\/$//')
+  readme="${dir}README.md"
+  if [ -f "$readme" ]; then
+    count=$(grep -c "^| \[" "$readme" 2>/dev/null)
+    echo "  $catname: $count items"
+  fi
+done
+```
+
+**3b. Create a Hermes skill** (`skill_manage action='create'`) that makes the catalog searchable:
+- **Triggers** — "find an API for", "API to", "scraper for X", "search for X in catalog"
+- **Body** — document the catalog structure, include grep commands per category, show common search patterns
+- **Cross-references** — route to complementary skills (e.g. mcp-integrations for MCP entries, ecc-bridge for scrapers)
+- **Pitfalls** — note affiliate links, pricing, stale entries, large file sizes
+
+See `references/data-catalog-integration.md` for a worked example (API-mega-list).
+
+**3c. Create Obsidian documentation** — `<vault>/Projects/<PROJECT_NAME>.md` with:
+- Overview, features, project structure
+- Architecture Mermaid graph showing integration with Hermes ecosystem
+- Search patterns and examples
+- Wikilinks to related projects and skills
+- Tags
+
+**3d. Update `/decide` routing** — add the new skill to:
+- Domain Skills routing section
+- Complementary Setup Routing section
+- Known Integration Patterns table (especially cross-refs to mcp-integrations, ecc-bridge, etc.)
+
+**3e. Update the GH Pages website** — if the repo tracks a hermes-workflow site:
+- **index.html** — add skill card to the appropriate category's skill data array
+- **SKILLS_CATALOG.md** — add full entry with triggers, pipeline, integration
+- **INTEGRATION.md** — add to Domain Skill Execution, Cross-Skill Integration Points, Quick Reference table, File Layout section
+- **README.md** — add to Ecosystem list
+
+**3f. Commit and push** — then verify the website is deployed:
+```bash
+cd ~/Documents/Projects/hw-new
+git add -A
+git commit -m "Integrate <name>: new skill + docs + website updates"
+git push
+curl -s -o /dev/null -w "%{http_code}" "https://attilahuns288452.github.io/hermes-workflow/"
+```
+
+**3g. Verify the new skill card renders** — navigate to the GH Pages site, click the relevant category tab, and confirm the card appears with the correct description.
+
+**3g-ii. (Optional) Build/update ecosystem dashboard** — If the data catalog significantly expands the ecosystem or the user asked for a dashboard, create or update the ecosystem dashboard:
+- See `references/dashboard-integration.md` for the full workflow (data gathering, HTML building, deployment, verification)
+- Steps: gather stats → build/update dashboard.html → copy to hw-new/dashboard.html → add nav link + tab + skill card → update /decide routing → create/update Obsidian note → commit/push → verify
+
+**3h. Jump to Step 9** (skip Steps 3–8 which are for code repos).
+
+### Step 4 — Install Dependencies (code repos only)
 Delegate to `software-development/setup` for project-specific setup:
 - Check `package.json` → `npm install`
 - Check `requirements.txt` / `pyproject.toml` → `pip install` / `uv sync`
@@ -155,7 +216,7 @@ Where possible, call these scripts instead of manual steps:
 
 ## Examples
 
-### Full ecosystem onboarding for a new GitHub repo
+### Full ecosystem onboarding for a new GitHub repo (code project)
 ```bash
 # What the /update skill does:
 /update https://github.com/owner/repo
@@ -167,6 +228,21 @@ Where possible, call these scripts instead of manual steps:
 # 6. Add wikilinks to existing complementary notes
 # 7. Refresh Obisidian knowledge graph
 # 8. Patch /decide if needed
+```
+
+### Data-catalog integration (API-mega-list example)
+```bash
+# What the /update skill does for a data catalog:
+/update https://github.com/cporter202/API-mega-list
+# 1. git clone to ~/Documents/Projects/API-mega-list
+# 2. Analyze: 18 categories, 10,498 Apify actors, no code to run
+# 3. Skip deps, skip Graphify (no code to graph)
+# 4. Create productivity/api-mega-list skill with grep-based search
+# 5. Create ~/Documents/Obsidian Vault/Projects/API-mega-list.md
+# 6. Update /decide: Domain Skills routing + Known Integration Patterns
+# 7. Update GH Pages: index.html (skill card), SKILLS_CATALOG.md,
+#    INTEGRATION.md, README.md
+# 8. git commit + push + verify deployment
 ```
 
 ### Integrating from a local path
@@ -181,6 +257,10 @@ Where possible, call these scripts instead of manual steps:
 - **Large repos** — graphify can be slow on >2000 files; use `--no-viz` and `--no-cluster`
 - **MCP port overlaps** — if the new repo starts MCP servers, check Hermes config for port conflicts
 - **No graphify** — if graphify is not installed, the knowledge graph step is skipped. Install with `uv tool install graphifyy` and `uv tool install "graphifyy[mcp]"`
+- **Data-catalog — verify it's not a live service** — Before treating a repo as a data catalog, confirm by running Phase 0.5 checks (see `setup` skill): no API routes, no database, no server-side code. A repo that LOOKS like a directory but is actually an API server needs the code-project path, not the data-catalog path.
+- **GH Pages skill data array format** — When updating index.html's skill data, entries follow `{n:'Skill Name',c:'category',d:'One-line description.'}` with COMMA after each entry. No trailing comma on the last entry. JS engines parse this strictly — a missing comma breaks the entire skills grid.
+- **SKILLS_CATALOG.md table format** — The file uses `||` (double pipes) as leading table delimiters (empty first column in markdown). When patching this file, match the exact table format: `|| "Query" | Execution Path |\n||---------|---------------|\n|| "...`  Using a single `|` instead of `||` will misalign the table.
+- **Website skill count accuracy** — After adding a new skill card to index.html, verify the "90+" hero stat is still accurate. If the actual count crosses a round-number threshold (e.g. 135 → 136), update SKILLS_CATALOG.md's header but keep the hero stat approximate ("90+").
 
 ## Ecosystem Documentation Export (NEW)
 
@@ -194,8 +274,86 @@ When the user asks to **document their Hermes setup** — make a GitHub repo res
 - "create a meta-prompt for my setup"
 - "make the repo representative of my full agent config"
 
+### Phase 0 — Mirror the Actual Skills Tree (CRITICAL)
+
+**⚠️ Do NOT create reference/stub .md files.** The user wants their actual
+installed Hermes Agent skills in the repo, not summarized references.
+
+Copy the entire Hermes Agent skills tree into the repo's `skills/` directory,
+preserving the `category/skill-name/SKILL.md` directory structure:
+
+```python
+import shutil, os
+from pathlib import Path
+
+hermes_skills = Path.home() / "AppData/Local/hermes/skills"
+repo_skills = Path("skills")  # relative to repo root
+
+# Remove any old flat .md stubs
+if repo_skills.exists():
+    for item in repo_skills.iterdir():
+        if item.is_file() and item.suffix == ".md":
+            item.unlink()
+        elif item.is_dir() and item.name != ".git":
+            shutil.rmtree(item)
+
+# Walk and copy every SKILL.md preserving structure
+for root, dirs, files in os.walk(hermes_skills):
+    dirs[:] = [d for d in dirs if not d.startswith('.')]
+    if "SKILL.md" not in files:
+        continue
+    src = Path(root) / "SKILL.md"
+    rel = src.relative_to(hermes_skills)
+    dst = repo_skills / rel
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dst)
+
+# Also copy .bundled_manifest (lists shipped skills)
+manifest = hermes_skills / ".bundled_manifest"
+if manifest.exists():
+    shutil.copy2(manifest, repo_skills / ".bundled_manifest")
+
+# Copy supporting files from custom/authored skills
+support_dirs = ("references", "scripts", "templates")
+for skill_rel in ["decide", "core-identity-guard", "ecc-bridge",
+                  "workflow/token-saver", "workflow/session_memory",
+                  "note-taking/obsidian"]:
+    src_dir = hermes_skills / skill_rel
+    dst_dir = repo_skills / skill_rel
+    if src_dir.exists():
+        for item in src_dir.iterdir():
+            if item.is_dir() and item.name in support_dirs:
+                dst_sub = dst_dir / item.name
+                if dst_sub.exists():
+                    shutil.rmtree(dst_sub)
+                if item.exists():
+                    shutil.copytree(item, dst_sub)
+```
+
+**Verify** the copy produced the right structure:
+```bash
+# Count SKILL.md files
+find skills/ -name "SKILL.md" | wc -l
+
+# Show category listing
+find skills/ -maxdepth 2 -name "SKILL.md" \
+  | sed 's|skills/||;s|/.*||' \
+  | sort | uniq -c | sort -rn
+
+# Check no old flat .md remain
+ls skills/*.md 2>/dev/null && echo "WARNING: flat .md files remain!" || echo "OK: no flat .md files"
+```
+
+**After copying, remove old files from git tracking:**
+```bash
+cd <repo-directory>
+git rm -r --cached skills/ 2>/dev/null   # remove old stub entries
+git add skills/                           # add new properly-structured skills
+```
+
 ### Phase 1 — Audit the Current Ecosystem
-Before producing any files, scan the actual environment:
+Before generating reference documentation, scan the actual environment to
+get accurate counts for web site and meta-prompt:
 
 ```bash
 # Scan Hermes skills
@@ -387,6 +545,11 @@ After push, verify:
 - **Skill count accuracy**: Use `find ~/AppData/Local/hermes/skills/ -maxdepth 2 -name "SKILL.md" | wc -l` for an accurate count. Never guess.
 - **Meta-prompt paths**: Contains system paths that only make sense on the author's machine. Frame as "this user's setup" rather than a universal template.
 - **Graphify CLI limitations**: On Windows, `graphify export obsidian` doesn't exist (v0.8.37). Don't claim it in documentation — stick to commands that actually work (`query`, `explain`, `path`, `benchmark`, etc.).
+- **Stub .md files trap**: When documenting a Hermes setup, it's tempting to create clean reference stubs (e.g., `decide.md`, `token-saver.md`). **Don't.** The user wants their actual installed skills mirrored verbatim. Copy `~/.hermes/skills/` preserving `dir/SKILL.md` structure — never summarize or flatten into single `.md` files. See Phase 0 above.
+- **Windows path mismatch between tools**: On Windows, `execute_code` (Python) and `terminal` (git-bash) resolve `/tmp` differently.
+  - `execute_code` runs as a native Windows process: `Path("/tmp")` → `C:\tmp\`
+  - `terminal` runs via git-bash: `/tmp` → `C:\Users\<user>\AppData\Local\Temp\`
+  - **Fix**: Always use `os.environ["TEMP"]` or the full native Windows path (`C:\Users\<user>\AppData\Local\Temp\...`) in Python scripts that work with files created/modified by `terminal`. Or do all work in a single tool (e.g., do everything from Python via `from hermes_tools import terminal` instead of mixing `execute_code` and `terminal`).
 
 ## Related Skills
 - `software-development/setup` — performs Phase 1-3 (clone, install, verify)
