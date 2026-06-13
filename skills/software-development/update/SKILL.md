@@ -260,7 +260,7 @@ Where possible, call these scripts instead of manual steps:
 - **Data-catalog — verify it's not a live service** — Before treating a repo as a data catalog, confirm by running Phase 0.5 checks (see `setup` skill): no API routes, no database, no server-side code. A repo that LOOKS like a directory but is actually an API server needs the code-project path, not the data-catalog path.
 - **GH Pages skill data array format** — When updating index.html's skill data, entries follow `{n:'Skill Name',c:'category',d:'One-line description.'}` with COMMA after each entry. No trailing comma on the last entry. JS engines parse this strictly — a missing comma breaks the entire skills grid.
 - **SKILLS_CATALOG.md table format** — The file uses `||` (double pipes) as leading table delimiters (empty first column in markdown). When patching this file, match the exact table format: `|| "Query" | Execution Path |\n||---------|---------------|\n|| "...`  Using a single `|` instead of `||` will misalign the table.
-- **Website skill count accuracy** — After adding a new skill card to index.html, verify the "90+" hero stat is still accurate. If the actual count crosses a round-number threshold (e.g. 135 → 136), update SKILLS_CATALOG.md's header but keep the hero stat approximate ("90+").
+- **Website skill count accuracy** — After adding a new skill card to index.html, verify the "117" hero stat is still accurate. If the actual count changes (e.g. 117 → 120), update index.html, README.md, SKILLS_CATALOG.md, and the decide skill's references to match the real count.
 
 ## Ecosystem Documentation Export (NEW)
 

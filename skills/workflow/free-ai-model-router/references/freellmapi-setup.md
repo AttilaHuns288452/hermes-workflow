@@ -236,7 +236,7 @@ Run `curl -H "Authorization: Bearer <key>" http://localhost:3001/v1/models | jq 
 - **Fix**: Use Python `requests` library for authenticated API calls:
   ```python
   import requests
-  token = "62693564-b5c7-4b32-8b3a-a6a9"  # from /api/auth/login
+  token = "freellmapi_unified_api_key_here"  # from /api/auth/login
   headers = {'Authorization': f'Bearer {token}'}
   requests.get('http://localhost:3001/api/settings/api-key', headers=headers)
   ```
