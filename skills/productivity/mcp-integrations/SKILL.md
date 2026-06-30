@@ -18,7 +18,9 @@ This skill covers adding MCP servers to Hermes Agent, with verified operational 
 - Node.js for npx servers, `uv`/`uvx` for Python-based servers
 
 ```bash
-/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/python -m pip install mcp
+pip install mcp
+# Or if using Hermes bundled Python:
+# $HERMES_HOME/hermes-agent/venv/Scripts/python -m pip install mcp
 ```
 
 ## Core Patterns
@@ -35,7 +37,7 @@ mcp_servers:
     url: \"https://connect.composio.dev/mcp\"
 EOF
 tail -10 ~/.hermes/config.yaml   # verify
-/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes mcp list
+hermes mcp list   # or $HERMES_HOME/hermes-agent/venv/Scripts/hermes mcp list
 ```
 
 ### 2. Composio setup (composio.dev/hermes)
@@ -56,7 +58,7 @@ Restart Hermes. The first Composio-backed request will trigger the OAuth flow. T
 
 **Known pitfall:** Do NOT add `headers:` with `x-consumer-api-key` for the Composio `/mcp` endpoint. That produces persistent `401 Unauthorized` responses. Normal built-in OAuth login covers authentication here.
 
-**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `C:\Users\Attila\Documents\apikeys\composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
+**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `$HOME/Documents/apikeys/composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
 
 ### 2. LLMQuant Data setup
 
@@ -206,7 +208,7 @@ For cron, prefer testing by direct execution once before declaring success.
 ## Open Design Notes
 - Windows install path can contain spaces, so `command` should quote or escape it properly.
 - Hermes now supports the Open Design stdio MCP server on Windows:
-  `C:\Users\Attila\AppData\Local\Programs\Open Design release-stable-win\Open Design.exe` with env:
+  `Open Design.exe` with env:
   `OD_DATA_DIR`, `OD_SIDECAR_NAMESPACE`, `ELECTRON_RUN_AS_NODE`.
 - This does not currently indicate rich generative/code-agent bridge support. Focused integration path is still reading design files via MCP; generative capabilities remain unverified.
 - `bloom`/`blind` options shown by some daemon logs are implementation-specific. Keep `initializationOptions` minimal unless documentation explicitly requires them.
@@ -309,7 +311,7 @@ with zipfile.ZipFile(io.BytesIO(data)) as z:
     with open(os.path.join(dest_dir, 'iii.exe'), 'wb') as f:
         f.write(z.read('iii.exe'))
 PY
-'C:\Users\Attila\.local\bin\iii.exe' --version
+'iii.exe' --version  # or $HOME/.local/bin/iii.exe
 ```
 
 Restart the shell or export PATH if needed before launching `agentmemory`.

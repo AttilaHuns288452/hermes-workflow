@@ -16,7 +16,7 @@ triggers:
 ## Purpose
 Eliminate unnecessary full-file reads by probing CodeGraph MCP and Graphify before reading files. Live benchmarks show **50× to 1,233× token reduction** per query depending on scope.
 
-This is now actively enforced by `/decide` Mandatory Rule #4 and Execution Order.
+This is enforced by `/decide` Rule 1 (Token Saver Probe Chain).
 
 ---
 
@@ -27,33 +27,47 @@ When you need to understand any code in `~/Documents/Projects/`:
 ### Step A — Detect Project
 Extract `$PROJECT` from the file path. All projects live at `~/Documents/Projects/$PROJECT/`.
 
-### Step B — Probe CodeGraph MCP (Always Available)
-```bash
-# From ~/Documents/Projects/ where the .codegraph/ DB lives
-codegraph query "function_name"
-codegraph callers "function_name"
-codegraph callees "function_name"
-codegraph impact "function_name"
-```
-- **Always works** — CodeGraph covers ALL 945 files across all projects
-- **Cost: ~300 tokens** vs reading files directly (~15K+ tokens)
-- Returns file paths + line numbers → you know where to read if needed
+### Step B — Probe CodeGraph (MCP Tools First)
 
-### Step C — Probe Graphify (Available for 14/16 Projects)
+Use the built-in MCP tools — no terminal command needed, always available:
+
+```
+mcp_codegraph_codegraph_explore(query="function_name")     # PRIMARY — single call returns defs + source
+mcp_codegraph_codegraph_search(query="function_name")      # Broader name search
+mcp_codegraph_codegraph_callers(symbol="function_name")    # Who calls it
+mcp_codegraph_codegraph_callees(symbol="function_name")    # What it calls
+mcp_codegraph_codegraph_impact(symbol="function_name")     # Refactoring impact
+mcp_codegraph_codegraph_files(pattern="*.tsx")             # File tree
+```
+
+- **Always works** — CodeGraph covers ALL 1,607 files across all projects (44.46 MB index, 25,135 nodes, 61,386 edges)
+- **Cost: ~300 tokens** vs reading files directly (~15K+ tokens)
+- Returns source code + file paths and line numbers → you know exactly where to read if needed
+
+**Terminal fallback** (use only if MCP tools are unavailable):
 ```bash
-# Check if this project has a graph
-test -f "$PROJECT/graphify-out/graph.json" && echo "EXISTS" || echo "NO GRAPH"
+cd ~/Documents/Projects && codegraph query "function_name"
+cd ~/Documents/Projects && codegraph callers "function_name"
+cd ~/Documents/Projects && codegraph callees "function_name"
+cd ~/Documents/Projects && codegraph impact "function_name"
+```
+
+### Step C — Probe Graphify (Available for 21/24 Projects)
+```bash
+# Quick check if this project has a graph
+test -f ~/Documents/Projects/$PROJECT/graphify-out/graph.json \
+  && echo "✅ EXISTS" || echo "❌ NO GRAPH"
 
 # If yes, query it:
-cd ~/Documents/Projects/$PROJECT
-~/.local/bin/graphify.exe query "what does X do?" --budget 2000 --graph graphify-out/graph.json
+cd ~/Documents/Projects/$PROJECT && \
+  ~/.local/bin/graphify.exe query "<question>" --budget 2000 --graph graphify-out/graph.json
 ```
-- **Available for:** API-mega-list, atm-crypto-bank, atm-machine, countdown-timer,
-  ECC, ecosystem-test, free-ai-tools, freebuff-test, free-llm-api, graphify,
-  hermes-workflow, hw-new, MoneyPrinterTurbo, task-manager-cli
-- **Not available:** hermes-dashboard (single HTML), unit-converter (no code files)
-- **ECC index is 34MB across 5,821 files** — builds in ~6 min, queries in ~300 tokens
+- **21/24 projects indexed** — all except: Hermes Skills (exported skills tree, not a code project), hermes-dashboard (single HTML), unit-converter (no code files)
+- **ECC index is 34MB across 5,821 files** — queries in ~300 tokens
 - **Cost: ~300 tokens** vs reading source tree (~370K tokens)
+- **Savings: up to 1,233× per query**
+
+**Full project list:** ai-marketing-skills, AI-Youtube-Shorts-Generator, anime-waifu-quiz, API-mega-list, atm-crypto-bank, atm-machine, buildable-plugin-skills, countdown-timer, ECC, ecosystem-test, free-ai-tools, freebuff-test, freelance-rate-calculator, freellmapi, free-llm-api, graphify, hermes-workflow, hw-new, MoneyPrinterTurbo, MoneyPrinterV2, task-manager-cli
 
 ### Step D — Targeted Read (Last Resort)
 ```python
@@ -63,27 +77,43 @@ Only after probes A-C failed to provide enough context. Read only the specific s
 
 ---
 
-## Coverage Summary
+## Coverage Summary (24 Projects Total)
+
+### Full-Index Table
 
 | Project | CodeGraph | Graphify |
 |---------|-----------|----------|
-| API-mega-list | ✅ 945-file global index | ✅ 59KB graph |
+| ai-marketing-skills | ✅ 945-file global index | ✅ 2,270 nodes, 2,885 edges |
+| AI-Youtube-Shorts-Generator | ✅ global index | ✅ indexed |
+| anime-waifu-quiz | ✅ global index | ✅ indexed |
+| API-mega-list | ✅ global index | ✅ 59KB graph |
 | atm-crypto-bank | ✅ global index | ✅ 116KB graph |
 | atm-machine | ✅ global index | ✅ 461KB graph |
+| buildable-plugin-skills | ✅ global index | ✅ 3,152 nodes, 3,352 edges |
 | countdown-timer | ✅ global index | ✅ 1.4KB graph |
 | ECC | ✅ global index | ✅ 34MB graph (5,821 files) |
 | ecosystem-test | ✅ global index | ✅ 9.8KB graph |
 | free-ai-tools | ✅ global index | ✅ 236KB graph |
+| freebuff-test | ✅ global index | ✅ indexed |
+| freelance-rate-calculator | ✅ global index | ✅ indexed |
+| freellmapi | ✅ global index | ✅ indexed |
 | free-llm-api | ✅ global index | ✅ 1MB graph |
 | graphify | ✅ global index | ✅ 7.8MB graph (8,267 nodes) |
-| hermes-dashboard | ✅ global index | ❌ no code files |
-| hermes-workflow | ✅ global index | ✅ 1.9MB graph |
-| hw-new | ✅ global index | ✅ 1.9MB graph |
+| hermes-workflow | ✅ global index | ✅ 7.8MB graph (11,501 nodes, 13,727 edges, built Jun 30) |
+| hermes-token-test | ✅ global index | ✅ 33KB graph (45 nodes, 74 edges, built Jun 30) |
+| hermes-workflow | ✅ global index | ✅ 7.8MB graph (11,501 nodes, 13,727 edges) |
 | MoneyPrinterTurbo | ✅ global index | ✅ 830KB graph |
+| MoneyPrinterV2 | ✅ global index | ✅ indexed |
 | task-manager-cli | ✅ global index | ✅ 49KB graph |
-| unit-converter | ✅ global index | ❌ no code files |
 
-CodeGraph covers **everything**. Graphify covers **14/16 code projects** with dedicated indices.
+### Non-Code Projects (No Graphify Index — Correct)
+| Project | Reason |
+|---------|--------|
+| Hermes Skills | Export of ~/.hermes/skills/ tree — documentation, not code |
+| hermes-dashboard | Single HTML page |
+| unit-converter | No code files |
+
+CodeGraph covers **all 24 projects**. Graphify covers **21/24 projects** with dedicated indices.
 
 ---
 
@@ -101,7 +131,14 @@ CodeGraph covers **everything**. Graphify covers **14/16 code projects** with de
 
 ## Integration with /decide
 
-The `/decide` skill's Mandatory Rule #4 now enforces this as an active pipeline step:
+The `/decide` skill enforces this via **Rule 1 (Token Saver Probe Chain)** and the **Session Startup Protocol**:
+
+At session start, the agent announces:
+```
+📋 Compliance: Rule 1 (Token Saver) = ACTIVE
+```
+
+This makes the probe chain a **stated commitment**, not just documented best practice. The self-audit at session end verifies compliance matches the announcement.
 
 ```
 session_memory → core-identity-guard → task_tier gate → 
@@ -121,7 +158,11 @@ Tier 1 (atomic) requests skip the probe.
 - `references/graphify-index-building.md` — Large project build patterns (ECC 34MB/5,821 files), background mode, skip logic
 
 ```bash
-# CodeGraph — always works from ~/Documents/Projects/
+# CodeGraph MCP tools (preferred — always available, no CWD dependency)
+mcp_codegraph_codegraph_explore(query="symbol_name")
+mcp_codegraph_codegraph_search(query="symbol_name")
+
+# CodeGraph — terminal fallback (use if MCP tools unavailable)
 cd ~/Documents/Projects && codegraph query "symbol_name"
 
 # Graphify — when project has graph.json

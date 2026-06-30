@@ -40,25 +40,16 @@ Based on [Cocoon AI's architecture-diagram-generator](https://github.com/Cocoon-
 
 1. User describes their system architecture (components, connections, technologies)
 2. Generate the HTML file following the design system below
-3. Save with `write_file` to a `.html` file (e.g. `~/architecture-diagram.html`)
+3. Save the generated content with `write_file` to produce a `.html` diagram file
 4. User opens in any browser — works offline, no dependencies
 
 ### Output Location
 
-Save diagrams to a user-specified path, or default to the current working directory:
-```
-./[project-name]-architecture.html
-```
+The diagram file is saved to the current working directory.
 
 ### Preview
 
-After saving, suggest the user open it:
-```bash
-# macOS
-open ./my-architecture.html
-# Linux
-xdg-open ./my-architecture.html
-```
+After saving, suggest the user open it in their browser.
 
 ## Design System & Visual Language
 

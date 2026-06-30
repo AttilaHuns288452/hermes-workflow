@@ -17,6 +17,11 @@ triggers:
   - "MCP server for"
   - "lead generation API"
   - "social media API"
+  - "search for data about"
+  - "find data on"
+  - "data source for"
+  - "where to get data about"
+  - "API for data"
 metadata:
   decide:
     keywords: [api, apify, mega list, scraper, mcp server, lead gen, web scraping, social media api, api catalog, api directory]
@@ -152,14 +157,39 @@ grep "^| \[" ~/Documents/Projects/API-mega-list/ai-apis-1208/README.md | shuf -n
 grep -i "mcp" ~/Documents/Projects/API-mega-list/mcp-servers-apis-131/README.md | head -10
 
 # Find social media scrapers by platform
-grep -i "instagram\|tiktok\|twitter\|linkedin" ~/Documents/Projects/API-mega-list/social-media-apis-3268/README.md | head -10
+grep -i "instagram\\|tiktok\\|twitter\\|linkedin" ~/Documents/Projects/API-mega-list/social-media-apis-3268/README.md | head -10
 
 # Find e-commerce pricing APIs
-grep -i "price\|pricing\|monitor" ~/Documents/Projects/API-mega-list/ecommerce-apis-2440/README.md | head -10
+grep -i "price\\|pricing\\|monitor" ~/Documents/Projects/API-mega-list/ecommerce-apis-2440/README.md | head -10
 
 # Find lead generation tools
-grep -i "email\|phone\|enrich" ~/Documents/Projects/API-mega-list/lead-generation-apis-3452/README.md | head -10
+grep -i "email\\|phone\\|enrich" ~/Documents/Projects/API-mega-list/lead-generation-apis-3452/README.md | head -10
+
+# Search for data about a specific topic (stocks, crypto, weather, etc.)
+grep -i "stock\\|crypto\\|weather\\|news" ~/Documents/Projects/API-mega-list/*/README.md | head -15
 ```
+
+## Data Search Patterns
+When the user asks to "search for data about X" or "find data on X", use these targeted searches to find relevant APIs:
+
+```bash
+# Financial data (stocks, crypto, forex)
+grep -i "stock\\|equit\\|crypto\\|forex\\|finance" ~/Documents/Projects/API-mega-list/*/README.md
+
+# Economic/macro data
+grep -i "gdp\\|inflation\\|unemployment\\|cpi" ~/Documents/Projects/API-mega-list/*/README.md
+
+# Company/business data
+grep -i "company\\|business\\|corporate\\|SEC\\|filing" ~/Documents/Projects/API-mega-list/*/README.md
+
+# Location/geographic data
+grep -i "geocode\\|map\\|location\\|address\\|coordinate" ~/Documents/Projects/API-mega-list/*/README.md
+
+# Media/content data (videos, news, social)
+grep -i "youtube\\|tiktok\\|instagram\\|news\\|trend" ~/Documents/Projects/API-mega-list/*/README.md
+```
+
+The 18 categories cover 26,005 APIs — many of which are dedicated data scrapers for specific verticals. If a data source exists on the public web, there's likely an Apify actor that can extract it.
 
 ## Integration with Existing Hermes Skills
 

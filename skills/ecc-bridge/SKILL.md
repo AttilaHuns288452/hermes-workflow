@@ -51,7 +51,7 @@ type-design-analyzer, database-reviewer), load the agent's prompt directly into 
 so the current free model executes the review:
 
 ```bash
-python C:\Users\Attila\AppData\Local\hermes\skills\ecc-bridge\scripts\ecc-runner.py <agent-name>
+python $HERMES_HOME/skills/ecc-bridge/scripts/ecc-runner.py <agent-name>
 ```
 
 Take the output and use it as the **system prompt** for this conversation. The agent body  

@@ -135,8 +135,10 @@ Run `graphify-integrate` workflow (call the skill or run steps directly):
 
 ```bash
 cd "$PROJECT_PATH"
-graphify . --no-viz 2>&1
-graphify export obsidian --dir "$VAULT/Projects/$PROJECT_NAME/graphify"
+graphify update . 2>&1
+
+# Then create the Obsidian note manually from graph stats
+# (There is NO graphify export command — create notes with the obsidian skill)
 ```
 
 If graphify is not installed, the integration continues without it — just skip this step.
@@ -222,7 +224,7 @@ Where possible, call these scripts instead of manual steps:
 /update https://github.com/owner/repo
 # 1. git clone to ~/Documents/Projects/repo
 # 2. npm install / pip install
-# 3. graphify . --no-viz + export obsidian
+# 3. graphify update . + create Obsidian note manually from graph stats
 # 4. Check: complements ECC? free-ai-tools? Graphify?
 # 5. Create ~/Documents/Obsidian Vault/Projects/repo.md
 # 6. Add wikilinks to existing complementary notes
@@ -260,7 +262,7 @@ Where possible, call these scripts instead of manual steps:
 - **Data-catalog — verify it's not a live service** — Before treating a repo as a data catalog, confirm by running Phase 0.5 checks (see `setup` skill): no API routes, no database, no server-side code. A repo that LOOKS like a directory but is actually an API server needs the code-project path, not the data-catalog path.
 - **GH Pages skill data array format** — When updating index.html's skill data, entries follow `{n:'Skill Name',c:'category',d:'One-line description.'}` with COMMA after each entry. No trailing comma on the last entry. JS engines parse this strictly — a missing comma breaks the entire skills grid.
 - **SKILLS_CATALOG.md table format** — The file uses `||` (double pipes) as leading table delimiters (empty first column in markdown). When patching this file, match the exact table format: `|| "Query" | Execution Path |\\n||---------|---------------|\\n|| "..."`  Using a single `|` instead of `||` will misalign the table.
-- **Website skill count accuracy** — After adding a new skill card to index.html, verify the "117" hero stat is still accurate. If the actual count changes (e.g. 117 → 120), update index.html, README.md, SKILLS_CATALOG.md, and the decide skill's references to match the real count.
+- **Website skill count accuracy** — After adding a new skill card to index.html, verify the hero stat is still accurate. Compare: `find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | wc -l` (local) vs `find skills/ -name 'SKILL.md' | wc -l` (repo). The local and repo counts can differ when the repo has bundled/reference-only skills. Update index.html, README.md, SKILLS_CATALOG.md, and the decide skill's references with the repo's count — not the local install's count.
 - **Misleading template placeholders** — `api_key: none` in a config template passes every secret scan (it's not a real key) but silently breaks all API calls. Apply the template placeholder verification (Phase 2d) before every commit. Other common offenders: `password: password`, `secret: ""`, `key: ""`, `token: none`.
 - **README install command drift** — After mirroring a tool's install instructions into README.md or SETUP.md, the command can go stale when the upstream project changes build systems (pip→npm, npm→pnpm, setup.py→pyproject.toml). Cross-reference install commands against the actual project's package manifests before each ecosystem doc export.
 
@@ -351,6 +353,114 @@ cd <repo-directory>
 git rm -r --cached skills/ 2>/dev/null   # remove old stub entries
 git add skills/                           # add new properly-structured skills
 ```
+
+### Phase 0a — 📋 Content Accuracy Audit (Local vs Repo)
+**⚠️ Symlinks**: On MSYS/Windows, `find` does NOT follow symlinks by default. LLMQuant skills at `~/.hermes/skills/llmquant-*` are symlinks to `~/.agents/skills/`. Always use `find -L` when counting local skills: `find -L ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | wc -l`. The non-L value will be lower (misses symlinked skills).
+
+**Why:** After mirroring, the repo may be stale or missing skills relative to the local install. Reference files may have diverged (local added warnings, repo fixed secrets). Run this check before the security audit to find and fix silent drift.
+
+**Step 1 — Compare total counts:**
+```bash
+echo "Local: $(find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | wc -l)"
+echo "Repo:  $(find skills/ -name 'SKILL.md' | wc -l)"
+```
+
+**Step 2 — List skills missing from repo (local-only):**
+```bash
+comm -13 <(cd skills && find . -name 'SKILL.md' | sed 's|./||;s|/SKILL\.md||' | sort) \
+         <(find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | sed 's|.*/skills/||;s|/SKILL\.md||' | sort)
+```
+Any results = skills that need to be copied to the repo. Copy them with their full directory tree.
+
+**Step 3 — List skills missing from local install (repo-only):**
+```bash
+comm -23 <(cd skills && find . -name 'SKILL.md' | sed 's|./||;s|/SKILL\.md||' | sort) \
+         <(find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | sed 's|.*/skills/||;s|/SKILL\.md||' | sort)
+```
+Any results = skills the repo has but local doesn't — expected if the repo includes bundled/reference-only skills. Document the delta.
+
+For each repo-only domain skill, check if the local Hermes setup already supports the domain through other means (MCP server, config keys, API tokens). Example: the 18 `llmquant-*` skills exist in the repo but aren't installed locally — yet the `llmquant-data` MCP server is wired in `~/.hermes/config.yaml` with an active API key. The user can query data via MCP but the local decide skill won't route to llmquant guidance skills.
+
+**When repo-only skills have local config support:** Consider installing the missing skills from the repo → local `~/.hermes/skills/` to enable full routing + domain guidance, not just raw MCP data access. After installing, update the decide skill with routing entries for the new domain.
+
+**Step 4 — Content-compare every common skill:**
+```bash
+comm -12 <(cd skills && find . -name 'SKILL.md' | sed 's|./||;s|/SKILL\.md||' | sort) \
+         <(find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | sed 's|.*/skills/||;s|/SKILL\.md||' | sort) \
+  | while read skill; do
+      repo_f="skills/$skill/SKILL.md"
+      local_f="$HOME/AppData/Local/hermes/skills/$skill/SKILL.md"
+      if [ -f "$repo_f" ] && [ -f "$local_f" ]; then
+        diff -w "$local_f" "$repo_f" > /dev/null 2>&1 || echo "  MISMATCH: $skill"
+      fi
+    done
+```
+Any result = SKILL.md content has drifted. Investigate which direction has newer content (check timestamps: `ls -la "$local_f" "$repo_f"`). Copy the newer version.
+
+**Step 5 — Check reference files for merge-necessary divergence:**
+```bash
+for skill in $(comm -12 <(cd skills && find . -name 'SKILL.md' | sed 's|./||;s|/SKILL\.md||' | sort) \
+                      <(find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | sed 's|.*/skills/||;s|/SKILL\.md||' | sort)); do
+  for ref_dir in references scripts templates assets; do
+    if [ -d "$HOME/AppData/Local/hermes/skills/$skill/$ref_dir" ] || [ -d "skills/$skill/$ref_dir" ]; then
+      diff -rqw "$HOME/AppData/Local/hermes/skills/$skill/$ref_dir" "skills/$skill/$ref_dir" 2>/dev/null \
+        | grep -v 'Only in' || true
+    fi
+  done
+done
+```
+Lines starting with `Content` indicate a file exists in both but differs — these need manual merge attention (e.g., repo has a security fix, local has new warnings).
+
+**Step 6 — Resolve content differences:**
+- **SKILL.md mismatches**: Check timestamps. If local is newer, `cp local_f repo_f`. If repo is newer, investigate why remote was directly edited.
+- **Reference file merges**: When both sides have unique content (local has warnings, repo has redacted secrets), copy the local version to the repo first, then apply the repo's security redactions on top.
+- **Missing skills**: `cp -r` the full skill directory including support files.
+- **After all merges**: Re-run `diff -w` to confirm zero content differences across the common set.
+
+**Step 7 — Check for flat `.SKILL.md` files and non-SKILL.md support files:**
+The content audit above only covers `SKILL.md`. But Hermes creates additional support files that should also be mirrored:
+
+```bash
+# Find flat .SKILL.md files (single-file skills) local-only
+echo "=== Flat .SKILL.md files ==="
+comm -13 <(cd skills && find . -name '*.SKILL.md' | sed 's|./||' | sort) \
+         <(find ~/AppData/Local/hermes/skills/ -name '*.SKILL.md' | sed 's|.*/skills/||' | sort)
+
+# Check for missing non-SKILL.md support files (workflows, scripts, references, assets)
+echo "=== Missing support directories ==="
+for dir in workflows scripts references assets templates; do
+  for skill_dir in ~/AppData/Local/hermes/skills/*/ ~/AppData/Local/hermes/skills/*/*/; do
+    local_sub="$skill_dir$dir"
+    rel_name=$(echo "$skill_dir" | sed 's|.*/skills/||')
+    repo_sub="skills/$rel_name$dir"
+    if [ -d "$local_sub" ] && [ ! -d "$repo_sub" ]; then
+      echo "  MISSING: $rel_name$dir"
+    fi
+  done
+done
+
+# Check for missing standalone files (LICENSE, README.md, *.md at flat level)
+echo "=== Missing standalone files ==="
+find ~/AppData/Local/hermes/skills/ -maxdepth 2 -name 'LICENSE*' -o -name 'README.md' -o -name 'CHANGELOG*' 2>/dev/null | \
+while read f; do
+  rel=$(echo "$f" | sed 's|.*/skills/||')
+  [ ! -f "skills/$rel" ] && echo "  MISSING: $rel"
+done
+```
+
+For each missing file:
+- **Flat `.SKILL.md` files**: Copy to repo preserving path
+- **Support directories**: `cp -r` the entire directory
+- **Standalone files**: Copy to repo
+
+**Step 8 — Update decide routing for newly installed skills:**
+After adding repo-only domain skills to the local install (e.g., bulk-installing 18 `llmquant-*` skills), update the decide skill to route to them:
+1. Count the new skills: `find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | wc -l`
+2. Update decide's local skill count reference in both places (e.g., "117 skills" → new count)
+3. Add a domain routing entry in decide's Domain Skills section for the new category
+4. Sync the updated decide SKILL.md to the repo's copy as well
+
+**Design principle:** The user expects content fidelity between local install and repo mirror. Structural mirroring (file exists) is insufficient — actual content must match too.
 
 ### Phase 0.5 — 🔒 Security Audit (Pre-Commit Secret Scan)
 
@@ -684,6 +794,11 @@ After push, verify:
   - `execute_code` runs as a native Windows process: `Path("/tmp")` → `C:\tmp\`
   - `terminal` runs via git-bash: `/tmp` → `C:\Users\<user>\AppData\Local\Temp\`
   - **Fix**: Always use `os.environ["TEMP"]` or the full native Windows path (`C:\Users\<user>\AppData\Local\Temp\...`) in Python scripts that work with files created/modified by `terminal`. Or do all work in a single tool (e.g., do everything from Python via `from hermes_tools import terminal` instead of mixing `execute_code` and `terminal`).
+- **`find` misses symlinked skill directories on MSYS/Windows**: MSYS git-bash `find` does NOT follow symlinks by default. If any skills are symlinks (e.g., LLMQuant skills at `~/.hermes/skills/llmquant-*` → `~/.agents/skills/llmquant-*`), `find ~/.hermes/skills/ -name "SKILL.md"` silently omits them — giving a misleadingly low count.
+  - **Always use `find -L`** when counting installed skills: `find -L ~/.hermes/skills/ -name "SKILL.md" | wc -l`
+  - For the repo mirror (no symlinks), plain `find` is fine: `find skills/ -name "SKILL.md" | wc -l`
+  - To disambiguate, compare `find` vs `find -L`: any difference reveals symlinked skills that should be verified as intact before treating the count as authoritative.
+  - When a skill category shows 0 matches in a `find` scan but `ls -d` shows the files exist, 90% of the time the directories are symlinks — rerun with `find -L`.
 
 ## Related Skills
 - `software-development/setup` — performs Phase 1-3 (clone, install, verify)

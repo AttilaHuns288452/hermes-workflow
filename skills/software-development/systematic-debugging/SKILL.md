@@ -274,6 +274,72 @@ This is NOT a failed hypothesis — this is a wrong architecture.
 
 ---
 
+## Common Bug Classes
+
+### Next.js React Error #310
+
+Error #310 means TWO different things depending on the full message. Check via error boundary or dev build:
+
+1. **"Text content did not match"** — Hydration mismatch. Server and client render different HTML. Fix: client-only mount, `suppressHydrationWarning`, or stable initial state.
+2. **"Rendered more hooks than during the previous render"** — Hook count mismatch. A `useState`/`useEffect` is placed AFTER an early `return` in the component. Fix: Move ALL hooks before any conditional return. **Not a hydration issue** — same symptom in static export builds too.
+
+**How to tell which one:** Add an `app/error.tsx` that displays `error.message`. On click → hook count. On initial page load → hydration.
+
+**Real-world case:** `AnimeQuiz.tsx` had a `useEffect` at line 265 (tsundere sound) placed after `if (!gender) return` at line 163. When gender was null → 11 hooks. After gender selected → 12 hooks. Fix: moved the useEffect above line 163 so all 12 hooks always execute.
+
+📎 See `references/nextjs-hydration-mismatch.md` for full Next.js hydration reference with reproduction recipes, fix patterns, ErrorBoundary caveats, and Vercel deployment notes.
+
+### Tailwind CSS Dynamic Class Names
+
+Tailwind scans source code for **complete class name strings** at build time. Classes built via JavaScript string interpolation WILL NOT be in the compiled CSS.
+
+```tsx
+// ❌ BROKEN — Tailwind can't see "bg-purple-600", "bg-pink-600", "bg-blue-600"
+const color = "purple";
+className={`bg-${color}-600 text-white`}
+
+// ✅ WORKS — Full class names in the source
+className={`px-4 py-2 ${isActive ? "bg-purple-600" : "bg-gray-100"} text-white`}
+
+// ✅ ALSO WORKS — Store the full class in the data, not the color name
+const buttons = [
+  { key: "all", cls: "bg-purple-600" },
+  { key: "waifu", cls: "bg-pink-600" },
+];
+// Then: className={isSelected ? cls : "bg-gray-100"}
+```
+
+**Detection:** Filter/tab/highlight classes don't apply any styling, but the HTML class attribute is present. Check dev tools → Elements → the class string is there but the CSS rule is missing.
+
+**Fix:** Move full class names into your data structure or use static conditional logic. Never construct Tailwind class names from template literals with non-static parts.
+
+## Deployment Considerations
+
+Fixing a bug is only half the work — the fix must be **deployed** before verification is possible.
+
+### Verify the Fix Is Live
+
+```bash
+curl -sL "https://example.com/" | grep -o '_not-found'
+```
+If `_not-found` is found → the fix isn't deployed yet, or the build failed.
+
+### When a Fix Doesn't Reach Production
+
+If the live site still shows the OLD behavior after deploying:
+
+1. **Check the deploy finished** — Vercel dashboard → Deployments → look for a green checkmark
+2. **Check the build succeeded** — Red triangle = build failure. Click to see logs.
+3. **Check branch** — Some Vercel projects only deploy from `main` not `master`
+4. **Check Git integration** — No webhook = not connected to GitHub. Go to Vercel → Settings → Git → "Configure Git Provider"
+5. **Manual deploy fallback** — Use Vercel CLI with `--token` flag
+
+### Free Form Backend via Google Forms
+
+For static sites needing a feedback form, Google Forms accepts submissions via `no-cors` POST with no backend required. 📎 See `references/google-forms-no-cors-backend.md` for entry ID discovery, POST format, and setup.
+
+---
+
 ## Red Flags — STOP and Follow Process
 
 If you catch yourself thinking:

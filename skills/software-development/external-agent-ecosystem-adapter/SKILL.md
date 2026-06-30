@@ -24,6 +24,32 @@ triggers:
 
 ## Procedure — Phase 1: Import & Install
 
+### Option A — external_dirs (Recommended for SKILL.md Repos)
+
+If the ecosystem repo has SKILL.md files under a `skills/` directory, the cleanest approach is to add it as an `external_dirs` entry in Hermes' active config. This keeps the repo updatable by `git pull` and avoids copying files.
+
+**Location:** The active config on Windows is:
+```
+C:\Users\<user>\AppData\Local\hermes\config.yaml
+```
+(NOT `~/.hermes/config.yaml` — that's a profile override stub.)
+
+**Config YAML:**
+```yaml
+skills:
+  external_dirs:
+    - C:/Users/<user>/path/to/repo/skills
+```
+
+**Pitfalls (Windows-specific):**
+- `hermes config set skills.external_dirs [path]` stores the value as a **string**, not a YAML list. Edit the config file directly with Python string manipulation, not `yaml.dump()` on the full file (which destroys anchors, flow styles, and MCP server entries).
+- External_dirs require a **new Hermes session** to take effect — `/reload-skills` only rescans local `~/.hermes/skills/`.
+- Precedence: local `~/.hermes/skills/` wins over external_dirs on exact name collision.
+
+See `skill_view("external-skills-integration", file_path="references/external-dirs-setup-windows.md")` for the full step-by-step recipe.
+
+### Option B — Copy to ~/.hermes/skills/ (Fallback)
+
 1. Clone the repo into the user's project directory if not already there.
 2. Run the repo's installer/package manager (`npm install`, `install.ps1`, `install.sh`).
 3. Copy the repo's skill assets into `~/.hermes/skills/<eco-name>/`.

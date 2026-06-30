@@ -29,12 +29,10 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null; then
 else
   AUTH="git"
   # Ensure we have a token for API calls
+  # (The buyer should have GITHUB_TOKEN set in their environment after purchase)
   if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-    elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-      GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
-    fi
+    echo "Error: GITHUB_TOKEN not set. Configure your GitHub Personal Access Token after purchase."
+    exit 1
   fi
 fi
 echo "Using: $AUTH"
@@ -311,20 +309,21 @@ git branch -d $BRANCH
 
 Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`
 
-### Enable Auto-Merge (curl)
+### Enable Auto-Merge
 
 ```bash
 # Auto-merge requires the repo to have it enabled in settings.
-# This uses the GraphQL API since REST doesn't support auto-merge.
-PR_NODE_ID=$(curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['node_id'])")
+# Use gh CLI for the simplest syntax:
+gh pr merge --auto --squash --delete-branch
 
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/graphql \
-  -d "{\"query\": \"mutation { enablePullRequestAutoMerge(input: {pullRequestId: \\\"$PR_NODE_ID\\\", mergeMethod: SQUASH}) { clientMutationId } }\"}"
+# Or via API after obtaining the PR node ID
+gh pr view --json id -q ".id" | xargs -I {} gh api graphql -f query='
+  mutation($prId: ID!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: SQUASH}) {
+      clientMutationId
+    }
+  }
+' -f prId={}
 ```
 
 ## 7. Complete Workflow Example
@@ -342,7 +341,7 @@ git checkout -b fix/login-redirect-bug
 git add src/auth/login.py tests/test_login.py
 git commit -m "fix: correct redirect URL after login
 
-Preserves the ?next= parameter instead of always redirecting to /dashboard."
+Preserves the ?next= parameter instead of always redirecting to the dashboard."
 
 # 5. Push
 git push -u origin HEAD
@@ -361,7 +360,7 @@ git push -u origin HEAD
 |--------|-----|-----------|
 | List my PRs | `gh pr list --author @me` | `curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls?state=open"` |
 | View PR diff | `gh pr diff` | `git diff main...HEAD` (local) or `curl -H "Accept: application/vnd.github.diff" ...` |
-| Add comment | `gh pr comment N --body "..."` | `curl -X POST .../issues/N/comments -d '{"body":"..."}'` |
-| Request review | `gh pr edit N --add-reviewer user` | `curl -X POST .../pulls/N/requested_reviewers -d '{"reviewers":["user"]}'` |
-| Close PR | `gh pr close N` | `curl -X PATCH .../pulls/N -d '{"state":"closed"}'` |
+| Add comment | `gh pr comment N --body "..."` | `curl -X POST -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/issues/N/comments" -d '{"body":"..."}'` |
+| Request review | `gh pr edit N --add-reviewer user` | `curl -X POST -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls/N/requested_reviewers" -d '{"reviewers":["user"]}'` |
+| Close PR | `gh pr close N` | `curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls/N" -d '{"state":"closed"}'` |
 | Check out someone's PR | `gh pr checkout N` | `git fetch origin pull/N/head:pr-N && git checkout pr-N` |

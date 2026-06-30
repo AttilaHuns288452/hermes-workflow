@@ -255,7 +255,7 @@ Run `curl -H "Authorization: Bearer <key>" http://localhost:3001/v1/models | jq 
 - **Fix**: Removed the duplicate line. The correct key (`[REDACTED]`) is now the only one.
 - **Prevention**: When regenerating the unified API key via the dashboard, also update `~/.hermes/.env` to replace the old key (not append a second line).
 - **Verification**: `od -A x -t c ~/.hermes/.env | grep FREELM` should show exactly one occurrence. Test with `curl -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/models | python -c "import sys,json; d=json.load(sys.stdin); print(f'{len([m for m in d[\"data\"] if m.get(\"available\")])} available / {len(d[\"data\"])} total')"`
-- **Project path on Windows**: `C:\Users\Attila\Documents\Projects\freellmapi`
+- **Project path on Windows**: `$HOME/Documents/Projects/freellmapi`
 - **Database location**: `server/data/freeapi.db` (SQLite)
 - **API keys table**: Empty initially — 0 rows, must add via dashboard at `http://localhost:5173` → API Keys
 - **Settings table**: Stores `unified_api_key`, `catalog_applied_version`, `catalog_applied_json`, `active_profile_id`, `embeddings_default_family`
@@ -277,7 +277,7 @@ Run `curl -H "Authorization: Bearer <key>" http://localhost:3001/v1/models | jq 
 ### Verified Working Commands
 ```bash
 # Build (Windows PowerShell / Git Bash)
-cd C:\Users\Attila\Documents\Projects\freellmapi
+cd $HOME/Documents/Projects/freellmapi
 npm install
 npm run build:server
 cd server && npm run start

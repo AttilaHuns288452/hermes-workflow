@@ -1,20 +1,19 @@
-# Live Token Savings Benchmarks — Session 2026-06-12
+# Live Token Savings Benchmarks
 
 ## Summary
-The token-saver was **documented but never used** across all prior sessions. This session made it actively enforced via `/decide` Mandatory Rule #4.
+The token-saver was **documented but never used** across all prior sessions until June 12, 2026. The decide skill now enforces it via **Rule 1 (Token Saver Probe Chain)**.
 
-## Live-Tested Token Savings (This Session)
+## Live-Tested Token Savings
 
 | Method | Tokens | vs Raw Read | Savings | Notes |
 |--------|--------|-------------|---------|-------|
-| `codegraph query "symbol"` | ~300 | 15K (10 files) | **50×** | Always works — 945 files indexed |
-| `graphify query "question"` | ~300 | 370K (full tree) | **1,233×** | BFS traversal, 14/19 projects |
+| `codegraph query "symbol"` | ~300 | 15K (10 files) | **50×** | Always works — 1,607 files indexed |
+| `graphify query "question"` | ~300 | 370K (full tree) | **1,233×** | BFS traversal, 21/24 projects |
 | `codegraph callers "fn"` | ~200 | 10K (grep+3 files) | **50×** | FTS5 symbol search |
 | `graphify explain "symbol"` | ~145 | 5K (1 file) | **35×** | Plain-language summary |
 | Full probe chain (3+2 queries) | ~1,500 | 350K (feature understanding) | **233×** | CodeGraph → Graphify → read_file |
 
-**Old benchmark**: Graphify's self-reported 56.2× avg (max 157.7×)
-**New reality**: 35×–1,233× depending on probe type and scope. CodeGraph hits ALWAYS; Graphify on 14/19 projects.
+**Savings range:** 35×–1,233× depending on probe type and scope.
 
 ## 4-Step Probe Chain Commands (Copy-Paste Ready)
 
@@ -40,37 +39,45 @@ fi
 read_file("path/to/file.py", offset=<line>, limit=50)
 ```
 
-## Graphify Index Coverage (14/19 Projects)
+## Graphify Index Coverage (21/24 Projects)
 
-| Project | Graph Size | Files | Status |
-|---------|------------|-------|--------|
-| **ECC** | **34MB** | **5,821** | ✅ Built (6+ min) |
-| api-mega-list | 60KB | ~500 | ✅ |
-| atm-crypto-bank | 117KB | 26 | ✅ |
-| atm-machine | 462KB | 21 | ✅ |
-| countdown-timer | 1.4KB | 3 | ✅ |
-| free-ai-tools | 237KB | ~100 | ✅ |
-| free-llm-api | 1MB | ~200 | ✅ |
-| MoneyPrinterTurbo | 830KB | ~300 | ✅ |
-| hermes-workflow | 1.9MB | ~300 | ✅ |
-| hw-new | 1.9MB | ~300 | ✅ |
-| freebuff-test | 1.4KB | 5 | ✅ |
-| graphify (self) | 7.8MB | 544 | ✅ |
-| task-manager-cli | 49KB | ~50 | ✅ |
-| ecosystem-test | 9.8KB | ~20 | ✅ |
-| hermes-dashboard | — | 0 | ❌ Single HTML |
-| unit-converter | — | 0 | ❌ No code files |
+| Project | Notes |
+|---------|-------|
+| ai-marketing-skills | ✅ 2,270 nodes, 2,885 edges |
+| AI-Youtube-Shorts-Generator | ✅ |
+| anime-waifu-quiz | ✅ |
+| API-mega-list | ✅ 59KB |
+| atm-crypto-bank | ✅ 116KB |
+| atm-machine | ✅ 461KB |
+| buildable-plugin-skills | ✅ 3,152 nodes, 3,352 edges |
+| countdown-timer | ✅ 1.4KB |
+| ECC | ✅ 34MB (5,821 files) |
+| ecosystem-test | ✅ 9.8KB |
+| free-ai-tools | ✅ 236KB |
+| freebuff-test | ✅ |
+| freelance-rate-calculator | ✅ |
+| freellmapi | ✅ |
+| free-llm-api | ✅ 1MB |
+| graphify (self) | ✅ 7.8MB (8,267 nodes) |
+| hermes-workflow | ✅ 7.8MB (11,501 nodes, 13,727 edges, built Jun 30) |
+| hw-new | ✅ 1.9MB |
+| hermes-token-test | ✅ 33KB (45 nodes, 74 edges, benchmark: 4.0× savings, built Jun 30) |
+| MoneyPrinterTurbo | ✅ 830KB |
+| MoneyPrinterV2 | ✅ |
+| task-manager-cli | ✅ 49KB |
+| Hermes Skills | ❌ (exported skill tree, not code) |
+| hermes-dashboard | ❌ (single HTML) |
+| unit-converter | ❌ (no code files) |
 
-**Build command** (run from project root):
+## Key Insight
+
+> **The token-saver was passive prose — now it's an active enforcement rule in `/decide` (Rule 1).**
+>
+> Before June 12: `read_file()` called directly every time.
+> After June 12: Mandatory 4-step probe chain must run first.
+> After June 23 (this session): decide skill rewritten so Rule 1 is the FIRST thing you read.
+
+**Build command** (run from project root to create missing indices):
 ```bash
 ~/.local/bin/graphify.exe update .
 ```
-
-## Key Insight for Future Sessions
-
-> **The token-saver was passive prose — now it's an active enforcement gate in `/decide`.**
-> 
-> Before this session: `read_file()` called directly every time.
-> After this session: Mandatory 4-step probe chain runs first, `read_file()` only as last resort.
-> 
-> The enforcement lives in `/decide` Mandatory Rule #4 and Execution Order — not in token-saver skill alone.

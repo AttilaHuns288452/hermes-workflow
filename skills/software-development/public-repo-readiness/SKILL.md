@@ -168,9 +168,9 @@ When the repo is a mirror of a Hermes Agent skill installation:
 
 1. **Graphify build artifacts** (`graphify-out/`) — these contain absolute local filesystem paths in AST cache JSON blobs. Add to `.gitignore` and `git rm --cached` if already tracked.
 
-2. **Skill mirror integrity** — verify every SKILL.md from local `~/.hermes/skills/` is mirrored in the repo:
+2. **Skill mirror integrity** — verify every SKILL.md from local `~/.hermes/skills/` is mirrored in the repo, and check reference files for merge-necessary divergence:
    ```bash
-   # Check for differences (whitespace-only diffs are safe)
+   # Check SKILL.md content differences (whitespace-only diffs are safe)
    find ~/AppData/Local/hermes/skills/ -name 'SKILL.md' | while read sk; do
      rel=$(echo "$sk" | sed 's|.*/skills/||')
      if [ -f "skills/$rel" ]; then
@@ -181,7 +181,26 @@ When the repo is a mirror of a Hermes Agent skill installation:
        echo "MISSING FROM REPO: skills/$rel"
      fi
    done
+
+   # Check reference files for merge-necessary divergence
+   # (both sides may have unique content that needs combining)
+   for skill_dir in skills/*/*/; do
+     skill_rel=$(echo "$skill_dir" | sed 's|^skills/||;s|/$||')
+     for subdir in references scripts templates assets; do
+       local_dir="$HOME/AppData/Local/hermes/skills/$skill_rel/$subdir"
+       repo_dir="skills/$skill_rel/$subdir"
+       if [ -d "$local_dir" ] && [ -d "$repo_dir" ]; then
+         content_diffs=$(diff -rq "$local_dir" "$repo_dir" 2>/dev/null | grep 'differ$' || true)
+         if [ -n "$content_diffs" ]; then
+           echo "MERGE NEEDED: $skill_rel/$subdir — files differ in content"
+         fi
+       fi
+     done
+   done
    ```
+   When reference files diverge (e.g., local has new security warnings, repo has redacted secrets):
+   - Copy the local version to the repo first (preserves local content additions)
+   - Then apply any security redactions that only exist in the repo version
 
 3. **CRLF/LF differences** — the local Hermes install may use CRLF (Windows) while the repo uses LF. Content is identical; only whitespace differs. Verify with `diff -w`.
 

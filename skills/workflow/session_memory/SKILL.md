@@ -37,12 +37,22 @@ Do NOT ask the user to repeat context if it is likely recoverable from session h
 4. If session search is insufficient, review persistent memory for durable facts relevant to the query.
 5. Surface retrieved context clearly and concisely before proceeding.
 
-### What to Look For
+### Context Clues: What to Look For
 - Decisions: approvals, rejected options, selected approaches
 - Preferences: UI/style choices, model selection rules, tool order
 - Patterns: file naming, directory conventions, commit message style
 - Prior work: existing project plans, partial implementations, known blockers
 - Context clues: usernames, paths, environment facts, API behaviors
+
+### Ambiguous Term Resolution
+When the user mentions broad terms like "dashboard" without specifying which one, check BOTH services — this user's setup has two independent dashboards on different ports:
+
+| Term | Port | What it provides |
+|------|------|-----------------|
+| "Hermes Dashboard", "dashboard" | 9119 | Live chat, skills, config, cron, agent sessions |
+| "FreeLLM API", "session-memory", "API dashboard" | 3001 | Session history browser, memory files (MEMORY.md/USER.md), usage stats, model management, API keys |
+
+The `/session-memory` feature lives on port 3001 (FreeLLM API dashboard), NOT on port 9119 (Hermes Dashboard). When the user asks for "session-memory" or "session history," retrieve context from port 3001's API, not 9119.
 
 ### surfacing Guidelines
 - Summarize retrieved context with source attribution when helpful.

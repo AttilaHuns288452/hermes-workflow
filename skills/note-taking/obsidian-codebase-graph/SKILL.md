@@ -135,15 +135,39 @@ Create the vault notes under a dedicated project notes folder:
 7. Write a project index note at the root linking to all top-level folders.
 8. Update folder and file notes to include their newly created symbol links.
 
-## Automation
+## Automation — TypeScript/Next.js (primary)
 
-Use `scripts/generate_codebase_graph.py` for generation:
+Use `scripts/generate_codebase_graph.py` with the upgraded regex-based parser:
 
 ```bash
+# Generate codebase graph for any TS/TSX/JS/JSX project
 python scripts/generate_codebase_graph.py '<source_root>' '<vault_root>'
+
+# Clean regenerate (removes existing project notes folder first)
+python scripts/generate_codebase_graph.py '<source_root>' --clean
+
+# Dry-run (show summary without writing files)
+python scripts/generate_codebase_graph.py '<source_root>' --skip-vault
 ```
 
-Result: a project notes folder under the vault with linked markdown notes ready for Obsidian graph view.
+The script uses **regex-based TypeScript/JSX parsing** — not Python's `ast.parse()` — so it correctly handles:
+- TypeScript syntax (generics, type annotations, `interface`, `type`)
+- JSX/TSX (React components, JSX return values)
+- Named/default/namespace imports and exports
+- `export type`, `export interface`, `export enum`
+- React hooks (`use*` patterns) auto-detection
+- Component detection (functions returning JSX)
+
+Result: `<Project Name> Project/` folder in the vault with linked markdown notes.
+
+## Usage patterns
+
+| Scenario | Command |
+|----------|---------|
+| First-time graph | `python generate_codebase_graph.py .` |
+| Regenerate clean | `python generate_codebase_graph.py . --clean` |
+| Different vault | `python generate_codebase_graph.py . 'D:\Obsidian\Vault'` |
+| Quick stats only | `python generate_codebase_graph.py . --skip-vault` |
 
 ## Validation and repair
 
@@ -152,37 +176,40 @@ After generation:
 - Ensure no empty or placeholder files remain unless intended.
 - Repair broken links by regenerating the affected note instead of creating duplicates.
 - Verify the graph is readable by checking folder note `children` lists and file note `dependencies` lists.
+- Open Obsidian graph view (Ctrl+O → `Cmd+G` on Mac) on the project notes folder.
 
 ## Execution guidance
 
+- The script auto-ignores: `node_modules`, `.next`, `dist`, `build`, `.git`, `out`, `graphify-out`, `coverage`, `.turbo`, `.cache`, and more.
 - Prefer non-destructive generation: create new notes under the target project notes folder rather than editing unrelated notes.
-- If a project note already exists for the requested root, merge the new graph into it by appending missing sections rather than overwriting.
-- If the user asks for `note to Obsidian`, treat it as a request to execute this workflow for the current or specified project.
-- If parsing is incomplete due to language or tooling limits, emit a `## Parsing Notes` section in the project index stating what was heuristically inferred versus statically verified.
+- Use `--clean` to wipe and regenerate if the project structure changed significantly.
+- If parsing is incomplete due to language or tooling limits (e.g. dynamically computed exports), the script notes it in the index page.
+- When the vault argument is omitted, defaults to `~/Documents/Obsidian Vault`.
 
 ## Pitfalls
 
-### `generate_codebase_graph.py` uses `ast.parse()` — does NOT handle HTML, CSS, or plain JS files
+### Regex parser is heuristic, not a full TypeScript AST
 
-The script relies on Python's built-in `ast` module for symbol extraction. This means it **only** works for files with extensions `.py`, `.js`, `.ts`, `.tsx`, `.jsx` that contain valid Python-parsable AST. It cannot parse:
+The script uses regex patterns to extract symbols. This handles **~90% of real-world Next.js/TS patterns** but may miss:
+- Re-export chains (`export { X } from './foo'`)
+- Destructured imports used as call expressions
+- Dynamic imports (`const X = await import('...')`)
+- Symbols created via `Object.assign` or factory functions
+- Computed property names or complex generics
 
-- **HTML files** (`.html`, `.htm`) — embedded `<script>` blocks and CSS inside `<style>` are invisible to `ast.parse()`
-- **CSS-only files** (`.css`, `.scss`, `.less`)
-- **JSON config files** beyond simple flat detection
-- **Markdown files** (`.md`) with code blocks
+**If a symbol is missing**: the file note and folder note are still created with correct wikilinks. You can manually add a `[[SymbolName]]` note with frontmatter.
 
-**When the project is a single-file or non-TS/JS app** (e.g. a single `index.html` with embedded CSS/JS):
-- The auto-generator will produce a note with no symbols, no imports/exports, and no useful relationships
-- **Instead**: create a manual `File Structure.md` note that:
-  - Lists every file in the project with its type and purpose (table)
-  - Documents the DOM or section hierarchy as a tree
-  - Lists all JavaScript symbols (functions, variables, event handlers) as a symbol table
-  - Links back to the main project note and any design/architecture notes
-  - Use this as the "file note" replacement; it's more useful than an empty auto-generated note
+### Script ignores non-TS/JS source extensions
+
+Files with `.css`, `.scss`, `.less`, `.json`, `.md`, `.yaml`, `.toml` are listed as file notes but NOT parsed for symbols. They appear in the graph as file nodes but have no symbol children.
 
 ### Single-file projects produce little value from auto-generation
 
-If the entire project is 1–3 files (especially HTML or mixed-content files), skip the auto-generator entirely. The manual `File Structure.md` approach above produces richer, more accurate output. Reserve the auto-generator for multi-file TypeScript/JS/Python projects with meaningful import/export graphs.
+If the entire project is 1–3 files, skip the auto-generator. Create a manual `File Structure.md` note that:
+- Lists every file with its type and purpose (table)
+- Documents the DOM or section hierarchy as a tree
+- Lists all symbols with descriptions
+- Links back to the main project note
 
 ## Example outcome
 

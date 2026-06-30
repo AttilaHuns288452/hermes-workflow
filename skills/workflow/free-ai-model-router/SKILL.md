@@ -53,8 +53,9 @@ OpenCode bundles its own free models under the `opencode/` namespace. These are 
 | Providers | 16 (covers models not in OpenCode or Freebuff) |
 | Models (total) | 107 (84 available, 23 unavailable) |
 | Provider keys stored | 13 (healthy: google, groq, openrouter, huggingface, opencode, github, cerebras, nvidia, mistral, cohere, zhipu, ollama, llm7) |
-| Dashboard | `http://localhost:5173` |
-| Dashboard login | `admin@freellmapi.local` / `freellmapi-admin` |
+| Dashboard (compiled) | `http://localhost:3001` (same port as API — Express serves static dashboard) |
+| Dashboard (dev mode) | `http://localhost:5173` (Vite dev server, via `npm run dev`) |
+| Dashboard login | `admin@freellmapi.local` / `freellmapi-admin` (or first signup creates admin) |
 | Hermes provider config | `model.provider=custom`, `model.base_url=http://localhost:3001/v1`, `model.default=auto` via `hermes config set` |
 | Hermes auth credential | `custom:freellmapi` (api_key stored via `hermes auth add freellmapi --type api-key --api-key <key>`) |
 
@@ -140,6 +141,8 @@ If OpenCode's bundled models fail, try OpenRouter `:free` models. Most return se
 - **Always specify `--model` explicitly.** OpenCode without `--model` may select an unsuitable model (e.g., image-only models like `google/gemini-3-pro-image-preview`). Use `--model opencode/<model>` for OpenCode bundled models, `--model openrouter/<model>` for OpenRouter models.
 - **Discover models from the CLI, not the website.** The authoritative list of what's available is `opencode models`. The OpenRouter website shows many `:free` models that return server errors when used through OpenCode. Always probe before committing.
 - **Timeouts ≠ unavailability.** Some free models are slow. Set generous timeouts (≥120s) for free-tier models and only fall through after a confirmed failure.
+- **FreeLLMAPI "Invalid API key" — sync in EITHER direction.** The unified API key in FreeLLMAPI's SQLite DB (`freeapi.db`) can diverge from the key in `~/.hermes/.env` in *either* direction: the DB may have a rotated key while .env has the old one, OR (less commonly) the .env was updated with a new key while the DB stayed on the old one. Always check both sources and sync the outdated one. The `references/freellmapi-setup.md` covers the full diagnosis chain including SQLite reads and reverse-sync (DB ← .env).
+**Root cause**: FreeLLMAPI's `initDb()` → `migrateDbSchema()` generates a fresh `unified_api_key` via `crypto.randomBytes(24)` whenever the `settings` table row is missing — which happens when the DB file is deleted, recreated, or the row is manually cleared. A server restart alone does NOT regenerate the key (the row persists across restarts), but a clean install, `rm server/data/freeapi.db`, or running `regenerateUnifiedKey()` does. Fix: sync Hermes `.env` to match the DB key via the settings API (`GET /api/settings/api-key` with a dashboard token), or update the DB directly.
 
 ## Consistency Rule
 - **Before every multi-tool task**, probe the actual environment and current OpenRouter access first. Models on the free tier change without notice.
@@ -429,4 +432,5 @@ Trigger this skill on:
 - `references/atm-machine-note-example.md` — reference ATM Machine note structure for quality comparison
 - `references/model-probe-methodology.md` — three-step probe pattern (discover → smoke-test → verify) used to confirm working models
 - `references/freellmapi-setup.md` — FreeLLMAPI local proxy setup: build from source, dashboard auth, unified API key, upstream provider keys, Hermes integration, troubleshooting
+- `references/freellmapi-extension-patterns.md` — Patterns for extending FreeLLMAPI with new routes, pages, and managing upstream provider keys (API reference, route registration, auth flow, custom providers)
 - `scripts/verify-freellmapi.py` — verification script: `python scripts/verify-freellmapi.py --key freellmapi-xxx [--test-chat]`

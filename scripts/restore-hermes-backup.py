@@ -30,11 +30,14 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-REMOTE = "sabiniano_gdrive"
-DRIVE_FOLDER = "Hermes Backup"
+REMOTE = os.environ.get("RCLONE_REMOTE", "hermes_gdrive")
+DRIVE_FOLDER = os.environ.get("RCLONE_BACKUP_PATH", "Hermes Backup")
 
 # The target Hermes home on the new machine
-DEFAULT_HERMES_HOME = Path("C:/Users/Attila/AppData/Local/hermes")
+DEFAULT_HERMES_HOME = Path(os.environ.get(
+    "HERMES_HOME",
+    str(Path.home().parent / Path.home().name / "AppData/Local/hermes" if os.name == "nt" else Path.home() / ".config/hermes")
+))
 LEGACY_HERMES_HOME = Path.home() / ".hermes"
 
 RCLONE_CONFIG_DIR = Path.home() / "AppData/Roaming/rclone"
@@ -66,7 +69,7 @@ def list_backups():
     )
     if proc.returncode != 0 or not proc.stdout.strip():
         log("  No backups found or rclone not configured.")
-        log("  Ensure rclone is installed and 'sabiniano_gdrive' remote is set up.")
+        log("  Ensure rclone is installed and the RCLONE_REMOTE env var is set ($RCLONE_REMOTE).")
         return []
 
     backups = [line.strip() for line in proc.stdout.strip().split("\n") if line.strip()]
@@ -168,7 +171,7 @@ def restore_from_zip(zip_path, target_dir):
     log("  1. Start Hermes: hermes")
     log("  2. Verify your profiles: hermes profile list")
     log("  3. Check MCP servers: hermes mcp list")
-    log("  4. If restoring to a new machine, install rclone and set up sabiniano_gdrive")
+    log("  4. If restoring to a new machine, install rclone and set $RCLONE_REMOTE")
     log("=" * 60)
 
 

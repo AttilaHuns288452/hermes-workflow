@@ -204,3 +204,7 @@ If there are zero findings in a severity tier, omit that tier entirely.
 - If an env var name is suspicious but the value is not shown, flag it as "value not visible — verify manually."
 - Do not rewrite code or offer feature suggestions. Security audit only.
 - Be terse. One line per finding unless the fix requires explanation.
+
+## Pitfalls
+
+- **Meta-pitfall: reference files can leak the same secrets they teach you to redact** — If your audit produces a `session-audit-example.md` reference file containing `sed` commands or code examples that use the real leaked value (e.g., `sed -i 's/REAL_TOKEN/placeholder/'`), that reference file itself becomes a leak. Always use a fake/placeholder token in example commands: `sed -i 's/your-dashboard-token-here/placeholder/'`. Run the same secret-scan patterns against the skill's own `references/` directory before committing.

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 r"""
-Hermes Daily Google Drive Backup — COMPREHENSIVE PLUG-AND-PLAY EDITION
+Hermes Daily Backup — Backs up your entire Hermes setup to Google Drive (or any rclone remote).
 
-Backs up EVERYTHING related to Hermes so you can restore on a new device
-and be back in business immediately.
+Usage:
+  Set RCLONE_REMOTE and RCLONE_BACKUP_PATH env vars, then run:
+    python run-hermes-backup.py
 
-Backup target: sabiniano_gdrive:Hermes Backup (Google Drive)
-Hermes home:   C:\Users\Attila\AppData\Local\hermes
+Backup target: $RCLONE_REMOTE:$RCLONE_BACKUP_PATH  (default: hermes_gdrive:Hermes Backup)
+Hermes home:   $HERMES_HOME                          (default: ~/AppData/Local/hermes on Windows)
 """
 
 import argparse
@@ -23,16 +24,16 @@ from pathlib import Path
 # The REAL Hermes home (NOT ~/.hermes — that's a stale legacy dir)
 REAL_HERMES_HOME = Path(os.environ.get(
     "HERMES_HOME",
-    "C:/Users/Attila/AppData/Local/hermes"
+    str(Path.home().parent / Path.home().name / "AppData/Local/hermes" if os.name == "nt" else Path.home() / ".config/hermes")
 ))
 FALLBACK_HERMES_HOME = Path.home() / ".hermes"
 
 STAGING_DIR = REAL_HERMES_HOME / "tmp"
 LOG_DIR = REAL_HERMES_HOME / "tmp" / "backup-logs"
 
-REMOTE = "sabiniano_gdrive"
-DRIVE_FOLDER = "Hermes Backup"
-KEEP = 5  # Keep 5 most recent backups
+REMOTE = os.environ.get("RCLONE_REMOTE", "hermes_gdrive")
+DRIVE_FOLDER = os.environ.get("RCLONE_BACKUP_PATH", "Hermes Backup")
+KEEP = int(os.environ.get("BACKUP_KEEP", "5"))  # Keep 5 most recent backups
 
 RCLONE_CONFIG = Path(os.environ.get(
     "RCLONE_CONFIG",
@@ -116,10 +117,9 @@ BACKUP_ITEMS = [
     "desktop-build-stamp.json",
 ]
 
-# Additional external paths to backup
+# Additional external paths to backup (set EXTERNAL_SKILLS_DIRS env var, comma-separated)
 EXTERNAL_BACKUP_DIRS = [
-    # External skill repos referenced in config.yaml
-    "C:/Users/Attila/Documents/Repos/external-skills/",
+    d.strip() for d in os.environ.get("EXTERNAL_SKILLS_DIRS", str(Path.home() / "Documents/Repos/external-skills/")).split(",") if d.strip()
 ]
 
 EXTERNAL_BACKUP_FILES = [

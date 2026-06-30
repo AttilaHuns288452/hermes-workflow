@@ -14,10 +14,10 @@ import shutil
 import sys
 from pathlib import Path
 
-# Real Hermes home (AppData)
+# Real Hermes home — set $HERMES_HOME or auto-detect
 HERMES_HOME = Path(os.environ.get(
     "HERMES_HOME",
-    "C:/Users/Attila/AppData/Local/hermes"
+    str(Path.home().parent / Path.home().name / "AppData/Local/hermes" if os.name == "nt" else Path.home() / ".config/hermes")
 ))
 
 # Files to sync from root to every profile

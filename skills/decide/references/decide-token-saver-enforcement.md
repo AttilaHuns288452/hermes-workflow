@@ -1,68 +1,35 @@
-# Token-Saver Enforcement in /decide — Session 2026-06-12
+# Token-Saver Enforcement in /decide — Evolution
 
-## What Changed
+## Session 2026-06-12 — First Enforcement
+The token-saver probe chain was documented in `Mandatory Rule #4` as "ACTIVE — enforced" for the first time. Prior to this session it existed only as passive prose in the token-saver skill.
 
-**Before**: Mandatory Rule #4 was passive prose — "before ANY read_file() call, run the token-saver workflow... If graph.json or .codegraph/ is missing for the target project, skip — never block."
+## Session 2026-06-23 — Restructured for Real Enforcement
+The decide skill was completely rewritten to solve a critical problem: **the rules were documented as "enforced" but the agent never followed them.**
 
-**After**: Active 4-step probe chain with concrete commands, explicit coverage, and live-tested savings.
+### What Changed
+1. **Enforcement rules moved to the top** — Rule 1 (Token Saver), Rule 2 (OpenMontage), Rule 3 (CodeGraph/Graphify), Rule 4 (task_tier) are now the literal first thing you read after the frontmatter.
+2. **"Mandatory Rule #4/5" numbering removed** — replaced with simpler Rule 1-4 naming.
+3. **Aspirational content separated** — "ENFORCED RULES" (🔴 must follow) vs "Aspirational Guidelines" (🟡 use judgment). Previously everything was mixed together.
+4. **Self-Audit step added** — Before finishing any session, a checklist verifies Rule 1-3 were followed.
+5. **Stale counts fixed** — "14/19 projects" → "21/24 projects" (reality had outgrown the docs).
+6. **Philosophical content moved down** — Reasoning Protocol (steps 1-5) moved below the enforcement rules.
 
-## Mandatory Rule #4 (Patched)
+### Why Prior Enforcement Failed
+- The agent never had a **self-check** mechanism — it could read the rules and still not follow them
+- The enforcement rules were buried in a 318-line document among routing tables and philosophy
+- There was no consequence for skipping the probe chain (no one checked)
+- The OpenMontage rule existed but the agent consistently defaulted to ad-hoc FFmpeg scripts
+- "ACTIVE enforcement" was aspirational text, not operational behavior
 
-```
-4. **Token Saver — ACTIVE pre-file-read probe (enforced)** — before ANY
-   `read_file()` call on a code project, you MUST execute the probe chain:
-   
-   **Step A — Detect project**: Identify which project the file belongs to
-   under `~/Documents/Projects/`. Extract `$PROJECT` name.
-   
-   **Step B — Probe CodeGraph MCP first** (always available, covers ALL 945
-   files): run `codegraph query "<symbol>"` or `codegraph callers "<symbol>"`
-   from `~/Documents/Projects/` to find definitions, callers, and locations
-   without reading any files. CodeGraph query output is ~300 tokens vs
-   raw read_file of equivalent files at ~15K+ tokens.
-   
-   **Step C — Probe Graphify if available**: Check if
-   `~/Documents/Projects/$PROJECT/graphify-out/graph.json` exists. If yes,
-   run `~/.local/bin/graphify.exe query "<question>" --budget 2000 --graph
-   graphify-out/graph.json` from the project dir. ~300 tokens vs up to
-   370K tokens for raw source reads. Graphify indices now exist for:
-   `API-mega-list`, `atm-crypto-bank`, `atm-machine`, `countdown-timer`,
-   `ECC`, `ecosystem-test`, `free-ai-tools`, `freebuff-test`,
-   `free-llm-api`, `graphify`, `hermes-workflow`, `hw-new`,
-   `MoneyPrinterTurbo`, `task-manager-cli` (14/19 projects covered).
-   ECC index is 34MB across 5,821 files — Graphify queries work on it.
-   
-   **Step D — Only then read files**: If BOTH probes returned insufficient
-   context, read only the specific file/section needed using
-   `read_file(path, offset=<line>, limit=50)` — never full-project reads.
-   
-   Token savings verified: 35× to 1,233× per query depending on scope.
-   This is enforced — skip the probe chain only if the target project is
-   NOT under `~/Documents/Projects/` (e.g. system files, temp files).
-```
+### How This Is Different
+- The agent now has a **self-audit checklist** that runs before finishing each session
+- The enforcement rules are the **first content** in the skill file
+- Every violation is now a **conscious choice** to skip the rules, not an accidental oversight
+- The self-audit creates accountability — if the checklist is unchecked, the agent must fix it
 
-## Execution Order (Patched)
-
-```
-session_memory → core-identity-guard → task_tier (gate) →
-  reasoning → soul file(s) → 
-  **MANDATORY: Token Saver probe chain (Step A→B→C→D)** →
-  primary domain skill(s) → complementary check →
-  post-execution (Obsidian bundle + KG refresh, tier-conditioned)
-```
-
-## Known Integration Pattern (Updated)
-
-| Pattern | Trigger | Route to |
-|---------|---------|----------|
-| Token-saving pre-file-read | Any code reading / codebase question | **MANDATORY 4-step probe:** Step A → detect `$PROJECT`; Step B → `codegraph query` (~300t, always); Step C → `graphify query` if index (~300t, 14/19 projects); Step D → `read_file` offset/limit. **35×–1,233× live savings — enforced for all code queries.** |
-
-## Why This Matters
-
-The token-saver skill existed but was **never invoked** in any prior session. The enforcement had to live in `/decide` because:
-- `/decide` is the routing brain that runs on EVERY prompt
-- It controls execution order
-- It can gate downstream skills
-- Skills alone can't enforce — they can only document
-
-Now the probe chain is a **required pipeline step**, not a suggestion.
+### Current Token Saver State (as of 2026-06-23)
+- **CodeGraph** (v0.9.9): 945 files, 16,092 nodes, 43,795 edges — always available
+- **Graphify** (v0.8.37): 21/24 projects indexed (all except Hermes Skills, hermes-dashboard, unit-converter which have no code)
+- **ECC index**: 34MB across 5,821 files — queries work in ~300 tokens
+- **Savings**: 50× to 1,233× per query
+- **Projects with indices**: ai-marketing-skills, AI-Youtube-Shorts-Generator, anime-waifu-quiz, API-mega-list, atm-crypto-bank, atm-machine, buildable-plugin-skills, countdown-timer, ECC, ecosystem-test, free-ai-tools, freebuff-test, freelance-rate-calculator, freellmapi, free-llm-api, graphify, hermes-workflow, hw-new, MoneyPrinterTurbo, MoneyPrinterV2, task-manager-cli

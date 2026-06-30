@@ -11,6 +11,8 @@ triggers:
 # /graphify-integrate
 
 > ⚠️ **PITFALL:** Graphify v0.8.37 CLI has NO `export obsidian` command. The Obsidian integration is a manual workflow: run `graphify update .` to refresh the code graph, then create notes manually using data from `graphify query/explain/path`. See `references/graphify-cli-capabilities.md` for the full CLI command set.
+>
+> 🪟 **Windows binary**: On Windows, Graphify ships as `graphify.exe` at `~/.local/bin/graphify.exe`, NOT via `uv tool graphifyy`. `which graphify` may not find `graphify.exe` — use `~/.local/bin/graphify.exe --version` or `ls ~/.local/bin/graphify*` to detect it. All CLI commands (`update`, `query`, `explain`, `benchmark`) work identically on both.
 
 ## Role
 Run the codebase knowledge graph pipeline on any project and wire the results into the Obsidian vault. Creates wikilinked code-symbol notes that complement the vault's knowledge graph and the codebase-graph's file/symbol mapping.
@@ -19,7 +21,7 @@ Two complementary tools exist for code knowledge:
 
 | Tool | Approach | Best For |
 |------|----------|----------|
-| **Graphify** (v0.8.37, `uv tool graphifyy`) | Post-processing AST code graph | Obsidian export, community detection, reports — **documentation** |
+| **Graphify** (v0.8.37, `~/.local/bin/graphify.exe` on Windows, or `uv tool graphifyy` via pip) | Post-processing AST code graph | Obsidian export, community detection, reports — **documentation** |
 | **CodeGraph** (v0.9.9, `npm i -g @colbymchenry/codegraph`) | Real-time MCP server | Live agent queries (explore/search/impact/callers) — **development** |
 
 Both are kept. Neither replaces the other. See the **CodeGraph vs Graphify** comparison section for when to use which.
@@ -27,18 +29,36 @@ Both are kept. Neither replaces the other. See the **CodeGraph vs Graphify** com
 **Mandatory per /decide**: The code-graph layer runs on EVERY project/coding/analysis task as part of the Obsidian+Graphify bundle. It is the secondary brain — code-level AST knowledge that feeds all downstream skills (model selection, code review, architecture decisions, refactoring, debugging).
 
 ## Prerequisites
-- Graphify installed: `uv tool install graphifyy` (core) + `uv tool install "graphifyy[mcp]"` (optional MCP)
-- CodeGraph (optional, complementary): `npm install -g @colbymchenry/codegraph` then `codegraph init .` in target project
+- Graphify installed: via `~/.local/bin/graphify.exe` (Windows native binary) OR `uv tool install graphifyy` (Python package)
+- CodeGraph (complementary): `npm install -g @colbymchenry/codegraph` then `codegraph init .` in target project
 - Obsidian vault at `~/Documents/Obsidian Vault/`
 - Integration script at `~/.hermes/scripts/graphify-obsidian-integration.py`
+
+### Windows Binary Detection
+On Windows, Graphify may be a native binary rather than a Python package:
+```bash
+# Check for the native binary
+ls ~/.local/bin/graphify.exe 2>/dev/null && ~/.local/bin/graphify.exe --version
+# Alternative: check Python package
+which graphify 2>/dev/null && graphify --version
+# If neither exists, install via Python:
+uv tool install graphifyy
+```
 
 ## Workflow
 
 ### Step 1 — Ensure Graphify Is Installed
 ```bash
-# Check for graphify
-which graphify 2>/dev/null || uv tool install graphifyy -q 2>&1 | tail -3
-graphify --help | head -3
+# Check for graphify (Windows: try ~/.local/bin/graphify.exe)
+if command -v graphify &>/dev/null; then
+  echo "Found: $(which graphify)"
+elif [ -f ~/.local/bin/graphify.exe ]; then
+  echo "Found: ~/.local/bin/graphify.exe ($(~/.local/bin/graphify.exe --version))"
+else
+  # Install via Python package
+  uv tool install graphifyy -q 2>&1 | tail -3
+fi
+graphify --help 2>/dev/null || ~/.local/bin/graphify.exe --help 2>/dev/null | head -5
 ```
 
 If graphify is missing, install it:
@@ -71,14 +91,17 @@ Run the full pipeline. Graphify will detect whether the project has code files (
 ```bash
 cd ~/Documents/Projects/<ProjectName>
 
-# Step 4a: Build the code graph
-graphify . --no-viz 2>&1
+# Step 4a: Build the code graph (code-only, no API key needed)
+graphify update . 2>&1
+
+# For first-time extraction with doc support (needs GEMINI_API_KEY etc.):
+# graphify extract . --no-cluster --no-viz 2>&1
 
 # Check if graph.json was generated
 ls graphify-out/graph.json
 ```
 
-**Note:** If the project has documentation files (`.md`, `.txt`, etc.), Graphify needs `GEMINI_API_KEY` or `GOOGLE_API_KEY` for semantic extraction. Setting this env var enables doc extraction. Without it, only code files are processed via AST.
+**Note:** `graphify update .` performs AST-only re-extraction on changed code files (incremental, no API key needed). For initial extraction on a fresh clone, it auto-detects the corpus and runs AST on code files. Documentation files (`.md`, `.txt`) need `GEMINI_API_KEY` or `GOOGLE_API_KEY` for semantic extraction.
 
 **Incremental updates:** For subsequent runs on the same project:
 ```bash
@@ -118,10 +141,14 @@ If the project only has code files (no markdown/docs needing semantic extraction
 
 ```bash
 cd ~/Documents/Projects/<ProjectName>
-graphify . --no-viz
+graphify update .
 
-# Get real stats for the manual Obsidian note
-cd graphify-out && python -c "import json; d=json.load(open('graph.json')); print(f'{len(d[\"nodes\"])} nodes, {len(d[\"edges\"])} edges, {len({n.get(\"community\") for n in d[\"nodes\"]})} communities')"
+# Get real stats for the manual Obsidian note (stay in project root)
+python -c "
+import json
+d = json.load(open('graphify-out/graph.json'))
+print(f\"{len(d['nodes'])} nodes, {len(d['edges'])} edges, {len({n.get('community') for n in d['nodes']})} communities\")
+"
 ```
 
 ### Step 5 — Register MCP Server (Optional)
@@ -207,10 +234,17 @@ Optional flags:
 ```bash
 # Quick pipeline for any project
 cd ~/Documents/Projects/<name>
-graphify . --no-viz
+graphify update .
+
+# Benchmark token savings (new index)
+~/.local/bin/graphify.exe benchmark graphify-out/graph.json
 
 # Create a manual Obsidian note with graph stats (NO export CLI command exists)
-cat graphify-out/graph.json | python -c "import json,sys; d=json.load(sys.stdin); print(f'{len(d.get(\"nodes\",[]))} nodes, {len(d.get(\"edges\",[]))} edges')"
+python -c "
+import json
+d = json.load(open('graphify-out/graph.json'))
+print(f\"{len(d['nodes'])} nodes, {len(d['edges'])} edges\")
+"
 
 # Then cross-link + refresh (same as Steps 6-8 above)
 ```
@@ -299,9 +333,10 @@ python render_galaxy_kg.py
 The galaxy renderer at `render_galaxy_kg.py` reads the same `kg_output.json` as the standard renderer so no scan re-run is needed — just swap the render script.
 
 ## Pitfalls
+- **Windows binary vs Python package**: If `graphify` is not found by `which`, check `~/.local/bin/graphify.exe`. The native binary has all the same commands (`update`, `query`, `explain`, `benchmark`) but no built-in MCP server — that's only available via `uv tool install "graphifyy[mcp]"`. If you need the MCP server, install the Python package instead.
 - **No API key for docs**: Graphify needs `GEMINI_API_KEY` for semantic extraction of markdown/docs. Code-only repos work fine without it.
 - **Large repos (>2000 files)**: Graphify's cluster step can be slow. Use `--no-viz` to skip HTML generation, or `--no-cluster` to skip community detection.
-- **Re-running**: Graphify has incremental detection — `graphify . --no-viz` only re-processes changed files.
+- **Re-running**: Graphify has incremental detection — `graphify update .` only re-processes changed files.
 - **No `graphify export obsidian` command**: Graphify (v0.8.37) has NO `export` subcommand. Do NOT search for one or try to call it — it doesn't exist. Create Obsidian notes manually using the `obsidian` skill bundle with graph stats extracted from `graphify-out/graph.json`.
 - **Windows paths**: When specifying paths, use forward slashes or escaped backslashes.
 - **MCP server per project**: Each project needs its own `graphify-mcp` registration pointing to that project's `graphify-out/graph.json`.
