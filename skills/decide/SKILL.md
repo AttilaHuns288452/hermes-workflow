@@ -32,7 +32,6 @@ Step 4 — Proceed to domain routing below
 - Rule 1 (Token Saver): [ACTIVE / SKIP — reason]
 - Rule 2 (OpenMontage): [ACTIVE / SKIP — reason]
 - Rule 3 (CodeGraph/Graphify): [ACTIVE / SKIP — reason]
-- Rule 5 (Obsidian Code Graph): [ACTIVE / SKIP — reason]
 ```
 
 This serves two purposes:
@@ -100,57 +99,27 @@ These rules apply to EVERY session. They are not suggestions. If you catch yours
 
 Run `task_tier` immediately after session_memory + core-identity-guard. The structured output governs:
 
-| TIER | Token Saver | Obsidian Update | Obsidian Bundle (full) | KG Refresh |
-|------|------------|-----------------|----------------------|------------|
-| 1 (atomic) | SKIP | RUN if project changed | SKIP | SKIP |
-| 2 (task) | **RUN** | **RUN** if project changed | SKIP (unless structural change) | SKIP (unless structural change) |
-| 3 (project) | **RUN** | **RUN** | **RUN** (all 3 Obsidian skills) | **RUN** |
+| TIER | Token Saver | Obsidian Bundle | KG Refresh |
+|------|------------|-----------------|------------|
+| 1 (atomic) | SKIP | SKIP | SKIP |
+| 2 (task) | **RUN** | SKIP | SKIP (unless structural change) |
+| 3 (project) | **RUN** | **RUN** (all 3 Obsidian skills) | **RUN** |
 
-> **Obsidian Update** = `obsidian-codebase-graph --clean` on the affected project
 > **Obsidian Bundle** = create/update note + codebase graph + KG viz
 > **KG Refresh** = regenerate `obsidian-knowledge-graph`
-
-### Rule 5: Obsidian Notes Must Reflect Current Project State
-
-After EVERY code change to a project under `~/Documents/Projects/` (any tier), you MUST ensure the project's Obsidian code graph is current:
-
-1. **Check if Obsidian notes exist** for the project:
-   ```bash
-   test -d "$OBSIDIAN_VAULT/<Project Name> Project/"  # e.g. "anime-waifu-quiz Project/"
-   ```
-   Where `OBSIDIAN_VAULT` defaults to `~/Documents/Obsidian Vault`.
-
-2. **If notes exist** → regenerate them immediately:
-   ```bash
-   python $HERMES_HOME/skills/note-taking/obsidian-codebase-graph/scripts/generate_codebase_graph.py \
-     "$HOME/Documents/Projects/$PROJECT" --clean
-   ```
-   The `--clean` flag wipes the old project notes folder first, so the graph is always in sync.
-
-3. **If notes don't exist** and the change is structural (Tier 2/3) → create them:
-   ```bash
-   python $HERMES_HOME/skills/note-taking/obsidian-codebase-graph/scripts/generate_codebase_graph.py \
-     "$HOME/Documents/Projects/$PROJECT"
-   ```
-
-4. **Skip only if**: 
-   - The change was purely cosmetic (README typo, comment fix, config value change) with no structural code impact
-   - You are working in a scratch/temp directory, not a tracked project
-   - The project has no meaningful code to graph (e.g., pure documentation repo)
-
-**Why this matters:** The Obsidian code graph is your navigation layer for future sessions. Stale notes = broken wikilinks = wasted time. Every structural change that goes un-mirrored degrades the knowledge graph for every future task on that project.
 
 ---
 
 ## 🟡 Aspirational Guidelines (Use Judgment)
 
-### G1: Full Obsidian Bundle for Tier 3 (post-task)
-After completing a Tier 3 task (even if Rule 5 already ran `--clean`), also:
-- Create/update the project's main Obsidian note (following ATM-Machine template: Overview, Features, Structure, Architecture, Code Patterns, Mermaid graph, wikilinks, tags)
-- Run `obsidian-knowledge-graph` to refresh the vault-wide interconnectivity viz
-- Refresh the KG render in any dashboard
+### G1: Obsidian Bundle for Tier 3 (trigger-based)
+After completing a Tier 3 task — or any time the user says "update the obsidian notes" or "create the obsidian notes after creating a project" — run the full Obsidian bundle:
+1. `obsidian-codebase-graph --clean` on the affected project
+2. Create/update the project's main Obsidian note (ATM-Machine template: Overview, Features, Structure, Architecture, Code Patterns, Mermaid graph, wikilinks, tags)
+3. Run `obsidian-knowledge-graph` to refresh vault-wide interconnectivity viz
+4. Refresh the KG render in any dashboard
 
-> **Note:** Rule 5 covers the `obsidian-codebase-graph --clean` step (mandatory after every code change). This G1 covers the **additional** Obsidian polish that makes a project navigable long-term.
+> **Note:** This is **on-demand only** — don't run automatically after every code change. The triggers are: user asks for note update, user creates a new project, or Tier 3 task completion.
 ### G2: Self-Audit (Run Before Finishing Each Session)
 
 Before delivering your final response, verify your startup compliance matches reality:
@@ -159,18 +128,14 @@ Before delivering your final response, verify your startup compliance matches re
 📋 Startup Compliance (what I announced):
 - Rule 1 (Token Saver): [ACTIVE / SKIP]
 - Rule 2 (OpenMontage): [ACTIVE / SKIP]
-- Rule 5 (Obsidian Code Graph): [ACTIVE / SKIP]
 
 [X] Did I actually probe CodeGraph before every read_file?
     → If I said ACTIVE but didn't probe, this is a violation. Fix it.
 [X] Did I route video to OpenMontage (not ad-hoc scripts)?
     → If I said ACTIVE but wrote FFmpeg, this is a violation. Fix it.
-[X] Did I update Obsidian notes after every code change?
-    → If I said ACTIVE but didn't run obsidian-codebase-graph --clean, this is a violation. Fix it.
 [X] Is the task_tier classification still accurate?
 [X] Did I use the right tool for the task?
 [X] If code-related: did I use CodeGraph + Graphify before read_file?
-[X] Rule 5: did I run obsidian-codebase-graph --clean after the last code change?
 ```
 
 **Consequence of violation:** If any box is unchecked, the startup compliance announcement was misleading. Do NOT deliver results until all boxes are checked. If you cannot fix the violation (e.g., you already read files without probing), disclose it to the user and correct in the next action.
@@ -190,12 +155,10 @@ Every session: call session_search() to check for relevant context before routin
    - Rule 1 (Token Saver) if Tier 2/3 and code reading
    - Rule 2 (OpenMontage) if video
    - Rule 3 (CodeGraph/Graphify) if code query
-   - Rule 5 (Obsidian Code Graph) if code changed
 5. Domain skill selection         → routing (see below)
 6. Execute                        → with tooling from chosen skill
-7. Post-execution                 → Rule 5: obsidian-codebase-graph --clean if code changed
-8. Full Obsidian Bundle           → if Tier 3 (G1)
-9. Self-audit (G2)                → verify rules were followed
+7. Post-execution                 → Obsidian Bundle if Tier 3 OR user requested note update
+8. Self-audit (G2)                → verify rules were followed
 ```
 
 ---
@@ -218,7 +181,7 @@ Every session: call session_search() to check for relevant context before routin
 | Ecosystem dashboard / stats / project graph | `productivity/hermes-dashboard` |
 | Update / ecosystem integrate / onboard | `software-development/update` |
 | Graphify / Obsidian code-graph export | `software-development/graphify-integrate` |
-| Codebase-to-Obsidian mapping / project initialization graph / generate codebase notes / visualize architecture in Obsidian / sync code to vault | `note-taking/obsidian-codebase-graph` (use `--clean` flag for regenerating) |
+| Update / create Obsidian notes / sync code to vault / "update the obsidian notes" / "create the obsidian notes after creating a project" / codebase-to-Obsidian mapping / project initialization graph / generate codebase notes / visualize architecture in Obsidian | `note-taking/obsidian-codebase-graph` (use `--clean` flag for regenerating) |
 | Coding / implementation | `software-development` or domain-specific |
 | Design / UI / visual | `creative` |
 | ECC agent invocation | `ecc-bridge` |
@@ -291,7 +254,7 @@ When the user asks for setup/install/configure of a new repo or tool, proactivel
 
 | New Repo | Also Route To |
 |----------|---------------|
-| Any new project | `graphify-integrate` + Obsidian bundle (build graph via `obsidian-codebase-graph --clean`, create note, cross-link). **Rule 5 will thereafter keep the Obsidian graph in sync after every change.** |
+| Any new project | `graphify-integrate` + Obsidian bundle (build graph via `obsidian-codebase-graph --clean`, create note, cross-link) — only when user requests it |
 | Agent framework (ECC, devfleet, etc.) | `external-agent-ecosystem-adapter` |
 | Model/provider resource | `free-ai-tools` (model catalog) + `model-recommender-workflow` |
 | Freebuff / Codebuff | `free-ai-model-router` (combined model selection) |

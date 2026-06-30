@@ -150,22 +150,6 @@ python scripts/generate_codebase_graph.py '<source_root>' --clean
 python scripts/generate_codebase_graph.py '<source_root>' --skip-vault
 ```
 
-## Update-after-changes workflow (Rule 5 enforcement)
-
-After any structural code change to a project, the Obsidian code graph MUST be regenerated. This is enforced by **Rule 5** in `/decide`:
-
-```bash
-# Regenerate existing graph (safe — uses --clean to wipe stale notes)
-python $HERMES_HOME/skills/note-taking/obsidian-codebase-graph/scripts/generate_codebase_graph.py \
-  "$HOME/Documents/Projects/$PROJECT" --clean
-```
-
-Detection logic:
-- Run `test -d "$OBSIDIAN_VAULT/<Project Name> Project/"` to check if notes exist
-- If yes → `--clean` regenerate
-- If no + structural change → create without `--clean`
-- Skip only for cosmetic changes (typos, comments, config values) — Rule 5 allows judgment here
-
 The script uses **regex-based TypeScript/JSX parsing** — not Python's `ast.parse()` — so it correctly handles:
 - TypeScript syntax (generics, type annotations, `interface`, `type`)
 - JSX/TSX (React components, JSX return values)
@@ -184,6 +168,11 @@ Result: `<Project Name> Project/` folder in the vault with linked markdown notes
 | Regenerate clean | `python generate_codebase_graph.py . --clean` |
 | Different vault | `python generate_codebase_graph.py . 'D:\Obsidian\Vault'` |
 | Quick stats only | `python generate_codebase_graph.py . --skip-vault` |
+
+> **On-demand only:** This skill runs only when explicitly triggered. Common triggers:
+> - "update the obsidian notes"
+> - "create the obsidian notes after creating a project"
+> - Tier 3 (project-level) task completion (triggers the full Obsidian bundle)
 
 ## Validation and repair
 
