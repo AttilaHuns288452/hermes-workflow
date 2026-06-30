@@ -150,6 +150,55 @@ graph TD
 
 This project's documentation and website content are licensed under [CC BY-NC 4.0](LICENSE).
 
+## 💾 Backup & Restore
+
+Hermes is backed up daily to Google Drive at **2:00 AM** (via Hermes cron). The backup captures **everything** needed for a complete plug-and-play migration to a new device.
+
+### What's backed up
+
+| Item | Why |
+|------|-----|
+| `config.yaml` | All Hermes settings, MCP servers, providers |
+| `.env` | API keys (shared across all profiles) |
+| `auth.json` | OAuth tokens |
+| `profiles/*/` | Every profile's config, state, sessions, memories, skills |
+| `skills/` | Custom skills |
+| `memories/` | Persistent cross-session memory |
+| `state.db` | Full session database |
+| `scripts/` | Backup, restore, and sync scripts |
+| `plugins/` | Plugin configurations |
+| `external/` | Rclone config, external skill repos |
+
+### Backup & Restore Scripts
+
+```
+scripts/
+├── run-hermes-backup.py       # Daily backup to Google Drive (runs via cron)
+├── restore-hermes-backup.py   # Plug-and-play restore on new device
+└── sync-hermes-credentials.py # Sync .env + auth.json to all profiles
+```
+
+### How to Restore
+
+```bash
+# On your new machine, install Hermes and set up rclone with sabiniano_gdrive
+# Then run:
+python /path/to/restore-hermes-backup.py --restore-latest
+
+# Or download and restore a local ZIP:
+python restore-hermes-backup.py --local-backup Hermes_Backup_2026-06-30.zip
+```
+
+### Syncing Credentials Across Profiles
+
+After adding new API keys, run the sync script to propagate them to all profiles:
+
+```bash
+python /path/to/sync-hermes-credentials.py
+```
+
+All profiles share MCP servers from the root config — no duplication needed.
+
 ---
 
-*Theme: Dark Navy Moonlight · Updated: Jun 12, 2026*
+*Theme: Dark Navy Moonlight · Updated: Jun 30, 2026*
