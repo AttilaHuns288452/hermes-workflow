@@ -113,6 +113,7 @@ Run `task_tier` immediately after session_memory + core-identity-guard. The stru
 ## 🟡 Aspirational Guidelines (Use Judgment)
 
 ### G1: Obsidian Bundle for Tier 3 (trigger-based)
+
 After completing a Tier 3 task — or any time the user says "update the obsidian notes" or "create the obsidian notes after creating a project" — run the full Obsidian bundle:
 1. `obsidian-codebase-graph --clean` on the affected project
 2. Create/update the project's main Obsidian note (ATM-Machine template: Overview, Features, Structure, Architecture, Code Patterns, Mermaid graph, wikilinks, tags)
@@ -189,6 +190,7 @@ Every session: call session_search() to check for relevant context before routin
 | Email | `email`, `gmail` |
 | GitHub / PR / repo | `github` |
 | Productivity / docs / PDFs | `productivity` |
+| Export markdown to DOCX/PPTX/XLSX/PDF/HTML/CSV/JSON/XML/LaTeX/IPYNB / convert table to spreadsheet / extract code blocks from markdown / generate formatted report / markdown exporter | `productivity/markdown-exporter` |
 | Data / notebooks / analytics | `data-science` |
 | Media / audio / video | `media` |
 | Smart home | `smart-home` |
