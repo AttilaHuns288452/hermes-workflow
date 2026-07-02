@@ -1,7 +1,16 @@
 ---
 name: obsidian
-description: Read, search, create, and edit notes in the Obsidian vault.
+description: Read, search, create, and edit notes in the Obsidian vault. Also covers Obsidian Flavored Markdown (wikilinks, callouts, embeds, properties), Bases (.base), JSON Canvas (.canvas), and Obsidian CLI. Upstream: kepano/obsidian-skills.
 platforms: [linux, macos, windows]
+tags: [obsidian, notes, knowledge-management, vault, wikilinks, callouts, canvas, bases]
+related_skills:
+  - obsidian-codebase-graph
+  - obsidian-knowledge-graph
+  - graphify-integrate
+  - obsidian-markdown
+  - obsidian-bases
+  - json-canvas
+  - obsidian-cli
 ---
 
 # Obsidian Vault
@@ -171,6 +180,201 @@ For a simple append with no stable context, `terminal` is acceptable if it is th
 
 Use `patch` for focused note changes when the current content gives you stable context. Prefer this over shell text rewriting.
 
-## Wikilinks
+## Obsidian-Flavored Markdown
 
-Obsidian links notes with `[[Note Name]]` syntax. When creating notes, use these to link related content.
+Obsidian extends CommonMark and GFM. This section covers Obsidian-specific syntax.
+
+> **External skill (via `kepano/obsidian-skills`):** `obsidian-markdown` with references `CALLOUTS.md`, `EMBEDS.md`, `PROPERTIES.md`.
+
+### Wikilinks (Internal Links)
+
+```markdown
+[[Note Name]]                          Link to note
+[[Note Name|Display Text]]             Custom display text
+[[Note Name#Heading]]                  Link to heading
+[[Note Name#^block-id]]                Link to block
+[[#Heading in same note]]              Same-note heading link
+```
+
+Define a block ID by appending `^block-id` to any paragraph:
+```markdown
+This paragraph can be linked to. ^my-block-id
+```
+For lists and quotes, place the block ID on a separate line after the block.
+
+> Use `[[wikilinks]]` for notes within the vault (Obsidian tracks renames automatically) and `[text](url)` for external URLs only.
+
+### Embedded Content
+
+Use `![[embed]]` syntax to embed content from other notes, images, PDFs, audio, video, and canvases:
+
+```markdown
+![[Note Name]]                          Embed entire note
+![[Note Name#Heading]]                  Embed specific heading
+![[Note Name#^block-id]]                Embed specific block
+![[image.png]]                          Embed image (with optional |widthxheight)
+![[document.pdf]]                       Embed PDF
+![[audio.mp3]]                          Embed audio file
+![[video.mp4]]                          Embed video file
+![[canvas.canvas]]                      Embed canvas view
+```
+
+Image sizing: `![[image.png|100]]` (100px wide), `![[image.png|100x200]]` (100w x 200h).
+
+### Callouts
+
+Callouts highlight information with an optional expandable block:
+
+```markdown
+> [!type] Title
+> Content line 1
+> Content line 2
+```
+
+Supported types: `note`, `abstract`/`summary`/`tldr`, `info`, `todo`, `tip`/`hint`/`important`, `success`/`check`/`done`, `question`/`help`/`faq`, `warning`/`caution`/`attention`, `failure`/`fail`/`missing`, `danger`/`error`, `bug`, `example`, `quote`/`cite`.
+
+Collapsible callouts — add `+` (default open) or `-` (default collapsed):
+```markdown
+> [!faq]+ Are callouts foldable?
+> Yes, they are.
+```
+
+### Properties (Frontmatter)
+
+Obsidian uses YAML frontmatter with typed properties:
+
+```yaml
+---
+title: My Note
+tags:
+  - tag1
+  - tag2
+aliases:
+  - Alternative Name
+date: 2024-01-01
+status: draft
+cssclass: my-custom-style
+---
+```
+
+Property types: `text` (default), `number`, `date`, `datetime`, `checkbox` (boolean). Define in Obsidian's Properties view or inline in frontmatter.
+
+### Comments
+
+Hidden comments that only show in Editing view:
+
+```markdown
+%% This is a comment and won't appear in Reading or Live Preview %%
+```
+
+### Aliases
+
+Multiple names for the same note — added in frontmatter:
+
+```yaml
+---
+aliases:
+  - Alternative Title
+  - Another Name
+---
+```
+
+Wikilinks with pipe: `[[Alternative Title|]]` resolves to the current note.
+
+### Tags
+
+Two forms:
+- **Inline tags**: `#tag` anywhere in content
+- **Property tags**: `tags: [tag1, tag2]` in frontmatter. Tag hierarchy: `#project/active/coding`
+
+## Obsidian Bases (.base files)
+
+> **External skill (via `kepano/obsidian-skills`):** `obsidian-bases`
+
+Bases provide database-like views of notes. `.base` files use YAML:
+
+```yaml
+filters:
+  and:
+    - 'status == "active"'
+    - not:
+        - 'file.hasTag("archived")'
+
+formulas:
+  days_since_creation: '(date(today) - date(file.ctime)) / (1000 * 60 * 60 * 24)'
+
+views:
+  - type: table
+    name: Active Items
+    columns:
+      - property: title
+      - property: formula.days_since_creation
+        displayName: "Age (days)"
+```
+
+**View types:** `table`, `cards`, `list`, `map`. Each view has `name`, `type`, optional `filter` override, and `columns`/`order`.
+
+**Gotchas:** Unquoted strings with special YAML chars break parsing. Mismatched quotes in formula expressions fail silently. Reference `formula.X` only after defining `X` in `formulas`.
+
+## JSON Canvas (.canvas files)
+
+> **External skill (via `kepano/obsidian-skills`):** `json-canvas`
+
+Visual canvases follow the [JSON Canvas Spec 1.0](https://jsoncanvas.org/spec/1.0/):
+
+```json
+{
+  "nodes": [
+    {
+      "id": "a1b2c3d4e5f6a7b8",
+      "type": "text",
+      "text": "Main Idea",
+      "x": 100, "y": 100,
+      "width": 300, "height": 200
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1f2a3b4c5d6e7f8",
+      "fromNode": "a1b2c3d4e5f6a7b8",
+      "toNode": "b2c3d4e5f6a7b8a1",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "leads to"
+    }
+  ]
+}
+```
+
+**Node types:** `text`, `file` (link to note), `group` (container, has `children` array).
+
+**IDs:** 16-character hex strings. Must be unique across all nodes and edges.
+
+**Edge sides:** `top`, `right`, `bottom`, `left`. Endpoints (`fromEnd`, `toEnd`): `none`, `arrow`, `dot`.
+
+## Obsidian CLI
+
+> **External skill (via `kepano/obsidian-skills`):** `obsidian-cli`
+
+For plugin/theme development and vault automation. Requires Obsidian to be open.
+
+```bash
+obsidian help                           # All commands
+obsidian create name="My Note" content="Hello"
+obsidian search query="keyword"
+obsidian open path="folder/note.md"
+obsidian properties set key=status value=draft
+obsidian plugin reload                  # Reload plugins during dev
+obsidian js 'console.log("hello")'      # Run arbitrary JS
+obsidian screenshot path="output.png"   # Capture screenshot
+obsidian dom inspect path=".markdown-reading-view"
+```
+
+Parameters use `key=value`, flags are bare (e.g., `silent`, `overwrite`, `new`). Use `file=<name>` for wikilink-style resolution or `path=<path>` for exact vault path. Use `vault=<name>` as the first param to target a specific vault.
+
+## Upstream Resources
+
+- **kepano/obsidian-skills** — https://github.com/kepano/obsidian-skills — full skill set with detailed references (CALLOUTS.md, EMBEDS.md, PROPERTIES.md) loaded via external_dirs
+- **Obsidian Flavored Markdown:** https://help.obsidian.md/obsidian-flavored-markdown
+- **Obsidian CLI:** https://help.obsidian.md/cli
+- **JSON Canvas Spec:** https://jsoncanvas.org/spec/1.0/

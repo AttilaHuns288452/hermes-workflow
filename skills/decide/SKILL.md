@@ -212,7 +212,7 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | Media / audio / video | `media` |
 | Smart home | `smart-home` |
 | MLOps / models | `mlops` |
-| Notes / Obsidian / codebase graph / KG viz | `note-taking` (bundle all three) |
+| Notes / Obsidian / wikilinks / callouts / embeds / properties / vault operations / .base files / Bases / JSON Canvas / .canvas files / Obsidian CLI / plugin dev / theme dev / knowledge graph / KG viz | `note-taking` (bundle all three: `obsidian` for core syntax + operations, `obsidian-codebase-graph` for code graph mapping, `obsidian-knowledge-graph` for vault graph viz) |
 | Backup / restore / credential sync / Google Drive backup / rclone / migrate Hermes | `workflow/hermes-backup-workflow` |
 | Workflow / model selection | `workflow` |
 | SEO / site audit / schema / rankings | `seo` |
