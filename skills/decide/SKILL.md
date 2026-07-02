@@ -199,8 +199,9 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | Ecosystem dashboard / stats / project graph | `productivity/hermes-dashboard` |
 | Update / ecosystem integrate / onboard | `software-development/update` |
 | Graphify / Obsidian code-graph export | `software-development/graphify-integrate` |
-| Update / create Obsidian notes / sync code to vault / "update the obsidian notes" / "create the obsidian notes after creating a project" / codebase-to-Obsidian mapping / project initialization graph / generate codebase notes / visualize architecture in Obsidian | `note-taking/obsidian-codebase-graph` (use `--clean` flag for regenerating) |
-| Coding / implementation | `software-development` or domain-specific |
+|| Update / create Obsidian notes / sync code to vault / "update the obsidian notes" / "create the obsidian notes after creating a project" / codebase-to-Obsidian mapping / project initialization graph / generate codebase notes / visualize architecture in Obsidian | `note-taking/obsidian-codebase-graph` (use `--clean` flag for regenerating) |
+|| Document project codebase / generate project documentation / "create a documentation folder structure" / "generate docs for [project]" / document system architecture in Obsidian / create organized project documentation / codebase documentation structure / recreate my whole obsidian notes into organized structure | `note-taking/project-documentation` (on-demand — 6-subfolder structure: 01_overview, 02_architecture, 03_modules, 04_data_flow, 05_dependencies, 06_gaps_and_todos) |
+|| Coding / implementation | `software-development` or domain-specific |
 | Design / UI / visual | `creative` |
 | ECC agent invocation | `ecc-bridge` |
 | Research / papers / monitoring | `research` |
