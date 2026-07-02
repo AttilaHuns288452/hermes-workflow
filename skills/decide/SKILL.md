@@ -144,6 +144,23 @@ Before delivering your final response, verify your startup compliance matches re
 ### G3: session_memory Always First
 Every session: call session_search() to check for relevant context before routing anything. Never skip.
 
+### G4: On-Demand Over Automatic for Token-Heavy Operations
+
+Any automated post-task workflow that consumes significant tokens should default to **on-demand** (triggered by explicit user request) rather than automatic enforcement after every change. This includes:
+
+- Obsidian code graph regeneration
+- Full project analysis passes
+- Bulk format exports (e.g., markdown-exporter batch runs)
+- Cross-referencing / graph rebuilds
+- Dashboard or knowledge graph refreshes
+
+The user explicitly prioritizes **token efficiency** over having everything auto-synced. Only run these automatically if:
+- The user explicitly opted in (said "keep doing this automatically")
+- OR the task is Tier 3 and the user confirmed they want the full bundle during this session
+- OR you asked and they said yes
+
+**Rationale from the user:** "so you know i would not waste tokens when i dont need it"
+
 ---
 
 ## Execution Order (Summary)
@@ -201,6 +218,12 @@ Every session: call session_search() to check for relevant context before routin
 | SEO / site audit / schema / rankings | `seo` |
 | Marketing / sales / content / growth | `productivity/ai-marketing-skills` |
 | App building / prototype | `software-development/buildable-plugin` |
+| Start new feature / implement spec / design-first workflow / structured dev pipeline / Superpowers methodology / obra superpowers | `software-development/superpowers-methodology` |
+
+### Cross-Cutting Behavioral Guidelines (Load alongside any code task)
+| Trigger | Load With |
+|---------|-----------|
+| Writing / reviewing / refactoring code — remind me to think before coding, keep it simple, make surgical changes, define success criteria / behavioral guardrails / Karpathy principles / avoid overcomplication | `software-development/karpathy-guidelines` |
 
 ### Quant & Finance Skills (LLMQuant Domain)
 | Trigger | Route To |

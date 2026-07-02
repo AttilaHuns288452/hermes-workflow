@@ -13,6 +13,10 @@ Behavioral guidelines to reduce common LLM coding mistakes, derived from [Andrej
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 > **Reference:** See `references/examples.md` for detailed real-world code examples (before/after diffs) for each principle.
+>
+> **Upstream repo:** https://github.com/multica-ai/andrej-karpathy-skills — the original CLAUDE.md these guidelines are derived from.
+>
+> **Plugin install:** From Claude Code, run `/plugin marketplace add forrestchang/andrej-karpathy-skills` then `/plugin install andrej-karpathy-skills@karpathy-skills`.
 
 ## 1. Think Before Coding
 
