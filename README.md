@@ -40,12 +40,13 @@ source .env
 
 ### 3. Install Tools (5-Minute Stack)
 
-| Tool | Layer | Install Command |
-|------|-------|----------------|
-| **OpenCode** | Free Model Layer 1 | `npm install -g opencode` or [download](https://github.com/opencode-ai/opencode/releases) |
-| **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` |
-| **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` |
-| **FreeLLMAPI** | Free Model Layer 3 | `git clone https://github.com/tashfeenahmed/freellmapi.git && cd freellmapi && npm install` |
+| Tool | Layer | Install Command | Notes |
+|------|-------|----------------|-------|
+| **OpenCode** | Free Model Layer 1 | `npm install -g opencode` or [download](https://github.com/opencode-ai/opencode/releases) | Primary coding agent |
+| **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` | AST code graph |
+| **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` | Live MCP code probe |
+| **FreeLLMAPI** | Free Model Layer 3 | `git clone https://github.com/tashfeenahmed/freellmapi.git && cd freellmapi && npm install` | 107 models proxy |
+| **Ponytail** | AI Lazy Mode Plugin | `npm install -g @dietrichgebert/ponytail` | YAGNI enforcer, -54% code |
 
 ```bash
 # Verify installations
@@ -144,6 +145,7 @@ graph TD
 - **Freebuff** — Cloud free model extensions (Kimi K2.6, MiniMax M3, etc.)
 - **FreeLLMAPI** — 107 models, 84 available (13 provider keys)
 - **API Mega List** — 10,498 ready-to-use Apify APIs across 18 categories (searchable via `productivity/api-mega-list` skill)
+- **Ponytail** — YAGNI lazy-mode AI plugin (DietrichGebert, 6 pony skills: ponytail, ponytail-review, ponytail-audit, ponytail-debt, ponytail-gain, ponytail-help)
 - **MoneyPrinterTurbo** — AI short video generation (86.1k ⭐)
 
 ## 📄 License

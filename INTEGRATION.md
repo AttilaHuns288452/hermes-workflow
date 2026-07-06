@@ -53,6 +53,9 @@ This document maps the full Hermes Agent integration — how **139 skills across
                     │  Coding │ GitHub │ Research │ Design │
                     │  Media  │ MLOps  │ Finance           │
                     │  +12 more specialized categories     │
+                    │                                     │
+                    │  Cross-cutting: Ponytail lazy-mode   │
+                    │  (adds YAGNI ladder on any code task)│
                     └───────────┬─────────────────────────┘
                                 │
                     ┌───────────▼─────────────────────────┐
@@ -147,7 +150,7 @@ User says ambiguous reference → session_search(query)
 | Trigger | Skill(s) Routed | Notes |
 |---------|----------------|-------|
 | Always (every request) | `core-identity-guard` → `session_memory` | Pre-routing, never skipped |
-| Coding / implementation | `software-development/*` | 17 skills |
+| Coding / implementation | `software-development/*` | 17 skills; Ponytail lazy-mode (YAGNI) applied cross-cutting |
 | GitHub / PR / issues | `github/*` | 7 skills |
 | Design / UI / visual | `creative/*` | 16 skills |
 | Research / papers | `research/*` | 5 skills |
@@ -224,7 +227,7 @@ User says ambiguous reference → session_search(query)
 | Category | Skills | Examples |
 |----------|--------|----------|
 | `apple` | 5 | apple-notes, apple-reminders, findmy, imessage, macos-computer-use |
-| `autonomous-ai-agents` | 5 | claude-code, codex, hermes-agent, opencode |
+| `autonomous-ai-agents` | 10 | claude-code, codex, hermes-agent, opencode, ponytail, ponytail-review, ponytail-audit, ponytail-debt, ponytail-gain, ponytail-help |
 | `creative` | 16 | claude-design, comfyui, excalidraw, manim-video, p5js, touchdesigner-mcp |
 | `data-science` | 1 | jupyter-live-kernel |
 | `devops` | 2 | kanban-orchestrator, kanban-worker |
@@ -243,13 +246,45 @@ User says ambiguous reference → session_search(query)
 | `smart-home` | 1 | openhue |
 | `social-media` | 1 | xurl |
 | `software-development` | 17 | setup, graphify-integrate, systematic-debugging, tdd, winforms-csharp |
-| `workflow` | 5 | session_memory, task_tier, token-saver, free-ai-model-router, model-recommender-workflow |
+| `workflow` | 7 | session_memory, task_tier, token-saver, free-ai-model-router, model-recommender-workflow, external-skills-integration, hermes-backup-workflow |
 
 **Parallel Execution:** Skills can delegate to sub-agents (`delegate_task`) for parallel work.
 
 ---
 
-### Step 7: Model Routing (`workflow/free-ai-model-router`)
+### Step 7: Ponytail Cross-Cutting Layer (`ponytail/skills/ponytail`)
+
+**Purpose:** Cross-cutting code quality layer applied to ANY coding task. Enforces the YAGNI ladder before any code is written.
+
+**The 7-Rung Ponytail Ladder (stop at the first that holds):**
+```
+1. Does this need to exist at all?  (YAGNI — skip speculative code)
+2. Already in this codebase?        (reuse before re-implementing)
+3. Stdlib does it?                  (stdlib before custom code)
+4. Native platform feature?         (CSS over JS, <input type="date"> over picker libs)
+5. Already-installed dependency?    (never add a new dep for a few lines)
+6. Can it be one line?             (one line)
+7. Minimum code that works.        (only then: ship the smallest solution)
+```
+
+| Intensity | Behavior |
+|-----------|----------|
+| **lite** | Build what's asked, name the lazier alternative in one line |
+| **full** (default) | Ladder enforced — stdlib first, shortest diff, shortest explanation |
+| **ultra** | YAGNI extremist — deletion before addition, challenge requirements |
+
+**Output pattern:** Code first, then at most 3 lines: what was skipped, when to add it. Mark deliberate shortcuts with `ponytail:` comments naming the ceiling and upgrade path.
+
+**When NOT to engage:** Never simplify away input validation, error handling that prevents data loss, security measures, accessibility, or anything explicitly requested.
+
+**Integration:**
+- Triggered on any coding task in `/decide` routing table
+- Cross-cutting — loaded alongside any `software-development/*` skill
+- Available as `/ponytail lite|full|ultra` slash commands in OpenCode and Hermes
+
+---
+
+### Step 8: Model Routing (`workflow/free-ai-model-router`)
 
 **Purpose:** Select the best available free model for every task. Always default to free. Fall back gracefully.
 
@@ -277,7 +312,7 @@ User says ambiguous reference → session_search(query)
 
 ---
 
-### Step 8: Obsidian Documentation + Knowledge Graph Refresh
+### Step 9: Obsidian Documentation + Knowledge Graph Refresh
 
 **Purpose:** Every project, coding, or analysis task produces permanent documentation. Mandatory post-execution phase (gated by Tier 3).
 
