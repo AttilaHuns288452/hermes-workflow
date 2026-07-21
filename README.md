@@ -1,6 +1,6 @@
 # Hermes Workflow
 
-**AI Agent Workflow Engine** — 165 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing (★ DeepSeek V4 Flash via OpenCode recommended), permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
+**AI Agent Workflow Engine** — 641 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing (★ DeepSeek V4 Flash via OpenCode recommended), permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
 
 ## 🚀 Plug-and-Play Setup
 

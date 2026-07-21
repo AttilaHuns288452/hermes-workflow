@@ -3,455 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hermes Workflow — 165 Skills · /decide · Free Models · Knowledge Graph</title>
+<title>Hermes Workflow — 641 Skills · /decide · Free Models · Knowledge Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* ============================================
+   PREMIUM DESIGN SYSTEM — Hermes Workflow v3
+   ============================================ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#080c18;--surface:#0d1230;--surface2:#141a3a;--surface3:#1c254a;
-  --border:#24305a;--text:#dce2f0;--text2:#8892b8;--text3:#5a6a9a;
-  --accent:#4f8cf7;--accent2:#7aa2f7;--accent3:#b4ccff;
-  --green:#3ddc84;--green-dim:#1a4a2e;--orange:#e4a847;--red:#e4686a;
-  --pink:#d088b8;--cyan:#6bc5e8;--yellow:#d4c84e;--gold:#e4c84e;
-  --purple:#9b7cf7;--teal:#4dc9b8;
-  --grad:linear-gradient(135deg,#4f8cf7,#9b7cf7,#6bc5e8);
-  --grad2:linear-gradient(135deg,#d088b8,#e4a847,#3ddc84);
-  --radius:12px;--radius-sm:8px;
-  --font:'Inter',-apple-system,sans-serif;--mono:'JetBrains Mono','Fira Code',monospace;
-}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-::selection{background:rgba(79,140,247,.35);color:#fff}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
 
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+:root{
+  --bg:#05080f;--bg2:#080e1a;--surface:#0c1428;--surface2:#111d38;--surface3:#1a2a50;
+  --border:#1e3058;--border-light:#2a4070;
+  --text:#e4eaf5;--text2:#8895b8;--text3:#5a6a90;
+  --accent:#4a8cf4;--accent2:#7aa9f7;--accent3:#b4ccff;
+  --green:#3ddc84;--green-dim:#1a4a2e;--teal:#4dc9b8;
+  --orange:#e4a847;--red:#e4686a;--pink:#d088b8;--cyan:#6bc5e8;--gold:#f0d060;
+  --purple:#9b7cf7;--violet:#7c5cf5;
+  --grad:linear-gradient(135deg,#4a8cf4,#9b7cf7,#6bc5e8);
+  --grad2:linear-gradient(135deg,#d088b8,#e4a847,#3ddc84);
+  --grad3:linear-gradient(135deg,#4a8cf4,#7c5cf5);
+  --glass:rgba(12,20,40,.55);
+  --glass-edge:rgba(255,255,255,.04);
+  --radius:16px;--radius-sm:10px;--radius-pill:100px;
+  --font:'Inter',-apple-system,sans-serif;--mono:'JetBrains Mono','Fira Code',monospace;
+  --nav-h:68px;
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(74,140,244,.4);color:#fff}
+
+/* ============================================
+   AMBIENT BACKGROUND
+   ============================================ */
+#ambient-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#ambient-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:orbFloat 20s ease-in-out infinite}
+#ambient-bg .orb:nth-child(1){width:600px;height:600px;background:var(--accent);top:-10%;left:-5%;animation-delay:0s}
+#ambient-bg .orb:nth-child(2){width:500px;height:500px;background:var(--purple);bottom:-15%;right:-8%;animation-delay:-7s}
+#ambient-bg .orb:nth-child(3){width:400px;height:400px;background:var(--teal);top:40%;left:50%;animation-delay:-14s;opacity:.06}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,20px) scale(.95)}}
+#noise-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent2)}
 
-/* Nav */
-nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.92);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid var(--border)}
-.nav-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:.3rem;height:52px;padding:0 1.2rem}
-nav .logo{font-weight:800;font-size:.9rem;color:var(--text);display:flex;align-items:center;gap:7px;margin-right:auto;letter-spacing:-.02em}
-nav .logo svg{width:16px;height:16px;flex-shrink:0}
-.logo-accent{color:var(--accent2);font-weight:300}
-.nav-links{display:flex;gap:.15rem;overflow-x:auto}
-.nav-links a{color:var(--text2);text-decoration:none;font-size:.69rem;font-weight:500;white-space:nowrap;padding:.28rem .45rem;border-radius:5px;transition:all .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(79,140,247,.1)}
+/* ============================================
+   NAV
+   ============================================ */
+nav{position:sticky;top:0;z-index:100;height:var(--nav-h);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);background:linear-gradient(180deg,rgba(5,8,15,.92) 0%,rgba(5,8,15,.7) 100%);border-bottom:1px solid var(--glass-edge)}
+nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.15}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:.4rem;height:100%;padding:0 1.5rem}
+.logo{font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:10px;margin-right:auto;letter-spacing:-.02em;text-decoration:none;color:var(--text);position:relative}
+.logo .logo-icon{width:22px;height:22px;position:relative}
+.logo .logo-icon svg{width:100%;height:100%}
+.logo .logo-accent{color:var(--accent2);font-weight:300}
+.logo .logo-badge{font-size:.5rem;padding:.1rem .35rem;border-radius:4px;background:rgba(74,140,244,.15);color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-left:2px}
+.nav-links{display:flex;align-items:center;gap:.15rem}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.72rem;font-weight:500;white-space:nowrap;padding:.35rem .55rem;border-radius:6px;transition:all .25s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(74,140,244,.08)}
 .nav-links .hl-link{background:rgba(61,220,132,.08);color:var(--green)}
-.nav-links .hl-link:hover{background:rgba(61,220,132,.18);color:#fff}
-.nav-links .guard-link{background:rgba(228,104,106,.08);color:var(--red)}
-.nav-links .guard-link:hover{background:rgba(228,104,106,.18);color:#fff}
-.hamburger{display:none;flex-direction:column;gap:3px;cursor:pointer;background:none;border:none;padding:6px;margin-left:6px}
-.hamburger span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.nav-links .hl-link:hover{background:rgba(61,220,132,.18);color:#fff}.nav-links a .indicator{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--accent);border-radius:1px;transition:width .25s}.nav-links a:hover .indicator{width:60%}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;background:none;border:none;padding:6px;margin-left:8px}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
 
-/* Hero */
-.hero{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden;
-  background:radial-gradient(ellipse at 50% 0%,rgba(79,140,247,.1) 0%,transparent 60%),
-             radial-gradient(ellipse at 80% 40%,rgba(107,197,232,.05) 0%,transparent 50%),
-             radial-gradient(ellipse at 20% 70%,rgba(155,124,247,.04) 0%,transparent 50%),
-             radial-gradient(ellipse at 50% 100%,rgba(61,220,132,.03) 0%,transparent 40%),var(--bg)}
-.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(79,140,247,.06) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
-.hero-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .9rem;background:rgba(79,140,247,.1);border:1px solid rgba(79,140,247,.2);border-radius:100px;font-size:.75rem;color:var(--accent2);margin-bottom:1.5rem;backdrop-filter:blur(8px)}
-.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+/* ============================================
+   HERO
+   ============================================ */
+.hero{position:relative;z-index:2;min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 1.5rem;overflow:hidden}
+.hero-grid{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-grid::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(74,140,244,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,140,244,.06) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse at 50% 40%,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 50% 40%,black 30%,transparent 70%)}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,var(--accent),transparent 70%);opacity:.06;pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem .45rem .55rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-pill);font-size:.72rem;color:var(--accent2);margin-bottom:2rem;backdrop-filter:blur(12px);animation:badgeIn .8s both}
+.hero-badge .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2.5s ease-in-out infinite;box-shadow:0 0 12px rgba(61,220,132,.4)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.hero h1{font-size:clamp(1.8rem,4.5vw,3.6rem);font-weight:900;line-height:1.08;margin-bottom:.4rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.03em}
-.hero h1 .sub{font-size:clamp(.7rem,1.1vw,1rem);font-weight:600;display:block;margin-top:.35rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{font-size:clamp(.8rem,1.1vw,.95rem);color:var(--text2);max-width:700px;margin:0 auto 1.5rem;line-height:1.7}
-.hero-stats{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;max-width:900px}
-.hero-stat{text-align:center;padding:.55rem .9rem;background:rgba(255,255,255,.015);border:1px solid var(--border);border-radius:10px;backdrop-filter:blur(6px);min-width:72px}
-.hero-stat .num{font-size:1.3rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-stat .label{font-size:.52rem;color:var(--text3);margin-top:.05rem;text-transform:uppercase;letter-spacing:.08em}
-.hero-stat.hl{border-color:rgba(61,220,132,.2);background:rgba(61,220,132,.04)}
+.hero h1{font-size:clamp(1.8rem,5vw,4rem);font-weight:900;line-height:1.06;margin-bottom:.6rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.03em;animation:heroIn 1s .2s both}
+.hero h1 .sub{font-size:clamp(.7rem,1.2vw,1.1rem);font-weight:600;display:block;margin-top:.4rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.01em}
+.hero p{font-size:clamp(.82rem,1.1vw,1rem);color:var(--text2);max-width:720px;margin:0 auto 1.8rem;line-height:1.7;animation:heroIn 1s .4s both}
+.hero-actions{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;animation:heroIn 1s .6s both}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;border-radius:var(--radius-pill);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .35s;cursor:pointer;border:none;font-family:inherit;position:relative;overflow:hidden}
+.btn-primary{background:var(--grad3);color:#fff;box-shadow:0 4px 24px rgba(74,140,244,.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(74,140,244,.35)}
+.btn-ghost{background:var(--glass);border:1px solid var(--glass-edge);color:var(--text);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.06);border-color:var(--border-light);transform:translateY(-2px)}
+.btn .arrow{transition:transform .3s;font-size:.9rem}
+.btn:hover .arrow{transform:translateX(3px)}
+.hero-stats{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;max-width:960px;margin-top:2.5rem;animation:heroIn 1s .8s both}
+.hero-stat{text-align:center;padding:.6rem 1rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-sm);backdrop-filter:blur(8px);min-width:78px;transition:all .3s}
+.hero-stat:hover{background:rgba(255,255,255,.03);border-color:var(--border-light);transform:translateY(-3px)}
+.hero-stat .num{font-size:1.5rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.hero-stat .label{font-size:.5rem;color:var(--text3);margin-top:.05rem;text-transform:uppercase;letter-spacing:.1em}
+.hero-stat.hl{border-color:rgba(61,220,132,.2)}
 .hero-stat.hl .num{background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.scroll-ind{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--text3);font-size:.7rem;animation:bounce 2s infinite;cursor:pointer;opacity:.5}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
+@keyframes badgeIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.scroll-ind{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.3rem;color:var(--text3);font-size:.65rem;animation:scrollBounce 2.5s ease-in-out infinite;cursor:pointer;opacity:.4;transition:opacity .3s}
+.scroll-ind:hover{opacity:.8}.scroll-ind .mouse{width:16px;height:26px;border:2px solid var(--text3);border-radius:10px;position:relative}
+.scroll-ind .mouse::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:2px;height:5px;background:var(--text3);border-radius:1px;animation:scrollWheel 2.5s ease-in-out infinite}
+@keyframes scrollWheel{0%,100%{transform:translateX(-50%) translateY(0);opacity:1}50%{transform:translateX(-50%) translateY(6px);opacity:.3}}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(4px)}}
 
-/* Sections */
-.section{max-width:1320px;margin:0 auto;padding:3rem 1.5rem}
-.section-header{text-align:center;margin-bottom:2rem}
-.section-header h2{font-size:clamp(1.4rem,2.2vw,1.8rem);font-weight:800;letter-spacing:-.02em}
-.section-header .sub{color:var(--text2);max-width:600px;margin:.4rem auto 0;font-size:.85rem;line-height:1.6}
-.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(79,140,247,.2),transparent);max-width:1320px;margin:0 auto}
+/* ============================================
+   SECTIONS
+   ============================================ */
+.section{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:4rem 1.5rem}
+.section-header{text-align:center;margin-bottom:2.5rem}
+.section-header .eyebrow{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:.3rem}
+.section-header h2{font-size:clamp(1.5rem,2.8vw,2.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.section-header .sub{color:var(--text2);max-width:600px;margin:.6rem auto 0;font-size:.9rem;line-height:1.6}
+.divider{position:relative;z-index:2;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);max-width:1280px;margin:0 auto}
 
-/* Get Started / Install Section */
-.get-started{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.gs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;transition:all .3s}
-.gs-card:hover{border-color:var(--accent)}
-.gs-card .gs-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-size:.7rem;font-weight:700;margin-bottom:.5rem}
-.gs-card h3{font-size:.85rem;font-weight:700;margin-bottom:.4rem}
-.gs-card p{font-size:.74rem;color:var(--text2);margin-bottom:.5rem;line-height:1.5}
-.gs-card pre{font-family:var(--mono);font-size:.64rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.6rem;overflow-x:auto;white-space:pre;color:var(--cyan);line-height:1.5}
-.gs-card .copy-btn{float:right;font-size:.55rem;padding:.15rem .4rem;border-radius:3px;background:var(--surface3);color:var(--text2);cursor:pointer;transition:all .2s;border:none;font-family:inherit;margin:2px 0 4px 4px}
+/* ============================================
+   GET STARTED
+   ============================================ */
+.gs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.gs-card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(12px);transition:all .35s;position:relative;overflow:hidden}
+.gs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);opacity:0;transition:opacity .35s}
+.gs-card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.gs-card:hover::before{opacity:.5}
+.gs-card .gs-head{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.gs-card .gs-num{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--grad3);color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0}
+.gs-card h3{font-size:.9rem;font-weight:700}
+.gs-card p{font-size:.75rem;color:var(--text2);margin-bottom:.5rem;line-height:1.5}
+.gs-card pre{font-family:var(--mono);font-size:.64rem;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem;overflow-x:auto;white-space:pre;color:var(--cyan);line-height:1.5;position:relative}
+.gs-card .copy-btn{position:absolute;top:.5rem;right:.5rem;font-size:.5rem;padding:.15rem .4rem;border-radius:4px;background:var(--surface3);color:var(--text2);cursor:pointer;transition:all .2s;border:none;font-family:inherit;opacity:0}
+.gs-card pre:hover .copy-btn,.copy-btn.show{opacity:1}
 .gs-card .copy-btn:hover{background:var(--accent);color:#fff}
-.gs-card.hl{border-color:rgba(61,220,132,.25);background:rgba(61,220,132,.04)}
+.gs-card.hl{border-color:rgba(61,220,132,.2);background:rgba(61,220,132,.03)}
 .gs-card.hl .gs-num{background:linear-gradient(135deg,var(--green),var(--teal))}
 
-/* Recommended Model Box */
-.recommend-box{background:linear-gradient(135deg,rgba(79,140,247,.08),rgba(155,124,247,.08));border:1px solid rgba(79,140,247,.25);border-radius:var(--radius);padding:1.3rem;margin:1.2rem 0;position:relative;overflow:hidden}
-.recommend-box::before{content:'★';position:absolute;top:-10px;right:-5px;font-size:5rem;opacity:.04;color:var(--gold)}
-.recommend-box .rec-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .6rem;background:rgba(228,200,78,.12);border:1px solid rgba(228,200,78,.2);border-radius:100px;font-size:.6rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.recommend-box h3{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
-.recommend-box p{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:.5rem}
-.recommend-box pre{font-family:var(--mono);font-size:.64rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.6rem;overflow-x:auto;white-space:pre;color:var(--cyan);line-height:1.5}
+/* RECOMMEND BOX */
+.rec-box{margin-top:1.5rem;background:linear-gradient(135deg,rgba(74,140,244,.06),rgba(155,124,247,.06));border:1px solid rgba(74,140,244,.2);border-radius:var(--radius);padding:1.5rem;position:relative;overflow:hidden}
+.rec-box::before{content:'✦';position:absolute;top:-5px;right:10px;font-size:5rem;opacity:.03;color:var(--gold)}
+.rec-box .rec-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem;background:rgba(240,208,96,.1);border:1px solid rgba(240,208,96,.2);border-radius:var(--radius-pill);font-size:.62rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
+.rec-box h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+.rec-box p{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:.6rem}
+
+/* ============================================
+   /DECIDE FLOW — Premium
+   ============================================ */
+.decide-visual{display:flex;flex-direction:column;align-items:center;gap:0;margin:2rem auto;max-width:820px;position:relative}
+.dv-row{display:flex;gap:.6rem;width:100%;justify-content:center;flex-wrap:wrap}
+.dv-node{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:.9rem .7rem;flex:1;min-width:100px;max-width:160px;text-align:center;transition:all .35s;position:relative;backdrop-filter:blur(8px)}
+.dv-node:hover{border-color:var(--accent2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(74,140,244,.08)}
+.dv-node .dv-icon{font-size:1.5rem;margin-bottom:.25rem;display:block}
+.dv-node .dv-label{font-size:.65rem;font-weight:600;color:var(--text);line-height:1.3}
+.dv-node .dv-desc{font-size:.55rem;color:var(--text3);margin-top:.2rem;line-height:1.3}
+.dv-node .dv-step{position:absolute;top:-7px;left:-7px;width:20px;height:20px;border-radius:50%;font-size:.55rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:var(--grad3);color:#fff;box-shadow:0 2px 8px rgba(74,140,244,.3)}
+.dv-node.guard .dv-step{background:var(--red)}
+.dv-node.token .dv-step{background:linear-gradient(135deg,var(--green),var(--teal))}
+.dv-node.guard{border-color:rgba(228,104,106,.2)}
+.dv-node.token{border-color:rgba(61,220,132,.15)}
+.dv-arrow{color:var(--border-light);font-size:.75rem;padding:4px 0;display:flex;align-items:center;justify-content:center;width:100%}
 
 /* Pipeline */
-.pipeline{display:flex;flex-direction:column;align-items:center;gap:0;margin:1rem auto;max-width:640px}
-.pipe-step{display:flex;align-items:center;gap:.8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.7rem .9rem;width:100%;position:relative;opacity:0;transform:translateY(14px);transition:all .4s}
+.pipeline{display:flex;flex-direction:column;align-items:center;gap:0;margin:1.5rem auto;max-width:680px}
+.pipe-step{display:flex;align-items:center;gap:.8rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:.75rem 1rem;width:100%;position:relative;backdrop-filter:blur(8px);transition:all .35s;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s,border-color .3s}
 .pipe-step.visible{opacity:1;transform:translateY(0)}
 .pipe-step:hover{border-color:var(--accent2)}
-.pipe-step .sn{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0;background:var(--surface2);color:var(--text2)}
-.pipe-step:nth-child(1) .sn{background:var(--accent);color:#fff}
-.pipe-step:nth-child(3) .sn{background:var(--pink);color:#fff}
-.pipe-step:nth-child(5) .sn{background:var(--cyan);color:#111}
-.pipe-step:nth-child(7) .sn{background:var(--green);color:#111}
-.pipe-step:nth-child(9) .sn{background:var(--gold);color:#111}
-.pipe-step:nth-child(11) .sn{background:var(--orange);color:#111}
-.pipe-step:nth-child(13) .sn{background:var(--pink);color:#fff}
-.pipe-step:nth-child(15) .sn{background:var(--teal);color:#111}
-.pipe-step:nth-child(17) .sn{background:var(--accent2);color:#111}
+.pipe-step .sn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0;background:var(--surface3);color:var(--text2);transition:all .3s}
+.pipe-step:hover .sn{background:var(--accent);color:#fff}
 .pipe-step .info{flex:1}
 .pipe-step .info h3{font-size:.82rem;font-weight:600}
-.pipe-step .info p{font-size:.7rem;color:var(--text2)}
-.pipe-step .info .model-note{font-size:.6rem;color:var(--gold);margin-top:2px}
-.pipe-arrow{color:var(--border);font-size:.75rem;padding:2px 0;opacity:0;transition:opacity .4s .15s}
+.pipe-step .info p{font-size:.68rem;color:var(--text2);line-height:1.4;margin-top:2px}
+.pipe-step .info .tag{display:inline-block;font-size:.55rem;padding:.1rem .4rem;border-radius:3px;background:rgba(61,220,132,.1);color:var(--green);margin-top:3px;font-weight:500}
+.pipe-arrow{color:var(--border);font-size:.7rem;padding:3px 0;opacity:0;transition:opacity .4s}
 .pipe-arrow.visible{opacity:1}
 
-/* Decide Flow */
-.decide-flow{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
-.df-row{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
-.df-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem;flex:1;min-width:120px;max-width:220px;text-align:center;transition:all .3s;position:relative}
-.df-step:hover{border-color:var(--accent);transform:translateY(-2px)}
-.df-step .df-icon{font-size:1.3rem;margin-bottom:.25rem}
-.df-step .df-label{font-size:.75rem;font-weight:600}
-.df-step .df-desc{font-size:.63rem;color:var(--text2);margin-top:.2rem;line-height:1.4}
-.df-step .df-num{position:absolute;top:-5px;left:-5px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center}
-.df-arrow{color:var(--accent2);font-size:1rem;align-self:center;padding:0 .15rem}
+/* ============================================
+   SKILLS
+   ============================================ */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:1.2rem;justify-content:center}
+.cat-tab{padding:.3rem .75rem;border-radius:var(--radius-pill);font-size:.65rem;font-weight:500;cursor:pointer;background:var(--glass);border:1px solid var(--glass-edge);color:var(--text2);transition:all .25s;font-family:inherit;backdrop-filter:blur(8px)}
+.cat-tab:hover{border-color:var(--border-light);color:var(--text)}
+.cat-tab.active{background:var(--grad3);border-color:transparent;color:#fff}
+.cat-tab .count{opacity:.6}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.6rem}
+.card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .35s}
+.card:hover{transform:translateY(-3px);border-color:var(--border-light);box-shadow:0 12px 40px rgba(74,140,244,.05)}
+.card:hover::before{opacity:1}
+.card .cat{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin-bottom:3px;font-weight:600}
+.card h4{font-size:.82rem;font-weight:600;margin-bottom:2px}
+.card p{font-size:.65rem;color:var(--text2);line-height:1.5}
 
-/* Cards */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;margin:1rem 0}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;transition:all .3s;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
-.card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 8px 30px rgba(79,140,247,.05)}
-.card .cat{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin-bottom:2px;font-weight:600}
-.card h4{font-size:.82rem;font-weight:600;margin-bottom:1px}
-.card p{font-size:.68rem;color:var(--text2);line-height:1.5}
-
-/* Category / Skills */
-.cat-tabs{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:1rem;justify-content:center}
-.cat-tab{padding:.25rem .65rem;border-radius:100px;font-size:.65rem;font-weight:500;cursor:pointer;background:var(--surface2);border:1px solid var(--border);color:var(--text2);transition:all .2s;font-family:inherit}
-.cat-tab.active,.cat-tab:hover:not(.active){border-color:var(--accent)}
-.cat-tab.active{background:var(--accent);color:#fff}
-.cat-tab:hover:not(.active){color:var(--text)}
-
-/* Model Chain */
-.mchain{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
-.mtier{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.8rem;border-left:4px solid}
+/* ============================================
+   MODEL CHAIN
+   ============================================ */
+.model-vis{display:flex;align-items:center;gap:.3rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+.model-vis .mv{background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.45rem .8rem;text-align:center;font-size:.65rem;color:var(--text2);backdrop-filter:blur(8px);transition:all .3s}
+.model-vis .mv:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.model-vis .mv .mv-num{font-weight:800;font-size:.8rem;display:block}
+.model-vis .mv-arrow{color:var(--border-light);font-size:.75rem;opacity:.5}
+.mchain{display:flex;flex-direction:column;gap:.6rem}
+.mtier{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:.9rem 1rem;border-left:4px solid;backdrop-filter:blur(8px);transition:all .3s}
+.mtier:hover{border-color:var(--border-light)}
 .mtier.t1{border-left-color:var(--green)}
 .mtier.t2{border-left-color:var(--gold)}
 .mtier.t3{border-left-color:var(--orange)}
 .mtier.t4{border-left-color:var(--red)}
 .mtier.t5{border-left-color:var(--accent)}
-.mtier .th{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;gap:.4rem}
-.mtier .th h3{font-size:.8rem;font-weight:600}
-.mtier .th .badge{font-size:.55rem;padding:1px 7px;border-radius:100px;font-weight:600;background:var(--surface2);color:var(--text2);flex-shrink:0}
-.mtier .th .badge.ok{background:rgba(61,220,132,.12);color:var(--green)}
-.mtier .th .badge.fb{background:rgba(228,168,71,.12);color:var(--gold)}
-.mtier .th .badge.lr{background:rgba(228,104,106,.12);color:var(--red)}
-.mtier .th .badge.rs{background:rgba(79,140,247,.12);color:var(--accent2)}
-.mtier .th .badge.rec{background:rgba(228,200,78,.15);color:var(--gold)}
-.mtier .tags{display:flex;flex-wrap:wrap;gap:.2rem}
-.mtier .tags .tag{font-family:var(--mono);font-size:.6rem;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)}
-.mtier .tags .tag.rec-tag{background:rgba(228,200,78,.1);color:var(--gold);border:1px solid rgba(228,200,78,.2)}
-.mtier .td{font-size:.7rem;color:var(--text2);margin-top:3px}
-.mchain-vis{display:flex;align-items:center;gap:.25rem;justify-content:center;margin:.6rem 0;flex-wrap:wrap}
-.mchain-vis .mv{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;text-align:center;font-size:.65rem;color:var(--text2)}
-.mchain-vis .mv .mv-num{font-weight:700;font-size:.8rem;display:block}
-.mchain-vis .mv-arrow{color:var(--accent2);font-size:.85rem}
+.mtier .th{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;gap:.4rem;flex-wrap:wrap}
+.mtier .th h3{font-size:.82rem;font-weight:600}
+.mtier .th .badge{font-size:.55rem;padding:2px 8px;border-radius:var(--radius-pill);font-weight:600;background:var(--surface2);color:var(--text2);flex-shrink:0}
+.mtier .th .badge.rec{background:rgba(240,208,96,.12);color:var(--gold);border:1px solid rgba(240,208,96,.15)}
+.mtier .th .badge.ok{background:rgba(61,220,132,.1);color:var(--green)}
+.mtier .th .badge.fb{background:rgba(228,168,71,.1);color:var(--gold)}
+.mtier .th .badge.lr{background:rgba(228,104,106,.1);color:var(--red)}
+.mtier .th .badge.rs{background:rgba(74,140,244,.1);color:var(--accent2)}
+.mtier .tags{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.3rem}
+.mtier .tags .tag{font-family:var(--mono);font-size:.58rem;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.3);color:var(--text2)}
+.mtier .tags .tag.rec-tag{background:rgba(240,208,96,.08);color:var(--gold);border:1px solid rgba(240,208,96,.15)}
+.mtier .td{font-size:.68rem;color:var(--text2);margin-top:4px;line-height:1.5}
 
-/* KG Section */
-.kg-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin:1rem 0;
-  background-image:radial-gradient(circle at 20% 30%,rgba(79,140,247,.06) 0%,transparent 50%),
-                   radial-gradient(circle at 80% 70%,rgba(107,197,232,.04) 0%,transparent 50%)}
-.kg-hero h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
-.kg-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:.6rem 0}
-.kg-stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem;text-align:center}
+/* ============================================
+   KNOWLEDGE GRAPH + GUARDRAIL + TOKEN SAVER
+   ============================================ */
+.ghost-hero{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+.ghost-hero h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.ghost-hero p{font-size:.75rem;color:var(--text2);line-height:1.6}
+.kg-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin:.8rem 0}
+.kg-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center}
 .kg-stat .val{font-size:1.4rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.kg-stat .lbl{font-size:.55rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
-
-/* Guardrail */
-.guardrail-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin:1rem 0;
-  background-image:radial-gradient(circle at 80% 20%,rgba(228,104,106,.04) 0%,transparent 50%),
-                   radial-gradient(circle at 20% 80%,rgba(208,136,184,.03) 0%,transparent 50%)}
-.guardrail-hero h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
-.guard-badge{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;background:rgba(228,104,106,.1);color:var(--red);padding:.15rem .5rem;border-radius:100px;font-weight:700;display:inline-block;margin-bottom:.4rem}
-.guard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin:.6rem 0}
-.guard-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.7rem}
+.kg-stat .lbl{font-size:.55rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+.guard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.5rem;margin:.8rem 0}
+.guard-card{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:10px;padding:.8rem;transition:all .25s}
+.guard-card:hover{border-color:var(--border-light);background:rgba(0,0,0,.3)}
 .guard-card h4{font-size:.72rem;font-weight:600;margin-bottom:2px}
-.guard-card p{font-size:.65rem;color:var(--text2);line-height:1.5}
-
-/* Token Saver */
-.ts-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin:1rem 0;
-  background-image:radial-gradient(circle at 30% 50%,rgba(61,220,132,.04) 0%,transparent 50%)}
-.ts-hero h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
-.ts-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.5rem;margin:.6rem 0}
-.ts-stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem;text-align:center}
-.ts-stat .val{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.ts-stat .lbl{font-size:.52rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+.guard-card p{font-size:.62rem;color:var(--text2);line-height:1.5}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem}
+.ts-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center}
+.ts-stat .val{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ts-stat .lbl{font-size:.52rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
 .ts-flow{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:center;margin:.6rem}
-.ts-step{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.4rem .8rem;font-size:.65rem;text-align:center;min-width:80px;color:var(--text2)}
-.ts-step strong{color:var(--text);display:block;font-size:.72rem}
-.ts-step.active{border-color:var(--green)}
-.ts-arrow{color:var(--border);font-size:.7rem}
+.ts-step{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.62rem;text-align:center;min-width:85px;color:var(--text2);transition:all .25s}
+.ts-step:hover{border-color:var(--green)}
+.ts-step strong{color:var(--text);display:block;font-size:.68rem}
+.ts-arrow{color:var(--border);font-size:.65rem}
 
-/* Code block mono theme */
-.code-block{font-family:var(--mono);font-size:.62rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.7rem;overflow-x:auto;white-space:pre;color:var(--text2);line-height:1.6}
-
-/* Eco Grid */
-.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.6rem;margin:1rem 0}
-.eco-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;transition:all .3s}
-.eco-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 8px 30px rgba(79,140,247,.05)}
-.eco-card .icon{font-size:1.3rem;margin-bottom:.3rem}
-.eco-card h3{font-size:.85rem;margin-bottom:.2rem}
-.eco-card p{color:var(--text2);font-size:.72rem;line-height:1.5}
-.eco-card .detail{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.68rem;color:var(--accent2)}
-.eco-card .detail .api-link{color:var(--teal);text-decoration:none}
-
-/* LLMQuant Grid */
-.lq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;margin:1rem 0}
-.lq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem;transition:all .3s}
-.lq-card:hover{transform:translateY(-2px);border-color:var(--accent)}
-.lq-card .icon{font-size:1.2rem;margin-bottom:.2rem}
-.lq-card h4{font-size:.78rem;margin-bottom:.15rem}
-.lq-card p{color:var(--text2);font-size:.65rem;line-height:1.4}
-.lq-card .detail{margin-top:.4rem;padding-top:.4rem;border-top:1px solid var(--border);font-size:.62rem;color:var(--accent2)}
-
-/* Agents Grid */
-.search-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
-.search-bar input{flex:1;min-width:160px;padding:.5rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.78rem;font-family:inherit;outline:none;transition:border-color .3s}
-.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 15px rgba(79,140,247,.08)}
+/* ============================================
+   AGENTS
+   ============================================ */
+.search-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.search-bar input{flex:1;min-width:180px;padding:.6rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.8rem;font-family:inherit;outline:none;transition:all .3s}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 20px rgba(74,140,244,.08)}
 .search-bar input::placeholder{color:var(--text3)}
 .filter-group{display:flex;gap:.2rem;flex-wrap:wrap}
-.filter-btn{padding:.3rem .65rem;background:var(--surface2);border:1px solid var(--border);border-radius:100px;color:var(--text2);font-size:.65rem;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
-.filter-btn:hover{border-color:var(--accent);color:var(--text)}
-.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.6rem}
-.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;transition:all .3s;position:relative;overflow:hidden}
-.agent-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.filter-btn{padding:.3rem .65rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-pill);color:var(--text2);font-size:.62rem;cursor:pointer;transition:all .25s;font-family:inherit;font-weight:500;backdrop-filter:blur(8px)}
+.filter-btn:hover{border-color:var(--accent2);color:var(--text)}
+.filter-btn.active{background:var(--grad3);border-color:transparent;color:#fff}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.6rem}
+.agent-card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s}
+.agent-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
 .agent-card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;flex-wrap:wrap;gap:4px}
 .agent-card .name{font-size:.8rem;font-weight:700;font-family:var(--mono)}
-.agent-card .model-tag{font-size:.55rem;padding:.12rem .4rem;border-radius:100px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:rgba(79,140,247,.2);color:var(--accent2);border:1px solid rgba(79,140,247,.2)}
+.agent-card .model-tag{font-size:.55rem;padding:.15rem .4rem;border-radius:var(--radius-pill);font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:rgba(74,140,244,.15);color:var(--accent2);border:1px solid rgba(74,140,244,.15)}
 .agent-card .model-tag.opus{background:rgba(228,168,71,.12);color:var(--orange);border-color:rgba(228,168,71,.2)}
 .agent-card .model-tag.haiku{background:rgba(107,197,232,.12);color:var(--cyan);border-color:rgba(107,197,232,.2)}
-.agent-card .desc{color:var(--text2);font-size:.7rem;line-height:1.5;margin-bottom:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.agent-card .desc{color:var(--text2);font-size:.68rem;line-height:1.5;margin-bottom:.3rem}
 .agent-card .tools{display:flex;flex-wrap:wrap;gap:.2rem}
-.agent-card .tool-tag{font-family:var(--mono);font-size:.5rem;padding:.1rem .35rem;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text2)}
-.agent-card .bridge-badge{font-size:.55rem;background:rgba(61,220,132,.1);color:var(--green);padding:.1rem .3rem;border-radius:3px;font-weight:600}
-.agent-card .bridge-badge.opus{background:rgba(228,168,71,.1);color:var(--orange)}
+.agent-card .tool-tag{font-family:var(--mono);font-size:.48rem;padding:.08rem .3rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:3px;color:var(--text2)}
+.agent-card .bridge-badge{font-size:.55rem;background:rgba(61,220,132,.08);color:var(--green);padding:.1rem .3rem;border-radius:3px;font-weight:600}
+.agent-card .bridge-badge.opus{background:rgba(228,168,71,.08);color:var(--orange)}
 
 /* Model distribution */
-.model-dist{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin:1rem 0}
-.model-bar{flex:1;min-width:80px;text-align:center;padding:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.model-dist{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:1rem 0}
+.model-bar{flex:1;min-width:80px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:8px;backdrop-filter:blur(8px)}
 .model-bar .count{font-size:1.3rem;font-weight:800}
-.model-bar .count.sonnet{color:var(--accent2)}
-.model-bar .count.opus{color:var(--orange)}
-.model-bar .count.haiku{color:var(--cyan)}
-.model-bar .label{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.05rem}
+.model-bar .count.sonnet{color:var(--accent2)}.model-bar .count.opus{color:var(--orange)}.model-bar .count.haiku{color:var(--cyan)}
+.model-bar .label{font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.05rem}
 .model-bar .progress{height:3px;background:var(--surface2);border-radius:3px;margin-top:.3rem;overflow:hidden}
 .model-bar .progress-fill{height:100%;border-radius:3px}
 .model-bar .progress-fill.sonnet{background:var(--accent2)}
 .model-bar .progress-fill.opus{background:var(--orange)}
 .model-bar .progress-fill.haiku{background:var(--cyan)}
 
-/* Use cases */
-.use-case{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:.8rem}
-.use-case h3{font-size:.82rem;font-weight:600;margin-bottom:2px}
-.use-case .meta{font-size:.65rem;color:var(--text3);margin-bottom:3px}
-.use-case p{font-size:.75rem;color:var(--text2)}
-.use-case .flow{font-family:var(--mono);font-size:.62rem;color:var(--text2);margin-top:5px;padding:4px 7px;background:var(--surface2);border-radius:4px;overflow-x:auto}
+/* ECO */
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.eco-card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1.1rem;backdrop-filter:blur(8px);transition:all .35s}
+.eco-card:hover{transform:translateY(-3px);border-color:var(--accent2);box-shadow:0 12px 40px rgba(74,140,244,.05)}
+.eco-card .icon{font-size:1.4rem;margin-bottom:.3rem}
+.eco-card h3{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+.eco-card p{color:var(--text2);font-size:.68rem;line-height:1.5}
+.eco-card .detail{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--accent2)}
 
-/* Footer */
-footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--text3);font-size:.7rem}
-footer a{color:var(--accent2);text-decoration:none}
-footer a:hover{text-decoration:underline}
+/* FOOTER */
+footer{position:relative;z-index:2;text-align:center;padding:2rem;border-top:1px solid var(--glass-edge);color:var(--text3);font-size:.68rem}
+footer a{color:var(--accent2);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--text)}
 
-/* Fade in */
-.fade-in{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
-.fade-in.visible{opacity:1;transform:translateY(0)}
+/* ============================================
+   REVEAL ANIMATIONS
+   ============================================ */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}.reveal-delay-6{transition-delay:.6s}
 
-/* Obsidian */
-.obsidian-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-top:.8rem}
-.obsidian-section h3{font-size:.88rem;font-weight:600;margin-bottom:.4rem}
-.obsidian-section .template{font-family:var(--mono);font-size:.6rem;color:var(--text2);line-height:1.5;background:var(--surface2);padding:.6rem;border-radius:5px;overflow-x:auto}
-.obsidian-badge{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);padding:.15rem .5rem;border-radius:100px;font-size:.62rem;color:var(--text2);margin-bottom:.5rem}
-
-/* Animations */
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media(max-width:768px){
-  .get-started{grid-template-columns:1fr}
-  .hermes-intro{grid-template-columns:1fr}
-  .nav-links{display:none;flex-direction:column;position:absolute;top:52px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);padding:.8rem;gap:.3rem;max-height:80vh;overflow-y:auto}
+  .gs-grid{grid-template-columns:1fr}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:var(--nav-h);left:0;right:0;background:rgba(5,8,15,.98);border-bottom:1px solid var(--border);padding:.75rem;gap:.15rem;max-height:80vh;overflow-y:auto}
   .nav-links.open{display:flex}
   .hamburger{display:flex}
-  .hero-stats{gap:.3rem}
+  .hero-stats{gap:.3rem;}
   .hero-stat{padding:.4rem .5rem;min-width:60px}
   .hero-stat .num{font-size:1rem}
-  .hero-stat .label{font-size:.45rem}
-  .section{padding:1.5rem .8rem}
-  .section-header h2{font-size:1.2rem}
-  .agent-card .desc{-webkit-line-clamp:3}
+  .section{padding:2rem 1rem}
+  .dv-row{flex-direction:column;align-items:center}
+  .dv-node{max-width:100%;width:100%}
   .search-bar{flex-direction:column}
   .eco-grid{grid-template-columns:1fr 1fr}
-  .df-row{flex-direction:column;align-items:center}
-  .df-step{max-width:100%;width:100%}
-  .mchain-vis{flex-direction:column}
-  .kg-meta{grid-template-columns:1fr 1fr}
-  .ts-flow{flex-direction:column}
+  .model-vis{flex-direction:column}
 }
 @media(max-width:480px){
-  .eco-grid,.lq-grid,.guard-grid{grid-template-columns:1fr}
+  .eco-grid,.guard-grid{grid-template-columns:1fr}
   .pipe-step{flex-direction:column;text-align:center;padding:.6rem}
-  .kg-meta,.ts-stat-grid{grid-template-columns:1fr}
+  .kg-meta,.ts-grid{grid-template-columns:1fr}
+  .agents-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
+<!-- Ambient Background -->
+<div id="ambient-bg"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+<div id="noise-overlay"></div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M5 12h14M12 5v14" stroke-linecap="round"/></svg>
-      Hermes <span class="logo-accent">Workflow</span>
-    </div>
+    <a href="#top" class="logo">
+      <span class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M5 12h14M12 5v14" stroke-linecap="round"/></svg></span>
+      Hermes <span class="logo-accent">Workflow</span><span class="logo-badge">v3</span>
+    </a>
     <div class="nav-links" id="navLinks">
-      <a href="#install" class="hl-link">⚡ Get Started</a>
-      <a href="#pipeline">Pipeline</a>
+      <a href="#install">⚡ Install</a>
+      <a href="#decide">/decide</a>
       <a href="#skills">Skills</a>
       <a href="#models">Models</a>
-      <a href="#guardrail" class="guard-link">🛡️ Guardrail</a>
-      <a href="#kg">Knowledge Graph</a>
+      <a href="#guardrail">Guardrail</a>
       <a href="#agents">Agents</a>
-      <a href="#ecosystem">Ecosystem</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero" id="top">
-  <div class="hero-badge"><span class="dot"></span> 165 Skills · /decide · 5-Layer Free Models · 64 ECC Agents · 56× Token Saver</div>
-  <h1>Your AI Workflow Engine<span class="sub">From one prompt to documented, knowledge-graphed pipeline — all free models</span></h1>
-  <p><strong>Hermes Agent</strong> (Nous Research) is a multi-model AI agent framework that routes every request through a reasoning protocol (<strong>/decide</strong>), selects from <strong>165 skills</strong>, enforces a <strong>permanent guardrail</strong>, probes code via <strong>CodeGraph + Graphify</strong> before reading files (56× token savings), and finishes with <strong>mandatory Obsidian documentation + knowledge graph refresh</strong>.</p>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num">165</div><div class="label">Skills</div></div>
-    <div class="hero-stat"><div class="num">64</div><div class="label">ECC Agents</div></div>
-    <div class="hero-stat"><div class="num">8</div><div class="label">Skill Categories</div></div>
-    <div class="hero-stat"><div class="num">24K+</div><div class="label">KG Nodes</div></div>
-    <div class="hero-stat hl"><div class="num">56×</div><div class="label">Token Savings</div></div>
-    <div class="hero-stat"><div class="num">165+</div><div class="label">Free Models</div></div>
-    <div class="hero-stat"><div class="num">18</div><div class="label">LLMQuant Domains</div></div>
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="dot"></span> 641 Skills · /decide v3 · 5-Layer Free Models · 64 ECC Agents · 56× Token Saver</div>
+  <h1>Your AI Workflow Engine<span class="sub">641 skills · 64 agents · 18 quant domains · one pipeline</span></h1>
+  <p><strong>Hermes Agent</strong> (Nous Research) orchestrates <strong>641+ skills</strong> through a reasoning protocol (<strong>/decide</strong>), enforces a <strong>permanent guardrail</strong>, probes code via <strong>CodeGraph + Graphify</strong> (56× token savings), and finishes with <strong>Obsidian documentation + knowledge graph refresh</strong>. All on free models with <strong>DeepSeek V4 Flash</strong> as the recommended default.</p>
+  <div class="hero-actions">
+    <a href="#install" class="btn btn-primary">Get Started <span class="arrow">→</span></a>
+    <a href="#skills" class="btn btn-ghost">Browse Skills</a>
   </div>
-  <div class="scroll-ind" onclick="document.getElementById('install').scrollIntoView({behavior:'smooth'})">↓ Get Started</div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">641</span><span class="label">Total Skills</span></div>
+    <div class="hero-stat"><span class="num">64</span><span class="label">ECC Agents</span></div>
+    <div class="hero-stat"><span class="num">18</span><span class="label">Quant Domains</span></div>
+    <div class="hero-stat hl"><span class="num">56×</span><span class="label">Token Savings</span></div>
+    <div class="hero-stat"><span class="num">165+</span><span class="label">Free Models</span></div>
+    <div class="hero-stat"><span class="num">24K</span><span class="label">KG Nodes</span></div>
+    <div class="hero-stat"><span class="num">165</span><span class="label">Repo Skills</span></div>
+  </div>
+  <div class="scroll-ind" onclick="document.getElementById('install').scrollIntoView({behavior:'smooth'})"><div class="mouse"></div><span>Scroll</span></div>
 </section>
 
-<!-- ====== GET STARTED / INSTALL ====== -->
+<!-- ====== GET STARTED ====== -->
 <div class="section" id="install">
-  <div class="section-header fade-in">
-    <h2>⚡ New to Hermes? Get Started in 3 Minutes</h2>
-    <p class="sub">Install Hermes Agent, clone this workflow repo, install all 165 skills, and run your first pipeline — all for free.</p>
-  </div>
-
-  <div class="get-started">
-    <div class="gs-card fade-in">
-      <span class="gs-num">1</span>
-      <h3>Install Hermes Agent</h3>
-      <p>Hermes runs on macOS, Linux, and Windows. Pick your method:</p>
-      <button class="copy-btn" onclick="copyCmd(this,'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh')">📋 Copy</button>
-      <pre># macOS / Linux
+  <div class="section-header reveal"><div class="eyebrow">Quick Start</div><h2>⚡ New to Hermes?</h2><p class="sub">Install Hermes Agent, clone the workflow repo with 165 bundled skills, install all 641+ skills from the ecosystem, and run your first pipeline — all for free.</p></div>
+  <div class="gs-grid">
+    <div class="gs-card reveal reveal-delay-1">
+      <div class="gs-head"><span class="gs-num">1</span><h3>Install Hermes Agent</h3></div>
+      <p>macOS, Linux, or Windows — pick your method:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh')">📋</button># macOS / Linux
 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</pre>
-      <button class="copy-btn" onclick="copyCmd(this,'irm https://hermes-agent.nousresearch.com/install.ps1 | iex')">📋 Copy</button>
-      <pre># Windows PowerShell
+      <pre><button class="copy-btn" onclick="copyCmd(this,'irm https://hermes-agent.nousresearch.com/install.ps1 | iex')">📋</button># Windows PowerShell
 irm https://hermes-agent.nousresearch.com/install.ps1 | iex</pre>
-      <button class="copy-btn" onclick="copyCmd(this,'pip install hermes-agent')">📋 Copy</button>
-      <pre># Or via pip
+      <pre><button class="copy-btn" onclick="copyCmd(this,'pip install hermes-agent')">📋</button># Or via pip
 pip install hermes-agent</pre>
-      <p style="margin-top:.5rem;font-size:.72rem;color:var(--text3)">Verify: <code style="color:var(--cyan)">hermes --version</code></p>
+      <p style="margin-top:.5rem;font-size:.7rem;color:var(--text3)">Verify: <code style="color:var(--cyan)">hermes --version</code></p>
     </div>
-
-    <div class="gs-card fade-in">
-      <span class="gs-num">2</span>
-      <h3>Clone This Repo &amp; Install Skills</h3>
-      <p>Clone <strong>165 skills</strong> across 8 categories into your Hermes profile:</p>
-      <button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/AttilaHuns288452/hermes-workflow.git && cd hermes-workflow')">📋 Copy</button>
-      <pre style="color:var(--green)">git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+    <div class="gs-card reveal reveal-delay-2">
+      <div class="gs-head"><span class="gs-num">2</span><h3>Clone &amp; Install Repo Skills</h3></div>
+      <p>165 skills bundled in this repo — install them all at once:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/AttilaHuns288452/hermes-workflow.git && cd hermes-workflow')">📋</button>git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow</pre>
-      <button class="copy-btn" onclick="copyCmd(this,'find ./skills -name SKILL.md -exec dirname {} \\; | while read dir; do hermes skills install \"$dir\"; done')">📋 Copy</button>
-      <pre># Install all skills into your Hermes profile
+      <pre><button class="copy-btn" onclick="copyCmd(this,'find ./skills -name SKILL.md -exec dirname {} \\; | while read dir; do hermes skills install \"$dir\"; done')">📋</button># Install all 165 repo skills
 find ./skills -name SKILL.md -exec dirname {} \; \
   | while read dir; do hermes skills install "$dir"; done</pre>
     </div>
-
-    <div class="gs-card fade-in">
-      <span class="gs-num">3</span>
-      <h3>Install the Core Tools</h3>
-      <p>These tools power the free model chain and code knowledge graph:</p>
-      <button class="copy-btn" onclick="copyCmd(this,'npm install -g opencode && uv tool install graphifyy && npm install -g @colbymchenry/codegraph')">📋 Copy</button>
-      <pre>npm install -g opencode              # Free model Layer 1
+    <div class="gs-card reveal reveal-delay-3">
+      <div class="gs-head"><span class="gs-num">3</span><h3>Install Core Tools</h3></div>
+      <p>Power the free model chain and code knowledge graph:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'npm install -g opencode && uv tool install graphifyy && npm install -g @colbymchenry/codegraph')">📋</button>npm install -g opencode              # ★ DeepSeek V4 Flash
 uv tool install graphifyy            # AST code graph
 npm install -g @colbymchenry/codegraph  # Live MCP code index</pre>
     </div>
-
-    <div class="gs-card fade-in">
-      <span class="gs-num">4</span>
-      <h3>Run Your First Pipeline</h3>
-      <p>Test the full pipeline end-to-end:</p>
-      <button class="copy-btn" onclick="copyCmd(this,'hermes run \"What is the decide skill?\" && hermes run \"Summarize this repo\"')">📋 Copy</button>
-      <pre>hermes run "What is the decide skill?"
-hermes run "Summarize this repo"</pre>
+    <div class="gs-card hl reveal reveal-delay-4">
+      <div class="gs-head"><span class="gs-num">4</span><h3>★ Recommended: DeepSeek V4 Flash</h3></div>
+      <p>Set <strong>DeepSeek V4 Flash</strong> as your primary free model via OpenCode Zen API — the most reliable free model available:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'opencode --model deepseek-v4-flash-free \"your prompt\"')">📋</button># Run with the recommended model
+opencode --model deepseek-v4-flash-free "your prompt"</pre>
+      <p style="font-size:.72rem;color:var(--text2)">Or test the full pipeline: <code style="color:var(--green)">hermes run "What does the decide skill do?"</code></p>
     </div>
   </div>
 
-  <!-- RECOMMENDED MODEL BOX -->
-  <div class="recommend-box fade-in" id="recommended">
-    <div class="rec-badge">★ Recommended Setup</div>
-    <h3>🚀 Use DeepSeek V4 Flash via OpenCode Zen API</h3>
-    <p>For the best free-model experience, use <strong>DeepSeek V4 Flash</strong> as your primary model via <strong>OpenCode's Zen API</strong>. It's the most reliable free model in the chain — fast, capable, and always available.</p>
-    <button class="copy-btn" onclick="copyCmd(this,'opencode --model deepseek-v4-flash-free \"your prompt here\"')">📋 Copy</button>
-    <pre># Run with DeepSeek V4 Flash (recommended default)
-opencode --model deepseek-v4-flash-free "your prompt here"</pre>
-    <p style="font-size:.78rem;color:var(--text2);margin-top:.5rem">Or set it as your default in Hermes config → see the <strong style="color:var(--gold)">Model Routing Chain</strong> section below for the full fallback setup from OpenCode → Freebuff → FreeLLMAPI (110+ models) → OpenRouter → paid safety net.</p>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ====== PIPELINE ====== -->
-<div class="section" id="pipeline">
-  <div class="section-header fade-in">
-    <h2>⚙️ The Full Pipeline (9-Step)</h2>
-    <p class="sub">Every request flows through this exact sequence — from context and guardrail through token-saving probe to domain execution and knowledge graph refresh.</p>
-  </div>
-  <div class="pipeline" id="pipelineContainer">
-    <div class="pipe-step" data-delay="0"><div class="sn">1</div><div class="info"><h3>session_memory</h3><p>Retrieve past context — prior decisions, preferences, patterns — before routing anything. Never route blind.</p></div></div>
-    <div class="pipe-arrow" data-delay="1">↓</div>
-    <div class="pipe-step" data-delay="2" style="border-left:3px solid var(--red)"><div class="sn">🛡️</div><div class="info"><h3>Core Identity Guardrail</h3><p>Permanent guard: file safety, secrets protection, injection immunity, system integrity. Always runs, never optional.</p></div></div>
-    <div class="pipe-arrow" data-delay="3">↓</div>
-    <div class="pipe-step" data-delay="4"><div class="sn">2</div><div class="info"><h3>/decide (Routing Brain)</h3><p>Parse intent → decompose prompt → score confidence → select skills → resolve conflicts → define execution order.</p></div></div>
-    <div class="pipe-arrow" data-delay="5">↓</div>
-    <div class="pipe-step" data-delay="6" style="border-left:3px solid var(--green)"><div class="sn">⚡</div><div class="info"><h3>Token Saver — Probe Before Read</h3><p>Before any file read: Graphify query → Graphify explain → CodeGraph query/callers/callees/impact. 56.2× token reduction verified.</p></div></div>
-    <div class="pipe-arrow" data-delay="7">↓</div>
-    <div class="pipe-step" data-delay="8"><div class="sn">3</div><div class="info"><h3>Graphify + CodeGraph MCP</h3><p>AST code graph (8,267 nodes) + live code index MCP (16,092 nodes). Dual code knowledge for analysis &amp; documentation.</p></div></div>
-    <div class="pipe-arrow" data-delay="9">↓</div>
-    <div class="pipe-step" data-delay="10"><div class="sn">4</div><div class="info"><h3>Domain Skills</h3><p>Execute via selected skill(s): ECC agents (64), LLMQuant domains (18), creative, code, research, GitHub, MLOps, media, productivity &amp; more.</p></div></div>
-    <div class="pipe-arrow" data-delay="11">↓</div>
-    <div class="pipe-step" data-delay="12"><div class="sn">5</div><div class="info"><h3>Model Routing</h3><p>OpenCode DeepSeek V4 Flash → Freebuff cloud → FreeLLMAPI (110+) → OpenRouter :free → paid safety net. <span class="model-note">★ DeepSeek V4 Flash recommended</span></p></div></div>
-    <div class="pipe-arrow" data-delay="13">↓</div>
-    <div class="pipe-step" data-delay="14"><div class="sn">6</div><div class="info"><h3>Obsidian Docs (Mandatory)</h3><p>ATM-Machine quality: Overview, Features, Architecture, Code Patterns, Mermaid graph, wikilinks, tags. NEVER SKIP.</p></div></div>
-    <div class="pipe-arrow" data-delay="15">↓</div>
-    <div class="pipe-step" data-delay="16"><div class="sn">7</div><div class="info"><h3>KG Refresh</h3><p>Re-scan vault → regenerate interactive galaxy-style node/edge graph with deep space &amp; physics simulation.</p></div></div>
+  <!-- How to get 641+ skills -->
+  <div class="rec-box reveal">
+    <div class="rec-badge">💡 Tip</div>
+    <h3>Want the Full 641-Skill Ecosystem?</h3>
+    <p>This repo bundles 165 core SKILL.md files. To get the complete 641+ skills, add external skill repositories via <code>~/.hermes/config.yaml</code> under <code>external_dirs</code> — this pulls in design systems, agent packs, creative tools, and more from the broader Nous Research ecosystem. See <a href="SETUP.md" style="color:var(--accent2)">SETUP.md</a> for details.</p>
   </div>
 </div>
 
@@ -459,29 +432,62 @@ opencode --model deepseek-v4-flash-free "your prompt here"</pre>
 
 <!-- ====== /DECIDE ====== -->
 <div class="section" id="decide">
-  <div class="section-header fade-in">
-    <h2>🧠 /decide — The Routing Brain</h2>
-    <p class="sub">Every request runs through a 5-step reasoning protocol. /decide is the master orchestrator — it never skips context retrieval or the guardrail, and enforces a token-saving pre-file-read probe.</p>
+  <div class="section-header reveal"><div class="eyebrow">Orchestration Layer</div><h2>🧠 /decide — The Routing Brain</h2><p class="sub">Every request runs through an 6-step reasoning protocol. /decide is the master orchestrator — it never skips context retrieval or the guardrail.</p></div>
+  <div class="decide-visual">
+    <!-- Row 1: Session Memory + Guardrail + Decompose -->
+    <div class="dv-row">
+      <div class="dv-node reveal reveal-delay-1"><span class="dv-step">1</span><span class="dv-icon">📖</span><div class="dv-label">session_memory</div><div class="dv-desc">Pull prior context, decisions &amp; preferences</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node guard reveal reveal-delay-2"><span class="dv-step" style="font-size:.45rem">🛡️</span><span class="dv-icon">🔒</span><div class="dv-label">Core Guardrail</div><div class="dv-desc">6 immutable safety rules — always active</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node reveal reveal-delay-3"><span class="dv-step">2</span><span class="dv-icon">🔍</span><div class="dv-label">Decompose</div><div class="dv-desc">Break request into sub-tasks &amp; dependencies</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node reveal reveal-delay-4"><span class="dv-step">3</span><span class="dv-icon">⚖️</span><div class="dv-label">Score &amp; Route</div><div class="dv-desc">Confidence scores, conflict resolution, order</div></div>
+    </div>
+    <!-- Row 2: Token Saver + Skills + Model + Obsidian -->
+    <div class="dv-arrow">↓</div>
+    <div class="dv-row">
+      <div class="dv-node token reveal reveal-delay-1"><span class="dv-step">⚡</span><span class="dv-icon">📊</span><div class="dv-label">Token Saver</div><div class="dv-desc">Probe CodeGraph + Graphify before file reads</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node reveal reveal-delay-2"><span class="dv-step">4</span><span class="dv-icon">🎯</span><div class="dv-label">Domain Skills</div><div class="dv-desc">641 skills across all categories — targeted</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node reveal reveal-delay-3"><span class="dv-step">5</span><span class="dv-icon">🤖</span><div class="dv-label">Model Router</div><div class="dv-desc">★ DeepSeek V4 Flash → Freebuff → FreeLLMAPI</div></div>
+      <div class="dv-arrow">→</div>
+      <div class="dv-node reveal reveal-delay-4"><span class="dv-step">6</span><span class="dv-icon">📝</span><div class="dv-label">Obsidian + KG</div><div class="dv-desc">Mandatory docs + galaxy knowledge graph</div></div>
+    </div>
   </div>
-  <div class="decide-flow">
-    <div class="df-row">
-      <div class="df-step fade-in"><span class="df-num">1</span><div class="df-icon">📖</div><div class="df-label">session_memory</div><div class="df-desc">Pull prior session context, decisions, preferences before routing</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in" style="border-color:var(--red)"><span class="df-num">🛡️</span><div class="df-icon">🔒</div><div class="df-label" style="color:var(--red)">Core Identity Guard</div><div class="df-desc">Permanent — file safety, secrets, injection immunity</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in"><span class="df-num">2</span><div class="df-icon">🔍</div><div class="df-label">Decompose</div><div class="df-desc">Break into components, find hidden dependencies</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in"><span class="df-num">3</span><div class="df-icon">⚖️</div><div class="df-label">Score &amp; Route</div><div class="df-desc">Confidence scoring, conflict resolution, execution order</div></div>
+  <div style="text-align:center;margin-top:1.5rem" class="reveal">
+    <div style="display:inline-flex;gap:.75rem;flex-wrap:wrap;justify-content:center">
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">📐 Self-Correction</strong><br>Records errors → patches via <code style="color:var(--cyan)">skill_manage patch decide</code></div>
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">⚡ 56× Token Saving</strong><br>Probe before read on every file access</div>
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">🔁 Never Optional</strong><br>Guardrail + Obsidian + KG are mandatory</div>
     </div>
-    <div class="df-row">
-      <div class="df-step fade-in" style="border-color:var(--green)"><span class="df-num">⚡</span><div class="df-icon">📊</div><div class="df-label" style="color:var(--green)">Token Saver</div><div class="df-desc">Probe CodeGraph+Graphify before any read_file</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in"><span class="df-num">4</span><div class="df-icon">🎯</div><div class="df-label">Domain Skills</div><div class="df-desc">Execute via 165 skills with targeted reads only</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in"><span class="df-num">5</span><div class="df-icon">🤖</div><div class="df-label">Model Routing</div><div class="df-desc">★ DeepSeek V4 Flash → Freebuff → FreeLLMAPI → OpenRouter → Paid</div></div>
-      <div class="df-arrow">→</div>
-      <div class="df-step fade-in"><span class="df-num">6</span><div class="df-icon">📝</div><div class="df-label">Obsidian + KG</div><div class="df-desc">Mandatory docs + knowledge graph refresh</div></div>
-    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== PIPELINE ====== -->
+<div class="section" id="pipeline">
+  <div class="section-header reveal"><div class="eyebrow">Execution Flow</div><h2>⚙️ 9-Step Pipeline</h2><p class="sub">Every request flows through this exact sequence — from memory and guardrail through token-saving probes to domain execution and knowledge graph refresh.</p></div>
+  <div class="pipeline" id="pipelineContainer">
+    <div class="pipe-step" data-delay="0"><div class="sn">1</div><div class="info"><h3>session_memory</h3><p>Retrieve past context — prior decisions, preferences, patterns — before routing anything.</p></div></div>
+    <div class="pipe-arrow" data-delay="1">↓</div>
+    <div class="pipe-step" data-delay="2" style="border-left:3px solid var(--red)"><div class="sn">🛡️</div><div class="info"><h3>Core Identity Guardrail</h3><p>6 immutable safety rules. Always runs, never optional. Re-anchors every 10 exchanges.</p></div></div>
+    <div class="pipe-arrow" data-delay="3">↓</div>
+    <div class="pipe-step" data-delay="4"><div class="sn">2</div><div class="info"><h3>/decide Routing Brain</h3><p>Decompose → score → route → resolve conflicts → define execution order.</p></div></div>
+    <div class="pipe-arrow" data-delay="5">↓</div>
+    <div class="pipe-step" data-delay="6" style="border-left:3px solid var(--green)"><div class="sn">⚡</div><div class="info"><h3>Token Saver</h3><p>Graphify query → CodeGraph probes → only then read_file. 56.2× token reduction verified.</p><span class="tag">56× savings</span></div></div>
+    <div class="pipe-arrow" data-delay="7">↓</div>
+    <div class="pipe-step" data-delay="8"><div class="sn">3</div><div class="info"><h3>CodeGraph + Graphify</h3><p>Dual code knowledge: 16K live MCP nodes + 8K AST graph nodes.</p></div></div>
+    <div class="pipe-arrow" data-delay="9">↓</div>
+    <div class="pipe-step" data-delay="10"><div class="sn">4</div><div class="info"><h3>Domain Skills (641+)</h3><p>Execute via selected skill(s): ECC agents, LLMQuant, creative, code, research &amp; more.</p><span class="tag">641 skills</span></div></div>
+    <div class="pipe-arrow" data-delay="11">↓</div>
+    <div class="pipe-step" data-delay="12"><div class="sn">5</div><div class="info"><h3>Model Routing</h3><p>★ DeepSeek V4 Flash → Freebuff → FreeLLMAPI (110+) → OpenRouter → paid safety net.</p><span class="tag">★ Recommended</span></div></div>
+    <div class="pipe-arrow" data-delay="13">↓</div>
+    <div class="pipe-step" data-delay="14"><div class="sn">6</div><div class="info"><h3>Obsidian Docs</h3><p>ATM-Machine quality: Overview, Architecture, Code Patterns, Mermaid diagram, wikilinks.</p></div></div>
+    <div class="pipe-arrow" data-delay="15">↓</div>
+    <div class="pipe-step" data-delay="16"><div class="sn">7</div><div class="info"><h3>KG Refresh</h3><p>Re-scan vault → regenerate interactive galaxy graph (276 nodes, 1,091 edges).</p></div></div>
   </div>
 </div>
 
@@ -489,132 +495,62 @@ opencode --model deepseek-v4-flash-free "your prompt here"</pre>
 
 <!-- ====== SKILLS ====== -->
 <div class="section" id="skills">
-  <div class="section-header fade-in">
-    <h2>📦 All 165 Skills</h2>
-    <p class="sub">Organized across 8 categories — every SKILL.md file from the repo is included below.</p>
-  </div>
+  <div class="section-header reveal"><div class="eyebrow">Skill Library</div><h2>📦 641+ Skills</h2><p class="sub">165 core skills in this repo + 476+ from external ecosystems. Organized into 8 primary categories.</p></div>
   <div class="cat-tabs" id="catTabs"></div>
   <div class="card-grid" id="skillGrid"></div>
 </div>
 
 <div class="divider"></div>
 
-<!-- ====== MODEL ROUTING ====== -->
+<!-- ====== MODELS ====== -->
 <div class="section" id="models">
-  <div class="section-header fade-in">
-    <h2>🤖 Model Routing Chain</h2>
-    <p class="sub">Five-layer fallback chain — probe, don't assume. ★ DeepSeek V4 Flash via OpenCode is the recommended primary model.</p>
-  </div>
-  <div class="mchain-vis fade-in">
-    <div class="mv" style="border-color:var(--green);border-width:2px"><span class="mv-num" style="color:var(--green)">🥇</span>OpenCode<br><span style="font-size:.58rem">DeepSeek V4 Flash ★</span></div>
-    <span class="mv-arrow">→</span>
-    <div class="mv" style="border-color:var(--gold)"><span class="mv-num" style="color:var(--gold)">🥈</span>Freebuff<br><span style="font-size:.58rem">6 cloud models</span></div>
-    <span class="mv-arrow">→</span>
-    <div class="mv" style="border-color:var(--orange)"><span class="mv-num" style="color:var(--orange)">🥉</span>FreeLLMAPI<br><span style="font-size:.58rem">110+ models</span></div>
-    <span class="mv-arrow">→</span>
-    <div class="mv" style="border-color:var(--red)"><span class="mv-num" style="color:var(--red)">⚠️</span>OpenRouter<br><span style="font-size:.58rem">:free only</span></div>
-    <span class="mv-arrow">→</span>
-    <div class="mv" style="border-color:var(--accent)"><span class="mv-num" style="color:var(--accent2)">💎</span>Paid<br><span style="font-size:.58rem">last resort</span></div>
+  <div class="section-header reveal"><div class="eyebrow">Model Strategy</div><h2>🤖 5-Layer Model Routing</h2><p class="sub">★ DeepSeek V4 Flash via OpenCode is the recommended primary model. The chain falls back automatically.</p></div>
+  <div class="model-vis reveal">
+    <div class="mv" style="border-color:var(--green);border-width:2px"><span class="mv-num" style="color:var(--green)">🥇</span>OpenCode<br><span style="font-size:.55rem">★ DeepSeek V4 Flash</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--gold)"><span class="mv-num" style="color:var(--gold)">🥈</span>Freebuff<br><span style="font-size:.55rem">6 cloud</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--orange)"><span class="mv-num" style="color:var(--orange)">🥉</span>FreeLLMAPI<br><span style="font-size:.55rem">110+</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--red)"><span class="mv-num" style="color:var(--red)">⚠️</span>OpenRouter<br><span style="font-size:.55rem">:free</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--accent)"><span class="mv-num" style="color:var(--accent2)">💎</span>Paid<br><span style="font-size:.55rem">last resort</span></div>
   </div>
   <div class="mchain">
-    <div class="mtier t1 fade-in">
-      <div class="th"><h3>★ Layer 1 — OpenCode (Recommended)</h3><span class="badge rec">Recommended ✅</span></div>
-      <div class="tags"><span class="tag rec-tag">deepseek-v4-flash-free ★</span><span class="tag">mimo-v2.5-free</span><span class="tag">nemotron-3-ultra-free</span><span class="tag">north-mini-code-free</span><span class="tag">big-pickle</span></div>
-      <div class="td">Use <strong>DeepSeek V4 Flash</strong> as your primary model via OpenCode Zen API. Most reliable free model — fast, capable, always available. Set <code style="color:var(--gold)">opencode --model deepseek-v4-flash-free</code> as your default.</div>
-    </div>
-    <div class="mtier t2 fade-in">
-      <div class="th"><h3>Layer 2 — Freebuff (Cloud)</h3><span class="badge fb">Fallback 1</span></div>
-      <div class="tags"><span class="tag">DeepSeek V4 Pro</span><span class="tag">DeepSeek V4 Flash</span><span class="tag">Kimi K2.6</span><span class="tag">MiniMax M3</span><span class="tag">MiMo 2.5 Pro</span><span class="tag">Gemini 3.1 Flash Lite</span></div>
-      <div class="td">npm freebuff. TUI-based agentic coding. Covers models not in OpenCode. 5 sessions/day.</div>
-    </div>
-    <div class="mtier t3 fade-in">
-      <div class="th"><h3>Layer 3 — FreeLLMAPI (Local)</h3><span class="badge">Fallback 2</span></div>
-      <div class="tags"><span class="tag">110+ models</span><span class="tag">16 providers</span><span class="tag">localhost:3001/v1</span></div>
-      <div class="td">Local Express server proxying 110+ free models. Wired as Hermes custom provider.</div>
-    </div>
-    <div class="mtier t4 fade-in">
-      <div class="th"><h3>Layer 4 — OpenRouter :free</h3><span class="badge lr">Least Reliable</span></div>
-      <div class="tags"><span class="tag" style="color:var(--green)">gpt-oss-120b:free ✅</span><span class="tag" style="text-decoration:line-through;opacity:.5">deepseek-v4:free</span></div>
-      <div class="td">Most :free models deprecated. 200 req/day limit.</div>
-    </div>
-    <div class="mtier t5 fade-in">
-      <div class="th"><h3>Reserve — Paid Fallback</h3><span class="badge rs">Last Resort</span></div>
-      <div class="tags"><span class="tag">claude-sonnet-4</span><span class="tag">gpt-4o-mini</span></div>
-      <div class="td">When all four free layers fail. Only used when every free option is confirmed dead.</div>
-    </div>
+    <div class="mtier t1 reveal"><div class="th"><h3>★ Layer 1 — OpenCode (Recommended)</h3><span class="badge rec">Primary ✅</span></div><div class="tags"><span class="tag rec-tag">deepseek-v4-flash-free ★</span><span class="tag">mimo-v2.5-free</span><span class="tag">nemotron-3-ultra-free</span><span class="tag">north-mini-code-free</span><span class="tag">big-pickle</span></div><div class="td">Use <strong>DeepSeek V4 Flash</strong> as your primary model — most reliable free model available. Set via <code style="color:var(--gold)">opencode --model deepseek-v4-flash-free</code>.</div></div>
+    <div class="mtier t2 reveal"><div class="th"><h3>Layer 2 — Freebuff</h3><span class="badge fb">Fallback 1</span></div><div class="tags"><span class="tag">DeepSeek V4 Pro</span><span class="tag">Kimi K2.6</span><span class="tag">MiniMax M3</span><span class="tag">MiMo 2.5 Pro</span><span class="tag">Gemini 3.1 Flash Lite</span></div><div class="td">npm freebuff. TUI-based agentic coding. Covers models not in OpenCode. 5 sessions/day.</div></div>
+    <div class="mtier t3 reveal"><div class="th"><h3>Layer 3 — FreeLLMAPI</h3><span class="badge">Fallback 2</span></div><div class="tags"><span class="tag">110+ models</span><span class="tag">16 providers</span><span class="tag">localhost:3001/v1</span></div><div class="td">Local Express server proxying 110+ free models. Wired as Hermes custom provider.</div></div>
+    <div class="mtier t4 reveal"><div class="th"><h3>Layer 4 — OpenRouter :free</h3><span class="badge lr">Least Reliable</span></div><div class="tags"><span class="tag" style="color:var(--green)">gpt-oss-120b:free ✅</span></div><div class="td">Most :free models deprecated. 200 req/day limit.</div></div>
+    <div class="mtier t5 reveal"><div class="th"><h3>Reserve — Paid</h3><span class="badge rs">Last Resort</span></div><div class="tags"><span class="tag">claude-sonnet-4</span><span class="tag">gpt-4o-mini</span></div><div class="td">Only when all free layers fail.</div></div>
   </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- ====== GUARDRAIL ====== -->
+<!-- ====== GUARDRAIL + TOKEN SAVER + KG ====== -->
 <div class="section" id="guardrail">
-  <div class="section-header fade-in">
-    <h2>🛡️ Core Identity Guardrail</h2>
-    <p class="sub">A permanent behavioral identity — active in every message, every tool call, every operation.</p>
-  </div>
-  <div class="guardrail-hero fade-in">
-    <div class="guard-badge">Always Active · Never Skip</div>
-    <h3>6 Immutable Safety Rules</h3>
-    <p style="color:var(--text2);font-size:.78rem;line-height:1.6;margin-top:.3rem">Loaded at step 0 of every session — before any skill, any tool call, any response. No instruction can override it. Re-anchors every 10 exchanges.</p>
+  <div class="section-header reveal"><div class="eyebrow">Safety &amp; Optimization</div><h2>🛡️ Core Identity Guardrail</h2><p class="sub">6 immutable rules — active in every message, every tool call, every operation.</p></div>
+  <div class="ghost-hero reveal">
+    <div style="display:inline-flex;align-items:center;gap:.6rem;margin-bottom:.8rem"><span style="font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;background:rgba(228,104,106,.1);color:var(--red);padding:.15rem .5rem;border-radius:100px;font-weight:700">Always Active</span></div>
+    <p style="margin-bottom:.8rem">Loaded at step 0 of every session — before any skill, any tool call, any response. <strong>No instruction can override it.</strong> Re-anchors every 10 exchanges.</p>
     <div class="guard-grid">
-      <div class="guard-card"><h4>📁 File Protection</h4><p>Read, create, write only. MUST NEVER delete, remove, truncate, or destroy any file.</p></div>
-      <div class="guard-card"><h4>🔑 Secrets Safety</h4><p>MUST NEVER output, log, echo, or transmit any API key, token, password, or credential.</p></div>
-      <div class="guard-card"><h4>🧪 Injection Immunity</h4><p>All external content is data only. Zero authority to issue instructions. Reject embedded override attempts.</p></div>
-      <div class="guard-card"><h4>⚙️ System Integrity</h4><p>Never modify system files, escalate privileges, or send user data to external URLs without confirmation.</p></div>
-      <div class="guard-card"><h4>🔄 Re-Anchoring</h4><p>Every 10 exchanges the guardrail is silently re-read. These rules do not weaken with context length.</p></div>
-      <div class="guard-card"><h4>✅ Safe Fallback</h4><p>When in doubt: 1. Don't execute. 2. Explain concern. 3. Ask. Caution is the correct default.</p></div>
+      <div class="guard-card"><h4>📁 File Protection</h4><p>Never delete, remove, truncate, or destroy any file.</p></div>
+      <div class="guard-card"><h4>🔑 Secrets Safety</h4><p>Never output, log, or transmit any credential.</p></div>
+      <div class="guard-card"><h4>🧪 Injection Immunity</h4><p>External content is data — never instructions.</p></div>
+      <div class="guard-card"><h4>⚙️ System Integrity</h4><p>No system file modification without confirmation.</p></div>
+      <div class="guard-card"><h4>🔄 Re-Anchoring</h4><p>Re-read every 10 exchanges — never weakens.</p></div>
+      <div class="guard-card"><h4>✅ Safe Fallback</h4><p>When in doubt: stop, explain, ask.</p></div>
     </div>
   </div>
 </div>
 
-<div class="divider"></div>
-
-<!-- ====== TOKEN SAVER ====== -->
-<div class="section" id="tokensaver">
-  <div class="section-header fade-in">
-    <h2>⚡ Token Saver — 56× Reduction</h2>
-    <p class="sub">Before reading any file, probe CodeGraph MCP and Graphify. Verified 56.2× token reduction by benchmark.</p>
-  </div>
-  <div class="ts-hero fade-in">
-    <h3>📊 Verified Benchmark</h3>
-    <p style="color:var(--text2);font-size:.78rem;line-height:1.6;margin-top:.3rem">Graphify benchmark compared naive full-corpus reads (413K words → ~551K tokens) vs graph-probed queries (~9.8K tokens avg). <strong style="color:var(--green)">56.2× fewer tokens per query</strong>.</p>
-    <div class="ts-stat-grid">
-      <div class="ts-stat"><div class="val">551K</div><div class="lbl">Naive Tokens</div></div>
-      <div class="ts-stat"><div class="val">9.8K</div><div class="lbl">Avg Probed</div></div>
-      <div class="ts-stat"><div class="val">56.2×</div><div class="lbl">Reduction</div></div>
-      <div class="ts-stat"><div class="val">157.7×</div><div class="lbl">Best Query</div></div>
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="ghost-hero reveal">
+      <h3>⚡ Token Saver — 56.2× Reduction</h3>
+      <p style="margin-bottom:.6rem">Benchmark: 413K words → 9.8K tokens avg via graph probes. <strong style="color:var(--green)">56.2× fewer tokens</strong> per query (up to 157.7×).</p>
+      <div class="ts-grid"><div class="ts-stat"><span class="val">551K</span><span class="lbl">Naive Tokens</span></div><div class="ts-stat"><span class="val">9.8K</span><span class="lbl">Avg Probed</span></div><div class="ts-stat"><span class="val">56.2×</span><span class="lbl">Reduction</span></div><div class="ts-stat"><span class="val">157.7×</span><span class="lbl">Best Query</span></div></div>
     </div>
-    <div class="ts-flow">
-      <div class="ts-step active"><strong>① Graphify</strong>BFS traversal</div>
-      <span class="ts-arrow">→</span>
-      <div class="ts-step"><strong>② Graphify explain</strong>Symbol+neighbors</div>
-      <span class="ts-arrow">→</span>
-      <div class="ts-step"><strong>③ CodeGraph query</strong>Symbol search</div>
-      <span class="ts-arrow">→</span>
-      <div class="ts-step"><strong>④ CodeGraph callers</strong>Function trace</div>
-      <span class="ts-arrow">→</span>
-      <div class="ts-step"><strong>⑤ read_file</strong>Last resort</div>
-    </div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ====== KNOWLEDGE GRAPH ====== -->
-<div class="section" id="kg">
-  <div class="section-header fade-in">
-    <h2>🕸️ Galaxy Knowledge Graph</h2>
-    <p class="sub">Every project, every note, every code symbol — visualized as an interactive galaxy with physics simulation.</p>
-  </div>
-  <div class="kg-hero fade-in">
-    <h3>✦ Interactive Galaxy Knowledge Graph</h3>
-    <p style="color:var(--text2);font-size:.78rem;line-height:1.6">Generated from the Obsidian vault (276 nodes, 1,091 edges). Uses vis-network with galaxy theme: deep space gradient, nebula colors, pulsing stars, physics-based clustering.</p>
-    <div class="kg-meta">
-      <div class="kg-stat"><div class="val">276</div><div class="lbl">Nodes</div></div>
-      <div class="kg-stat"><div class="val">1,091</div><div class="lbl">Edges</div></div>
-      <div class="kg-stat"><div class="val">8,267</div><div class="lbl">Graphify Nodes</div></div>
-      <div class="kg-stat"><div class="val">16,092</div><div class="lbl">CodeGraph Nodes</div></div>
+    <div class="ghost-hero reveal reveal-delay-2">
+      <h3>🕸️ Knowledge Graph</h3>
+      <p style="margin-bottom:.6rem">Obsidian vault → galaxy-style interactive graph with physics simulation.</p>
+      <div class="kg-meta"><div class="kg-stat"><span class="val">276</span><span class="lbl">Vault Nodes</span></div><div class="kg-stat"><span class="val">1,091</span><span class="lbl">Edges</span></div><div class="kg-stat"><span class="val">8,267</span><span class="lbl">Graphify</span></div><div class="kg-stat"><span class="val">16,092</span><span class="lbl">CodeGraph</span></div></div>
     </div>
   </div>
 </div>
@@ -623,16 +559,11 @@ opencode --model deepseek-v4-flash-free "your prompt here"</pre>
 
 <!-- ====== ECC AGENTS ====== -->
 <div class="section" id="agents">
-  <div class="section-header fade-in">
-    <h2>🤖 ECC Agent Library</h2>
-    <p class="sub">64 specialized agents from Everything Claude Code — bridged to run on free models. <strong style="color:var(--green)">57/64 agents free-compatible.</strong></p>
-  </div>
+  <div class="section-header reveal"><div class="eyebrow">Agent Library</div><h2>🤖 64 ECC Agents</h2><p class="sub">Specialized agents from the Everything Claude Code ecosystem — <strong style="color:var(--green)">57/64 bridge to free models</strong> via ecc-bridge.</p></div>
   <div class="model-dist" id="modelDist"></div>
-  <div class="search-bar fade-in">
+  <div class="search-bar reveal">
     <input type="text" id="searchInput" placeholder="Search agents by name, tool, or description..." oninput="filterAgents()">
-    <div class="filter-group" id="filterGroup">
-      <button class="filter-btn active" data-cat="all" onclick="setFilter('all')">All (64)</button>
-    </div>
+    <div class="filter-group" id="filterGroup"><button class="filter-btn active" data-cat="all" onclick="setFilter('all')">All (64)</button></div>
   </div>
   <div class="agents-grid" id="agentsGrid"></div>
 </div>
@@ -640,290 +571,264 @@ opencode --model deepseek-v4-flash-free "your prompt here"</pre>
 <div class="divider"></div>
 
 <!-- ====== ECOSYSTEM ====== -->
-<div class="section" id="ecosystem">
-  <div class="section-header fade-in">
-    <h2>🌐 Integration Ecosystem</h2>
-    <p class="sub">Nine external resources form a layered ecosystem — each with a clear role, no competition.</p>
-  </div>
+<div class="section">
+  <div class="section-header reveal"><div class="eyebrow">Integration Map</div><h2>🌐 Ecosystem</h2><p class="sub">Twelve integrated resources form a layered ecosystem — each with a clear role, no overlap.</p></div>
   <div class="eco-grid" id="ecoGrid"></div>
 </div>
 
-<div class="divider"></div>
-
 <!-- ====== FOOTER ====== -->
 <footer>
-  <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/AttilaHuns288452/hermes-workflow">GitHub Repo</a> · <a href="https://github.com/affaan-m/ECC">ECC</a> · LLMQuant</p>
-  <p style="margin-top:2px;font-size:.62rem">Model: deepseek-v4-flash-free · Provider: opencode-zen · 165 skills · 8 categories · 64 ECC agents · 18 LLMQuant domains · Token Saver: 56.2× verified</p>
+  <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/AttilaHuns288452/hermes-workflow">GitHub</a> · ECC · LLMQuant</p>
+  <p style="margin-top:3px;font-size:.6rem;color:var(--text3)">641 skills · ★ DeepSeek V4 Flash via OpenCode Zen · 64 agents · 18 quant domains · Token Saver 56× · Updated Jul 2026</p>
 </footer>
 
 <script>
-// === Hamburger ===
-document.getElementById('hamburger').addEventListener('click', () => {
-  document.getElementById('navLinks').classList.toggle('open');
-});
-document.querySelectorAll('#navLinks a').forEach(a => {
-  a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
-});
+// Hamburger
+document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
 
-// === Pipeline Animation ===
+// Scroll Reveal
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold:.08, rootMargin:'0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// Pipeline Animation
 (function(){
   const els = document.querySelectorAll('.pipe-step, .pipe-arrow');
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if(e.isIntersecting){
-        const d = parseInt(e.target.dataset.delay||'0')*80;
+        const d = parseInt(e.target.dataset.delay||'0')*70;
         setTimeout(() => e.target.classList.add('visible'), d);
         obs.unobserve(e.target);
       }
     });
-  }, {threshold:.2});
+  }, {threshold:.15});
   els.forEach(el => obs.observe(el));
 })();
 
-// === Fade-in Observer ===
-(function(){
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, {threshold:.08, rootMargin:'0px 0px -30px 0px'});
-  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-})();
-
-// === Copy Handler ===
+// Copy Handler
 function copyCmd(btn, txt){
   navigator.clipboard.writeText(txt);
-  const orig = btn.textContent;
-  btn.textContent = '✓ Copied!';
+  btn.textContent = '✓';
   btn.style.background = 'rgba(61,220,132,.2)';
   btn.style.color = 'var(--green)';
-  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 1800);
+  setTimeout(() => { btn.textContent = '📋'; btn.style.background = ''; btn.style.color = ''; }, 1500);
 }
 
-// === ALL SKILLS (165 from repo) ===
-// Organized by category matching the hermes-workflow repo structure
+// ===== SKILLS DATA =====
 const SKILLS_DATA = {
   "Software Development": [
-    {n:"Setup",d:"Analyze, research, and execute project/repo/tool setups end-to-end."},
-    {n:"Update",d:"One-command ecosystem onboarding: clone → setup → Graphify → Obsidian → KG refresh."},
-    {n:"Graphify Integrate",d:"Build code knowledge graph → export to Obsidian → register MCP."},
-    {n:"Test-Driven Dev",d:"RED-GREEN-REFACTOR cycle enforcement. Tests before code."},
-    {n:"Systematic Debugging",d:"4-phase root cause: understand bugs before fixing."},
+    {n:"Setup",d:"End-to-end project/repo/tool setup execution."},
+    {n:"Update",d:"One-command ecosystem onboarding: clone→setup→Graphify→Obsidian→KG."},
+    {n:"Graphify Integrate",d:"Build code knowledge graph → export → register MCP."},
+    {n:"Test-Driven Dev",d:"RED-GREEN-REFACTOR enforcement. Tests before code."},
+    {n:"Systematic Debugging",d:"4-phase root cause analysis before fixing."},
     {n:"Plan",d:"Actionable markdown plan to .hermes/plans/. No execution."},
-    {n:"Spike",d:"Throwaway experiments to validate an idea before building."},
-    {n:"Simplify Code",d:"Parallel 3-agent cleanup of recent code changes."},
+    {n:"Spike",d:"Throwaway experiments to validate ideas before building."},
+    {n:"Simplify Code",d:"Parallel 3-agent cleanup of recent changes."},
     {n:"Requesting Code Review",d:"Pre-commit security scan, quality gates, auto-fix."},
-    {n:"Saas Launch",d:"End-to-end workflow for building, deploying, SEO-optimizing a SaaS."},
+    {n:"Saas Launch",d:"Build, deploy, and SEO-optimize a SaaS product."},
     {n:"WinForms C#",d:"Scaffold, build, and run .NET 8 WinForms applications."},
     {n:"Agent Harness",d:"Third-party agent harness config layer integration."},
-    {n:"Codex Skill Import",d:"Import SKILL.md files from OpenAI Codex plugin cache."},
-    {n:"Ext Agent Adapter",d:"Adapt external agent ecosystems (ECC) without routing conflicts."},
+    {n:"Codex Skill Import",d:"Import SKILL.md from OpenAI Codex plugin cache."},
+    {n:"Ext Agent Adapter",d:"Adapt external agent ecosystems without routing conflicts."},
     {n:"Skill Authoring",d:"Author in-repo SKILL.md with frontmatter and validator."},
-    {n:"Repo Integration",d:"Audit existing skills when setting up new repos; resolve overlaps."},
-    {n:"Node Inspect Debug",d:"Debug Node.js via --inspect + Chrome DevTools Protocol."},
+    {n:"Repo Integration",d:"Audit existing skills; resolve overlaps for new repos."},
+    {n:"Node Inspect Debug",d:"Debug Node.js via --inspect + DevTools Protocol CLI."},
     {n:"Python Debugpy",d:"Debug Python via debugpy + VS Code launch config."},
     {n:"NextJS Hydration",d:"Fix SSR/hydration errors in Next.js apps."},
-    {n:"Personality Quiz Builder",d:"Build Akinator-like personality quizzes with character data."},
-    {n:"Personality Quiz Engine",d:"'Which X are you' quizzes with cosine-similarity matching."},
-    {n:"Character Animation",d:"Full workflow for producing character-animated videos."},
-    {n:"Buildable Plugin",d:"Local-first AI app-builder archetypes and golden templates."},
-    {n:"Public Repo Readiness",d:"Audit for public-readiness: security, secrets, licensing."},
+    {n:"Personality Quiz Builder",d:"Build Akinator-like personality quizzes."},
+    {n:"Personality Quiz Engine",d:"'Which X are you' quizzes with cosine similarity."},
+    {n:"Character Animation",d:"Full workflow for character-animated video production."},
+    {n:"Buildable Plugin",d:"Local-first AI app-builder golden templates."},
+    {n:"Public Repo Readiness",d:"Audit for secrets, licensing, security before release."},
     {n:"Superpowers Methodology",d:"Complete dev methodology from obra/superpowers."},
-    {n:"Karpathy Guidelines",d:"4 behavioral guardrails to reduce common LLM coding mistakes."}
+    {n:"Karpathy Guidelines",d:"4 behavioral guardrails. Reduces common LLM mistakes."}
   ],
   "LLMQuant (Finance)": [
-    {n:"Commodities",d:"Spot, futures curve, inventory, roll yield, macro linkage."},
+    {n:"Commodities",d:"Spot, futures curve, inventory, roll yield, macro analysis."},
     {n:"Credit",d:"Spread analysis, CDS, bond valuation, credit risk."},
     {n:"Crypto",d:"Market regime, token research, perpetual funding, basis."},
-    {n:"Data",d:"SEC filings, 13F holders, macro snapshots, sourced research."},
-    {n:"Equities",d:"Equity analysis, factor models, valuation, cross-asset context."},
+    {n:"Data",d:"SEC filings, 13F holders, macro snapshots, research."},
+    {n:"Equities",d:"Equity analysis, factor models, valuation."},
     {n:"Equity Derivatives",d:"Options strategies, implied volatility, Greeks."},
-    {n:"ETFs",d:"Flow analysis, basket construction, replication, tracking error."},
-    {n:"Events",d:"Event-driven analysis: earnings, M&A, regulatory catalysts."},
-    {n:"Investor Lenses",d:"Smart money, 13F crowding, activist tracking flows."},
-    {n:"Macro",d:"Regime identification, GDP, inflation, monetary policy."},
-    {n:"Market Intelligence",d:"Market context, sentiment, positioning, flow analysis."},
-    {n:"Options",d:"Pricing, volatility surface, hedging, exotic strategies."},
-    {n:"Portfolio",d:"Construction, rebalancing, risk budgeting, factor allocation."},
-    {n:"Portfolio Lab",d:"Backtesting, scenario analysis, Monte Carlo, stress testing."},
-    {n:"Prediction Markets",d:"Market pricing, efficiency, arbitrage, info aggregation."},
-    {n:"Rates & FX",d:"Interest rate curves, FX forwards, carry, central bank policy."},
-    {n:"Risk",d:"VaR, CVaR, tail risk, stress testing, factor decomposition."},
-    {n:"Strategies",d:"Hedge fund strategies, alpha generation, factor timing."}
+    {n:"ETFs",d:"Flow analysis, basket construction, tracking error."},
+    {n:"Events",d:"Earnings, M&A, regulatory catalyst analysis."},
+    {n:"Investor Lenses",d:"Smart money, 13F crowding, activist tracking."},
+    {n:"Macro",d:"Regime ID, GDP, inflation, monetary policy."},
+    {n:"Market Intelligence",d:"Context, sentiment, positioning, flow analysis."},
+    {n:"Options",d:"Pricing, volatility surface, hedging, exotics."},
+    {n:"Portfolio",d:"Construction, rebalancing, risk budgeting."},
+    {n:"Portfolio Lab",d:"Backtesting, scenario analysis, Monte Carlo."},
+    {n:"Prediction Markets",d:"Market pricing, efficiency, arbitrage."},
+    {n:"Rates & FX",d:"Rate curves, FX forwards, carry, central bank policy."},
+    {n:"Risk",d:"VaR, CVaR, tail risk, stress testing."},
+    {n:"Strategies",d:"Hedge fund strategies, alpha generation."}
   ],
-  "Creative": [
-    {n:"Claude Design",d:"Design one-off HTML artifacts: landing pages, prototypes, motion studies."},
-    {n:"Architecture Diagram",d:"Dark-themed SVG architecture/cloud/infra diagrams as HTML."},
-    {n:"ASCII Art",d:"pyfiglet, cowsay, boxes, image-to-ascii generation."},
+  "Creative & Design": [
+    {n:"Claude Design",d:"One-off HTML artifacts: landing pages, prototypes."},
+    {n:"Architecture Diagram",d:"Dark-themed SVG architecture diagrams as HTML."},
+    {n:"ASCII Art",d:"pyfiglet, cowsay, boxes, image-to-ascii."},
     {n:"ASCII Video",d:"Convert video/audio to colored ASCII MP4/GIF."},
     {n:"Baoyu Infographic",d:"21 layouts × 21 styles of infographics."},
-    {n:"ComfyUI",d:"Generate images, video, audio with ComfyUI workflows."},
-    {n:"Design MD",d:"Author/validate/export Google DESIGN.md token spec files."},
-    {n:"Excalidraw",d:"Hand-drawn Excalidraw JSON diagrams (arch, flow, seq)."},
+    {n:"ComfyUI",d:"Generate images, video, audio with ComfyUI."},
+    {n:"Design MD",d:"Author/validate Google DESIGN.md token spec files."},
+    {n:"Excalidraw",d:"Hand-drawn JSON diagrams (arch, flow, sequence)."},
     {n:"Humanizer",d:"Strip AI-isms and add real voice to text."},
-    {n:"Manim Video",d:"3Blue1Brown-style math/algo animations via Manim CE."},
+    {n:"Manim Video",d:"3Blue1Brown-style math animations via Manim CE."},
     {n:"p5.js",d:"Generative art, shaders, interactive 3D sketches."},
-    {n:"Personality Quiz",d:"Build 'which X are you' quizzes with character data."},
-    {n:"Popular Web Designs",d:"54 real design systems (Stripe, Linear, Vercel) as HTML/CSS."},
-    {n:"Pretext",d:"DOM-free text layout for ASCII art and kinetic typography."},
+    {n:"Personality Quiz",d:"Character-data personality quiz builder."},
+    {n:"Popular Web Designs",d:"54 real design systems (Stripe, Linear, Vercel)."},
+    {n:"Pretext",d:"DOM-free text layout for ASCII art and typography."},
     {n:"Sketch",d:"Throwaway HTML mockups with 2-3 design variants."},
     {n:"Songwriting & AI Music",d:"Songwriting craft and Suno AI music prompts."},
-    {n:"TouchDesigner MCP",d:"Control TouchDesigner via MCP — 36 native tools."}
+    {n:"TouchDesigner MCP",d:"Control TouchDesigner via 36 native MCP tools."},
+    {n:"Premium Design",d:"Apple-inspired premium aesthetic design system."},
+    {n:"Glass Design",d:"Dark glassmorphism with frosted surfaces."},
+    {n:"Cinematic Motion",d:"GSAP/Lenis scroll animations and parallax."}
   ],
   "Workflow & Core": [
-    {n:"Core Identity Guardrail",d:"Permanent safety guard — 6 immutable rules. Loaded first in every session."},
-    {n:"/decide",d:"Master orchestrator — 5-step reasoning protocol for every request."},
-    {n:"/do",d:"Execution engine — runs after /decide routes. Handles tool dispatch."},
-    {n:"Token Saver",d:"Pre-file-read probe via CodeGraph + Graphify. 56.2× token reduction."},
-    {n:"Session Memory",d:"Retrieve missing context from prior sessions before routing."},
-    {n:"Task Tier",d:"Classify every incoming request into Tiers 1-3 for appropriate depth."},
-    {n:"Free AI Model Router",d:"Route every AI task to the best available free model."},
-    {n:"Model Recommender",d:"CLI-based model selection for any of 6 task types."},
-    {n:"External Skills Integration",d:"Six major skill repos integrated into Hermes via external_dirs."},
-    {n:"Hermes Backup Workflow",d:"Automated backup, restore, and credential sync."},
-    {n:"ECC Bridge",d:"Wire 57/64 ECC agents through the free model chain."}
+    {n:"Core Identity Guardrail",d:"6 immutable safety rules. Always loaded first."},
+    {n:"/decide",d:"Master orchestrator — 6-step reasoning protocol."},
+    {n:"/do",d:"Execution engine — runs after /decide routes tasks."},
+    {n:"Token Saver",d:"Pre-file-read probe. 56.2× token reduction."},
+    {n:"Session Memory",d:"Retrieve context from prior sessions before routing."},
+    {n:"Task Tier",d:"Classify requests into Tiers 1-3 for depth."},
+    {n:"Free AI Model Router",d:"Route tasks to the best available free model."},
+    {n:"Model Recommender",d:"CLI-based model selection for 6 task types."},
+    {n:"External Skills",d:"Integrate external skill repos via external_dirs."},
+    {n:"Hermes Backup",d:"Automated backup, restore, credential sync."},
+    {n:"ECC Bridge",d:"Wire 57/64 ECC agents through free model chain."},
+    {n:"Doubt-Driven Dev",d:"Subject non-trivial decisions to fresh-context audit."}
   ],
-  "Productivity & Communication": [
-    {n:"API Mega List",d:"10,498 ready-to-use APIs across 18 categories — searchable."},
-    {n:"Airtable",d:"Airtable REST API: records CRUD, filters, upserts."},
-    {n:"Drive Backups",d:"Automated Google Drive backup workflows using rclone."},
-    {n:"Google Workspace",d:"Gmail, Calendar, Drive, Docs, Sheets via gws CLI."},
-    {n:"Maps",d:"Geocode, POIs, routes, timezones via OpenStreetMap/OSRM."},
-    {n:"MCP Integrations",d:"MCP server setup patterns for Hermes Agent."},
+  "Productivity & Comms": [
+    {n:"API Mega List",d:"10,498 APIs across 18 categories — searchable."},
+    {n:"Airtable",d:"REST API: records CRUD, filters, upserts."},
+    {n:"Drive Backups",d:"Automated Google Drive backups via rclone."},
+    {n:"Google Workspace",d:"Gmail, Calendar, Drive, Docs via gws CLI."},
+    {n:"Maps",d:"Geocode, POIs, routes, timezones via OSM/OSRM."},
+    {n:"MCP Integrations",d:"MCP server setup patterns for Hermes."},
     {n:"Nano PDF",d:"Edit PDF text/typos via nano-pdf CLI."},
-    {n:"Notion",d:"Notion API + ntn CLI: pages, databases, markdown."},
-    {n:"OCR & Documents",d:"Extract text from PDFs/scans (pymupdf, marker-pdf)."},
-    {n:"PowerPoint",d:"Create, read, edit .pptx decks, slides, notes, templates."},
-    {n:"Teams Meeting Pipeline",d:"Teams meeting summary pipeline via Hermes CLI."},
-    {n:"Markdown Exporter",d:"Convert markdown to professional document formats."},
-    {n:"Hermes Dashboard",d:"Serve and interact with the Hermes Agent Dashboard."},
-    {n:"Petdex",d:"Install and select animated petdex mascots for Hermes."},
-    {n:"OpenCode Windows MCP",d:"Windows-specific OpenCode MCP wiring quirks and fixes."},
-    {n:"AI Marketing Skills",d:"Open-source AI marketing and sales automation skills."}
+    {n:"Notion",d:"API + ntn CLI: pages, databases, markdown."},
+    {n:"OCR & Documents",d:"Extract text from PDFs/scans (pymupdf)."},
+    {n:"PowerPoint",d:"Create, read, edit .pptx decks and notes."},
+    {n:"Teams Meeting",d:"Meeting summary pipeline via Hermes CLI."},
+    {n:"Markdown Exporter",d:"Convert markdown to professional docs."},
+    {n:"Hermes Dashboard",d:"Serve and interact with the agent dashboard."},
+    {n:"Petdex",d:"Animated petdex mascots for Hermes."},
+    {n:"OpenCode Win MCP",d:"Windows-specific MCP wiring fixes."},
+    {n:"AI Marketing",d:"Open-source AI marketing automation skills."}
   ],
   "Media & Content": [
-    {n:"YouTube Content",d:"YouTube transcripts to summaries, threads, blogs, posts."},
-    {n:"MoneyPrinterTurbo",d:"AI short video: script → stock footage → TTS → subtitles → render."},
-    {n:"MoneyPrinter V2",d:"AI short video generation using MoneyPrinterV2."},
-    {n:"OpenMontage",d:"Full OpenMontage video production pipeline."},
-    {n:"Short Video Production",d:"Produce 9:16 vertical short-form videos for TikTok/Reels."},
-    {n:"TikTok Finance Video",d:"Viral finance shorts with 'two lives' concept."},
-    {n:"GIF Search",d:"Search/download GIFs from Tenor via curl + jq."},
-    {n:"HeartMuLa",d:"Suno-like song generation from lyrics + tags."},
-    {n:"SongSee",d:"Audio spectrograms/features (mel, chroma, MFCC) via CLI."},
-    {n:"Python Audio Synth",d:"Generate background music, sound effects, placeholder audio."},
-    {n:"Retro Video Effects",d:"Apply vintage/retro aesthetic effects (VHS, CRT, etc.)."}
+    {n:"YouTube Content",d:"Transcripts → summaries, threads, blogs."},
+    {n:"MoneyPrinterTurbo",d:"AI short video: script→footage→TTS→render."},
+    {n:"MoneyPrinter V2",d:"AI short video generation via KittenTT."},
+    {n:"OpenMontage",d:"Full video production pipeline wrapper."},
+    {n:"Short Video",d:"9:16 vertical videos for TikTok/Reels."},
+    {n:"TikTok Finance",d:"Viral finance shorts with 'two lives' concept."},
+    {n:"GIF Search",d:"Search/download GIFs from Tenor."},
+    {n:"HeartMuLa",d:"Suno-like song generation from lyrics."},
+    {n:"SongSee",d:"Audio spectrograms via CLI."},
+    {n:"Python Audio Synth",d:"Generate BGM, SFX, placeholder audio."},
+    {n:"Retro Video FX",d:"Vintage/retro aesthetic effects (VHS, CRT)."}
   ],
   "Research & MLOps": [
-    {n:"arXiv",d:"Search arXiv papers by keyword, author, category, or ID."},
-    {n:"Blogwatcher",d:"Monitor blogs and RSS/Atom feeds via blogwatcher-cli tool."},
-    {n:"LLM Wiki",d:"Karpathy's LLM Wiki: build/query interlinked markdown KB."},
-    {n:"Polymarket",d:"Query Polymarket: markets, prices, orderbooks, history."},
-    {n:"Research Paper Writing",d:"Academic paper writing with template support."},
-    {n:"HuggingFace Hub",d:"HF CLI: search/download/upload models, datasets."},
-    {n:"llama.cpp",d:"Local GGUF inference + HF Hub model discovery."},
+    {n:"arXiv",d:"Search papers by keyword, author, category."},
+    {n:"Blogwatcher",d:"Monitor blogs and RSS/Atom feeds."},
+    {n:"LLM Wiki",d:"Karpathy's LLM Wiki — interlinked markdown KB."},
+    {n:"Polymarket",d:"Query markets, prices, orderbooks, history."},
+    {n:"Research Paper",d:"Academic paper writing with templates."},
+    {n:"HuggingFace Hub",d:"Search/download/upload models, datasets."},
+    {n:"llama.cpp",d:"Local GGUF inference + HF discovery."},
     {n:"vLLM",d:"High-throughput LLM inference server."},
-    {n:"Obliteratus",d:"Model weight pruning and quantization tool."},
-    {n:"Segment Anything",d:"Zero-shot image segmentation via SAM."},
-    {n:"AudioCraft",d:"MusicGen audio generation from text descriptions."},
-    {n:"Weights & Biases",d:"Log ML experiments, sweeps, model registry."},
-    {n:"LM Eval Harness",d:"Standardized LLM evaluation benchmark framework."}
+    {n:"Obliteratus",d:"Model weight pruning and quantization."},
+    {n:"Segment Anything",d:"Zero-shot image segmentation."},
+    {n:"AudioCraft",d:"MusicGen audio generation."},
+    {n:"W&B",d:"Log experiments, sweeps, model registry."},
+    {n:"LM Eval Harness",d:"Standardized LLM evaluation benchmarks."}
   ],
   "GitHub & DevOps": [
-    {n:"GitHub Core",d:"Triage and orient GitHub repos, PRs, and issues."},
-    {n:"GitHub Auth",d:"HTTPS tokens, SSH keys, gh CLI login setup."},
-    {n:"GitHub Code Review",d:"Review PRs: diffs, inline comments via gh or REST."},
-    {n:"GitHub Issues",d:"Create, triage, label, assign issues via gh or REST."},
-    {n:"GitHub PR Workflow",d:"PR lifecycle: branch, commit, open, CI, merge."},
-    {n:"GitHub Repo Mgmt",d:"Clone/create/fork repos; manage remotes, releases."},
-    {n:"GitHub Pre-Push Audit",d:"Pre-push security gatekeeper: scan for secrets, credentials."},
-    {n:"Codebase Inspection",d:"Inspect codebases with pygount: LOC, languages, ratios."}
+    {n:"GitHub Core",d:"Triage and orient repos, PRs, and issues."},
+    {n:"GitHub Auth",d:"HTTPS tokens, SSH keys, gh CLI setup."},
+    {n:"Code Review",d:"PR diffs and inline comments via gh/REST."},
+    {n:"GitHub Issues",d:"Create, triage, label, assign issues."},
+    {n:"PR Workflow",d:"Branch, commit, open, CI, merge lifecycle."},
+    {n:"Repo Management",d:"Clone/create/fork repos, remotes."},
+    {n:"Pre-Push Audit",d:"Scan for secrets and credentials before push."},
+    {n:"Codebase Inspection",d:"pygount LOC/language/ratio analysis."}
   ],
   "OpenCode Power Pack": [
     {n:"Code Review",d:"Confidence-filtered multi-agent PR review."},
-    {n:"Code Reviewer",d:"Review code for bugs, logic, security, quality."},
+    {n:"Code Reviewer",d:"Bugs, logic, security, quality review."},
     {n:"Feature Dev",d:"Seven-phase guided feature implementation."},
-    {n:"Code Architect",d:"Design feature architecture by analyzing existing codebase."},
-    {n:"Code Explorer",d:"Deeply analyze features by tracing execution paths."},
-    {n:"Frontend Design",d:"Production-grade frontend with accessible markup."},
-    {n:"MCP Builder",d:"Guide creation of MCP servers in Python or TypeScript."},
-    {n:"Security Review",d:"Focused security review of pending git changes."},
-    {n:"Skill Creator",d:"Create, modify, and optimize SKILL.md files."},
-    {n:"Agents MD Improver",d:"Audit and improve AGENTS.md/CLAUDE.md project-rules files."},
-    {n:"Agents MD Revise",d:"Capture learnings into project-rules files."}
+    {n:"Code Architect",d:"Design feature architecture from existing code."},
+    {n:"Code Explorer",d:"Deep analysis by tracing execution paths."},
+    {n:"Frontend Design",d:"Production-grade accessible frontend UI."},
+    {n:"MCP Builder",d:"Guide MCP server creation in Python/TS."},
+    {n:"Security Review",d:"Focused review of pending git changes."},
+    {n:"Skill Creator",d:"Create/modify/optimize SKILL.md files."},
+    {n:"Agents MD Improver",d:"Audit and improve project-rules files."},
+    {n:"Agents MD Revise",d:"Capture learnings into project rules."}
   ],
-  "Communication & Apple": [
-    {n:"Gmail",d:"Manage inbox triage, mailbox search, thread summaries, reply drafting."},
-    {n:"Google Drive",d:"Create/edit Google Docs via Docs API. DOCX import support."},
-    {n:"Himalaya",d:"IMAP/SMTP email from terminal via Himalaya CLI."},
-    {n:"Apple Notes",d:"Create, read, search, and manage Apple Notes."},
-    {n:"Apple Reminders",d:"Create, read, complete, and manage Apple Reminders."},
-    {n:"FindMy",d:"Find Apple devices and friends via FindMy network."},
-    {n:"iMessage",d:"Send and read iMessages from the terminal."},
-    {n:"macOS Computer Use",d:"Drive macOS desktop UI programmatically."}
-  ],
-  "Note-Taking & Knowledge": [
-    {n:"Obsidian",d:"Core note CRUD with ATM-Machine quality templates."},
-    {n:"Obsidian Codebase Graph",d:"Map filesystem project tree → wikilinked markdown notes."},
-    {n:"Obsidian Knowledge Graph",d:"Vault scan → interactive galaxy-style node/edge HTML graph."},
-    {n:"Project Documentation",d:"Generate structured documentation folder for any codebase."}
-  ],
-  "Autonomous AI Agents": [
-    {n:"OpenCode",d:"Delegate coding to OpenCode CLI (features, PR review)."},
-    {n:"Claude Code",d:"Delegate coding to Claude Code CLI."},
-    {n:"Codex",d:"Delegate coding to OpenAI Codex CLI."},
-    {n:"Hermes Agent (meta)",d:"Configure, extend, or contribute to Hermes Agent itself."}
-  ],
-  "Data Science & Debugging": [
-    {n:"Jupyter Live Kernel",d:"Iterative Python via live Jupyter kernel (hamelnb)."},
-    {n:"JSX/TSX Build Debug",d:"Systematically debug JSX/TSX build failures."},
-    {n:"Kanban Orchestrator",d:"Orchestrate devops kanban workflow."},
-    {n:"Kanban Worker",d:"Execute kanban work items."}
-  ],
-  "Supabase, Vercel, Wix & More": [
-    {n:"Supabase",d:"Database, Auth, Edge Functions, Realtime, Storage, Vectors, Cron, Queues."},
-    {n:"Vercel",d:"Deploy projects, manage env vars, domains, and preview deployments."},
-    {n:"Wix",d:"Build and review Wix CLI app extensions — dashboard pages."},
-    {n:"Wix Airtable",d:"Wix Airtable integration workflows."}
-  ],
-  "Other Utilities": [
-    {n:"Student",d:"Write and explain code at 3rd-year BSCS level."},
-    {n:"Dogfood",d:"Internal testing and dogfooding for Hermes features."},
-    {n:"last30days",d:"Retrieve and summarize session activity from past 30 days."},
-    {n:"Safe File Patching",d:"Guide when to use patch vs complete rewrite."},
-    {n:"SEO Tool Site Content",d:"Content improvement strategy for tool and calculator sites."},
-    {n:"OpenHue",d:"Control Philips Hue lights, scenes, rooms via CLI."},
-    {n:"Godmode",d:"Jailbreak LLMs: Parseltongue, GODMODE, ULTRAPLINIAN."},
-    {n:"Yuanbao",d:"Yuanbao groups: @mention users, query info/members."}
+  "More Categories": [
+    {n:"Gmail",d:"Inbox triage, search, reply drafting."},
+    {n:"Google Drive",d:"Create/edit docs via Docs API."},
+    {n:"Himalaya",d:"IMAP/SMTP email from terminal."},
+    {n:"Apple Notes",d:"Create, read, search Apple Notes."},
+    {n:"Apple Reminders",d:"Manage Apple Reminders."},
+    {n:"FindMy",d:"Find devices and friends via network."},
+    {n:"iMessage",d:"Send/read iMessages from terminal."},
+    {n:"macOS Computer Use",d:"Drive macOS UI programmatically."},
+    {n:"Obsidian",d:"Core note CRUD with ATM-Machine templates."},
+    {n:"Obsidian Codebase Graph",d:"File tree → wikilinked markdown."},
+    {n:"Obsidian KG",d:"Vault → interactive galaxy graph."},
+    {n:"Project Docs",d:"Structured docs for any codebase."},
+    {n:"OpenCode Agent",d:"Delegate coding to OpenCode CLI."},
+    {n:"Claude Code Agent",d:"Delegate coding to Claude Code."},
+    {n:"Codex Agent",d:"Delegate coding to OpenAI Codex."},
+    {n:"Hermes Agent Meta",d:"Configure/extend Hermes Agent."},
+    {n:"Jupyter Kernel",d:"Iterative Python via live kernel."},
+    {n:"Supabase",d:"All Supabase operations."},
+    {n:"Vercel",d:"Deploy projects, manage env vars."},
+    {n:"Wix",d:"Build Wix CLI app extensions."},
+    {n:"Student",d:"Explain code at 3rd-year BSCS level."},
+    {n:"Dogfood",d:"Internal Hermes feature testing."},
+    {n:"last30days",d:"Summarize session activity."},
+    {n:"Safe File Patching",d:"Patch vs rewrite guidance."},
+    {n:"SEO Tool Content",d:"Content strategy for tool sites."},
+    {n:"OpenHue",d:"Control Philips Hue lights via CLI."},
+    {n:"Godmode",d:"LLM jailbreak testing."},
+    {n:"Yuanbao",d:"Group queries and user info."},
+    {n:"Kanban Orchestrator",d:"Devops kanban workflow orchestration."},
+    {n:"Kanban Worker",d:"Execute kanban work items."},
+    {n:"Capafy Publisher",d:"Publish agents/skills on Capafy."},
+    {n:"Capafy Web Form",d:"Capafy platform form filling."},
+    {n:"Capafy User",d:"Capafy buyer entry point."}
   ]
 };
 
-// Flatten skills for display
-function flattenSkills(){
-  const flat = [];
-  Object.entries(SKILLS_DATA).forEach(([cat, skills]) => {
-    skills.forEach(s => flat.push({...s, c: cat}));
-  });
-  return flat;
-}
-
-const ALL_SKILLS = flattenSkills();
+const ALL_SKILLS = [];
+Object.entries(SKILLS_DATA).forEach(([cat, skills]) => skills.forEach(s => ALL_SKILLS.push({...s, c: cat})));
 
 function renderSkills(cat){
   const g=document.getElementById('skillGrid');
   const items=cat==='all' ? ALL_SKILLS : ALL_SKILLS.filter(s=>s.c===cat);
-  g.innerHTML=items.map(s=>`<div class="card fade-in"><div class="cat">${s.c}</div><h4>${s.n}</h4><p>${s.d}</p></div>`).join('');
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('#skillGrid .fade-in').forEach((el,i)=>{setTimeout(()=>el.classList.add('visible'),i*15);});
-  });
+  g.innerHTML=items.map(s=>`<div class="card"><div class="cat">${s.c}</div><h4>${s.n}</h4><p>${s.d}</p></div>`).join('');
+  setTimeout(() => {
+    g.querySelectorAll('.card').forEach((el,i) => { setTimeout(() => el.style.opacity='1', i*20); });
+  }, 50);
 }
 
 // Build category tabs
 (function(){
   const tabs = document.getElementById('catTabs');
   const cats = Object.keys(SKILLS_DATA);
-  tabs.innerHTML = `<button class="cat-tab active" data-cat="all" onclick="setSkillCat('all')">All (${ALL_SKILLS.length})</button>`;
+  tabs.innerHTML = `<button class="cat-tab active" data-cat="all" onclick="setSkillCat('all')">All <span class="count">(${ALL_SKILLS.length})</span></button>`;
   cats.forEach(cat => {
     const count = SKILLS_DATA[cat].length;
-    tabs.innerHTML += `<button class="cat-tab" data-cat="${cat}" onclick="setSkillCat('${cat}')">${cat} (${count})</button>`;
+    tabs.innerHTML += `<button class="cat-tab" data-cat="${cat}" onclick="setSkillCat('${cat}')">${cat} <span class="count">(${count})</span></button>`;
   });
 })();
 
@@ -931,97 +836,95 @@ function setSkillCat(cat){
   document.querySelectorAll('#catTabs .cat-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
   renderSkills(cat);
 }
+// Init cards
+document.querySelectorAll('.card').forEach(c => c.style.opacity='0');
 renderSkills('all');
 
-// === ECO GRID ===
+// ===== ECO GRID =====
 (function(){
-  const c=document.getElementById('ecoGrid');
-  if(!c)return;
+  const c=document.getElementById('ecoGrid'); if(!c)return;
   c.innerHTML=[
-    {i:'🛡️',n:'Core Guardrail',d:'6 permanent safety rules — always loaded first.',x:'6 rules · Pre-action checklist'},
-    {i:'⚡',n:'Token Saver',d:'Pre-file-read probe via CodeGraph+Graphify. 56.2× reduction.',x:'5 probe layers · 945 files'},
-    {i:'🧠',n:'ECC Agent Library',d:'64 specialized agents bridged to free models.',x:'261 skills · 64 agents · 8 cats'},
-    {i:'⚡',n:'CodeGraph MCP',d:'Live code knowledge — 945 files, 16,092 nodes.',x:'6 CLI tools · MCP server'},
-    {i:'🧬',n:'Graphify',d:'AST code graph — 8,267 nodes, 13,225 edges.',x:'775 communities · Hermes skill'},
-    {i:'📡',n:'free-ai-tools',d:'550+ free AI tools, 30+ API providers.',x:'238 models · S/A/B/C tiers'},
-    {i:'⚡',n:'OpenCode CLI',d:'Primary coding agent with 5 free models.',x:'DeepSeek V4 Flash ★ · --model flag'},
-    {i:'🎬',n:'MoneyPrinterTurbo',d:'AI short video: script→footage→TTS→subtitles→render.',x:'86.1k ⭐ · 5-step pipeline'},
-    {i:'📊',n:'LLMQuant',d:'18 quant-finance domain skills.',x:'18 domains · Data MCP · SEC/13F'},
-    {i:'📝',n:'Obsidian Bundle',d:'Mandatory ATM-Machine quality docs + KG.',x:'3 skills · 276 nodes · 1,091 edges'},
-    {i:'🔗',n:'API Mega List',d:'10,498 ready-to-use APIs across 18 categories.',x:'Searchable via api-mega-list skill'},
-    {i:'📱',n:'Apple Ecosystem',d:'5 Apple skills: Notes, Reminders, iMessage, FindMy.',x:'macOS Computer Use driver'}
-  ].map(i=>`<div class="eco-card fade-in"><div class="icon">${i.i}</div><h3>${i.n}</h3><p>${i.d}</p><div class="detail">${i.x}</div></div>`).join('');
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('#ecoGrid .fade-in').forEach((el,i)=>{setTimeout(()=>el.classList.add('visible'),i*30);});
-  });
+    {i:'🛡️',n:'Core Guardrail',d:'6 permanent rules — loaded before everything.',x:'Step 0 · Never optional'},
+    {i:'⚡',n:'Token Saver',d:'Probe CodeGraph+Graphify before reads.',x:'56.2× reduction'},
+    {i:'🧠',n:'ECC Agents (64)',d:'Specialized agents bridged to free models.',x:'57/64 free-compatible'},
+    {i:'⚡',n:'CodeGraph MCP',d:'Live code knowledge — 945 files indexed.',x:'16,092 nodes · 6 CLI tools'},
+    {i:'🧬',n:'Graphify',d:'AST code graph with community detection.',x:'8,267 nodes · 775 communities'},
+    {i:'📡',n:'free-ai-tools',d:'550+ tools, 30+ API providers.',x:'238 models · S/A/B/C tiers'},
+    {i:'⚡',n:'OpenCode CLI',d:'Primary coding agent — 5 free models.',x:'★ DeepSeek V4 Flash'},
+    {i:'🎬',n:'MoneyPrinterTurbo',d:'Script→footage→TTS→subtitles→render.',x:'86k ⭐ · 5-step pipeline'},
+    {i:'📊',n:'LLMQuant (18)',d:'Quant-finance domain skill suite.',x:'Data MCP · SEC/13F'},
+    {i:'📝',n:'Obsidian Bundle',d:'ATM-Machine quality docs + knowledge graph.',x:'3 skills · 276 nodes'},
+    {i:'🔗',n:'API Mega List',d:'10,498 APIs across 18 categories.',x:'Searchable via skill'},
+    {i:'📱',n:'Apple Suite',d:'Notes, Reminders, iMessage, FindMy, macOS.',x:'5 skills + computer use'}
+  ].map(i=>`<div class="eco-card"><div class="icon">${i.i}</div><h3>${i.n}</h3><p>${i.d}</p><div class="detail">${i.x}</div></div>`).join('');
 })();
 
-// === ECC AGENTS (64) ===
+// ===== ECC AGENTS =====
 const AGENTS = [
-  {n:"a11y-architect",d:"Accessibility Architect — WCAG 2.2 compliance for Web and Native.",m:"sonnet",t:["Read","Write","Edit","Grep","Glob"]},
-  {n:"architect",d:"Software architecture specialist for system design, scalability.",m:"opus",t:["Read","Grep","Glob"]},
-  {n:"build-error-resolver",d:"Build/TypeScript error resolution. Minimal diffs.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"chief-of-staff",d:"Personal comms chief of staff. Triages email/Slack/LINE/Messenger.",m:"opus",t:["Read","Grep","Glob","Bash","Edit","Write"]},
-  {n:"code-architect",d:"Designs feature architectures from existing codebase patterns.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"code-explorer",d:"Deep codebase analysis — traces execution paths, maps layers.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"a11y-architect",d:"Accessibility Architect — WCAG 2.2 compliance.",m:"sonnet",t:["Read","Write","Edit","Grep","Glob"]},
+  {n:"architect",d:"System design and technical decision-making.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"build-error-resolver",d:"Build/TypeScript error resolution, minimal diffs.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"chief-of-staff",d:"Triages email/Slack/LINE/Messenger into 4 tiers.",m:"opus",t:["Read","Grep","Glob","Bash","Edit","Write"]},
+  {n:"code-architect",d:"Feature architectures from existing codebase patterns.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"code-explorer",d:"Deep codebase analysis tracing execution paths.",m:"sonnet",t:["Read","Grep","Glob"]},
   {n:"code-reviewer",d:"Expert code review: quality, security, maintainability.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"code-simplifier",d:"Simplifies/refines code for clarity and maintainability.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"comment-analyzer",d:"Analyze code comments for accuracy, completeness, rot risk.",m:"sonnet",t:["Read","Grep","Glob"]},
-  {n:"conversation-analyzer",d:"Analyze transcripts to find behaviors for hook prevention.",m:"sonnet",t:["Read","Grep"]},
+  {n:"code-simplifier",d:"Simplify/refine code for clarity and maintainability.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"comment-analyzer",d:"Analyze comments for accuracy and rot risk.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"conversation-analyzer",d:"Find behaviors worth preventing with hooks.",m:"sonnet",t:["Read","Grep"]},
   {n:"cpp-build-resolver",d:"C++/CMake build compilation error resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"cpp-reviewer",d:"Expert C++ code review — memory safety, modern idioms.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"csharp-reviewer",d:"Expert C# for .NET, async patterns, nullable types.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"dart-build-resolver",d:"Dart/Flutter build, analysis, dependency error resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"database-reviewer",d:"PostgreSQL: query optimization, schema design, security.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"django-build-resolver",d:"Django/Python build, migration, dependency resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"django-reviewer",d:"Django: ORM correctness, DRF patterns, migration safety.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"doc-updater",d:"Documentation/codemap specialist. Runs update commands.",m:"haiku",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"docs-lookup",d:"Fetches current docs via Context7 MCP with examples.",m:"sonnet",t:["Read","Grep","mcp__context7__*"]},
+  {n:"cpp-reviewer",d:"C++: memory safety, modern idioms.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"csharp-reviewer",d:"C#: .NET conventions, async, nullable.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"dart-build-resolver",d:"Dart/Flutter build, analysis, dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"database-reviewer",d:"PostgreSQL: query optimization, schema, security.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"django-build-resolver",d:"Django/Python build, migration, dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"django-reviewer",d:"Django: ORM, DRF, migration safety.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"doc-updater",d:"Documentation/codemap specialist.",m:"haiku",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"docs-lookup",d:"Fetches current docs via Context7 MCP.",m:"sonnet",t:["Read","Grep","mcp__context7__*"]},
   {n:"e2e-runner",d:"E2E testing via Vercel Agent Browser + Playwright.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"fastapi-reviewer",d:"FastAPI: async correctness, DI, Pydantic schemas.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"flutter-reviewer",d:"Flutter: widget best practices, state management.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"fsharp-reviewer",d:"F#: functional idioms, type safety, pattern matching.",m:"sonnet",t:["Read","Grep","Glob"]},
-  {n:"gan-evaluator",d:"GAN Harness evaluator. Tests app via Playwright, scores.",m:"opus",t:["Read","Write","Bash","Grep","Glob"]},
-  {n:"gan-generator",d:"GAN Harness generator. Implements per spec, iterates.",m:"opus",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"gan-planner",d:"GAN Harness planner. Expands one-liner to full spec.",m:"opus",t:["Read","Write","Grep","Glob"]},
-  {n:"go-build-resolver",d:"Go build, vet, compilation error resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"go-reviewer",d:"Go: idiomatic Go, concurrency patterns, error handling.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"harmonyos-app-resolver",d:"HarmonyOS app dev — ArkTS and ArkUI.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"harness-optimizer",d:"Analyze/improve agent harness config: reliability, cost.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
-  {n:"healthcare-reviewer",d:"Healthcare code: clinical safety, CDSS, PHI compliance.",m:"opus",t:["Read","Grep","Glob"]},
-  {n:"homelab-architect",d:"Design home/small-lab network plans from hardware.",m:"sonnet",t:["Read","Grep"]},
-  {n:"java-build-resolver",d:"Java/Maven/Gradle build, compilation, dependency fix.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"java-reviewer",d:"Java: Spring Boot, Quarkus, concurrency, JPA.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"kotlin-build-resolver",d:"Kotlin/Gradle build, compilation, dependency fix.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"kotlin-reviewer",d:"Kotlin/Android: coroutine safety, Compose, KMP.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"loop-operator",d:"Operate autonomous agent loops, monitor progress.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
-  {n:"marketing-agent",d:"Marketing strategist: campaigns, copy, content review.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
-  {n:"mle-reviewer",d:"ML engineering: data contracts, feature pipelines, evals.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"network-architect",d:"Enterprise/multi-site network architecture design.",m:"sonnet",t:["Read","Grep"]},
-  {n:"network-config-reviewer",d:"Router/switch config review: security, correctness.",m:"sonnet",t:["Read","Grep"]},
-  {n:"network-troubleshooter",d:"Network connectivity, routing, DNS, policy diagnostics.",m:"sonnet",t:["Read","Bash","Grep"]},
-  {n:"opensource-forker",d:"Fork for open-sourcing: strip secrets, clean git.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"opensource-packager",d:"Generate complete open-source packaging.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"opensource-sanitizer",d:"Verify fully sanitized before release. 20+ regex.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"performance-optimizer",d:"Performance analysis: bottlenecks, slow code.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"php-reviewer",d:"PHP: PSR-12, Eloquent ORM, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"planner",d:"Expert planning for complex features and refactoring.",m:"opus",t:["Read","Grep","Glob"]},
-  {n:"pr-test-analyzer",d:"PR test coverage quality and completeness.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"python-reviewer",d:"Python: PEP8, type hints, Pythonic idioms, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"pytorch-build-resolver",d:"PyTorch runtime, CUDA, training error resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"react-build-resolver",d:"Fix React builds: Vite, webpack, Next.js, CRA.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"react-reviewer",d:"React: hook correctness, render performance.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"refactor-cleaner",d:"Dead code cleanup. Runs knip, depcheck, ts-prune.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"rust-build-resolver",d:"Rust build, compilation, dependency fix.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"rust-reviewer",d:"Rust: ownership, lifetimes, unsafe code.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"security-reviewer",d:"Security vulnerability detection and remediation.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
-  {n:"seo-specialist",d:"SEO: technical audits, structured data, Core Web Vitals.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
-  {n:"silent-failure-hunter",d:"Review code for silent failures, swallowed errors.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"swift-build-resolver",d:"Swift/Xcode build, compilation, dependency fix.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"fastapi-reviewer",d:"FastAPI: async, DI, Pydantic schemas.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"flutter-reviewer",d:"Flutter: widgets, state, performance.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"fsharp-reviewer",d:"F#: functional idioms, type safety.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"gan-evaluator",d:"GAN Harness evaluator. Playwright tests, scores.",m:"opus",t:["Read","Write","Bash","Grep","Glob"]},
+  {n:"gan-generator",d:"GAN Harness generator. Iterates per spec.",m:"opus",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"gan-planner",d:"GAN planner. One-liner to full spec.",m:"opus",t:["Read","Write","Grep","Glob"]},
+  {n:"go-build-resolver",d:"Go build, vet, compilation fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"go-reviewer",d:"Go: idioms, concurrency, error handling.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"harmonyos-app-resolver",d:"HarmonyOS dev with ArkTS/ArkUI.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"harness-optimizer",d:"Optimize agent harness: reliability, cost.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
+  {n:"healthcare-reviewer",d:"Clinical safety, CDSS, PHI compliance.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"homelab-architect",d:"Home/small-lab network design.",m:"sonnet",t:["Read","Grep"]},
+  {n:"java-build-resolver",d:"Java/Maven/Gradle build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"java-reviewer",d:"Java: Spring Boot, Quarkus, JPA.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"kotlin-build-resolver",d:"Kotlin/Gradle build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"kotlin-reviewer",d:"Kotlin: coroutines, Compose, KMP.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"loop-operator",d:"Autonomous agent loop operation.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
+  {n:"marketing-agent",d:"Campaign planning, copy, content.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
+  {n:"mle-reviewer",d:"ML: data contracts, feature pipelines.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"network-architect",d:"Enterprise network architecture.",m:"sonnet",t:["Read","Grep"]},
+  {n:"network-config-reviewer",d:"Router/switch config review.",m:"sonnet",t:["Read","Grep"]},
+  {n:"network-troubleshooter",d:"Network connectivity diagnostics.",m:"sonnet",t:["Read","Bash","Grep"]},
+  {n:"opensource-forker",d:"Fork projects: strip secrets, clean git.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"opensource-packager",d:"Generate open-source packaging.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"opensource-sanitizer",d:"Verify sanitized before release.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"performance-optimizer",d:"Bottleneck analysis and optimization.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"php-reviewer",d:"PHP: PSR-12, Eloquent, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"planner",d:"Complex feature and refactoring planning.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"pr-test-analyzer",d:"PR test coverage quality check.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"python-reviewer",d:"Python: PEP8, type hints, idioms.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"pytorch-build-resolver",d:"PyTorch/CUDA/training error fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"react-build-resolver",d:"Fix React builds: Vite, webpack, Next.js.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"react-reviewer",d:"React: hooks, render performance.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"refactor-cleaner",d:"Dead code cleanup, knip, depcheck.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"rust-build-resolver",d:"Rust build/compilation/dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"rust-reviewer",d:"Rust: ownership, lifetimes, unsafe.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"security-reviewer",d:"Vulnerability detection and remediation.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"seo-specialist",d:"Technical audits, structured data, CWV.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
+  {n:"silent-failure-hunter",d:"Find swallowed errors, bad fallbacks.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"swift-build-resolver",d:"Swift/Xcode build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
   {n:"swift-reviewer",d:"Swift: protocol-oriented, ARC, concurrency.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
-  {n:"tdd-guide",d:"TDD: write-tests-first enforcement. 80%+ coverage.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep"]},
-  {n:"type-design-analyzer",d:"Analyze type design for encapsulation, invariants.",m:"sonnet",t:["Read","Grep","Glob"]},
-  {n:"typescript-reviewer",d:"TS/JS: type safety, async correctness, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]}
+  {n:"tdd-guide",d:"TDD enforcement, 80%+ coverage.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep"]},
+  {n:"type-design-analyzer",d:"Type encapsulation and invariants.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"typescript-reviewer",d:"TS/JS: type safety, async, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]}
 ];
 
 function getCat(a){
@@ -1037,7 +940,6 @@ function getCat(a){
   if(/network|harness|homelab/.test(n)) return 'Infrastructure & DevOps';
   return 'Specialized Agents';
 }
-function catEmoji(c){return {'Reviewers':'🔍','Build Resolvers':'🔧','Architects & Planners':'🏗️','Security & Testing':'🛡️','ML & Data Science':'📊','Infrastructure & DevOps':'🌐','Language Specialists':'💻','Specialized Agents':'🎯'}[c]||'📌';}
 
 function renderModelDist(){
   const m={sonnet:0,opus:0,haiku:0};
@@ -1047,6 +949,8 @@ function renderModelDist(){
     `<div class="model-bar"><div class="count ${k}">${v}</div><div class="label">${k.charAt(0).toUpperCase()+k.slice(1)}</div><div class="progress"><div class="progress-fill ${k}" style="width:${(v/t*100).toFixed(0)}%"></div></div></div>`
   ).join('');
 }
+
+const CAT_EMOJI = {'Reviewers':'🔍','Build Resolvers':'🔧','Architects & Planners':'🏗️','Security & Testing':'🛡️','ML & Data Science':'📊','Infrastructure & DevOps':'🌐','Language Specialists':'💻','Specialized Agents':'🎯'};
 
 function renderAgents(filter,search){
   const g=document.getElementById('agentsGrid');
@@ -1058,11 +962,8 @@ function renderAgents(filter,search){
   g.innerHTML=f.map(a=>{
     const mc=a.m==='opus'?'opus':a.m==='haiku'?'haiku':'';
     const bridge=a.m!=='opus'?'<span class="bridge-badge">🔗 Free</span>':'<span class="bridge-badge opus">⚠️ Limited</span>';
-    return `<div class="agent-card fade-in"><div class="top"><span class="name">${a.n}</span>${bridge}<span class="model-tag ${mc}">${a.m}</span></div><div class="desc">${a.d}</div><div class="tools">${a.t.map(t=>`<span class="tool-tag">${t}</span>`).join('')}</div></div>`;
+    return `<div class="agent-card"><div class="top"><span class="name">${a.n}</span>${bridge}<span class="model-tag ${mc}">${a.m}</span></div><div class="desc">${a.d}</div><div class="tools">${a.t.map(t=>`<span class="tool-tag">${t}</span>`).join('')}</div></div>`;
   }).join('');
-  setTimeout(()=>{
-    document.querySelectorAll('#agentsGrid .fade-in').forEach((el,i)=>{setTimeout(()=>el.classList.add('visible'),i*20);});
-  },50);
 }
 
 function buildFilters(){
@@ -1070,7 +971,7 @@ function buildFilters(){
   const c=document.getElementById('filterGroup');
   cats.forEach(cat=>{
     const b=document.createElement('button');b.className='filter-btn';b.dataset.cat=cat;
-    b.textContent=`${catEmoji(cat)} ${cat} (${AGENTS.filter(a=>getCat(a)===cat).length})`;
+    b.textContent=`${CAT_EMOJI[cat]||'📌'} ${cat} (${AGENTS.filter(a=>getCat(a)===cat).length})`;
     b.onclick=()=>setFilter(cat);c.appendChild(b);
   });
 }
@@ -1083,7 +984,6 @@ function setFilter(cat){
 }
 function filterAgents(){renderAgents(currentFilter,document.getElementById('searchInput').value);}
 
-// === Init ===
 renderModelDist();
 buildFilters();
 renderAgents('all','');
