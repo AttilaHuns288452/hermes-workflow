@@ -170,7 +170,17 @@ nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;ba
 .cat-tab.active{background:var(--grad3);border-color:transparent;color:#fff}
 .cat-tab .count{opacity:.6}
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.6rem}
-.card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s;position:relative;overflow:hidden}
+.card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s;position:relative;overflow:hidden;border-left:3px solid transparent}
+.card[data-cat*="Software"]{border-left-color:#4a8cf4;background:linear-gradient(135deg,rgba(74,140,244,.04),var(--glass))}
+.card[data-cat*="LLMQuant"]{border-left-color:#f0d060;background:linear-gradient(135deg,rgba(240,208,96,.04),var(--glass))}
+.card[data-cat*="Creative"]{border-left-color:#d088b8;background:linear-gradient(135deg,rgba(208,136,184,.04),var(--glass))}
+.card[data-cat*="Workflow"]{border-left-color:#3ddc84;background:linear-gradient(135deg,rgba(61,220,132,.04),var(--glass))}
+.card[data-cat*="Productivity"]{border-left-color:#6bc5e8;background:linear-gradient(135deg,rgba(107,197,232,.04),var(--glass))}
+.card[data-cat*="Media"]{border-left-color:#e4a847;background:linear-gradient(135deg,rgba(228,168,71,.04),var(--glass))}
+.card[data-cat*="Research"]{border-left-color:#9b7cf7;background:linear-gradient(135deg,rgba(155,124,247,.04),var(--glass))}
+.card[data-cat*="GitHub"]{border-left-color:#7c5cf5;background:linear-gradient(135deg,rgba(124,92,245,.04),var(--glass))}
+.card[data-cat*="OpenCode"]{border-left-color:#4dc9b8;background:linear-gradient(135deg,rgba(77,201,184,.04),var(--glass))}
+.card[data-cat*="More"]{border-left-color:#8895b8;background:linear-gradient(135deg,rgba(136,149,184,.04),var(--glass))}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .35s}
 .card:hover{transform:translateY(-3px);border-color:var(--border-light);box-shadow:0 12px 40px rgba(74,140,244,.05)}
 .card:hover::before{opacity:1}
@@ -880,7 +890,7 @@ Object.entries(SKILLS_DATA).forEach(([cat, skills]) => skills.forEach(s => ALL_S
 function renderSkills(cat){
   const g=document.getElementById('skillGrid');
   const items=cat==='all' ? ALL_SKILLS : ALL_SKILLS.filter(s=>s.c===cat);
-  g.innerHTML=items.map(s=>`<div class="card"><div class="cat">${s.c}</div><h4>${s.n}</h4><p>${s.d}</p></div>`).join('');
+  g.innerHTML=items.map(s=>`<div class="card" data-cat="${s.c}"><div class="cat">${s.c}</div><h4>${s.n}</h4><p>${s.d}</p></div>`).join('');
   setTimeout(() => {
     g.querySelectorAll('.card').forEach((el,i) => { setTimeout(() => el.style.opacity='1', i*20); });
   }, 50);
