@@ -4,6 +4,10 @@
 
 ---
 
+> **★ Recommended Model: DeepSeek V4 Flash via OpenCode Zen API** — set it as your primary model for the best free-model experience. See Step 5 and Step 10.
+
+---
+
 ## Step 1: Install Hermes Agent
 
 ```bash
@@ -58,7 +62,7 @@ source .env
 
 | Tool | Purpose | Install Command |
 |------|---------|-----------------|
-| **OpenCode** | Free Model Layer 1 | `npm install -g opencode` |
+| **OpenCode** | Free Model Layer 1 (★ recommended) | `npm install -g opencode` |
 | **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` |
 | **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` |
 | **FreeLLMAPI** | Free Model Layer 3 | (see Step 6) |
@@ -138,7 +142,7 @@ curl -s -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/m
 
 ---
 
-## Step 7: Install the Skills (161 total)
+## Step 7: Install the Skills (165 total)
 
 ```bash
 # Install all skills recursively from the repo
@@ -147,7 +151,7 @@ find ./skills -name 'SKILL.md' -exec dirname {} \; | while read dir; do
 done
 ```
 
-> The repo mirrors every skill from the Hermes Agent installation — all 161 SKILL.md files across 49 categories. Installing them loads the full pipeline: `/decide` routing brain, core identity guardrail, token saver probe chain, model router, ECC agent bridge, LLMQuant skills, creative/media/research workflows, and the mandatory Obsidian documentation bundle.
+> The repo mirrors every skill from the Hermes Agent installation — all 165 SKILL.md files across 8 categories. Installing them loads the full pipeline: `/decide` routing brain, core identity guardrail, token saver probe chain, model router, ECC agent bridge, LLMQuant skills, creative/media/research workflows, and the mandatory Obsidian documentation bundle.
 
 ---
 
@@ -172,7 +176,7 @@ hermes run "Summarize this repo structure"
 
 | Layer | Provider | Models |
 |-------|----------|--------|
-| 1 | OpenCode (Zen) | Bundled free models |
+| 1 | ★ OpenCode (Zen) | DeepSeek V4 Flash ★ (recommended) |
 | 2 | Freebuff API | Kimi K2.6, MiniMax M3, MiMo 2.5 |
 | 3 | **FreeLLMAPI** (:3001) | 107 models from 16 providers |
 | 4 | OpenRouter :free | 29+ free models |

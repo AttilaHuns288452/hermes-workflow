@@ -1,6 +1,6 @@
 # Hermes Workflow
 
-**AI Agent Workflow Engine** — 161 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing, permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
+**AI Agent Workflow Engine** — 165 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing (★ DeepSeek V4 Flash via OpenCode recommended), permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
 
 ## 🚀 Plug-and-Play Setup
 
@@ -88,10 +88,12 @@ The system centers on the **`/decide`** skill, a master orchestrator that:
 
 The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-workflow/](https://attilahuns288452.github.io/hermes-workflow/)** showcases:
 
-- **92+ Skills** — categorized tab grid with descriptions (15 categories)
+- **165 Skills** — categorized tab grid with descriptions (multiple categories)
+- **Getting Started section** — install Hermes, clone skills, recommended model setup
+- **★ DeepSeek V4 Flash recommendation** — using OpenCode Zen API as primary free model
 - **64 ECC Agents** — searchable, filterable library with free-model compatibility badges
-- **Live Dashboard** — ecosystem overview: 16 projects, 161 skills, 26K APIs, 8K+16K graph nodes, model layers, MCP servers
-- **Model Routing Chain** — 5-layer fallback chain visualization
+- **Live Dashboard** — ecosystem overview: 16 projects, 165 skills, 26K APIs, graph nodes, model layers, MCP servers
+- **Model Routing Chain** — 5-layer fallback chain (OpenCode → Freebuff → FreeLLMAPI → OpenRouter → Paid)
 - **Token Saver** — 56.2× verified token reduction via CodeGraph + Graphify probe
 - **Core Identity Guardrail** — 6 permanent safety rules
 - **Knowledge Graph** — 276 nodes / 1,091 edges galaxy visualization
@@ -103,7 +105,7 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 
 | Metric | Value |
 |--------|-------|
-| Skills | 97 across 15 categories |
+| Skills | 165 across multiple categories |
 | ECC Agents | 64 (57 free-compatible via ecc-bridge) |
 | Projects | 16 (3 with Graphify graphs) |
 | API Mega List | 26,005 APIs across 18 categories |
@@ -203,4 +205,4 @@ All profiles share MCP servers from the root config — no duplication needed.
 
 ---
 
-*Theme: Dark Navy Moonlight · Updated: Jun 30, 2026*
+*Theme: Dark Navy Moonlight · Updated: Jul 2026 · ★ DeepSeek V4 Flash recommended*
