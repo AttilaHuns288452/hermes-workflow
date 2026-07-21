@@ -57,7 +57,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 /* ============================================
    NAV
    ============================================ */
-nav{position:sticky;top:0;z-index:100;height:var(--nav-h);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);background:linear-gradient(180deg,rgba(5,8,15,.92) 0%,rgba(5,8,15,.7) 100%);border-bottom:1px solid var(--glass-edge)}
+nav{position:sticky;top:0;z-index:100;height:var(--nav-h);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);background:linear-gradient(180deg,rgba(5,8,15,.92) 0%,rgba(5,8,15,.7) 100%);border-bottom:1px solid var(--glass-edge);box-shadow:0 1px 0 rgba(74,140,244,.06)}
 nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.15}
 .nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:.4rem;height:100%;padding:0 1.5rem}
 .logo{font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:10px;margin-right:auto;letter-spacing:-.02em;text-decoration:none;color:var(--text);position:relative}
@@ -113,7 +113,10 @@ nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;ba
    SECTIONS
    ============================================ */
 .section{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:4rem 1.5rem}
+.section::before{content:'';position:absolute;inset:0;pointer-events:none;width:100vw;left:50%;transform:translateX(-50%);background:var(--section-bg,transparent);z-index:-1}
+.section:nth-child(even){--section-bg:rgba(74,140,244,.012)}
 .section-header{text-align:center;margin-bottom:2.5rem}
+.section-header h2::before{content:'';display:block;width:40px;height:3px;border-radius:2px;background:var(--grad);margin:0 auto .8rem}
 .section-header .eyebrow{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:.3rem}
 .section-header h2{font-size:clamp(1.5rem,2.8vw,2.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15}
 .section-header .sub{color:var(--text2);max-width:600px;margin:.6rem auto 0;font-size:.9rem;line-height:1.6}
