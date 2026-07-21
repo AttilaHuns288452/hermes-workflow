@@ -1,0 +1,157 @@
+---
+import "../styles/global.css";
+import firaMono400Woff2 from "@fontsource/fira-mono/files/fira-mono-latin-400-normal.woff2?url";
+import { getGithubStars } from "../lib/github-stars.ts";
+import NewsletterInput from "../ui/newsletter-input";
+import { skills } from "../data/skills";
+import Footer from "../ui/footer.astro";
+import { CommandDialog } from "../ui/command-dialog";
+import GitHubStarButton from "../ui/github-star-button.astro";
+
+type Props = {
+  preloadFiraMono?: boolean;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+  title?: string;
+  description?: string;
+  robots?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  twitterImage?: string;
+  twitterImageAlt?: string;
+  twitterSite?: string;
+  ogType?: string;
+  siteName?: string;
+};
+
+const {
+  preloadFiraMono,
+  structuredData,
+  title,
+  description,
+  robots,
+  ogImage,
+  ogImageAlt,
+  twitterImage,
+  twitterImageAlt,
+  twitterSite,
+  ogType,
+  siteName,
+} = Astro.props as Props;
+const canonicalPath =
+  Astro.url.pathname === "/"
+    ? "/"
+    : Astro.url.pathname.replace(/\/+$/, "");
+const canonicalUrl = new URL(
+  canonicalPath,
+  Astro.site ?? "https://www.ui-skills.com",
+);
+const pageTitle = title ?? "UI Skills - Skills for Design Engineers";
+const pageDescription = description ?? "Skills for Design Engineers.";
+const robotsContent =
+  robots ??
+  "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+const ogImageUrl = ogImage ?? "https://www.ui-skills.com/UI-OG.png";
+const twitterImageUrl = twitterImage ?? "https://www.ui-skills.com/UI-OG-X.png";
+const ogImageAltText =
+  ogImageAlt ?? "UI Skills preview for design engineers";
+const twitterImageAltText = twitterImageAlt ?? "UI Skills social preview image";
+const ogTypeValue = ogType ?? "website";
+const siteNameValue = siteName ?? "UI Skills";
+const twitterSiteHandle = twitterSite ?? "@ibelick";
+const commandItems = skills.map((skill) => ({
+  slug: skill.slug,
+  pathSlug: skill.pathSlug,
+  label: skill.label,
+  sourceLabel: skill.sourceLabel,
+  description: skill.description,
+  searchContent: skill.description ?? "",
+}));
+
+const githubStars = await getGithubStars();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    {
+      preloadFiraMono ? (
+        <link
+          rel="preload"
+          href={firaMono400Woff2}
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      ) : null
+    }
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalUrl.href} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="robots" content={robotsContent} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={ogImageAltText} />
+    <meta property="og:type" content={ogTypeValue} />
+    <meta property="og:site_name" content={siteNameValue} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={twitterImageUrl} />
+    <meta name="twitter:image:alt" content={twitterImageAltText} />
+    <meta name="twitter:site" content={twitterSiteHandle} />
+    {
+      structuredData ? (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(structuredData)}
+        />
+      ) : null
+    }
+    <script is:inline defer src="https://assets.onedollarstats.com/stonks.js"></script>
+  </head>
+  <body>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-black"
+    >
+      Skip to main content
+    </a>
+    <div class="relative min-h-dvh">
+      <header
+        class="absolute inset-x-0 top-0 z-10 flex justify-end px-4 pt-6 sm:px-8"
+      >
+        <div class="flex items-center gap-1">
+          <CommandDialog items={commandItems} client:load />
+          <GitHubStarButton
+            href="https://github.com/ibelick/ui-skills"
+            label={githubStars?.label}
+          />
+        </div>
+      </header>
+      <main id="main-content">
+        <slot />
+      </main>
+      <NewsletterInput client:load />
+      <Footer />
+    </div>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-parchment-50);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+</style>

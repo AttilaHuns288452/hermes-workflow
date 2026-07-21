@@ -105,7 +105,7 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 
 | Metric | Value |
 |--------|-------|
-| Skills | 165 across multiple categories |
+| Skills | 508 across all categories (165 core + 343 external) |
 | ECC Agents | 64 (57 free-compatible via ecc-bridge) |
 | Projects | 16 (3 with Graphify graphs) |
 | API Mega List | 26,005 APIs across 18 categories |

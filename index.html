@@ -132,8 +132,7 @@ nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;ba
 .gs-card h3{font-size:.9rem;font-weight:700}
 .gs-card p{font-size:.75rem;color:var(--text2);margin-bottom:.5rem;line-height:1.5}
 .gs-card pre{font-family:var(--mono);font-size:.64rem;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem;overflow-x:auto;white-space:pre;color:var(--cyan);line-height:1.5;position:relative}
-.gs-card .copy-btn{position:absolute;top:.5rem;right:.5rem;font-size:.5rem;padding:.15rem .4rem;border-radius:4px;background:var(--surface3);color:var(--text2);cursor:pointer;transition:all .2s;border:none;font-family:inherit;opacity:0}
-.gs-card pre:hover .copy-btn,.copy-btn.show{opacity:1}
+.gs-card .copy-btn{position:absolute;top:.5rem;right:.5rem;font-size:.5rem;padding:.15rem .4rem;border-radius:4px;background:var(--surface3);color:var(--text2);cursor:pointer;transition:all .2s;border:none;font-family:inherit}
 .gs-card .copy-btn:hover{background:var(--accent);color:#fff}
 .gs-card.hl{border-color:rgba(61,220,132,.2);background:rgba(61,220,132,.03)}
 .gs-card.hl .gs-num{background:linear-gradient(135deg,var(--green),var(--teal))}
@@ -160,21 +159,7 @@ nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;ba
 .svg-arrow{fill:var(--border-light);opacity:.5}
 @keyframes drawLine{to{stroke-dashoffset:0}}
 @keyframes fadeNode{to{opacity:1}}
-/* Pipe step CSS (keep for fallback) */
-.pipe-step{display:flex;align-items:center;gap:.8rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:.75rem 1rem;width:100%;position:relative;backdrop-filter:blur(8px);transition:all .35s;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s,border-color .3s}
-.pipe-step.visible{opacity:1;transform:translateY(0)}
-.pipe-step:hover{border-color:var(--accent2)}
-.pipe-step .sn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0;background:var(--surface3);color:var(--text2);transition:all .3s}
-.pipe-step:hover .sn{background:var(--accent);color:#fff}
-.pipe-step .info{flex:1}
-.pipe-step .info h3{font-size:.82rem;font-weight:600}
-.pipe-step .info p{font-size:.68rem;color:var(--text2);line-height:1.4;margin-top:2px}
-.pipe-step .info .tag{display:inline-block;font-size:.55rem;padding:.1rem .4rem;border-radius:3px;background:rgba(61,220,132,.1);color:var(--green);margin-top:3px;font-weight:500}
-.pipe-arrow{color:var(--border);font-size:.7rem;padding:3px 0;opacity:0;transition:opacity .4s}
-.pipe-arrow.visible{opacity:1}
-
-/* ============================================
-   SKILLS
+/* SKILLS
    ============================================ */
 .cat-tabs{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:1.2rem;justify-content:center}
 .cat-tab{padding:.3rem .75rem;border-radius:var(--radius-pill);font-size:.65rem;font-weight:500;cursor:pointer;background:var(--glass);border:1px solid var(--glass-edge);color:var(--text2);transition:all .25s;font-family:inherit;backdrop-filter:blur(8px)}
