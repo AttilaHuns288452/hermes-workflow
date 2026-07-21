@@ -88,11 +88,11 @@ The system centers on the **`/decide`** skill, a master orchestrator that:
 
 The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-workflow/](https://attilahuns288452.github.io/hermes-workflow/)** showcases:
 
-- **165 Skills** — categorized tab grid with descriptions (multiple categories)
+- **508 Skills** — categorized tab grid with colored category badges (165 core + 343 external)
 - **Getting Started section** — install Hermes, clone skills, recommended model setup
 - **★ DeepSeek V4 Flash recommendation** — using OpenCode Zen API as primary free model
 - **64 ECC Agents** — searchable, filterable library with free-model compatibility badges
-- **Live Dashboard** — ecosystem overview: 16 projects, 165 skills, 26K APIs, graph nodes, model layers, MCP servers
+- **Live Dashboard** — ecosystem overview: 16 projects, 508 skills, 26K APIs, graph nodes, model layers, MCP servers
 - **Model Routing Chain** — 5-layer fallback chain (OpenCode → Freebuff → FreeLLMAPI → OpenRouter → Paid)
 - **Token Saver** — 56.2× verified token reduction via CodeGraph + Graphify probe
 - **Core Identity Guardrail** — 6 permanent safety rules
