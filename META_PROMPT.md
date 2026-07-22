@@ -47,7 +47,7 @@ Step 3 — /decide Routing Brain
 Step 4 — Token Saver Probe Chain (Enforced)
    Before ANY read_file(), execute the 4-step probe:
    Step A — Detect project (identify $PROJECT under ~/Documents/Projects/)
-   Step B — Probe CodeGraph MCP (always available, 945 files, ~300 tokens)
+   Step B — Probe CodeGraph MCP (always available, 3,425 files, ~300 tokens)
    Step C — Probe Graphify (14/16 projects have indices, ~300 tokens)
    Step D — read_file() only as last resort with offset/limit
    Verified savings: 50× to 1,233× per query (ECC index: 34MB, works live)
@@ -375,7 +375,7 @@ Graphify (v0.8.37, uv tool install graphifyy)
   - Built-in benchmark: 56.2× avg token reduction (max 157.7×)
 
 CodeGraph (v0.9.9, npm)
-  - Pre-indexed MCP code knowledge graph: 945 files, 16,092 nodes, 43,795 edges (codegraph repo — reference scale)
+  - Pre-indexed MCP code knowledge graph: 3,425 files, 52,747 nodes, 125,822 edges (codegraph repo — reference scale)
   - Commands: query, callers, callees, impact
   - Live MCP server at port 3100, wired into Hermes config.yaml
 
