@@ -1,0 +1,694 @@
+{
+  "Software Development": [
+    {
+      "n": "Setup",
+      "d": "End-to-end project/repo/tool setup execution."
+    },
+    {
+      "n": "Update",
+      "d": "One-command ecosystem onboarding: clone→setup→Graphify→Obsidian→KG."
+    },
+    {
+      "n": "Graphify Integrate",
+      "d": "Build code knowledge graph → export → register MCP."
+    },
+    {
+      "n": "Test-Driven Dev",
+      "d": "RED-GREEN-REFACTOR enforcement. Tests before code."
+    },
+    {
+      "n": "Systematic Debugging",
+      "d": "4-phase root cause analysis before fixing."
+    },
+    {
+      "n": "Plan",
+      "d": "Actionable markdown plan to .hermes/plans/. No execution."
+    },
+    {
+      "n": "Spike",
+      "d": "Throwaway experiments to validate ideas before building."
+    },
+    {
+      "n": "Simplify Code",
+      "d": "Parallel 3-agent cleanup of recent changes."
+    },
+    {
+      "n": "Requesting Code Review",
+      "d": "Pre-commit security scan, quality gates, auto-fix."
+    },
+    {
+      "n": "Saas Launch",
+      "d": "Build, deploy, and SEO-optimize a SaaS product."
+    },
+    {
+      "n": "WinForms C#",
+      "d": "Scaffold, build, and run .NET 8 WinForms applications."
+    },
+    {
+      "n": "Agent Harness",
+      "d": "Third-party agent harness config layer integration."
+    },
+    {
+      "n": "Codex Skill Import",
+      "d": "Import SKILL.md from OpenAI Codex plugin cache."
+    },
+    {
+      "n": "Ext Agent Adapter",
+      "d": "Adapt external agent ecosystems without routing conflicts."
+    },
+    {
+      "n": "Skill Authoring",
+      "d": "Author in-repo SKILL.md with frontmatter and validator."
+    },
+    {
+      "n": "Repo Integration",
+      "d": "Audit existing skills; resolve overlaps for new repos."
+    },
+    {
+      "n": "Node Inspect Debug",
+      "d": "Debug Node.js via --inspect + DevTools Protocol CLI."
+    },
+    {
+      "n": "Python Debugpy",
+      "d": "Debug Python via debugpy + VS Code launch config."
+    },
+    {
+      "n": "NextJS Hydration",
+      "d": "Fix SSR/hydration errors in Next.js apps."
+    },
+    {
+      "n": "Personality Quiz Builder",
+      "d": "Build Akinator-like personality quizzes."
+    },
+    {
+      "n": "Personality Quiz Engine",
+      "d": "'Which X are you' quizzes with cosine similarity."
+    },
+    {
+      "n": "Character Animation",
+      "d": "Full workflow for character-animated video production."
+    },
+    {
+      "n": "Buildable Plugin",
+      "d": "Local-first AI app-builder golden templates."
+    },
+    {
+      "n": "Public Repo Readiness",
+      "d": "Audit for secrets, licensing, security before release."
+    },
+    {
+      "n": "Superpowers Methodology",
+      "d": "Complete dev methodology from obra/superpowers."
+    },
+    {
+      "n": "Karpathy Guidelines",
+      "d": "4 behavioral guardrails. Reduces common LLM mistakes."
+    }
+  ],
+  "LLMQuant (Finance)": [
+    {
+      "n": "Commodities",
+      "d": "Spot, futures curve, inventory, roll yield, macro analysis."
+    },
+    {
+      "n": "Credit",
+      "d": "Spread analysis, CDS, bond valuation, credit risk."
+    },
+    {
+      "n": "Crypto",
+      "d": "Market regime, token research, perpetual funding, basis."
+    },
+    {
+      "n": "Data",
+      "d": "SEC filings, 13F holders, macro snapshots, research."
+    },
+    {
+      "n": "Equities",
+      "d": "Equity analysis, factor models, valuation."
+    },
+    {
+      "n": "Equity Derivatives",
+      "d": "Options strategies, implied volatility, Greeks."
+    },
+    {
+      "n": "ETFs",
+      "d": "Flow analysis, basket construction, tracking error."
+    },
+    {
+      "n": "Events",
+      "d": "Earnings, M&A, regulatory catalyst analysis."
+    },
+    {
+      "n": "Investor Lenses",
+      "d": "Smart money, 13F crowding, activist tracking."
+    },
+    {
+      "n": "Macro",
+      "d": "Regime ID, GDP, inflation, monetary policy."
+    },
+    {
+      "n": "Market Intelligence",
+      "d": "Context, sentiment, positioning, flow analysis."
+    },
+    {
+      "n": "Options",
+      "d": "Pricing, volatility surface, hedging, exotics."
+    },
+    {
+      "n": "Portfolio",
+      "d": "Construction, rebalancing, risk budgeting."
+    },
+    {
+      "n": "Portfolio Lab",
+      "d": "Backtesting, scenario analysis, Monte Carlo."
+    },
+    {
+      "n": "Prediction Markets",
+      "d": "Market pricing, efficiency, arbitrage."
+    },
+    {
+      "n": "Rates & FX",
+      "d": "Rate curves, FX forwards, carry, central bank policy."
+    },
+    {
+      "n": "Risk",
+      "d": "VaR, CVaR, tail risk, stress testing."
+    },
+    {
+      "n": "Strategies",
+      "d": "Hedge fund strategies, alpha generation."
+    }
+  ],
+  "Creative & Design": [
+    {
+      "n": "Claude Design",
+      "d": "One-off HTML artifacts: landing pages, prototypes."
+    },
+    {
+      "n": "Architecture Diagram",
+      "d": "Dark-themed SVG architecture diagrams as HTML."
+    },
+    {
+      "n": "ASCII Art",
+      "d": "pyfiglet, cowsay, boxes, image-to-ascii."
+    },
+    {
+      "n": "ASCII Video",
+      "d": "Convert video/audio to colored ASCII MP4/GIF."
+    },
+    {
+      "n": "Baoyu Infographic",
+      "d": "21 layouts × 21 styles of infographics."
+    },
+    {
+      "n": "ComfyUI",
+      "d": "Generate images, video, audio with ComfyUI."
+    },
+    {
+      "n": "Design MD",
+      "d": "Author/validate Google DESIGN.md token spec files."
+    },
+    {
+      "n": "Excalidraw",
+      "d": "Hand-drawn JSON diagrams (arch, flow, sequence)."
+    },
+    {
+      "n": "Humanizer",
+      "d": "Strip AI-isms and add real voice to text."
+    },
+    {
+      "n": "Manim Video",
+      "d": "3Blue1Brown-style math animations via Manim CE."
+    },
+    {
+      "n": "p5.js",
+      "d": "Generative art, shaders, interactive 3D sketches."
+    },
+    {
+      "n": "Personality Quiz",
+      "d": "Character-data personality quiz builder."
+    },
+    {
+      "n": "Popular Web Designs",
+      "d": "54 real design systems (Stripe, Linear, Vercel)."
+    },
+    {
+      "n": "Pretext",
+      "d": "DOM-free text layout for ASCII art and typography."
+    },
+    {
+      "n": "Sketch",
+      "d": "Throwaway HTML mockups with 2-3 design variants."
+    },
+    {
+      "n": "Songwriting & AI Music",
+      "d": "Songwriting craft and Suno AI music prompts."
+    },
+    {
+      "n": "TouchDesigner MCP",
+      "d": "Control TouchDesigner via 36 native MCP tools."
+    },
+    {
+      "n": "Premium Design",
+      "d": "Apple-inspired premium aesthetic design system."
+    },
+    {
+      "n": "Glass Design",
+      "d": "Dark glassmorphism with frosted surfaces."
+    },
+    {
+      "n": "Cinematic Motion",
+      "d": "GSAP/Lenis scroll animations and parallax."
+    }
+  ],
+  "Workflow & Core": [
+    {
+      "n": "Core Identity Guardrail",
+      "d": "6 immutable safety rules. Always loaded first."
+    },
+    {
+      "n": "/decide",
+      "d": "Master orchestrator — 6-step reasoning protocol."
+    },
+    {
+      "n": "/do",
+      "d": "Execution engine — runs after /decide routes tasks."
+    },
+    {
+      "n": "Token Saver",
+      "d": "Pre-file-read probe. 56.2× token reduction."
+    },
+    {
+      "n": "Session Memory",
+      "d": "Retrieve context from prior sessions before routing."
+    },
+    {
+      "n": "Task Tier",
+      "d": "Classify requests into Tiers 1-3 for depth."
+    },
+    {
+      "n": "Free AI Model Router",
+      "d": "Route tasks to the best available free model."
+    },
+    {
+      "n": "Model Recommender",
+      "d": "CLI-based model selection for 6 task types."
+    },
+    {
+      "n": "External Skills",
+      "d": "Integrate external skill repos via external_dirs."
+    },
+    {
+      "n": "Hermes Backup",
+      "d": "Automated backup, restore, credential sync."
+    },
+    {
+      "n": "ECC Bridge",
+      "d": "Wire 57/64 ECC agents through free model chain."
+    },
+    {
+      "n": "Doubt-Driven Dev",
+      "d": "Subject non-trivial decisions to fresh-context audit."
+    }
+  ],
+  "Productivity & Comms": [
+    {
+      "n": "API Mega List",
+      "d": "10,498 APIs across 18 categories — searchable."
+    },
+    {
+      "n": "Airtable",
+      "d": "REST API: records CRUD, filters, upserts."
+    },
+    {
+      "n": "Drive Backups",
+      "d": "Automated Google Drive backups via rclone."
+    },
+    {
+      "n": "Google Workspace",
+      "d": "Gmail, Calendar, Drive, Docs via gws CLI."
+    },
+    {
+      "n": "Maps",
+      "d": "Geocode, POIs, routes, timezones via OSM/OSRM."
+    },
+    {
+      "n": "MCP Integrations",
+      "d": "MCP server setup patterns for Hermes."
+    },
+    {
+      "n": "Nano PDF",
+      "d": "Edit PDF text/typos via nano-pdf CLI."
+    },
+    {
+      "n": "Notion",
+      "d": "API + ntn CLI: pages, databases, markdown."
+    },
+    {
+      "n": "OCR & Documents",
+      "d": "Extract text from PDFs/scans (pymupdf)."
+    },
+    {
+      "n": "PowerPoint",
+      "d": "Create, read, edit .pptx decks and notes."
+    },
+    {
+      "n": "Teams Meeting",
+      "d": "Meeting summary pipeline via Hermes CLI."
+    },
+    {
+      "n": "Markdown Exporter",
+      "d": "Convert markdown to professional docs."
+    },
+    {
+      "n": "Hermes Dashboard",
+      "d": "Serve and interact with the agent dashboard."
+    },
+    {
+      "n": "Petdex",
+      "d": "Animated petdex mascots for Hermes."
+    },
+    {
+      "n": "OpenCode Win MCP",
+      "d": "Windows-specific MCP wiring fixes."
+    },
+    {
+      "n": "AI Marketing",
+      "d": "Open-source AI marketing automation skills."
+    }
+  ],
+  "Media & Content": [
+    {
+      "n": "YouTube Content",
+      "d": "Transcripts → summaries, threads, blogs."
+    },
+    {
+      "n": "MoneyPrinterTurbo",
+      "d": "AI short video: script→footage→TTS→render."
+    },
+    {
+      "n": "MoneyPrinter V2",
+      "d": "AI short video generation via KittenTT."
+    },
+    {
+      "n": "OpenMontage",
+      "d": "Full video production pipeline wrapper."
+    },
+    {
+      "n": "Short Video",
+      "d": "9:16 vertical videos for TikTok/Reels."
+    },
+    {
+      "n": "TikTok Finance",
+      "d": "Viral finance shorts with 'two lives' concept."
+    },
+    {
+      "n": "GIF Search",
+      "d": "Search/download GIFs from Tenor."
+    },
+    {
+      "n": "HeartMuLa",
+      "d": "Suno-like song generation from lyrics."
+    },
+    {
+      "n": "SongSee",
+      "d": "Audio spectrograms via CLI."
+    },
+    {
+      "n": "Python Audio Synth",
+      "d": "Generate BGM, SFX, placeholder audio."
+    },
+    {
+      "n": "Retro Video FX",
+      "d": "Vintage/retro aesthetic effects (VHS, CRT)."
+    }
+  ],
+  "Research & MLOps": [
+    {
+      "n": "arXiv",
+      "d": "Search papers by keyword, author, category."
+    },
+    {
+      "n": "Blogwatcher",
+      "d": "Monitor blogs and RSS/Atom feeds."
+    },
+    {
+      "n": "LLM Wiki",
+      "d": "Karpathy's LLM Wiki — interlinked markdown KB."
+    },
+    {
+      "n": "Polymarket",
+      "d": "Query markets, prices, orderbooks, history."
+    },
+    {
+      "n": "Research Paper",
+      "d": "Academic paper writing with templates."
+    },
+    {
+      "n": "HuggingFace Hub",
+      "d": "Search/download/upload models, datasets."
+    },
+    {
+      "n": "llama.cpp",
+      "d": "Local GGUF inference + HF discovery."
+    },
+    {
+      "n": "vLLM",
+      "d": "High-throughput LLM inference server."
+    },
+    {
+      "n": "Obliteratus",
+      "d": "Model weight pruning and quantization."
+    },
+    {
+      "n": "Segment Anything",
+      "d": "Zero-shot image segmentation."
+    },
+    {
+      "n": "AudioCraft",
+      "d": "MusicGen audio generation."
+    },
+    {
+      "n": "W&B",
+      "d": "Log experiments, sweeps, model registry."
+    },
+    {
+      "n": "LM Eval Harness",
+      "d": "Standardized LLM evaluation benchmarks."
+    }
+  ],
+  "GitHub & DevOps": [
+    {
+      "n": "GitHub Core",
+      "d": "Triage and orient repos, PRs, and issues."
+    },
+    {
+      "n": "GitHub Auth",
+      "d": "HTTPS tokens, SSH keys, gh CLI setup."
+    },
+    {
+      "n": "Code Review",
+      "d": "PR diffs and inline comments via gh/REST."
+    },
+    {
+      "n": "GitHub Issues",
+      "d": "Create, triage, label, assign issues."
+    },
+    {
+      "n": "PR Workflow",
+      "d": "Branch, commit, open, CI, merge lifecycle."
+    },
+    {
+      "n": "Repo Management",
+      "d": "Clone/create/fork repos, remotes."
+    },
+    {
+      "n": "Pre-Push Audit",
+      "d": "Scan for secrets and credentials before push."
+    },
+    {
+      "n": "Codebase Inspection",
+      "d": "pygount LOC/language/ratio analysis."
+    }
+  ],
+  "OpenCode Power Pack": [
+    {
+      "n": "Code Review",
+      "d": "Confidence-filtered multi-agent PR review."
+    },
+    {
+      "n": "Code Reviewer",
+      "d": "Bugs, logic, security, quality review."
+    },
+    {
+      "n": "Feature Dev",
+      "d": "Seven-phase guided feature implementation."
+    },
+    {
+      "n": "Code Architect",
+      "d": "Design feature architecture from existing code."
+    },
+    {
+      "n": "Code Explorer",
+      "d": "Deep analysis by tracing execution paths."
+    },
+    {
+      "n": "Frontend Design",
+      "d": "Production-grade accessible frontend UI."
+    },
+    {
+      "n": "MCP Builder",
+      "d": "Guide MCP server creation in Python/TS."
+    },
+    {
+      "n": "Security Review",
+      "d": "Focused review of pending git changes."
+    },
+    {
+      "n": "Skill Creator",
+      "d": "Create/modify/optimize SKILL.md files."
+    },
+    {
+      "n": "Agents MD Improver",
+      "d": "Audit and improve project-rules files."
+    },
+    {
+      "n": "Agents MD Revise",
+      "d": "Capture learnings into project rules."
+    }
+  ],
+  "More Categories": [
+    {
+      "n": "Gmail",
+      "d": "Inbox triage, search, reply drafting."
+    },
+    {
+      "n": "Google Drive",
+      "d": "Create/edit docs via Docs API."
+    },
+    {
+      "n": "Himalaya",
+      "d": "IMAP/SMTP email from terminal."
+    },
+    {
+      "n": "Apple Notes",
+      "d": "Create, read, search Apple Notes."
+    },
+    {
+      "n": "Apple Reminders",
+      "d": "Manage Apple Reminders."
+    },
+    {
+      "n": "FindMy",
+      "d": "Find devices and friends via network."
+    },
+    {
+      "n": "iMessage",
+      "d": "Send/read iMessages from terminal."
+    },
+    {
+      "n": "macOS Computer Use",
+      "d": "Drive macOS UI programmatically."
+    },
+    {
+      "n": "Obsidian",
+      "d": "Core note CRUD with ATM-Machine templates."
+    },
+    {
+      "n": "Obsidian Codebase Graph",
+      "d": "File tree → wikilinked markdown."
+    },
+    {
+      "n": "Obsidian KG",
+      "d": "Vault → interactive galaxy graph."
+    },
+    {
+      "n": "Project Docs",
+      "d": "Structured docs for any codebase."
+    },
+    {
+      "n": "OpenCode Agent",
+      "d": "Delegate coding to OpenCode CLI."
+    },
+    {
+      "n": "Claude Code Agent",
+      "d": "Delegate coding to Claude Code."
+    },
+    {
+      "n": "Codex Agent",
+      "d": "Delegate coding to OpenAI Codex."
+    },
+    {
+      "n": "Hermes Agent Meta",
+      "d": "Configure/extend Hermes Agent."
+    },
+    {
+      "n": "Jupyter Kernel",
+      "d": "Iterative Python via live kernel."
+    },
+    {
+      "n": "Supabase",
+      "d": "All Supabase operations."
+    },
+    {
+      "n": "Vercel",
+      "d": "Deploy projects, manage env vars."
+    },
+    {
+      "n": "Wix",
+      "d": "Build Wix CLI app extensions."
+    },
+    {
+      "n": "Student",
+      "d": "Explain code at 3rd-year BSCS level."
+    },
+    {
+      "n": "Dogfood",
+      "d": "Internal Hermes feature testing."
+    },
+    {
+      "n": "last30days",
+      "d": "Summarize session activity."
+    },
+    {
+      "n": "Safe File Patching",
+      "d": "Patch vs rewrite guidance."
+    },
+    {
+      "n": "SEO Tool Content",
+      "d": "Content strategy for tool sites."
+    },
+    {
+      "n": "OpenHue",
+      "d": "Control Philips Hue lights via CLI."
+    },
+    {
+      "n": "Godmode",
+      "d": "LLM jailbreak testing."
+    },
+    {
+      "n": "Yuanbao",
+      "d": "Group queries and user info."
+    },
+    {
+      "n": "Kanban Orchestrator",
+      "d": "Devops kanban workflow orchestration."
+    },
+    {
+      "n": "Kanban Worker",
+      "d": "Execute kanban work items."
+    },
+    {
+      "n": "Capafy Publisher",
+      "d": "Publish agents/skills on Capafy."
+    },
+    {
+      "n": "Capafy Web Form",
+      "d": "Capafy platform form filling."
+    },
+    {
+      "n": "Capafy User",
+      "d": "Capafy buyer entry point."
+    }
+  ]
+}

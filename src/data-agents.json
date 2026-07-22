@@ -1,0 +1,742 @@
+[
+  {
+    "n": "a11y-architect",
+    "d": "Accessibility Architect — WCAG 2.2 compliance.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "architect",
+    "d": "System design and technical decision-making.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "build-error-resolver",
+    "d": "Build/TypeScript error resolution, minimal diffs.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "chief-of-staff",
+    "d": "Triages email/Slack/LINE/Messenger into 4 tiers.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash",
+      "Edit",
+      "Write"
+    ]
+  },
+  {
+    "n": "code-architect",
+    "d": "Feature architectures from existing codebase patterns.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "code-explorer",
+    "d": "Deep codebase analysis tracing execution paths.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "code-reviewer",
+    "d": "Expert code review: quality, security, maintainability.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "code-simplifier",
+    "d": "Simplify/refine code for clarity and maintainability.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "comment-analyzer",
+    "d": "Analyze comments for accuracy and rot risk.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "conversation-analyzer",
+    "d": "Find behaviors worth preventing with hooks.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep"
+    ]
+  },
+  {
+    "n": "cpp-build-resolver",
+    "d": "C++/CMake build compilation error resolution.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "cpp-reviewer",
+    "d": "C++: memory safety, modern idioms.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "csharp-reviewer",
+    "d": "C#: .NET conventions, async, nullable.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "dart-build-resolver",
+    "d": "Dart/Flutter build, analysis, dependency fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "database-reviewer",
+    "d": "PostgreSQL: query optimization, schema, security.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "django-build-resolver",
+    "d": "Django/Python build, migration, dependency fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "django-reviewer",
+    "d": "Django: ORM, DRF, migration safety.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "doc-updater",
+    "d": "Documentation/codemap specialist.",
+    "m": "haiku",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "docs-lookup",
+    "d": "Fetches current docs via Context7 MCP.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "mcp__context7__*"
+    ]
+  },
+  {
+    "n": "e2e-runner",
+    "d": "E2E testing via Vercel Agent Browser + Playwright.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "fastapi-reviewer",
+    "d": "FastAPI: async, DI, Pydantic schemas.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "flutter-reviewer",
+    "d": "Flutter: widgets, state, performance.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "fsharp-reviewer",
+    "d": "F#: functional idioms, type safety.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "gan-evaluator",
+    "d": "GAN Harness evaluator. Playwright tests, scores.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "gan-generator",
+    "d": "GAN Harness generator. Iterates per spec.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "gan-planner",
+    "d": "GAN planner. One-liner to full spec.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Write",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "go-build-resolver",
+    "d": "Go build, vet, compilation fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "go-reviewer",
+    "d": "Go: idioms, concurrency, error handling.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "harmonyos-app-resolver",
+    "d": "HarmonyOS dev with ArkTS/ArkUI.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "harness-optimizer",
+    "d": "Optimize agent harness: reliability, cost.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash",
+      "Edit"
+    ]
+  },
+  {
+    "n": "healthcare-reviewer",
+    "d": "Clinical safety, CDSS, PHI compliance.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "homelab-architect",
+    "d": "Home/small-lab network design.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep"
+    ]
+  },
+  {
+    "n": "java-build-resolver",
+    "d": "Java/Maven/Gradle build fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "java-reviewer",
+    "d": "Java: Spring Boot, Quarkus, JPA.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "kotlin-build-resolver",
+    "d": "Kotlin/Gradle build fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "kotlin-reviewer",
+    "d": "Kotlin: coroutines, Compose, KMP.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "loop-operator",
+    "d": "Autonomous agent loop operation.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash",
+      "Edit"
+    ]
+  },
+  {
+    "n": "marketing-agent",
+    "d": "Campaign planning, copy, content.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  {
+    "n": "mle-reviewer",
+    "d": "ML: data contracts, feature pipelines.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "network-architect",
+    "d": "Enterprise network architecture.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep"
+    ]
+  },
+  {
+    "n": "network-config-reviewer",
+    "d": "Router/switch config review.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep"
+    ]
+  },
+  {
+    "n": "network-troubleshooter",
+    "d": "Network connectivity diagnostics.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Bash",
+      "Grep"
+    ]
+  },
+  {
+    "n": "opensource-forker",
+    "d": "Fork projects: strip secrets, clean git.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "opensource-packager",
+    "d": "Generate open-source packaging.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "opensource-sanitizer",
+    "d": "Verify sanitized before release.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "performance-optimizer",
+    "d": "Bottleneck analysis and optimization.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "php-reviewer",
+    "d": "PHP: PSR-12, Eloquent, security.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "planner",
+    "d": "Complex feature and refactoring planning.",
+    "m": "opus",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "pr-test-analyzer",
+    "d": "PR test coverage quality check.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "python-reviewer",
+    "d": "Python: PEP8, type hints, idioms.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "pytorch-build-resolver",
+    "d": "PyTorch/CUDA/training error fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "react-build-resolver",
+    "d": "Fix React builds: Vite, webpack, Next.js.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "react-reviewer",
+    "d": "React: hooks, render performance.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "refactor-cleaner",
+    "d": "Dead code cleanup, knip, depcheck.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "rust-build-resolver",
+    "d": "Rust build/compilation/dependency fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "rust-reviewer",
+    "d": "Rust: ownership, lifetimes, unsafe.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "security-reviewer",
+    "d": "Vulnerability detection and remediation.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "seo-specialist",
+    "d": "Technical audits, structured data, CWV.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  {
+    "n": "silent-failure-hunter",
+    "d": "Find swallowed errors, bad fallbacks.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "swift-build-resolver",
+    "d": "Swift/Xcode build fixes.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "swift-reviewer",
+    "d": "Swift: protocol-oriented, ARC, concurrency.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  },
+  {
+    "n": "tdd-guide",
+    "d": "TDD enforcement, 80%+ coverage.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Grep"
+    ]
+  },
+  {
+    "n": "type-design-analyzer",
+    "d": "Type encapsulation and invariants.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob"
+    ]
+  },
+  {
+    "n": "typescript-reviewer",
+    "d": "TS/JS: type safety, async, security.",
+    "m": "sonnet",
+    "t": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash"
+    ]
+  }
+]
