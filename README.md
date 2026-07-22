@@ -1,6 +1,6 @@
 # Hermes Workflow
 
-**AI Agent Workflow Engine** — 641 skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing (★ DeepSeek V4 Flash via OpenCode recommended), permanent guardrail, 56× token saver, live ecosystem dashboard, and mandatory Obsidian knowledge graph documentation.
+**AI Agent Workflow Engine** — 668+ skills, 64 ECC agents, 18 LLMQuant domains, 5-layer free model routing (★ DeepSeek V4 Flash via OpenCode recommended), permanent guardrail, 35×–1,233× token saver (CodeGraph 52,747 nodes + Graphify 21/24 projects), live ecosystem dashboard, mandatory Obsidian knowledge graph documentation, and Ponytail lazy-mode for minimal-diff coding.
 
 ## 🚀 Plug-and-Play Setup
 
@@ -88,11 +88,11 @@ The system centers on the **`/decide`** skill, a master orchestrator that:
 
 The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-workflow/](https://attilahuns288452.github.io/hermes-workflow/)** showcases:
 
-- **508 Skills** — categorized tab grid with colored category badges (165 core + 343 external)
+- **668+ Skills** — categorized tab grid with colored category badges (165 core + 343 external)
 - **Getting Started section** — install Hermes, clone skills, recommended model setup
 - **★ DeepSeek V4 Flash recommendation** — using OpenCode Zen API as primary free model
 - **64 ECC Agents** — searchable, filterable library with free-model compatibility badges
-- **Live Dashboard** — ecosystem overview: 16 projects, 508 skills, 26K APIs, graph nodes, model layers, MCP servers
+- **Live Dashboard** — ecosystem overview: 16 projects, 668+ skills, 26K APIs, graph nodes, model layers, MCP servers
 - **Model Routing Chain** — 5-layer fallback chain (OpenCode → Freebuff → FreeLLMAPI → OpenRouter → Paid)
 - **Token Saver** — 56.2× verified token reduction via CodeGraph + Graphify probe
 - **Core Identity Guardrail** — 6 permanent safety rules
@@ -109,7 +109,7 @@ The static GitHub Pages site at **[https://attilahuns288452.github.io/hermes-wor
 | ECC Agents | 64 (57 free-compatible via ecc-bridge) |
 | Projects | 16 (3 with Graphify graphs) |
 | API Mega List | 26,005 APIs across 18 categories |
-| CodeGraph MCP | 945 files / 16,092 nodes / 43,795 edges (codegraph repo — reference scale) |
+| CodeGraph MCP | 3,425 files / 52,747 nodes / 125,822 edges (codegraph repo — reference scale) |
 | Graphify | 8,267 nodes / 13,225 edges / 775 communities (graphify repo — reference scale) |
 | Token Savings | 56.2× average (up to 157.7× per query) |
 | Knowledge Graph | 276 nodes / 1,091 edges |

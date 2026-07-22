@@ -191,13 +191,13 @@ User says ambiguous reference → session_search(query)
 │  → codegraph callers "<symbol>"          ~300 tokens     │
 │  → codegraph callees "<symbol>"          ~300 tokens     │
 │  → codegraph impact "<file>"             ~300 tokens     │
-│  CodeGraph index: 945 files, 16,092 nodes, 43,795 edges │
+│  CodeGraph index: 3,425 files, 52,747 nodes, 125,822 edges │
 │                                                          │
 │  Step C: Probe Graphify (if index exists)                │
 │  → graphify query "<question>" --budget 2000 ~300 tokens │
 │  → graphify explain "<node>"              ~5K tokens     │
 │  → graphify path "<from>" "<to>"          ~8K tokens     │
-│  Projects with indices: 14/19 (incl. ECC: 34MB, 5,821f)  │
+│  Projects with indices: 21/24 (incl. ECC: 34MB, 5,821f)  │
 │                                                          │
 │  Step D: read_file (LAST RESORT)                         │
 │  → read_file(path, offset=N, limit=50)                   │
@@ -439,7 +439,7 @@ Model router respects skill recommendations but routes through free chain:
 hermes-dashboard provides a single-pane HTML overview:
   ├─ 16 projects, 139 skills, 19 categories
   ├─ 26,005 APIs across 18 categories
-  ├─ 8,267 Graphify + 16,092 CodeGraph nodes
+  ├─ 8,267 Graphify + 52,747 CodeGraph nodes
   ├─ 156 free models across 5 routing layers
   ├─ 6 wired MCP servers
   ├─ 64 ECC agents (57 free-compatible)
@@ -506,8 +506,8 @@ User: "update my ecosystem with github.com/user/new-tool"
 
 | Tool | Version | Installation | Index | Commands |
 |------|---------|-------------|-------|----------|
-| **Graphify** | v0.8.37 | `uv tool install graphifyy` | 14/19 projects indexed (8,267 nodes, 13,225 edges on graphify project) | `query`, `explain`, `path`, `benchmark`, `update` |
-| **CodeGraph** | v0.9.9 | `npm install -g @colbymchenry/codegraph` | 945 files, 16,092 nodes, 43,795 edges across all projects | `query`, `callers`, `callees`, `impact` |
+| **Graphify** | v0.8.37 | `uv tool install graphifyy` | 21/24 projects indexed (8,267 nodes, 13,225 edges on graphify project) | `query`, `explain`, `path`, `benchmark`, `update` |
+| **CodeGraph** | v0.9.9 | `npm install -g @colbymchenry/codegraph` | 3,425 files, 52,747 nodes, 125,822 edges across all projects | `query`, `callers`, `callees`, `impact` |
 
 **MCP Wiring:**
 ```yaml
