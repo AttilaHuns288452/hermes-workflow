@@ -286,17 +286,26 @@ function Hero() {
           <span className="text-[#e4eaf5]">Engine</span>
         </h1>
 
-        <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#8895b8] max-w-[720px] mx-auto mb-8 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          Hermes Agent orchestrates <strong className="text-[#e4eaf5]">{ALL_SKILLS.length}+ skills</strong> through <strong className="text-[#e4eaf5]">/decide</strong>, enforces a permanent guardrail, probes code via <strong className="text-[#e4eaf5]">CodeGraph + Graphify</strong> for 35×–1,233× token savings, and finishes with Obsidian documentation.
+        <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#8895b8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models.
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center animate-fade-up" style={{ animationDelay: '0.45s' }}>
           <a href="#install" className="btn-primary">
-            Get Started <span className="btn-icon">→</span>
+            Install Now <span className="btn-icon">→</span>
           </a>
           <a href="#skills" className="btn-secondary">
             Browse Skills
           </a>
+        </div>
+
+        <div className="mt-5 inline-block animate-fade-up" style={{ animationDelay: '0.55s' }}>
+          <div className="liquid-glass rounded-xl border border-white/[0.06] px-4 py-2.5 inline-flex items-center gap-3 flex-wrap justify-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5a6a90]">Quick Install</span>
+            <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 rounded-lg whitespace-nowrap">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</code>
+            <span className="text-[10px] text-[#5a6a90]">+</span>
+            <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288452/hermes-workflow.git</code>
+          </div>
         </div>
 
         <div className="flex gap-2 flex-wrap justify-center max-w-[900px] mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
