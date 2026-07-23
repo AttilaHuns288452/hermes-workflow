@@ -42,9 +42,9 @@ function useReveal() {
   return ref
 }
 
-function Reveal({ children, className = '' }) {
+function Reveal({ children, className = '', style }) {
   const ref = useReveal()
-  return <div ref={ref} className={`reveal ${className}`}>{children}</div>
+  return <div ref={ref} className={`reveal ${className}`} style={style}>{children}</div>
 }
 
 function StatsBar() {
@@ -122,8 +122,14 @@ function Nav() {
               <a key={l.h} href={l.h} onClick={() => setMenuOpen(false)} className="nav-link text-[0.72rem] font-medium text-[#8895b8] no-underline px-[0.55rem] py-[0.35rem] rounded-md hover:text-[#e4eaf5] hover:bg-[rgba(74,140,244,0.08)] transition-all duration-200">{l.l}</a>
             ))}
           </div>
-          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden flex flex-col gap-[3px] cursor-pointer bg-none border-none p-[4px] ml-2" aria-label="Menu">
-            {[0, 1, 2].map(i => <span key={i} className={`block w-5 h-[2px] bg-[#e4eaf5] rounded transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />)}
+          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden relative w-5 h-[20px] cursor-pointer bg-none border-none p-0 ml-2" aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
+            {[0, 1, 2].map(i => (
+              <span key={i} className="block w-5 h-[2px] bg-[#e4eaf5] rounded transition-all duration-300 absolute left-0" style={{
+                top: menuOpen ? '9px' : `${i * 7}px`,
+                transform: menuOpen && i === 0 ? 'rotate(45deg)' : menuOpen && i === 2 ? 'rotate(-45deg)' : 'none',
+                opacity: menuOpen && i === 1 ? 0 : 1,
+              }} />
+            ))}
           </button>
         </div>
       </nav>

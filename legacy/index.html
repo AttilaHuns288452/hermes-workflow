@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Workflow — 668+ Skills · /decide · Free Models · Knowledge Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   PREMIUM DESIGN SYSTEM — Hermes Workflow v3
+   ============================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+
+:root{
+  --bg:#05080f;--bg2:#080e1a;--surface:#0c1428;--surface2:#111d38;--surface3:#1a2a50;
+  --border:#1e3058;--border-light:#2a4070;
+  --text:#e4eaf5;--text2:#8895b8;--text3:#5a6a90;
+  --accent:#4a8cf4;--accent2:#7aa9f7;--accent3:#b4ccff;
+  --green:#3ddc84;--green-dim:#1a4a2e;--teal:#4dc9b8;
+  --orange:#e4a847;--red:#e4686a;--pink:#d088b8;--cyan:#6bc5e8;--gold:#f0d060;
+  --purple:#9b7cf7;--violet:#7c5cf5;
+  --grad:linear-gradient(135deg,#4a8cf4,#9b7cf7,#6bc5e8);
+  --grad2:linear-gradient(135deg,#d088b8,#e4a847,#3ddc84);
+  --grad3:linear-gradient(135deg,#4a8cf4,#7c5cf5);
+  --glass:rgba(12,20,40,.55);
+  --glass-edge:rgba(255,255,255,.04);
+  --radius:16px;--radius-sm:10px;--radius-pill:100px;
+  --font:'Geist',-apple-system,sans-serif;--mono:'JetBrains Mono','Fira Code',monospace;
+  --nav-h:68px;
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(74,140,244,.4);color:#fff}
+
+/* ============================================
+   AMBIENT BACKGROUND
+   ============================================ */
+#ambient-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#ambient-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:orbFloat 20s cubic-bezier(0.32,0.72,0,1) infinite}
+#ambient-bg .orb:nth-child(1){width:600px;height:600px;background:var(--accent);top:-10%;left:-5%;animation-delay:0s}
+#ambient-bg .orb:nth-child(2){width:500px;height:500px;background:var(--purple);bottom:-15%;right:-8%;animation-delay:-7s}
+#ambient-bg .orb:nth-child(3){width:400px;height:400px;background:var(--teal);top:40%;left:50%;animation-delay:-14s;opacity:.06}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,20px) scale(.95)}}
+#noise-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent2)}
+
+/* ============================================
+   NAV
+   ============================================ */
+nav{position:fixed;top:1rem;left:50%;transform:translateX(-50%);width:calc(100% - 2rem);max-width:1280px;z-index:100;backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);background:linear-gradient(180deg,rgba(5,8,15,.92) 0%,rgba(5,8,15,.7) 100%);border:1px solid var(--glass-edge);border-radius:100px;box-shadow:0 4px 24px rgba(0,0,0,.2)}
+nav::after{content:none}
+.nav-inner{width:100%;display:flex;align-items:center;gap:.4rem;height:var(--nav-h);padding:0 1rem 0 1.5rem}
+.logo{font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:10px;margin-right:auto;letter-spacing:-.02em;text-decoration:none;color:var(--text);position:relative}
+.logo .logo-icon{width:22px;height:22px;position:relative}
+.logo .logo-icon svg{width:100%;height:100%}
+.logo .logo-accent{color:var(--accent2);font-weight:300}
+.logo .logo-badge{font-size:.5rem;padding:.1rem .35rem;border-radius:4px;background:rgba(74,140,244,.15);color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-left:2px}
+.nav-links{display:flex;align-items:center;gap:.15rem}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.72rem;font-weight:500;white-space:nowrap;padding:.35rem .55rem;border-radius:6px;transition:all .25s cubic-bezier(0.32,0.72,0,1);position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(74,140,244,.08)}
+.nav-links .hl-link{background:rgba(61,220,132,.08);color:var(--green)}
+.nav-links .hl-link:hover{background:rgba(61,220,132,.18);color:#fff}.nav-links a .indicator{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--accent);border-radius:1px;transition:width .25s cubic-bezier(0.32,0.72,0,1)}.nav-links a:hover .indicator{width:60%}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;background:none;border:none;padding:6px;margin-left:8px}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text);border-radius:2px;transition:.3s cubic-bezier(0.32,0.72,0,1)}
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero{position:relative;z-index:2;min-height:92dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 3rem;overflow:hidden}
+.hero-grid{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-grid::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(74,140,244,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,140,244,.06) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse at 50% 40%,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 50% 40%,black 30%,transparent 70%)}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,var(--accent),transparent 70%);opacity:.06;pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem .45rem .55rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-pill);font-size:.72rem;color:var(--accent2);margin-bottom:2rem;backdrop-filter:blur(12px);animation:badgeIn .8s both}
+.hero-badge .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2.5s cubic-bezier(0.32,0.72,0,1) infinite;box-shadow:0 0 12px rgba(61,220,132,.4)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero h1{font-size:clamp(1.8rem,5vw,4rem);font-weight:900;line-height:1.06;margin-bottom:.6rem;background:linear-gradient(180deg,var(--text) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.03em;animation:heroIn 1s .2s both;text-wrap:balance}
+.hero h1 .sub{font-size:clamp(.7rem,1.2vw,1.1rem);font-weight:600;display:block;margin-top:.4rem;background:linear-gradient(135deg,var(--accent2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.01em}
+.hero p{font-size:clamp(.82rem,1.1vw,1rem);color:var(--text2);max-width:720px;margin:0 auto 1.8rem;line-height:1.7;animation:heroIn 1s .4s both;text-wrap:pretty}
+.hero-actions{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;animation:heroIn 1s .6s both}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;border-radius:var(--radius-pill);font-size:.82rem;font-weight:600;text-decoration:none;transition:all .35s cubic-bezier(0.32,0.72,0,1);cursor:pointer;border:none;font-family:inherit;position:relative;overflow:hidden}
+.btn-primary{background:var(--grad3);color:#fff;box-shadow:0 4px 24px rgba(74,140,244,.25)}
+.btn-primary:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 32px rgba(74,140,244,.35)}
+.btn-primary:active{transform:translateY(0) scale(.98)}
+.btn-icon{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);margin-left:.25rem;transition:all .35s cubic-bezier(0.32,0.72,0,1)}
+.btn-primary:hover .btn-icon{transform:translate(2px,-1px) scale(1.05);background:rgba(255,255,255,.25)}
+.btn-ghost{background:var(--glass);border:1px solid var(--glass-edge);color:var(--text);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.06);border-color:var(--border-light);transform:translateY(-2px)}
+.btn .arrow{transition:transform .3s cubic-bezier(0.32,0.72,0,1);font-size:.9rem}
+.btn:hover .arrow{transform:translateX(3px)}
+.hero-stats{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;max-width:960px;margin-top:2.5rem;animation:heroIn 1s .8s both}
+.hero-stat{text-align:center;padding:.6rem 1rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-sm);backdrop-filter:blur(8px);min-width:78px;transition:all .3s cubic-bezier(0.32,0.72,0,1)}
+.hero-stat:hover{background:rgba(255,255,255,.03);border-color:var(--border-light);transform:translateY(-3px)}
+.hero-stat .num{font-size:1.5rem;font-weight:800;color:var(--text);display:block}
+.hero-stat .label{font-size:.5rem;color:var(--text3);margin-top:.05rem;text-transform:uppercase;letter-spacing:.1em}
+.hero-stat.hl{border-color:rgba(61,220,132,.2)}
+.hero-stat.hl .num{background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+@keyframes badgeIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.scroll-ind{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.3rem;color:var(--text3);font-size:.65rem;animation:scrollBounce 2.5s cubic-bezier(0.32,0.72,0,1) infinite;cursor:pointer;opacity:.4;transition:opacity .3s}
+.scroll-ind:hover{opacity:.8}.scroll-ind .mouse{width:16px;height:26px;border:2px solid var(--text3);border-radius:10px;position:relative}
+.scroll-ind .mouse::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:2px;height:5px;background:var(--text3);border-radius:1px;animation:scrollWheel 2.5s cubic-bezier(0.32,0.72,0,1) infinite}
+@keyframes scrollWheel{0%,100%{transform:translateX(-50%) translateY(0);opacity:1}50%{transform:translateX(-50%) translateY(6px);opacity:.3}}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(4px)}}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.section{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:6rem 1.5rem}
+.section::before{content:'';position:absolute;inset:0;pointer-events:none;width:100vw;left:50%;transform:translateX(-50%);background:var(--section-bg,transparent);z-index:-1}
+.section:nth-child(even){--section-bg:rgba(74,140,244,.012)}
+.section-header{text-align:center;margin-bottom:2.5rem}
+.section-header h2::before{content:'';display:block;width:40px;height:3px;border-radius:2px;background:var(--grad);margin:0 auto .8rem}
+.section-header .eyebrow{display:inline-block;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--accent2);margin-bottom:.5rem;padding:.2rem .6rem;border-radius:100px;background:rgba(74,140,244,.08);border:1px solid rgba(74,140,244,.15)}
+.section-header h2{font-size:clamp(1.5rem,2.8vw,2.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15;text-wrap:balance}
+.section-header .sub{color:var(--text2);max-width:600px;margin:.6rem auto 0;font-size:.9rem;line-height:1.6;text-wrap:pretty}
+.divider{position:relative;z-index:2;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);max-width:1280px;margin:0 auto}
+
+/* ============================================
+   GET STARTED
+   ============================================ */
+.gs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s cubic-bezier(0.32,0.72,0,1);position:relative;overflow:hidden;border-left:3px solid transparent;box-shadow:inset 0 1px 1px rgba(255,255,255,.04)}
+.gs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);opacity:0;transition:opacity .35s}
+.gs-card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.gs-card:hover::before{opacity:.5}
+.gs-card .gs-head{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.gs-card .gs-num{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--grad3);color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0}
+.gs-card h3{font-size:.9rem;font-weight:700;text-wrap:balance}
+.gs-card p{font-size:.75rem;color:var(--text2);margin-bottom:.5rem;line-height:1.5;text-wrap:pretty}
+.gs-card pre{font-family:var(--mono);font-size:.64rem;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem;overflow-x:auto;white-space:pre;color:var(--cyan);line-height:1.5;position:relative}
+.gs-card .copy-btn{position:absolute;top:.5rem;right:.5rem;font-size:.5rem;padding:.15rem .4rem;border-radius:4px;background:var(--surface3);color:var(--text2);cursor:pointer;transition:all .2s;border:none;font-family:inherit}
+.gs-card .copy-btn:hover{background:var(--accent);color:#fff}
+.gs-card.hl{border-color:rgba(61,220,132,.2);background:rgba(61,220,132,.03)}
+.gs-card.hl .gs-num{background:linear-gradient(135deg,var(--green),var(--teal))}
+
+/* RECOMMEND BOX */
+.rec-box{margin-top:1.5rem;background:linear-gradient(135deg,rgba(74,140,244,.06),rgba(155,124,247,.06));border:1px solid rgba(74,140,244,.2);border-radius:var(--radius);padding:1.5rem;position:relative;overflow:hidden}
+.rec-box::before{content:'✦';position:absolute;top:-5px;right:10px;font-size:5rem;opacity:.03;color:var(--gold)}
+.rec-box .rec-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem;background:rgba(240,208,96,.1);border:1px solid rgba(240,208,96,.2);border-radius:var(--radius-pill);font-size:.62rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem}
+.rec-box h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem;text-wrap:balance}
+.rec-box p{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:.6rem;text-wrap:pretty}
+
+/* ============================================
+   /DECIDE FLOW — Premium
+   ============================================ */
+/* ============================================
+   SVG ANIMATED DIAGRAMS
+   ============================================ */
+.svg-diagram{width:100%;max-width:860px;margin:1.5rem auto;display:block;overflow:visible}
+.svg-diagram .node rect,.svg-diagram .node .bg{transition:all .3s}
+.svg-diagram .node:hover rect,.svg-diagram .node:hover .bg{filter:brightness(1.3)}
+.svg-diagram .node .label{font-family:var(--font);font-size:11px;font-weight:600;fill:var(--text);pointer-events:none}
+.svg-diagram .node .sublabel{font-family:var(--font);font-size:8px;fill:var(--text3);pointer-events:none}
+.svg-diagram .conn{fill:none;stroke-width:1.5;stroke-linecap:round}
+.svg-arrow{fill:var(--border-light);opacity:.5}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+@keyframes fadeNode{to{opacity:1}}
+/* SKILLS
+   ============================================ */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:1.2rem;justify-content:center}
+.cat-tab{padding:.3rem .75rem;border-radius:var(--radius-pill);font-size:.65rem;font-weight:500;cursor:pointer;background:var(--glass);border:1px solid var(--glass-edge);color:var(--text2);transition:all .25s;font-family:inherit;backdrop-filter:blur(8px)}
+.cat-tab:hover{border-color:var(--border-light);color:var(--text)}
+.cat-tab.active{background:var(--grad3);border-color:transparent;color:#fff}
+.cat-tab .count{opacity:.6}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.6rem}
+.card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s cubic-bezier(0.32,0.72,0,1);position:relative;overflow:hidden;border-left:3px solid transparent;box-shadow:inset 0 1px 1px rgba(255,255,255,.04)}
+.card[data-cat*="Software"]{border-left-color:#4a8cf4;background:linear-gradient(135deg,rgba(74,140,244,.04),var(--glass))}
+.card[data-cat*="LLMQuant"]{border-left-color:#f0d060;background:linear-gradient(135deg,rgba(240,208,96,.04),var(--glass))}
+.card[data-cat*="Creative"]{border-left-color:#d088b8;background:linear-gradient(135deg,rgba(208,136,184,.04),var(--glass))}
+.card[data-cat*="Workflow"]{border-left-color:#3ddc84;background:linear-gradient(135deg,rgba(61,220,132,.04),var(--glass))}
+.card[data-cat*="Productivity"]{border-left-color:#6bc5e8;background:linear-gradient(135deg,rgba(107,197,232,.04),var(--glass))}
+.card[data-cat*="Media"]{border-left-color:#e4a847;background:linear-gradient(135deg,rgba(228,168,71,.04),var(--glass))}
+.card[data-cat*="Research"]{border-left-color:#9b7cf7;background:linear-gradient(135deg,rgba(155,124,247,.04),var(--glass))}
+.card[data-cat*="GitHub"]{border-left-color:#7c5cf5;background:linear-gradient(135deg,rgba(124,92,245,.04),var(--glass))}
+.card[data-cat*="OpenCode"]{border-left-color:#4dc9b8;background:linear-gradient(135deg,rgba(77,201,184,.04),var(--glass))}
+.card[data-cat*="More"]{border-left-color:#8895b8;background:linear-gradient(135deg,rgba(136,149,184,.04),var(--glass))}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .35s}
+.card:hover{transform:translateY(-3px);border-color:var(--border-light);box-shadow:0 12px 40px rgba(74,140,244,.05)}
+.card:hover::before{opacity:1}
+.card .cat{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin-bottom:3px;font-weight:600}
+.card h4{font-size:.82rem;font-weight:600;margin-bottom:2px}
+.card p{font-size:.65rem;color:var(--text2);line-height:1.5;text-wrap:pretty}
+
+/* ============================================
+   MODEL CHAIN
+   ============================================ */
+.model-vis{display:flex;align-items:center;gap:.3rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+.model-vis .mv{background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.45rem .8rem;text-align:center;font-size:.65rem;color:var(--text2);backdrop-filter:blur(8px);transition:all .3s}
+.model-vis .mv:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.model-vis .mv .mv-num{font-weight:800;font-size:.8rem;display:block}
+.model-vis .mv-arrow{color:var(--border-light);font-size:.75rem;opacity:.5}
+.mchain{display:flex;flex-direction:column;gap:.6rem}
+.mtier{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:.9rem 1rem;border-left:4px solid;backdrop-filter:blur(8px);transition:all .3s}
+.mtier:hover{border-color:var(--border-light)}
+.mtier.t1{border-left-color:var(--green)}
+.mtier.t2{border-left-color:var(--gold)}
+.mtier.t3{border-left-color:var(--orange)}
+.mtier.t4{border-left-color:var(--red)}
+.mtier.t5{border-left-color:var(--accent)}
+.mtier .th{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;gap:.4rem;flex-wrap:wrap}
+.mtier .th h3{font-size:.82rem;font-weight:600}
+.mtier .th .badge{font-size:.55rem;padding:2px 8px;border-radius:var(--radius-pill);font-weight:600;background:var(--surface2);color:var(--text2);flex-shrink:0}
+.mtier .th .badge.rec{background:rgba(240,208,96,.12);color:var(--gold);border:1px solid rgba(240,208,96,.15)}
+.mtier .th .badge.ok{background:rgba(61,220,132,.1);color:var(--green)}
+.mtier .th .badge.fb{background:rgba(228,168,71,.1);color:var(--gold)}
+.mtier .th .badge.lr{background:rgba(228,104,106,.1);color:var(--red)}
+.mtier .th .badge.rs{background:rgba(74,140,244,.1);color:var(--accent2)}
+.mtier .tags{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.3rem}
+.mtier .tags .tag{font-family:var(--mono);font-size:.58rem;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.3);color:var(--text2)}
+.mtier .tags .tag.rec-tag{background:rgba(240,208,96,.08);color:var(--gold);border:1px solid rgba(240,208,96,.15)}
+.mtier .td{font-size:.68rem;color:var(--text2);margin-top:4px;line-height:1.5}
+
+/* ============================================
+   KNOWLEDGE GRAPH + GUARDRAIL + TOKEN SAVER
+   ============================================ */
+.ghost-hero{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1.5rem;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+.ghost-hero h3{font-size:1rem;font-weight:700;margin-bottom:.5rem;text-wrap:balance}
+.ghost-hero p{font-size:.75rem;color:var(--text2);line-height:1.6;text-wrap:pretty}
+.kg-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin:.8rem 0}
+.kg-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center}
+.kg-stat .val{font-size:1.4rem;font-weight:800;color:var(--accent2)}
+.kg-stat .lbl{font-size:.55rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+.guard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.5rem;margin:.8rem 0}
+.guard-card{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:10px;padding:.8rem;transition:all .25s}
+.guard-card:hover{border-color:var(--border-light);background:rgba(0,0,0,.3)}
+.guard-card h4{font-size:.72rem;font-weight:600;margin-bottom:2px}
+.guard-card p{font-size:.62rem;color:var(--text2);line-height:1.5}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem}
+.ts-stat{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center}
+.ts-stat .val{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ts-stat .lbl{font-size:.52rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+.ts-flow{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:center;margin:.6rem}
+.ts-step{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-size:.62rem;text-align:center;min-width:85px;color:var(--text2);transition:all .25s}
+.ts-step:hover{border-color:var(--green)}
+.ts-step strong{color:var(--text);display:block;font-size:.68rem}
+.ts-arrow{color:var(--border);font-size:.65rem}
+
+/* ============================================
+   AGENTS
+   ============================================ */
+.search-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.search-bar input{flex:1;min-width:180px;padding:.6rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.8rem;font-family:inherit;outline:none;transition:all .3s}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 20px rgba(74,140,244,.08)}
+.search-bar input::placeholder{color:var(--text3)}
+.filter-group{display:flex;gap:.2rem;flex-wrap:wrap}
+.filter-btn{padding:.3rem .65rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius-pill);color:var(--text2);font-size:.62rem;cursor:pointer;transition:all .25s;font-family:inherit;font-weight:500;backdrop-filter:blur(8px)}
+.filter-btn:hover{border-color:var(--accent2);color:var(--text)}
+.filter-btn.active{background:var(--grad3);border-color:transparent;color:#fff}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.6rem}
+.agent-card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1rem;backdrop-filter:blur(8px);transition:all .35s cubic-bezier(0.32,0.72,0,1);box-shadow:inset 0 1px 1px rgba(255,255,255,.04)}
+.agent-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.agent-card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem;flex-wrap:wrap;gap:4px}
+.agent-card .name{font-size:.8rem;font-weight:700;font-family:var(--mono)}
+.agent-card .model-tag{font-size:.55rem;padding:.15rem .4rem;border-radius:var(--radius-pill);font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:rgba(74,140,244,.15);color:var(--accent2);border:1px solid rgba(74,140,244,.15)}
+.agent-card .model-tag.opus{background:rgba(228,168,71,.12);color:var(--orange);border-color:rgba(228,168,71,.2)}
+.agent-card .model-tag.haiku{background:rgba(107,197,232,.12);color:var(--cyan);border-color:rgba(107,197,232,.2)}
+.agent-card .desc{color:var(--text2);font-size:.68rem;line-height:1.5;margin-bottom:.3rem}
+.agent-card .tools{display:flex;flex-wrap:wrap;gap:.2rem}
+.agent-card .tool-tag{font-family:var(--mono);font-size:.48rem;padding:.08rem .3rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:3px;color:var(--text2)}
+.agent-card .bridge-badge{font-size:.55rem;background:rgba(61,220,132,.08);color:var(--green);padding:.1rem .3rem;border-radius:3px;font-weight:600}
+.agent-card .bridge-badge.opus{background:rgba(228,168,71,.08);color:var(--orange)}
+
+/* Model distribution */
+.model-dist{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:1rem 0}
+.model-bar{flex:1;min-width:80px;text-align:center;padding:.5rem;background:var(--glass);border:1px solid var(--glass-edge);border-radius:8px;backdrop-filter:blur(8px)}
+.model-bar .count{font-size:1.3rem;font-weight:800}
+.model-bar .count.sonnet{color:var(--accent2)}.model-bar .count.opus{color:var(--orange)}.model-bar .count.haiku{color:var(--cyan)}
+.model-bar .label{font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.05rem}
+.model-bar .progress{height:3px;background:var(--surface2);border-radius:3px;margin-top:.3rem;overflow:hidden}
+.model-bar .progress-fill{height:100%;border-radius:3px}
+.model-bar .progress-fill.sonnet{background:var(--accent2)}
+.model-bar .progress-fill.opus{background:var(--orange)}
+.model-bar .progress-fill.haiku{background:var(--cyan)}
+
+/* ECO */
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.eco-card{background:var(--glass);border:1px solid var(--glass-edge);border-radius:var(--radius);padding:1.1rem;backdrop-filter:blur(8px);transition:all .35s cubic-bezier(0.32,0.72,0,1);box-shadow:inset 0 1px 1px rgba(255,255,255,.04)}
+.eco-card:hover{transform:translateY(-3px);border-color:var(--accent2);box-shadow:0 12px 40px rgba(74,140,244,.05)}
+.eco-card .icon{font-size:1.4rem;margin-bottom:.3rem}
+.eco-card h3{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+.eco-card p{color:var(--text2);font-size:.68rem;line-height:1.5;text-wrap:pretty}
+.eco-card .detail{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--accent2)}
+
+/* FOOTER */
+footer{position:relative;z-index:2;text-align:center;padding:2rem;border-top:1px solid var(--glass-edge);color:var(--text3);font-size:.68rem}
+footer a{color:var(--accent2);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--text)}
+
+/* ============================================
+   REVEAL ANIMATIONS
+   ============================================ */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}.reveal-delay-5{transition-delay:.5s}.reveal-delay-6{transition-delay:.6s}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:768px){
+  .gs-grid{grid-template-columns:1fr}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:var(--nav-h);left:0;right:0;background:rgba(5,8,15,.98);border-bottom:1px solid var(--border);padding:.75rem;gap:.15rem;max-height:80vh;overflow-y:auto}
+  .nav-links.open{display:flex}
+  .nav-links.open a{opacity:0;transform:translateY(20px);animation:navItemIn .4s cubic-bezier(0.32,0.72,0,1) forwards}
+  .nav-links.open a:nth-child(1){animation-delay:.05s}.nav-links.open a:nth-child(2){animation-delay:.1s}.nav-links.open a:nth-child(3){animation-delay:.15s}.nav-links.open a:nth-child(4){animation-delay:.2s}.nav-links.open a:nth-child(5){animation-delay:.25s}.nav-links.open a:nth-child(6){animation-delay:.3s}
+  @keyframes navItemIn{to{opacity:1;transform:translateY(0)}}
+  .hamburger{display:flex}
+  .hero-stats{gap:.3rem;}
+  .hero-stat{padding:.4rem .5rem;min-width:60px}
+  .hero-stat .num{font-size:1rem}
+  .section{padding:2rem 1rem}
+  .search-bar{flex-direction:column}
+  .eco-grid{grid-template-columns:1fr 1fr}
+  .model-vis{flex-direction:column}
+}
+@media(max-width:480px){
+  .eco-grid,.guard-grid{grid-template-columns:1fr}
+  .pipe-step{flex-direction:column;text-align:center;padding:.6rem}
+  .kg-meta,.ts-grid{grid-template-columns:1fr}
+  .agents-grid{grid-template-columns:1fr}
+}
+
+/* ============================================
+   SCROLL PROGRESS BAR
+   ============================================ */
+#scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--grad);z-index:200;transition:width .1s ease-out;box-shadow:0 0 8px rgba(74,140,244,.4)}
+
+/* ============================================
+   ACTIVE NAV INDICATOR
+   ============================================ */
+.nav-links a.active{color:var(--text);background:rgba(74,140,244,.12)}
+.nav-links a.active::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:60%;height:2px;background:var(--grad);border-radius:1px}
+
+/* ============================================
+   CARD HOVER GLOW
+   ============================================ */
+.card{cursor:default}
+.card:hover{box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.card .card-glow{display:none}
+
+/* ============================================
+   SKILL SEARCH
+   ============================================ */
+.skill-search{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.skill-search input{flex:1;min-width:180px;padding:.6rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.8rem;font-family:inherit;outline:none;transition:all .3s}
+.skill-search input:focus{border-color:var(--accent);box-shadow:0 0 20px rgba(74,140,244,.08)}
+.skill-search input::placeholder{color:var(--text3)}
+.skill-search .count-label{font-size:.65rem;color:var(--text3);white-space:nowrap}
+
+/* ============================================
+   BACK TO TOP
+   ============================================ */
+#back-top{position:fixed;bottom:1.5rem;right:1.5rem;width:40px;height:40px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(12px);color:var(--text2);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(20px);transition:all .35s;z-index:150;text-decoration:none}
+#back-top.visible{opacity:1;transform:translateY(0)}
+#back-top:hover{background:var(--grad3);color:#fff;border-color:transparent;transform:translateY(-3px)}
+
+/* ============================================
+   SVG DRAW ANIMATION
+   ============================================ */
+.svg-diagram .conn{stroke-dasharray:200;stroke-dashoffset:200;animation:drawLine 1.2s ease-out forwards}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+
+/* ============================================
+   KBD HINT
+   ============================================ */
+.kbd-hint{position:fixed;bottom:1.5rem;left:1.5rem;font-size:.6rem;color:var(--text3);background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(8px);padding:.3rem .5rem;border-radius:6px;z-index:150;opacity:0;transition:opacity .3s}
+.kbd-hint.visible{opacity:.7}
+.kbd-hint kbd{font-family:var(--mono);font-size:.58rem;padding:.05rem .25rem;border:1px solid var(--border);border-radius:3px;background:rgba(0,0,0,.3);color:var(--text2)}
+
+/* ============================================
+   STAT COUNTER
+   ============================================ */
+.hero-stat .num{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div id="ambient-bg"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+<div id="noise-overlay"></div>
+
+<!-- Scroll Progress -->
+<div id="scroll-progress"></div>
+
+<!-- Back to Top -->
+<a href="#top" id="back-top" aria-label="Back to top">↑</a>
+
+<!-- Keyboard Hint -->
+<div class="kbd-hint" id="kbdHint"><kbd>/</kbd> to search skills</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="logo">
+      <span class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M5 12h14M12 5v14" stroke-linecap="round"/></svg></span>
+      Hermes <span class="logo-accent">Workflow</span><span class="logo-badge">v3</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#install">⚡ Install</a>
+      <a href="#decide">/decide</a>
+      <a href="#skills">Skills</a>
+      <a href="#models">Models</a>
+      <a href="#guardrail">Guardrail</a>
+      <a href="#agents">Agents</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge"><span class="dot"></span> 668+ Skills · /decide v3 · 5-Layer Free Models · 64 ECC Agents · 35×–1,233× Token Saver</div>
+  <h1>Your AI Workflow Engine<span class="sub">668+ skills · 64 agents · 18 quant domains · one pipeline</span></h1>
+  <p><strong>Hermes Agent</strong> (Nous Research) orchestrates <strong>668+ skills</strong> through a reasoning protocol (<strong>/decide</strong>), enforces a <strong>permanent guardrail</strong>, probes code via <strong>CodeGraph + Graphify</strong> (35×–1,233× token savings), and finishes with <strong>Obsidian documentation + knowledge graph refresh</strong>. All on free models with <strong>DeepSeek V4 Flash</strong> as the recommended default.</p>
+  <div class="hero-actions">
+    <a href="#install" class="btn btn-primary">Get Started <span class="btn-icon"><span class="arrow">→</span></span></a>
+    <a href="#skills" class="btn btn-ghost">Browse Skills</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">668+</span><span class="label">Total Skills</span></div>
+    <div class="hero-stat"><span class="num">64</span><span class="label">ECC Agents</span></div>
+    <div class="hero-stat"><span class="num">18</span><span class="label">Quant Domains</span></div>
+    <div class="hero-stat hl"><span class="num">35×–1,233×</span><span class="label">Token Savings</span></div>
+    <div class="hero-stat"><span class="num">165+</span><span class="label">Free Models</span></div>
+    <div class="hero-stat"><span class="num">24K</span><span class="label">KG Nodes</span></div>
+    <div class="hero-stat"><span class="num">165</span><span class="label">Repo Skills</span></div>
+  </div>
+  <div class="scroll-ind" onclick="document.getElementById('install').scrollIntoView({behavior:'smooth'})"><div class="mouse"></div><span>Scroll</span></div>
+</section>
+
+<!-- ====== GET STARTED ====== -->
+<div class="section" id="install">
+  <div class="section-header reveal"><div class="eyebrow">Quick Start</div><h2>⚡ New to Hermes?</h2><p class="sub">Install Hermes Agent, clone the workflow repo with 165 bundled skills, install all 668+ skills from the ecosystem, and run your first pipeline — all for free.</p></div>
+  <div class="gs-grid">
+    <div class="gs-card reveal reveal-delay-1">
+      <div class="gs-head"><span class="gs-num">1</span><h3>Install Hermes Agent</h3></div>
+      <p>macOS, Linux, or Windows — pick your method:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh')">📋</button># macOS / Linux
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</pre>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'irm https://hermes-agent.nousresearch.com/install.ps1 | iex')">📋</button># Windows PowerShell
+irm https://hermes-agent.nousresearch.com/install.ps1 | iex</pre>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'pip install hermes-agent')">📋</button># Or via pip
+pip install hermes-agent</pre>
+      <p style="margin-top:.5rem;font-size:.7rem;color:var(--text3)">Verify: <code style="color:var(--cyan)">hermes --version</code></p>
+    </div>
+    <div class="gs-card reveal reveal-delay-2">
+      <div class="gs-head"><span class="gs-num">2</span><h3>Clone &amp; Install Repo Skills</h3></div>
+      <p>160 local + 508 external = 668+ bundled in this repo — install them all at once:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'git clone https://github.com/AttilaHuns288452/hermes-workflow.git && cd hermes-workflow')">📋</button>git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+cd hermes-workflow</pre>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'find ./skills -name SKILL.md -exec dirname {} \\; | while read dir; do hermes skills install \"$dir\"; done')">📋</button># Install all 165 repo skills
+find ./skills -name SKILL.md -exec dirname {} \; \
+  | while read dir; do hermes skills install "$dir"; done</pre>
+    </div>
+    <div class="gs-card reveal reveal-delay-3">
+      <div class="gs-head"><span class="gs-num">3</span><h3>Install Core Tools</h3></div>
+      <p>Power the free model chain and code knowledge graph:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'npm install -g opencode && uv tool install graphifyy && npm install -g @colbymchenry/codegraph')">📋</button>npm install -g opencode              # ★ DeepSeek V4 Flash
+uv tool install graphifyy            # AST code graph
+npm install -g @colbymchenry/codegraph  # Live MCP code index</pre>
+    </div>
+    <div class="gs-card hl reveal reveal-delay-4">
+      <div class="gs-head"><span class="gs-num">4</span><h3>★ Recommended: DeepSeek V4 Flash</h3></div>
+      <p>Set <strong>DeepSeek V4 Flash</strong> as your primary free model via OpenCode Zen API — the most reliable free model available:</p>
+      <pre><button class="copy-btn" onclick="copyCmd(this,'opencode --model deepseek-v4-flash-free \"your prompt\"')">📋</button># Run with the recommended model
+opencode --model deepseek-v4-flash-free "your prompt"</pre>
+      <p style="font-size:.72rem;color:var(--text2)">Or test the full pipeline: <code style="color:var(--green)">hermes run "What does the decide skill do?"</code></p>
+    </div>
+  </div>
+
+  <!-- How to get 668+ skills -->
+  <div class="rec-box reveal">
+    <div class="rec-badge">💡 Tip</div>
+    <h3>Want the Full 668+-Skill Ecosystem?</h3>
+    <p>This repo bundles 165 core SKILL.md files. To get the complete 668+ skills, add external skill repositories via <code>~/.hermes/config.yaml</code> under <code>external_dirs</code> — this pulls in design systems, agent packs, creative tools, and more from the broader Nous Research ecosystem. See <a href="SETUP.md" style="color:var(--accent2)">SETUP.md</a> for details.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== /DECIDE ====== -->
+<div class="section" id="decide">
+  <div class="section-header reveal"><div class="eyebrow">Orchestration Layer</div><h2>🧠 /decide — The Routing Brain</h2><p class="sub">Every request runs through a 6-step reasoning protocol. /decide is the master orchestrator — it never skips context retrieval or the guardrail.</p></div>
+  <svg class="svg-diagram" viewBox="0 0 860 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a8cf4"/><stop offset="1" stop-color="#7c5cf5"/></linearGradient>
+      <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4686a"/><stop offset="1" stop-color="#d088b8"/></linearGradient>
+      <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3ddc84"/><stop offset="1" stop-color="#4dc9b8"/></linearGradient>
+      <filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+    <!-- Connectors Row 1 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M130 90 L185 90" opacity=".5"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M340 90 L395 90" opacity=".5"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M550 90 L605 90" opacity=".5"/>
+    <!-- Connector Row 1→2 -->
+    <path class="conn" stroke="#2a4070" d="M430 125 L430 155" stroke-dasharray="4 4" opacity=".5"/>
+    <!-- Connectors Row 2 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M130 190 L185 190" opacity=".5"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M340 190 L395 190" opacity=".5"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="4 4" d="M550 190 L605 190" opacity=".5"/>
+    <!-- Row 1 Nodes -->
+    <g class="node" style="opacity:0;animation:fadeNode .5s .2s forwards">
+      <rect x="10" y="55" width="120" height="70" rx="10" fill="url(#g1)" fill-opacity=".12" stroke="#4a8cf4" stroke-opacity=".3"/>
+      <text class="label" x="70" y="82" text-anchor="middle">📖 session_memory</text>
+      <text class="sublabel" x="70" y="102" text-anchor="middle">Prior context retrieval</text>
+      <rect x="10" y="55" width="20" height="20" rx="5" fill="url(#g1)"/><text x="20" y="69" text-anchor="middle" fill="white" font-size="9" font-weight="700">1</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s .4s forwards">
+      <rect x="185" y="55" width="155" height="70" rx="10" fill="url(#g2)" fill-opacity=".08" stroke="#e4686a" stroke-opacity=".25"/>
+      <text class="label" x="262" y="80" text-anchor="middle">🛡️ Core Identity Guard</text>
+      <text class="sublabel" x="262" y="96" text-anchor="middle">6 immutable rules</text>
+      <text class="sublabel" x="262" y="110" text-anchor="middle">Always active · never optional</text>
+      <rect x="185" y="55" width="20" height="20" rx="5" fill="url(#g2)"/><text x="195" y="69" text-anchor="middle" fill="white" font-size="9" font-weight="700">🛡️</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s .6s forwards">
+      <rect x="395" y="55" width="155" height="70" rx="10" fill="url(#g1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/>
+      <text class="label" x="472" y="80" text-anchor="middle">🔍 Decompose</text>
+      <text class="sublabel" x="472" y="96" text-anchor="middle">Sub-task breakdown</text>
+      <text class="sublabel" x="472" y="110" text-anchor="middle">Hidden dependency detection</text>
+      <rect x="395" y="55" width="20" height="20" rx="5" fill="url(#g1)"/><text x="405" y="69" text-anchor="middle" fill="white" font-size="9" font-weight="700">2</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s .8s forwards">
+      <rect x="605" y="55" width="155" height="70" rx="10" fill="url(#g1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/>
+      <text class="label" x="682" y="80" text-anchor="middle">⚖️ Score &amp; Route</text>
+      <text class="sublabel" x="682" y="96" text-anchor="middle">Confidence scoring</text>
+      <text class="sublabel" x="682" y="110" text-anchor="middle">Conflict resolution</text>
+      <rect x="605" y="55" width="20" height="20" rx="5" fill="url(#g1)"/><text x="615" y="69" text-anchor="middle" fill="white" font-size="9" font-weight="700">3</text>
+    </g>
+    <!-- Row 2 Nodes -->
+    <g class="node" style="opacity:0;animation:fadeNode .5s 1s forwards">
+      <rect x="10" y="155" width="120" height="70" rx="10" fill="url(#g3)" fill-opacity=".08" stroke="#3ddc84" stroke-opacity=".2"/>
+      <text class="label" x="70" y="182" text-anchor="middle">⚡ Token Saver</text>
+      <text class="sublabel" x="70" y="202" text-anchor="middle">35×–1,233× reduction probe</text>
+      <rect x="10" y="155" width="20" height="20" rx="5" fill="url(#g3)"/><text x="20" y="169" text-anchor="middle" fill="#111" font-size="9" font-weight="700">⚡</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s 1.2s forwards">
+      <rect x="185" y="155" width="155" height="70" rx="10" fill="url(#g1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/>
+      <text class="label" x="262" y="180" text-anchor="middle">🎯 Domain Skills</text>
+      <text class="sublabel" x="262" y="196" text-anchor="middle">668+ skills across 8 cats</text>
+      <text class="sublabel" x="262" y="210" text-anchor="middle">Targeted execution</text>
+      <rect x="185" y="155" width="20" height="20" rx="5" fill="url(#g1)"/><text x="195" y="169" text-anchor="middle" fill="white" font-size="9" font-weight="700">4</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s 1.4s forwards">
+      <rect x="395" y="155" width="155" height="70" rx="10" fill="url(#g1)" fill-opacity=".08" stroke="#f0d060" stroke-opacity=".25"/>
+      <text class="label" x="472" y="180" text-anchor="middle">🤖 Model Router</text>
+      <text class="sublabel" x="472" y="196" text-anchor="middle">DeepSeek V4 Flash ★</text>
+      <text class="sublabel" x="472" y="210" text-anchor="middle">5-layer fallback chain</text>
+      <rect x="395" y="155" width="20" height="20" rx="5" fill="#f0d060"/><text x="405" y="169" text-anchor="middle" fill="#111" font-size="9" font-weight="700">5</text>
+    </g>
+    <g class="node" style="opacity:0;animation:fadeNode .5s 1.6s forwards">
+      <rect x="605" y="155" width="155" height="70" rx="10" fill="url(#g3)" fill-opacity=".08" stroke="#4dc9b8" stroke-opacity=".2"/>
+      <text class="label" x="682" y="180" text-anchor="middle">📝 Obsidian + KG</text>
+      <text class="sublabel" x="682" y="196" text-anchor="middle">Mandatory doc layer</text>
+      <text class="sublabel" x="682" y="210" text-anchor="middle">Knowledge graph refresh</text>
+      <rect x="605" y="155" width="20" height="20" rx="5" fill="url(#g3)"/><text x="615" y="169" text-anchor="middle" fill="#111" font-size="9" font-weight="700">6</text>
+    </g>
+    <!-- Arrow icons between nodes -->
+    <g style="opacity:0;animation:fadeNode .5s 1s forwards"><polygon class="svg-arrow" points="135,90 145,85 145,95"/><polygon class="svg-arrow" points="345,90 355,85 355,95"/><polygon class="svg-arrow" points="555,90 565,85 565,95"/><polygon class="svg-arrow" points="135,190 145,185 145,195"/><polygon class="svg-arrow" points="345,190 355,185 355,195"/><polygon class="svg-arrow" points="555,190 565,185 565,195"/></g>
+    <g style="opacity:0;animation:fadeNode .5s .6s forwards"><polygon class="svg-arrow" points="426,155 434,148 434,162"/></g>
+    <!-- Glow spots -->
+    <ellipse cx="430" cy="140" rx="60" ry="8" fill="#4a8cf4" opacity=".06" filter="url(#g)"/>
+  </svg>
+
+  <div style="text-align:center;margin-top:1.5rem" class="reveal">
+    <div style="display:inline-flex;gap:.75rem;flex-wrap:wrap;justify-content:center">
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">📐 Self-Correction</strong><br>Records errors → patches via <code style="color:var(--cyan)">skill_manage patch decide</code></div>
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">⚡ 35×–1,233× Token Saving</strong><br>Probe before read on every file access</div>
+      <div style="background:var(--glass);border:1px solid var(--glass-edge);border-radius:10px;padding:.6rem .9rem;font-size:.68rem;color:var(--text2);backdrop-filter:blur(8px)"><strong style="color:var(--text)">🔁 Never Optional</strong><br>Guardrail + Obsidian + KG are mandatory</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== PIPELINE ====== -->
+<div class="section" id="pipeline">
+  <div class="section-header reveal"><div class="eyebrow">Execution Flow</div><h2>⚙️ 9-Step Pipeline</h2><p class="sub">Every request flows through this exact sequence — from memory and guardrail through token-saving probes to domain execution and knowledge graph refresh.</p></div>
+  <svg class="svg-diagram" viewBox="0 0 860 530" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="p1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a8cf4"/><stop offset="1" stop-color="#7c5cf5"/></linearGradient>
+      <linearGradient id="p2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e4686a"/><stop offset="1" stop-color="#d088b8"/></linearGradient>
+      <linearGradient id="p3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3ddc84"/><stop offset="1" stop-color="#4dc9b8"/></linearGradient>
+      <linearGradient id="p4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0d060"/><stop offset="1" stop-color="#e4a847"/></linearGradient>
+    </defs>
+    <!-- Column 1 -->
+    <g class="node" style="opacity:0;animation:fadeNode .4s .1s forwards"><rect x="15" y="10" width="260" height="44" rx="8" fill="url(#p1)" fill-opacity=".1" stroke="#4a8cf4" stroke-opacity=".25"/><rect x="15" y="10" width="44" height="44" rx="8" fill="url(#p1)"/><text x="37" y="37" text-anchor="middle" fill="white" font-size="13" font-weight="700">1</text><text class="label" x="75" y="32" font-size="12">session_memory</text><text class="sublabel" x="75" y="45" font-size="7.5">Prior context retrieval</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s .3s forwards"><rect x="15" y="74" width="260" height="44" rx="8" fill="url(#p2)" fill-opacity=".08" stroke="#e4686a" stroke-opacity=".2"/><rect x="15" y="74" width="44" height="44" rx="8" fill="url(#p2)"/><text x="37" y="101" text-anchor="middle" fill="white" font-size="10">🛡️</text><text class="label" x="75" y="96" font-size="12">Core Identity Guardrail</text><text class="sublabel" x="75" y="109" font-size="7.5">6 immutable rules · never optional</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s .5s forwards"><rect x="15" y="138" width="260" height="44" rx="8" fill="url(#p1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/><rect x="15" y="138" width="44" height="44" rx="8" fill="url(#p1)"/><text x="37" y="165" text-anchor="middle" fill="white" font-size="13" font-weight="700">2</text><text class="label" x="75" y="160" font-size="12">/decide Routing Brain</text><text class="sublabel" x="75" y="173" font-size="7.5">Decompose → score → route → resolve</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s .7s forwards"><rect x="15" y="202" width="260" height="44" rx="8" fill="url(#p3)" fill-opacity=".08" stroke="#3ddc84" stroke-opacity=".2"/><rect x="15" y="202" width="44" height="44" rx="8" fill="url(#p3)"/><text x="37" y="229" text-anchor="middle" fill="#111" font-size="10">⚡</text><text class="label" x="75" y="224" font-size="12">Token Saver</text><text class="sublabel" x="75" y="237" font-size="7.5">35×–1,233× probe — Graphify → CodeGraph</text></g>
+    <!-- Column 2 -->
+    <g class="node" style="opacity:0;animation:fadeNode .4s .9s forwards"><rect x="300" y="10" width="260" height="44" rx="8" fill="url(#p1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/><rect x="300" y="10" width="44" height="44" rx="8" fill="url(#p1)"/><text x="322" y="37" text-anchor="middle" fill="white" font-size="13" font-weight="700">3</text><text class="label" x="360" y="32" font-size="12">CodeGraph + Graphify</text><text class="sublabel" x="360" y="45" font-size="7.5">16K MCP nodes + 8K AST nodes</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s 1.1s forwards"><rect x="300" y="74" width="260" height="44" rx="8" fill="url(#p1)" fill-opacity=".08" stroke="#4a8cf4" stroke-opacity=".2"/><rect x="300" y="74" width="44" height="44" rx="8" fill="url(#p1)"/><text x="322" y="101" text-anchor="middle" fill="white" font-size="13" font-weight="700">4</text><text class="label" x="360" y="96" font-size="12">Domain Skills</text><text class="sublabel" x="360" y="109" font-size="7.5">668+ skills · ECC · LLMQuant · creative</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s 1.3s forwards"><rect x="300" y="138" width="260" height="44" rx="8" fill="url(#p4)" fill-opacity=".08" stroke="#f0d060" stroke-opacity=".2"/><rect x="300" y="138" width="44" height="44" rx="8" fill="url(#p4)"/><text x="322" y="165" text-anchor="middle" fill="#111" font-size="10">★</text><text class="label" x="360" y="160" font-size="12">Model Routing</text><text class="sublabel" x="360" y="173" font-size="7.5">DeepSeek V4 Flash → Freebuff → FreeLLMAPI</text></g>
+    <g class="node" style="opacity:0;animation:fadeNode .4s 1.5s forwards"><rect x="300" y="202" width="260" height="44" rx="8" fill="url(#p3)" fill-opacity=".08" stroke="#4dc9b8" stroke-opacity=".2"/><rect x="300" y="202" width="44" height="44" rx="8" fill="url(#p3)"/><text x="322" y="229" text-anchor="middle" fill="#111" font-size="10">📝</text><text class="label" x="360" y="224" font-size="12">Obsidian Docs</text><text class="sublabel" x="360" y="237" font-size="7.5">ATM-Machine quality · wikilinks · Mermaid</text></g>
+    <!-- Column 3 -->
+    <g class="node" style="opacity:0;animation:fadeNode .4s 1.7s forwards"><rect x="585" y="10" width="260" height="44" rx="8" fill="url(#p3)" fill-opacity=".08" stroke="#4dc9b8" stroke-opacity=".2"/><rect x="585" y="10" width="44" height="44" rx="8" fill="url(#p3)"/><text x="607" y="37" text-anchor="middle" fill="#111" font-size="10">🕸️</text><text class="label" x="645" y="32" font-size="12">KG Refresh</text><text class="sublabel" x="645" y="45" font-size="7.5">Galaxy graph · 276 nodes · 1,091 edges</text></g>
+    <!-- Horizontal connectors row 1 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M275 32 L300 32" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M560 32 L585 32" opacity=".4"/>
+    <!-- Horizontal connectors row 2 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M275 96 L300 96" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M560 96 L585 96" opacity=".4"/>
+    <!-- Horizontal connectors row 3 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M275 160 L300 160" opacity=".4"/>
+    <!-- Horizontal connectors row 4 -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M275 224 L300 224" opacity=".4"/>
+    <!-- Vertical -->
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M145 54 L145 74" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M145 118 L145 138" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M145 182 L145 202" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M430 54 L430 74" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M430 118 L430 138" opacity=".4"/>
+    <path class="conn" stroke="#2a4070" stroke-dasharray="3 3" d="M430 182 L430 202" opacity=".4"/>
+    <!-- Arrowheads -->
+    <g style="opacity:0;animation:fadeNode .4s .9s forwards">
+      <polygon class="svg-arrow" points="278,32 286,27 286,37"/>
+      <polygon class="svg-arrow" points="563,32 571,27 571,37"/>
+      <polygon class="svg-arrow" points="278,96 286,91 286,101"/>
+      <polygon class="svg-arrow" points="278,160 286,155 286,165"/>
+      <polygon class="svg-arrow" points="278,224 286,219 286,229"/>
+      <polygon class="svg-arrow" points="563,96 571,91 571,101"/>
+    </g>
+    <g style="opacity:0;animation:fadeNode .4s .5s forwards">
+      <polygon class="svg-arrow" points="148,57 153,65 143,65"/>
+      <polygon class="svg-arrow" points="148,121 153,129 143,129"/>
+      <polygon class="svg-arrow" points="148,185 153,193 143,193"/>
+      <polygon class="svg-arrow" points="433,57 438,65 428,65"/>
+      <polygon class="svg-arrow" points="433,121 438,129 428,129"/>
+      <polygon class="svg-arrow" points="433,185 438,193 428,193"/>
+    </g>
+    <!-- Result badge -->
+    <g style="opacity:0;animation:fadeNode .4s 1.9s forwards">
+      <rect x="585" y="74" width="260" height="44" rx="22" fill="url(#p3)" fill-opacity=".12" stroke="#3ddc84" stroke-opacity=".3"/>
+      <text class="label" x="715" y="100" text-anchor="middle" fill="#3ddc84" font-size="13" font-weight="700">✅ Pipeline Complete</text>
+    </g>
+  </svg>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== SKILLS ====== -->
+<div class="section" id="skills">
+  <div class="section-header reveal"><div class="eyebrow">Skill Library</div><h2>📦 668+ Skills</h2><p class="sub">160 local skills in this repo + 508 from external ecosystems. Organized into 8 primary categories.</p></div>
+  <div class="skill-search reveal">
+    <input type="text" id="skillSearch" placeholder="Search 160 local + 508 external = 668+ by name or description... (press / to focus)" oninput="filterSkills()">
+    <span class="count-label" id="skillCount">160 local + 508 external = 668+</span>
+  </div>
+  <div class="cat-tabs" id="catTabs"></div>
+  <div class="card-grid" id="skillGrid"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== MODELS ====== -->
+<div class="section" id="models">
+  <div class="section-header reveal"><div class="eyebrow">Model Strategy</div><h2>🤖 5-Layer Model Routing</h2><p class="sub">★ DeepSeek V4 Flash via OpenCode is the recommended primary model. The chain falls back automatically.</p></div>
+  <div class="model-vis reveal">
+    <div class="mv" style="border-color:var(--green);border-width:2px"><span class="mv-num" style="color:var(--green)">🥇</span>OpenCode<br><span style="font-size:.55rem">★ DeepSeek V4 Flash</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--gold)"><span class="mv-num" style="color:var(--gold)">🥈</span>Freebuff<br><span style="font-size:.55rem">6 cloud</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--orange)"><span class="mv-num" style="color:var(--orange)">🥉</span>FreeLLMAPI<br><span style="font-size:.55rem">110+</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--red)"><span class="mv-num" style="color:var(--red)">⚠️</span>OpenRouter<br><span style="font-size:.55rem">:free</span></div><span class="mv-arrow">→</span>
+    <div class="mv" style="border-color:var(--accent)"><span class="mv-num" style="color:var(--accent2)">💎</span>Paid<br><span style="font-size:.55rem">last resort</span></div>
+  </div>
+  <div class="mchain">
+    <div class="mtier t1 reveal"><div class="th"><h3>★ Layer 1 — OpenCode (Recommended)</h3><span class="badge rec">Primary ✅</span></div><div class="tags"><span class="tag rec-tag">deepseek-v4-flash-free ★</span><span class="tag">mimo-v2.5-free</span><span class="tag">nemotron-3-ultra-free</span><span class="tag">north-mini-code-free</span><span class="tag">big-pickle</span></div><div class="td">Use <strong>DeepSeek V4 Flash</strong> as your primary model — most reliable free model available. Set via <code style="color:var(--gold)">opencode --model deepseek-v4-flash-free</code>.</div></div>
+    <div class="mtier t2 reveal"><div class="th"><h3>Layer 2 — Freebuff</h3><span class="badge fb">Fallback 1</span></div><div class="tags"><span class="tag">DeepSeek V4 Pro</span><span class="tag">Kimi K2.6</span><span class="tag">MiniMax M3</span><span class="tag">MiMo 2.5 Pro</span><span class="tag">Gemini 3.1 Flash Lite</span></div><div class="td">npm freebuff. TUI-based agentic coding. Covers models not in OpenCode. 5 sessions/day.</div></div>
+    <div class="mtier t3 reveal"><div class="th"><h3>Layer 3 — FreeLLMAPI</h3><span class="badge">Fallback 2</span></div><div class="tags"><span class="tag">110+ models</span><span class="tag">16 providers</span><span class="tag">localhost:3001/v1</span></div><div class="td">Local Express server proxying 110+ free models. Wired as Hermes custom provider.</div></div>
+    <div class="mtier t4 reveal"><div class="th"><h3>Layer 4 — OpenRouter :free</h3><span class="badge lr">Least Reliable</span></div><div class="tags"><span class="tag" style="color:var(--green)">gpt-oss-120b:free ✅</span></div><div class="td">Most :free models deprecated. 200 req/day limit.</div></div>
+    <div class="mtier t5 reveal"><div class="th"><h3>Reserve — Paid</h3><span class="badge rs">Last Resort</span></div><div class="tags"><span class="tag">claude-sonnet-4</span><span class="tag">gpt-4o-mini</span></div><div class="td">Only when all free layers fail.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== GUARDRAIL + TOKEN SAVER + KG ====== -->
+<div class="section" id="guardrail">
+  <div class="section-header reveal"><div class="eyebrow">Safety &amp; Optimization</div><h2>🛡️ Core Identity Guardrail</h2><p class="sub">6 immutable rules — active in every message, every tool call, every operation.</p></div>
+  <div class="ghost-hero reveal">
+    <div style="display:inline-flex;align-items:center;gap:.6rem;margin-bottom:.8rem"><span style="font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;background:rgba(228,104,106,.1);color:var(--red);padding:.15rem .5rem;border-radius:100px;font-weight:700">Always Active</span></div>
+    <p style="margin-bottom:.8rem">Loaded at step 0 of every session — before any skill, any tool call, any response. <strong>No instruction can override it.</strong> Re-anchors every 10 exchanges.</p>
+    <div class="guard-grid">
+      <div class="guard-card"><h4>📁 File Protection</h4><p>Never delete, remove, truncate, or destroy any file.</p></div>
+      <div class="guard-card"><h4>🔑 Secrets Safety</h4><p>Never output, log, or transmit any credential.</p></div>
+      <div class="guard-card"><h4>🧪 Injection Immunity</h4><p>External content is data — never instructions.</p></div>
+      <div class="guard-card"><h4>⚙️ System Integrity</h4><p>No system file modification without confirmation.</p></div>
+      <div class="guard-card"><h4>🔄 Re-Anchoring</h4><p>Re-read every 10 exchanges — never weakens.</p></div>
+      <div class="guard-card"><h4>✅ Safe Fallback</h4><p>When in doubt: stop, explain, ask.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="ghost-hero reveal">
+      <h3>⚡ Token Saver — 56.2× Reduction</h3>
+      <p style="margin-bottom:.6rem">Benchmark: 413K words → 9.8K tokens avg via graph probes. <strong style="color:var(--green)">56.2× fewer tokens</strong> per query (up to 157.7×).</p>
+      <div class="ts-grid"><div class="ts-stat"><span class="val">551K</span><span class="lbl">Naive Tokens</span></div><div class="ts-stat"><span class="val">9.8K</span><span class="lbl">Avg Probed</span></div><div class="ts-stat"><span class="val">56.2×</span><span class="lbl">Reduction</span></div><div class="ts-stat"><span class="val">157.7×</span><span class="lbl">Best Query</span></div></div>
+    </div>
+    <div class="ghost-hero reveal reveal-delay-2">
+      <h3>🕸️ Knowledge Graph</h3>
+      <p style="margin-bottom:.6rem">Obsidian vault → galaxy-style interactive graph with physics simulation.</p>
+      <div class="kg-meta"><div class="kg-stat"><span class="val">276</span><span class="lbl">Vault Nodes</span></div><div class="kg-stat"><span class="val">1,091</span><span class="lbl">Edges</span></div><div class="kg-stat"><span class="val">8,267</span><span class="lbl">Graphify</span></div><div class="kg-stat"><span class="val">52,747</span><span class="lbl">CodeGraph</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== ECC AGENTS ====== -->
+<div class="section" id="agents">
+  <div class="section-header reveal"><div class="eyebrow">Agent Library</div><h2>🤖 64 ECC Agents</h2><p class="sub">Specialized agents from the Everything Claude Code ecosystem — <strong style="color:var(--green)">57/64 bridge to free models</strong> via ecc-bridge.</p></div>
+  <div class="model-dist" id="modelDist"></div>
+  <div class="search-bar reveal">
+    <input type="text" id="searchInput" placeholder="Search agents by name, tool, or description..." oninput="filterAgents()">
+    <div class="filter-group" id="filterGroup"><button class="filter-btn active" data-cat="all" onclick="setFilter('all')">All (64)</button></div>
+  </div>
+  <div class="agents-grid" id="agentsGrid"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ====== ECOSYSTEM ====== -->
+<div class="section">
+  <div class="section-header reveal"><div class="eyebrow">Integration Map</div><h2>🌐 Ecosystem</h2><p class="sub">Twelve integrated resources form a layered ecosystem — each with a clear role, no overlap.</p></div>
+  <div class="eco-grid" id="ecoGrid"></div>
+</div>
+
+<!-- ====== FOOTER ====== -->
+<footer>
+  <p>Powered by <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> (Nous Research) · <a href="https://github.com/AttilaHuns288452/hermes-workflow">GitHub</a> · ECC · LLMQuant</p>
+  <p style="margin-top:3px;font-size:.6rem;color:var(--text3)">668+ skills · ★ DeepSeek V4 Flash via OpenCode Zen · 64 agents · 18 quant domains · Token Saver 35×–1,233× · Ponytail lazy-mode · Updated Jul 2026</p>
+</footer>
+
+<script>
+// Hamburger
+document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+
+// Scroll Reveal
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold:.08, rootMargin:'0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// === Scroll Progress Bar ===
+const sp = document.getElementById('scroll-progress');
+const backTop = document.getElementById('back-top');
+const kbdHint = document.getElementById('kbdHint');
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if(!ticking){ requestAnimationFrame(() => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    sp.style.width = (h > 0 ? (window.scrollY / h * 100) : 0) + '%';
+    backTop.classList.toggle('visible', window.scrollY > 400);
+    kbdHint.classList.toggle('visible', window.scrollY > 200 && window.scrollY < document.documentElement.scrollHeight - window.innerHeight - 200);
+    ticking = false;
+  }); ticking = true; }
+}, { passive: true });
+
+// === Active Nav on Scroll ===
+const navLinks = document.querySelectorAll('#navLinks a');
+const sections = ['install','decide','skills','models','guardrail','agents'];
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      const id = e.target.id;
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    }
+  });
+}, { threshold:.3, rootMargin:'-20% 0px -60% 0px' });
+sections.forEach(id => { const el = document.getElementById(id); if(el) navObs.observe(el); });
+
+// === Keyboard Shortcuts ===
+document.addEventListener('keydown', (e) => {
+  if(e.key === '/' && document.activeElement.tagName !== 'INPUT'){
+    e.preventDefault();
+    const s = document.getElementById('skillSearch');
+    if(s){ s.scrollIntoView({ behavior:'smooth', block:'center' }); s.focus(); }
+  }
+  if(e.key === 'Escape'){ document.getElementById('skillSearch').blur(); }
+});
+
+// === Animated Stat Counters ===
+function animateCounter(el, target, suffix=''){
+  const dur = 1200, start = performance.now();
+  const isDecimal = target % 1 !== 0;
+  function tick(now){
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = target * eased;
+    el.textContent = (isDecimal ? val.toFixed(1) : Math.floor(val)) + suffix;
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      const el = e.target;
+      const raw = el.textContent.trim();
+      const match = raw.match(/^([\d.]+)(.*)$/);
+      if(match){
+        const num = parseFloat(match[1]);
+        const suffix = match[2];
+        if(!isNaN(num) && num > 0){ animateCounter(el, num, suffix); counterObs.unobserve(el); }
+      }
+    }
+  });
+}, { threshold:.5 });
+document.querySelectorAll('.hero-stat .num, .kg-stat .val, .ts-stat .val').forEach(el => counterObs.observe(el));
+
+// === Fade-in Observer
+function copyCmd(btn, txt){
+  navigator.clipboard.writeText(txt);
+  btn.textContent = '✓';
+  btn.style.background = 'rgba(61,220,132,.2)';
+  btn.style.color = 'var(--green)';
+  setTimeout(() => { btn.textContent = '📋'; btn.style.background = ''; btn.style.color = ''; }, 1500);
+}
+
+// ===== SKILLS DATA =====
+const SKILLS_DATA = {
+  "Software Development": [
+    {n:"Setup",d:"End-to-end project/repo/tool setup execution."},
+    {n:"Update",d:"One-command ecosystem onboarding: clone→setup→Graphify→Obsidian→KG."},
+    {n:"Graphify Integrate",d:"Build code knowledge graph → export → register MCP."},
+    {n:"Test-Driven Dev",d:"RED-GREEN-REFACTOR enforcement. Tests before code."},
+    {n:"Systematic Debugging",d:"4-phase root cause analysis before fixing."},
+    {n:"Plan",d:"Actionable markdown plan to .hermes/plans/. No execution."},
+    {n:"Spike",d:"Throwaway experiments to validate ideas before building."},
+    {n:"Simplify Code",d:"Parallel 3-agent cleanup of recent changes."},
+    {n:"Requesting Code Review",d:"Pre-commit security scan, quality gates, auto-fix."},
+    {n:"Saas Launch",d:"Build, deploy, and SEO-optimize a SaaS product."},
+    {n:"WinForms C#",d:"Scaffold, build, and run .NET 8 WinForms applications."},
+    {n:"Agent Harness",d:"Third-party agent harness config layer integration."},
+    {n:"Codex Skill Import",d:"Import SKILL.md from OpenAI Codex plugin cache."},
+    {n:"Ext Agent Adapter",d:"Adapt external agent ecosystems without routing conflicts."},
+    {n:"Skill Authoring",d:"Author in-repo SKILL.md with frontmatter and validator."},
+    {n:"Repo Integration",d:"Audit existing skills; resolve overlaps for new repos."},
+    {n:"Node Inspect Debug",d:"Debug Node.js via --inspect + DevTools Protocol CLI."},
+    {n:"Python Debugpy",d:"Debug Python via debugpy + VS Code launch config."},
+    {n:"NextJS Hydration",d:"Fix SSR/hydration errors in Next.js apps."},
+    {n:"Personality Quiz Builder",d:"Build Akinator-like personality quizzes."},
+    {n:"Personality Quiz Engine",d:"'Which X are you' quizzes with cosine similarity."},
+    {n:"Character Animation",d:"Full workflow for character-animated video production."},
+    {n:"Buildable Plugin",d:"Local-first AI app-builder golden templates."},
+    {n:"Public Repo Readiness",d:"Audit for secrets, licensing, security before release."},
+    {n:"Superpowers Methodology",d:"Complete dev methodology from obra/superpowers."},
+    {n:"Karpathy Guidelines",d:"4 behavioral guardrails. Reduces common LLM mistakes."}
+  ],
+  "LLMQuant (Finance)": [
+    {n:"Commodities",d:"Spot, futures curve, inventory, roll yield, macro analysis."},
+    {n:"Credit",d:"Spread analysis, CDS, bond valuation, credit risk."},
+    {n:"Crypto",d:"Market regime, token research, perpetual funding, basis."},
+    {n:"Data",d:"SEC filings, 13F holders, macro snapshots, research."},
+    {n:"Equities",d:"Equity analysis, factor models, valuation."},
+    {n:"Equity Derivatives",d:"Options strategies, implied volatility, Greeks."},
+    {n:"ETFs",d:"Flow analysis, basket construction, tracking error."},
+    {n:"Events",d:"Earnings, M&A, regulatory catalyst analysis."},
+    {n:"Investor Lenses",d:"Smart money, 13F crowding, activist tracking."},
+    {n:"Macro",d:"Regime ID, GDP, inflation, monetary policy."},
+    {n:"Market Intelligence",d:"Context, sentiment, positioning, flow analysis."},
+    {n:"Options",d:"Pricing, volatility surface, hedging, exotics."},
+    {n:"Portfolio",d:"Construction, rebalancing, risk budgeting."},
+    {n:"Portfolio Lab",d:"Backtesting, scenario analysis, Monte Carlo."},
+    {n:"Prediction Markets",d:"Market pricing, efficiency, arbitrage."},
+    {n:"Rates & FX",d:"Rate curves, FX forwards, carry, central bank policy."},
+    {n:"Risk",d:"VaR, CVaR, tail risk, stress testing."},
+    {n:"Strategies",d:"Hedge fund strategies, alpha generation."}
+  ],
+  "Creative & Design": [
+    {n:"Claude Design",d:"One-off HTML artifacts: landing pages, prototypes."},
+    {n:"Architecture Diagram",d:"Dark-themed SVG architecture diagrams as HTML."},
+    {n:"ASCII Art",d:"pyfiglet, cowsay, boxes, image-to-ascii."},
+    {n:"ASCII Video",d:"Convert video/audio to colored ASCII MP4/GIF."},
+    {n:"Baoyu Infographic",d:"21 layouts × 21 styles of infographics."},
+    {n:"ComfyUI",d:"Generate images, video, audio with ComfyUI."},
+    {n:"Design MD",d:"Author/validate Google DESIGN.md token spec files."},
+    {n:"Excalidraw",d:"Hand-drawn JSON diagrams (arch, flow, sequence)."},
+    {n:"Humanizer",d:"Strip AI-isms and add real voice to text."},
+    {n:"Manim Video",d:"3Blue1Brown-style math animations via Manim CE."},
+    {n:"p5.js",d:"Generative art, shaders, interactive 3D sketches."},
+    {n:"Personality Quiz",d:"Character-data personality quiz builder."},
+    {n:"Popular Web Designs",d:"54 real design systems (Stripe, Linear, Vercel)."},
+    {n:"Pretext",d:"DOM-free text layout for ASCII art and typography."},
+    {n:"Sketch",d:"Throwaway HTML mockups with 2-3 design variants."},
+    {n:"Songwriting & AI Music",d:"Songwriting craft and Suno AI music prompts."},
+    {n:"TouchDesigner MCP",d:"Control TouchDesigner via 36 native MCP tools."},
+    {n:"Premium Design",d:"Apple-inspired premium aesthetic design system."},
+    {n:"Glass Design",d:"Dark glassmorphism with frosted surfaces."},
+    {n:"Cinematic Motion",d:"GSAP/Lenis scroll animations and parallax."}
+  ],
+  "Workflow & Core": [
+    {n:"Core Identity Guardrail",d:"6 immutable safety rules. Always loaded first."},
+    {n:"/decide",d:"Master orchestrator — 6-step reasoning protocol."},
+    {n:"/do",d:"Execution engine — runs after /decide routes tasks."},
+    {n:"Token Saver",d:"Pre-file-read probe. 56.2× token reduction."},
+    {n:"Session Memory",d:"Retrieve context from prior sessions before routing."},
+    {n:"Task Tier",d:"Classify requests into Tiers 1-3 for depth."},
+    {n:"Free AI Model Router",d:"Route tasks to the best available free model."},
+    {n:"Model Recommender",d:"CLI-based model selection for 6 task types."},
+    {n:"External Skills",d:"Integrate external skill repos via external_dirs."},
+    {n:"Hermes Backup",d:"Automated backup, restore, credential sync."},
+    {n:"ECC Bridge",d:"Wire 57/64 ECC agents through free model chain."},
+    {n:"Doubt-Driven Dev",d:"Subject non-trivial decisions to fresh-context audit."}
+  ],
+  "Productivity & Comms": [
+    {n:"API Mega List",d:"10,498 APIs across 18 categories — searchable."},
+    {n:"Airtable",d:"REST API: records CRUD, filters, upserts."},
+    {n:"Drive Backups",d:"Automated Google Drive backups via rclone."},
+    {n:"Google Workspace",d:"Gmail, Calendar, Drive, Docs via gws CLI."},
+    {n:"Maps",d:"Geocode, POIs, routes, timezones via OSM/OSRM."},
+    {n:"MCP Integrations",d:"MCP server setup patterns for Hermes."},
+    {n:"Nano PDF",d:"Edit PDF text/typos via nano-pdf CLI."},
+    {n:"Notion",d:"API + ntn CLI: pages, databases, markdown."},
+    {n:"OCR & Documents",d:"Extract text from PDFs/scans (pymupdf)."},
+    {n:"PowerPoint",d:"Create, read, edit .pptx decks and notes."},
+    {n:"Teams Meeting",d:"Meeting summary pipeline via Hermes CLI."},
+    {n:"Markdown Exporter",d:"Convert markdown to professional docs."},
+    {n:"Hermes Dashboard",d:"Serve and interact with the agent dashboard."},
+    {n:"Petdex",d:"Animated petdex mascots for Hermes."},
+    {n:"OpenCode Win MCP",d:"Windows-specific MCP wiring fixes."},
+    {n:"AI Marketing",d:"Open-source AI marketing automation skills."}
+  ],
+  "Media & Content": [
+    {n:"YouTube Content",d:"Transcripts → summaries, threads, blogs."},
+    {n:"MoneyPrinterTurbo",d:"AI short video: script→footage→TTS→render."},
+    {n:"MoneyPrinter V2",d:"AI short video generation via KittenTT."},
+    {n:"OpenMontage",d:"Full video production pipeline wrapper."},
+    {n:"Short Video",d:"9:16 vertical videos for TikTok/Reels."},
+    {n:"TikTok Finance",d:"Viral finance shorts with 'two lives' concept."},
+    {n:"GIF Search",d:"Search/download GIFs from Tenor."},
+    {n:"HeartMuLa",d:"Suno-like song generation from lyrics."},
+    {n:"SongSee",d:"Audio spectrograms via CLI."},
+    {n:"Python Audio Synth",d:"Generate BGM, SFX, placeholder audio."},
+    {n:"Retro Video FX",d:"Vintage/retro aesthetic effects (VHS, CRT)."}
+  ],
+  "Research & MLOps": [
+    {n:"arXiv",d:"Search papers by keyword, author, category."},
+    {n:"Blogwatcher",d:"Monitor blogs and RSS/Atom feeds."},
+    {n:"LLM Wiki",d:"Karpathy's LLM Wiki — interlinked markdown KB."},
+    {n:"Polymarket",d:"Query markets, prices, orderbooks, history."},
+    {n:"Research Paper",d:"Academic paper writing with templates."},
+    {n:"HuggingFace Hub",d:"Search/download/upload models, datasets."},
+    {n:"llama.cpp",d:"Local GGUF inference + HF discovery."},
+    {n:"vLLM",d:"High-throughput LLM inference server."},
+    {n:"Obliteratus",d:"Model weight pruning and quantization."},
+    {n:"Segment Anything",d:"Zero-shot image segmentation."},
+    {n:"AudioCraft",d:"MusicGen audio generation."},
+    {n:"W&B",d:"Log experiments, sweeps, model registry."},
+    {n:"LM Eval Harness",d:"Standardized LLM evaluation benchmarks."}
+  ],
+  "GitHub & DevOps": [
+    {n:"GitHub Core",d:"Triage and orient repos, PRs, and issues."},
+    {n:"GitHub Auth",d:"HTTPS tokens, SSH keys, gh CLI setup."},
+    {n:"Code Review",d:"PR diffs and inline comments via gh/REST."},
+    {n:"GitHub Issues",d:"Create, triage, label, assign issues."},
+    {n:"PR Workflow",d:"Branch, commit, open, CI, merge lifecycle."},
+    {n:"Repo Management",d:"Clone/create/fork repos, remotes."},
+    {n:"Pre-Push Audit",d:"Scan for secrets and credentials before push."},
+    {n:"Codebase Inspection",d:"pygount LOC/language/ratio analysis."}
+  ],
+  "OpenCode Power Pack": [
+    {n:"Code Review",d:"Confidence-filtered multi-agent PR review."},
+    {n:"Code Reviewer",d:"Bugs, logic, security, quality review."},
+    {n:"Feature Dev",d:"Seven-phase guided feature implementation."},
+    {n:"Code Architect",d:"Design feature architecture from existing code."},
+    {n:"Code Explorer",d:"Deep analysis by tracing execution paths."},
+    {n:"Frontend Design",d:"Production-grade accessible frontend UI."},
+    {n:"MCP Builder",d:"Guide MCP server creation in Python/TS."},
+    {n:"Security Review",d:"Focused review of pending git changes."},
+    {n:"Skill Creator",d:"Create/modify/optimize SKILL.md files."},
+    {n:"Agents MD Improver",d:"Audit and improve project-rules files."},
+    {n:"Agents MD Revise",d:"Capture learnings into project rules."}
+  ],
+  "More Categories": [
+    {n:"Gmail",d:"Inbox triage, search, reply drafting."},
+    {n:"Google Drive",d:"Create/edit docs via Docs API."},
+    {n:"Himalaya",d:"IMAP/SMTP email from terminal."},
+    {n:"Apple Notes",d:"Create, read, search Apple Notes."},
+    {n:"Apple Reminders",d:"Manage Apple Reminders."},
+    {n:"FindMy",d:"Find devices and friends via network."},
+    {n:"iMessage",d:"Send/read iMessages from terminal."},
+    {n:"macOS Computer Use",d:"Drive macOS UI programmatically."},
+    {n:"Obsidian",d:"Core note CRUD with ATM-Machine templates."},
+    {n:"Obsidian Codebase Graph",d:"File tree → wikilinked markdown."},
+    {n:"Obsidian KG",d:"Vault → interactive galaxy graph."},
+    {n:"Project Docs",d:"Structured docs for any codebase."},
+    {n:"OpenCode Agent",d:"Delegate coding to OpenCode CLI."},
+    {n:"Claude Code Agent",d:"Delegate coding to Claude Code."},
+    {n:"Codex Agent",d:"Delegate coding to OpenAI Codex."},
+    {n:"Hermes Agent Meta",d:"Configure/extend Hermes Agent."},
+    {n:"Jupyter Kernel",d:"Iterative Python via live kernel."},
+    {n:"Supabase",d:"All Supabase operations."},
+    {n:"Vercel",d:"Deploy projects, manage env vars."},
+    {n:"Wix",d:"Build Wix CLI app extensions."},
+    {n:"Student",d:"Explain code at 3rd-year BSCS level."},
+    {n:"Dogfood",d:"Internal Hermes feature testing."},
+    {n:"last30days",d:"Summarize session activity."},
+    {n:"Safe File Patching",d:"Patch vs rewrite guidance."},
+    {n:"SEO Tool Content",d:"Content strategy for tool sites."},
+    {n:"OpenHue",d:"Control Philips Hue lights via CLI."},
+    {n:"Godmode",d:"LLM jailbreak testing."},
+    {n:"Yuanbao",d:"Group queries and user info."},
+    {n:"Kanban Orchestrator",d:"Devops kanban workflow orchestration."},
+    {n:"Kanban Worker",d:"Execute kanban work items."},
+    {n:"Capafy Publisher",d:"Publish agents/skills on Capafy."},
+    {n:"Capafy Web Form",d:"Capafy platform form filling."},
+    {n:"Capafy User",d:"Capafy buyer entry point."}
+  ]
+};
+
+const ALL_SKILLS = [];
+Object.entries(SKILLS_DATA).forEach(([cat, skills]) => skills.forEach(s => ALL_SKILLS.push({...s, c: cat})));
+
+function renderSkills(cat, search=''){
+  const g=document.getElementById('skillGrid');
+  let items = cat==='all' ? ALL_SKILLS : ALL_SKILLS.filter(s=>s.c===cat);
+  if(search){
+    const q = search.toLowerCase();
+    items = items.filter(s => s.n.toLowerCase().includes(q) || s.d.toLowerCase().includes(q) || s.c.toLowerCase().includes(q));
+  }
+  document.getElementById('skillCount').textContent = items.length + (items.length === 1 ? ' skill' : ' skills');
+  g.innerHTML=items.map(s=>`<div class="card" data-cat="${s.c}"><div class="card-glow"></div><div class="cat">${s.c}</div><h4>${s.n}</h4><p>${s.d}</p></div>`).join('');
+  setTimeout(() => {
+    g.querySelectorAll('.card').forEach((el,i) => { setTimeout(() => el.style.opacity='1', i*15); });
+  }, 30);
+}
+
+// Build category tabs
+(function(){
+  const tabs = document.getElementById('catTabs');
+  const cats = Object.keys(SKILLS_DATA);
+  tabs.innerHTML = `<button class="cat-tab active" data-cat="all" onclick="setSkillCat('all')">All <span class="count">(${ALL_SKILLS.length})</span></button>`;
+  cats.forEach(cat => {
+    const count = SKILLS_DATA[cat].length;
+    tabs.innerHTML += `<button class="cat-tab" data-cat="${cat}" onclick="setSkillCat('${cat}')">${cat} <span class="count">(${count})</span></button>`;
+  });
+})();
+
+function setSkillCat(cat){
+  document.querySelectorAll('#catTabs .cat-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
+  renderSkills(cat, document.getElementById('skillSearch').value);
+}
+function filterSkills(){
+  const activeCat = document.querySelector('#catTabs .cat-tab.active');
+  renderSkills(activeCat ? activeCat.dataset.cat : 'all', document.getElementById('skillSearch').value);
+}
+// Init cards
+document.querySelectorAll('.card').forEach(c => c.style.opacity='0');
+renderSkills('all');
+
+// ===== ECO GRID =====
+(function(){
+  const c=document.getElementById('ecoGrid'); if(!c)return;
+  c.innerHTML=[
+    {i:'🛡️',n:'Core Guardrail',d:'6 permanent rules — loaded before everything.',x:'Step 0 · Never optional'},
+    {i:'⚡',n:'Token Saver',d:'Probe CodeGraph+Graphify before reads.',x:'56.2× reduction'},
+    {i:'🧠',n:'ECC Agents (64)',d:'Specialized agents bridged to free models.',x:'57/64 free-compatible'},
+    {i:'⚡',n:'CodeGraph MCP',d:'Live code knowledge — 3,425 files indexed.',x:'52,747 nodes · 6 CLI tools'},
+    {i:'🧬',n:'Graphify',d:'AST code graph with community detection.',x:'8,267 nodes · 775 communities'},
+    {i:'📡',n:'free-ai-tools',d:'550+ tools, 30+ API providers.',x:'238 models · S/A/B/C tiers'},
+    {i:'⚡',n:'OpenCode CLI',d:'Primary coding agent — 5 free models.',x:'★ DeepSeek V4 Flash'},
+    {i:'🎬',n:'MoneyPrinterTurbo',d:'Script→footage→TTS→subtitles→render.',x:'86k ⭐ · 5-step pipeline'},
+    {i:'📊',n:'LLMQuant (18)',d:'Quant-finance domain skill suite.',x:'Data MCP · SEC/13F'},
+    {i:'📝',n:'Obsidian Bundle',d:'ATM-Machine quality docs + knowledge graph.',x:'3 skills · 276 nodes'},
+    {i:'🔗',n:'API Mega List',d:'10,498 APIs across 18 categories.',x:'Searchable via skill'},
+    {i:'📱',n:'Apple Suite',d:'Notes, Reminders, iMessage, FindMy, macOS.',x:'5 skills + computer use'}
+  ].map(i=>`<div class="eco-card"><div class="icon">${i.i}</div><h3>${i.n}</h3><p>${i.d}</p><div class="detail">${i.x}</div></div>`).join('');
+})();
+
+// ===== ECC AGENTS =====
+const AGENTS = [
+  {n:"a11y-architect",d:"Accessibility Architect — WCAG 2.2 compliance.",m:"sonnet",t:["Read","Write","Edit","Grep","Glob"]},
+  {n:"architect",d:"System design and technical decision-making.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"build-error-resolver",d:"Build/TypeScript error resolution, minimal diffs.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"chief-of-staff",d:"Triages email/Slack/LINE/Messenger into 4 tiers.",m:"opus",t:["Read","Grep","Glob","Bash","Edit","Write"]},
+  {n:"code-architect",d:"Feature architectures from existing codebase patterns.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"code-explorer",d:"Deep codebase analysis tracing execution paths.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"code-reviewer",d:"Expert code review: quality, security, maintainability.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"code-simplifier",d:"Simplify/refine code for clarity and maintainability.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"comment-analyzer",d:"Analyze comments for accuracy and rot risk.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"conversation-analyzer",d:"Find behaviors worth preventing with hooks.",m:"sonnet",t:["Read","Grep"]},
+  {n:"cpp-build-resolver",d:"C++/CMake build compilation error resolution.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"cpp-reviewer",d:"C++: memory safety, modern idioms.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"csharp-reviewer",d:"C#: .NET conventions, async, nullable.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"dart-build-resolver",d:"Dart/Flutter build, analysis, dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"database-reviewer",d:"PostgreSQL: query optimization, schema, security.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"django-build-resolver",d:"Django/Python build, migration, dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"django-reviewer",d:"Django: ORM, DRF, migration safety.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"doc-updater",d:"Documentation/codemap specialist.",m:"haiku",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"docs-lookup",d:"Fetches current docs via Context7 MCP.",m:"sonnet",t:["Read","Grep","mcp__context7__*"]},
+  {n:"e2e-runner",d:"E2E testing via Vercel Agent Browser + Playwright.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"fastapi-reviewer",d:"FastAPI: async, DI, Pydantic schemas.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"flutter-reviewer",d:"Flutter: widgets, state, performance.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"fsharp-reviewer",d:"F#: functional idioms, type safety.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"gan-evaluator",d:"GAN Harness evaluator. Playwright tests, scores.",m:"opus",t:["Read","Write","Bash","Grep","Glob"]},
+  {n:"gan-generator",d:"GAN Harness generator. Iterates per spec.",m:"opus",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"gan-planner",d:"GAN planner. One-liner to full spec.",m:"opus",t:["Read","Write","Grep","Glob"]},
+  {n:"go-build-resolver",d:"Go build, vet, compilation fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"go-reviewer",d:"Go: idioms, concurrency, error handling.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"harmonyos-app-resolver",d:"HarmonyOS dev with ArkTS/ArkUI.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"harness-optimizer",d:"Optimize agent harness: reliability, cost.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
+  {n:"healthcare-reviewer",d:"Clinical safety, CDSS, PHI compliance.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"homelab-architect",d:"Home/small-lab network design.",m:"sonnet",t:["Read","Grep"]},
+  {n:"java-build-resolver",d:"Java/Maven/Gradle build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"java-reviewer",d:"Java: Spring Boot, Quarkus, JPA.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"kotlin-build-resolver",d:"Kotlin/Gradle build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"kotlin-reviewer",d:"Kotlin: coroutines, Compose, KMP.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"loop-operator",d:"Autonomous agent loop operation.",m:"sonnet",t:["Read","Grep","Glob","Bash","Edit"]},
+  {n:"marketing-agent",d:"Campaign planning, copy, content.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
+  {n:"mle-reviewer",d:"ML: data contracts, feature pipelines.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"network-architect",d:"Enterprise network architecture.",m:"sonnet",t:["Read","Grep"]},
+  {n:"network-config-reviewer",d:"Router/switch config review.",m:"sonnet",t:["Read","Grep"]},
+  {n:"network-troubleshooter",d:"Network connectivity diagnostics.",m:"sonnet",t:["Read","Bash","Grep"]},
+  {n:"opensource-forker",d:"Fork projects: strip secrets, clean git.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"opensource-packager",d:"Generate open-source packaging.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"opensource-sanitizer",d:"Verify sanitized before release.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"performance-optimizer",d:"Bottleneck analysis and optimization.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"php-reviewer",d:"PHP: PSR-12, Eloquent, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"planner",d:"Complex feature and refactoring planning.",m:"opus",t:["Read","Grep","Glob"]},
+  {n:"pr-test-analyzer",d:"PR test coverage quality check.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"python-reviewer",d:"Python: PEP8, type hints, idioms.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"pytorch-build-resolver",d:"PyTorch/CUDA/training error fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"react-build-resolver",d:"Fix React builds: Vite, webpack, Next.js.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"react-reviewer",d:"React: hooks, render performance.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"refactor-cleaner",d:"Dead code cleanup, knip, depcheck.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"rust-build-resolver",d:"Rust build/compilation/dependency fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"rust-reviewer",d:"Rust: ownership, lifetimes, unsafe.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"security-reviewer",d:"Vulnerability detection and remediation.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"seo-specialist",d:"Technical audits, structured data, CWV.",m:"sonnet",t:["Read","Grep","Glob","WebSearch","WebFetch"]},
+  {n:"silent-failure-hunter",d:"Find swallowed errors, bad fallbacks.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"swift-build-resolver",d:"Swift/Xcode build fixes.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep","Glob"]},
+  {n:"swift-reviewer",d:"Swift: protocol-oriented, ARC, concurrency.",m:"sonnet",t:["Read","Grep","Glob","Bash"]},
+  {n:"tdd-guide",d:"TDD enforcement, 80%+ coverage.",m:"sonnet",t:["Read","Write","Edit","Bash","Grep"]},
+  {n:"type-design-analyzer",d:"Type encapsulation and invariants.",m:"sonnet",t:["Read","Grep","Glob"]},
+  {n:"typescript-reviewer",d:"TS/JS: type safety, async, security.",m:"sonnet",t:["Read","Grep","Glob","Bash"]}
+];
+
+function getCat(a){
+  const n=a.n;
+  if(n.includes('reviewer')){
+    if(/python|typescript|javascript|rust|go|java|kotlin|cpp|csharp|php|swift|flutter|fsharp|django|fastapi|react/.test(n)) return 'Language Specialists';
+    return 'Reviewers';
+  }
+  if(n.includes('resolver')||n==='build-error-resolver') return 'Build Resolvers';
+  if(/architect|planner/.test(n)) return 'Architects & Planners';
+  if(/security|e2e|loop|silent/.test(n)) return 'Security & Testing';
+  if(/mle|gan/.test(n)) return 'ML & Data Science';
+  if(/network|harness|homelab/.test(n)) return 'Infrastructure & DevOps';
+  return 'Specialized Agents';
+}
+
+function renderModelDist(){
+  const m={sonnet:0,opus:0,haiku:0};
+  AGENTS.forEach(a=>{if(m[a.m]!==undefined)m[a.m]++;});
+  const t=AGENTS.length;
+  document.getElementById('modelDist').innerHTML=Object.entries(m).map(([k,v])=>
+    `<div class="model-bar"><div class="count ${k}">${v}</div><div class="label">${k.charAt(0).toUpperCase()+k.slice(1)}</div><div class="progress"><div class="progress-fill ${k}" style="width:${(v/t*100).toFixed(0)}%"></div></div></div>`
+  ).join('');
+}
+
+const CAT_EMOJI = {'Reviewers':'🔍','Build Resolvers':'🔧','Architects & Planners':'🏗️','Security & Testing':'🛡️','ML & Data Science':'📊','Infrastructure & DevOps':'🌐','Language Specialists':'💻','Specialized Agents':'🎯'};
+
+function renderAgents(filter,search){
+  const g=document.getElementById('agentsGrid');
+  const f=AGENTS.filter(a=>{
+    if(filter!=='all'&&getCat(a)!==filter)return false;
+    if(search){const s=search.toLowerCase();return a.n.toLowerCase().includes(s)||a.d.toLowerCase().includes(s)||a.t.some(t=>t.toLowerCase().includes(s));}
+    return true;
+  });
+  g.innerHTML=f.map(a=>{
+    const mc=a.m==='opus'?'opus':a.m==='haiku'?'haiku':'';
+    const bridge=a.m!=='opus'?'<span class="bridge-badge">🔗 Free</span>':'<span class="bridge-badge opus">⚠️ Limited</span>';
+    return `<div class="agent-card"><div class="top"><span class="name">${a.n}</span>${bridge}<span class="model-tag ${mc}">${a.m}</span></div><div class="desc">${a.d}</div><div class="tools">${a.t.map(t=>`<span class="tool-tag">${t}</span>`).join('')}</div></div>`;
+  }).join('');
+}
+
+function buildFilters(){
+  const cats=[...new Set(AGENTS.map(getCat))].sort();
+  const c=document.getElementById('filterGroup');
+  cats.forEach(cat=>{
+    const b=document.createElement('button');b.className='filter-btn';b.dataset.cat=cat;
+    b.textContent=`${CAT_EMOJI[cat]||'📌'} ${cat} (${AGENTS.filter(a=>getCat(a)===cat).length})`;
+    b.onclick=()=>setFilter(cat);c.appendChild(b);
+  });
+}
+
+let currentFilter='all';
+function setFilter(cat){
+  currentFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+  renderAgents(cat,document.getElementById('searchInput').value);
+}
+function filterAgents(){renderAgents(currentFilter,document.getElementById('searchInput').value);}
+
+renderModelDist();
+buildFilters();
+renderAgents('all','');
+</script>
+</body>
+</html>
