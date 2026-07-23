@@ -47,7 +47,7 @@ html{scroll-behavior:smooth;scroll-padding-top:72px}
   .text-gradient-green{background:linear-gradient(135deg,#3ddc84,#4dc9b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .text-gradient-blue{background:linear-gradient(135deg,#4a8cf4,#9b7cf7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .glass{backdrop-filter:blur(24px)saturate(1.5);-webkit-backdrop-filter:blur(24px)saturate(1.5)}
-  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+  .reveal{opacity:1;transform:translateY(0);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
   .reveal.visible{opacity:1;transform:translateY(0)}
 
   .stat-card{padding:6px 12px;border-radius:10px;background:rgba(12,20,40,.55);border:1px solid rgba(255,255,255,.04);backdrop-filter:blur(24px)saturate(1.5);text-align:center}
