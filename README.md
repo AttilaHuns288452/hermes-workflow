@@ -1,59 +1,93 @@
-# Hermes Workflow 🧞
+<div align="center">
 
-Agent workflow dashboard for **Hermes Agent** — 668+ skills, `/decide` routing brain, 5-layer free model chain, **Pantheon agent swarm**, **SkillClaw auto-evolution**, CodeGraph + Graphify token saver, and Obsidian knowledge graph visualization.
+# 🧞 Hermes Workflow
 
-## What's Here
+**668+ agent skills · /decide routing brain · 4-layer free model chain**
 
-| What | Where |
-|------|-------|
-| **Vite dashboard** (React + Tailwind) | `index.html` + `src/` — live at `attilahuns288452.github.io/hermes-workflow/` |
-| **Static HTML dashboard** | `dashboard.html` — standalone, JS-free version |
-| **Skills catalog** | `skills/` — 668+ agent skills organized by domain |
-| **Integration docs** | `INTEGRATION.md` — setup, config, deployment |
-| **Setup guide** | `SETUP.md` — full onboarding walkthrough |
-| **Legacy tools** | `legacy/` — pre-v2 tools preserved for reference |
+[![GitHub stars](https://img.shields.io/github/stars/AttilaHuns288452/hermes-workflow?style=flat&label=Stars&labelColor=0b0f1c&color=3ddc84)](https://github.com/AttilaHuns288452/hermes-workflow/stargazers)
+[![License](https://img.shields.io/badge/license-MIT-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
+[![Skills](https://img.shields.io/badge/Skills-668%2B-4a8cf4?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
+[![Agents](https://img.shields.io/badge/ECC%20Agents-64-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#agents)
+[![Model](https://img.shields.io/badge/Model-DeepSeek%20V4%20Flash-f0d060?style=flat&labelColor=0b0f1c)](https://opencode-zen.dev)
+[![Token Savings](https://img.shields.io/badge/Token%20Save-35%C3%97%E2%80%931233%C3%97-e4686a?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#pipeline)
+[![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
-## Key Integrations
+---
 
-### Pantheon Agent Swarm (oh-my-opencode-slim)
-7 specialized agents orchestrate multi-step coding tasks autonomously:
-- **Orchestrator** (GLM 5.2) — plans work graph, dispatches specialists
-- **Oracle** (DeepSeek V4 Flash) — strategic advice, code review, debugging
-- **Explorer** (DeepSeek V4 Flash) — codebase reconnaissance
-- **Librarian** (DeepSeek V4 Flash) — external knowledge, API docs
-- **Designer** (DeepSeek V4 Flash) — UI/UX implementation
-- **Fixer** (DeepSeek V4 Flash) — fast scoped patches
-- **Council** (multi-model) — parallel consensus synthesis
+**One install, zero config.** Clone this repo, run one command, and your AI assistant gets 668+ skills across 10 domains — coding, design, finance, media, research, DevOps, and more — all on free models.
 
-### SkillClaw — Auto-Evolving Skills
-Runs as a local proxy on port 30000, automatically improving skills across sessions. Zero manual effort — skills get sharper every time you use them.
-- `skillclaw start --daemon` — start the evolution proxy
-- `skillclaw doctor hermes` — verify integration health
+</div>
 
-### ECC Agent Bridge
-64 specialized agents across 8 categories, all routed through free models:
-- **Code agents:** `opencode/deepseek-v4-flash-free`
-- **Vision agents:** `opencode/mimo-v2.5-free`
-- **Self-hosted:** 3 interconnected services (AutoGPT :8000, DeepTutor :8005, OpenCharts :5173)
+## ✨ What's Inside
 
-## Quick Start
+| Layer | What |
+|-------|------|
+| **🧠 /decide** | 6-step routing brain — context retrieval → guardrail → decompose → probe → execute → document |
+| **⚡ Token Saver** | CodeGraph (52K+ nodes) + Graphify before any raw file read — 35×–1,233× token reduction |
+| **🤖 Pantheon Swarm** | 7 specialist agents (Orchestrator, Oracle, Explorer, Librarian, Designer, Fixer, Council) auto-split multi-step tasks |
+| **🔄 SkillClaw** | Daemon on `:30000` — auto-evolves skills from every session, zero manual effort |
+| **🔗 ECC Bridge** | 64 specialized agents routed through free models (DeepSeek V4 Flash for code, MiMo 2.5 for vision) |
+| **📘 Obsidian KG** | Vault → knowledge graph with community detection, ATM-Machine quality docs |
+| **🛡️ Guardrail** | 6 immutable rules — file protection, secrets safety, injection immunity, system integrity |
+
+## 🚀 Quick Start
 
 ```bash
-npm install
-npm run dev       # dev server at localhost:5173
-npm run build     # production build to docs/
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh
+git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+cd hermes-workflow
+# Install 668+ skills in one shot
+find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes skills install "$dir"; done
 ```
 
-## Customization
+**First pipeline:** `hermes run "What does the decide skill do?"`
 
-- **Skills:** add/edit skills in `skills/` — each is a `SKILL.md` with YAML frontmatter
-- **Config:** `config.yaml.template` → copy to `config.yaml` and tweak
-- **Tokens:** copy `.env.example` to `.env` and fill in your API keys
+## 📊 Stats
 
-## Built With
+```
+📦 668+   Skills across 10 domains
+🧠 64     ECC specialized agents
+⚡ 52,747 CodeGraph nodes · 125,822 edges · 3,425 files indexed
+💸 $0     Free model chain — DeepSeek V4 Flash → Freebuff → OpenRouter → Paid fallback
+🔄 7      Pantheon agent specialists for parallel coding
+🔧 1      SkillClaw daemon — self-improving skills
+```
 
-- [Vite](https://vitejs.dev/) — build tool
-- [React 19](https://react.dev/) — UI framework
-- [Tailwind CSS 4](https://tailwindcss.com/) — styling
-- [Lucide](https://lucide.dev/) — icons
-- [Oxlint](https://oxc.rs/) — linting
+## 🧩 Skill Categories
+
+| Category | Count | Highlights |
+|----------|-------|------------|
+| Software Development | 26 | TDD, Debugging, Setup, Architect, Plan |
+| LLMQuant (Finance) | 18 | Equities, Options, Macro, Risk, 13F |
+| Creative & Design | 20 | Claude Design, Excalidraw, p5.js, ComfyUI |
+| Workflow & Core | 14 | /decide, Token Saver, ECC Bridge, Pantheon |
+| Productivity & Comms | 16 | Gmail, Notion, Maps, OCR, PowerPoint |
+| Media & Content | 11 | OpenMontage, YouTube, TikTok, MoneyPrinter |
+| Research & MLOps | 13 | arXiv, llama.cpp, W&B, HuggingFace |
+| GitHub & DevOps | 8 | PR Workflow, CI/CD, Code Review |
+| OpenCode Power Pack | 11 | Feature Dev, Code Explorer, MCP Builder |
+| More Categories | 33 | Obsidian, iMessage, Agent Harness, Wix |
+
+## 🧬 Model Chain (4 layers, all free first)
+
+```
+DeepSeek V4 Flash (recommended) ─── Freebuff (6 models)
+         │                                 │
+         ├── OpenRouter:free (rate-limited)┘
+         │
+         └── Paid fallback ─── deepseek-v4-flash, mimo-v2.5, glm-5.2
+```
+
+## 🔗 Related
+
+- [Hermes Agent](https://hermes-agent.nousresearch.com) — the agent framework
+- [oh-my-opencode-slim](https://github.com/alvinunreal/oh-my-opencode-slim) — Pantheon agent plugin
+- [SkillClaw](https://github.com/AMAP-ML/SkillClaw) — auto-evolving skills
+
+---
+
+<div align="center">
+
+**Built with [Hermes Agent](https://hermes-agent.nousresearch.com) by Nous Research**
+
+</div>
