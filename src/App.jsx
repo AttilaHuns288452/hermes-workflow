@@ -744,7 +744,6 @@ function ModelsSection() {
   const tiers = [
     { n: 'DeepSeek V4 Flash', badge: 'RECOMMENDED', price: 'free', desc: 'Main coding agent via OpenCode Zen API. Reliable, fast, no rate limits for typical use.', tags: ['opencode/deepseek-v4-flash-free', 'default'], color: '#3ddc84' },
     { n: 'Freebuff (6 models)', badge: 'fallback', price: 'fallback', desc: 'Second layer — 6 free model endpoints for redundancy.', tags: ['freebuff/*', 'openrouter:free/*'], color: '#f0d060' },
-    { n: 'FreeLLMAPI (:3001/v1)', badge: 'fallback', price: 'fallback', desc: 'Self-hosted OpenAPI-compatible endpoint on localhost:3001.', tags: ['freellmapi/*'], color: '#e4a847' },
     { n: 'OpenRouter:free (2 models)', badge: 'rate-limited', price: 'rate-limited', desc: 'OpenRouter free tier with daily rate limits.', tags: ['openrouter:free/*'], color: '#e4686a' },
     { n: 'Paid (last resort)', badge: 'premium', price: 'premium', desc: 'Paid models for rate-limited fallback — DeepSeek V4 Flash, MiMo 2.5, GLM 5.2.', tags: ['opencode-go/*'], color: '#7aa9f7' },
   ]
@@ -755,7 +754,7 @@ function ModelsSection() {
         <div className="text-center mb-12">
           <div className="eyebrow mb-4">Model Chain</div>
           <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            5-Layer Free Model Routing
+            4-Layer Free Model Routing
           </h2>
           <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             Every task is routed through a fallback chain — free first, paid only when necessary. DeepSeek V4 Flash is the daily driver.
