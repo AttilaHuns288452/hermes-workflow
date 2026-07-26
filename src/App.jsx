@@ -278,7 +278,7 @@ function Hero() {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] mb-8 animate-fade-up bg-[rgba(12,20,40,0.55)] border border-[rgba(255,255,255,0.06)] text-[#7aa9f7]">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse-slow shadow-[0_0_12px_rgba(61,220,132,0.5)]" />
-          {ALL_SKILLS.length}+ Skills · /decide v3 · 5-Layer Free Models
+          {ALL_SKILLS.length}+ Skills · /decide v3 · Free Models · Pantheon Swarm · SkillClaw
         </div>
 
         <h1 className="text-[clamp(2.4rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance mb-6 animate-fade-up" style={{ animationDelay: '0.15s' }}>
@@ -288,7 +288,7 @@ function Hero() {
         </h1>
 
         <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#8895b8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models.
+          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models. Pantheon agent swarm auto-splits multi-step tasks across 7 specialists. Skills auto-evolve every session.
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center animate-fade-up" style={{ animationDelay: '0.45s' }}>
