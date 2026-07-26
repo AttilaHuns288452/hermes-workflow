@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Fragment, useCallback } from 'react'
 import skillsData from './data-skills.json'
 import agentsData from './data-agents.json'
 import catEmojiData from './data-cat-emoji.json'
+import integrationsData from './data-integrations.json'
 
 const ALL_SKILLS = []
 Object.entries(skillsData).forEach(([cat, skills]) =>
@@ -963,6 +964,53 @@ function AgentsSection() {
   )
 }
 
+function IntegrationsSection() {
+  const icons = {
+    'oh-my-opencode-slim': 'Zap',
+    'SkillClaw': 'RefreshCw',
+    'ECC Bridge': 'Share2',
+  }
+  const integrationIcons = {
+    Zap: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+    RefreshCw: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>,
+    Share2: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+  }
+
+  return (
+    <section id="integrations" className="section-pad relative z-10">
+      <div className="max-w-6xl mx-auto px-6">
+        <Reveal>
+          <div className="eyebrow mb-5">PLUGINS</div>
+          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.15] tracking-[-0.02em] text-gradient mb-4">Integrations</h2>
+          <p className="text-[#8895b8] text-[15px] max-w-2xl leading-relaxed">
+            Three new pillars that extend what Hermes can do — multi-agent coding, self-improving skills, and free-model agent routing.
+          </p>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-5 mt-12">
+          {integrationsData.map((item, i) => {
+            const icon = integrationIcons[icons[item.n]] || integrationIcons.Zap
+            return (
+              <div key={i} className="spotlight-card p-6" style={{ '--cat-color': item.c }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${item.c}22, rgba(255,255,255,0.02))`, border: `1px solid ${item.c}15`, color: item.c }}>
+                  {icon}
+                </div>
+                <h3 className="text-[#e4eaf5] font-bold text-[17px] mb-2">{item.n}</h3>
+                <p className="text-[#8895b8] text-[13px] leading-relaxed mb-4">{item.d}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {item.t.map((tag, ti) => (
+                    <span key={ti} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${item.c}15`, color: item.c }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function KGSection() {
   const stats = [
     { v: '8,267', l: 'Graph Nodes', c: '#7aa9f7' },
@@ -1031,6 +1079,7 @@ export default function App() {
         <PipelineSection />
         <SkillsSection />
         <ModelsSection />
+        <IntegrationsSection />
         <GuardrailSection />
         <AgentsSection />
         <KGSection />

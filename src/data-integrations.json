@@ -1,0 +1,20 @@
+[
+  {
+    "n": "oh-my-opencode-slim",
+    "d": "Pantheon multi-agent swarm — 7 specialists (Orchestrator, Oracle, Explorer, Librarian, Designer, Fixer, Council) coordinated by GLM 5.2",
+    "t": ["Agent Swarm", "Parallel Coding", "Auto-Delegation"],
+    "c": "#3ddc84"
+  },
+  {
+    "n": "SkillClaw",
+    "d": "Auto-evolving skills engine — learns from every session, improves SKILL.md files without manual effort, runs as daemon on :30000",
+    "t": ["Skill Evolution", "Self-Improving", "Session Learning"],
+    "c": "#9b7cf7"
+  },
+  {
+    "n": "ECC Bridge",
+    "d": "64 specialized agents routed through free models (deepseek-v4-flash-free for code, mimo-v2.5-free for vision)",
+    "t": ["64 Agents", "Free Models", "Vision + Code"],
+    "c": "#6bc5e8"
+  }
+]
