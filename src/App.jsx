@@ -286,7 +286,7 @@ function Hero() {
           <span className="text-[#e4eaf5]">Engine</span>
         </h1>
 
-        <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#8895b8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
+        <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#a0aec8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
           <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models.
         </p>
 
@@ -308,7 +308,7 @@ function Hero() {
           </div>
         </div>
 
-        <div className="flex gap-2 flex-wrap justify-center max-w-[900px] mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
+        <div className="flex gap-3 flex-wrap justify-center max-w-[900px] mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
           {[
             { v: ALL_SKILLS.length, l: 'Skills', suffix: '+' },
             { v: agentsData.length, l: 'Agents' },
@@ -319,7 +319,7 @@ function Hero() {
           ].map((s, i) => (
             <div
               key={i}
-              className={`px-4 py-2.5 rounded-xl text-center min-w-[88px] border backdrop-blur-md ${s.highlight ? 'border-[rgba(61,220,132,0.2)] bg-[rgba(61,220,132,0.05)]' : 'border-white/[0.05] bg-[rgba(12,20,40,0.55)]'}`}
+              className={`px-4 py-2.5 rounded-xl text-center min-w-[110px] border backdrop-blur-md ${s.highlight ? 'border-[rgba(61,220,132,0.2)] bg-[rgba(61,220,132,0.05)]' : 'border-white/[0.05] bg-[rgba(12,20,40,0.55)]'}`}
             >
               <div className={`text-lg font-extrabold ${s.highlight ? 'text-gradient-green' : 'text-[#e4eaf5]'}`}>
                 {s.prefix ? (
@@ -330,7 +330,7 @@ function Hero() {
                   mounted ? <AnimatedCounter value={s.v} suffix={s.suffix || ''} /> : <>{s.v}{s.suffix || ''}</>
                 )}
               </div>
-              <div className="text-[9px] text-[#5a6a90] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
+              <div className="text-[10px] text-[#5a6a90] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
             </div>
           ))}
         </div>
@@ -348,14 +348,14 @@ function InstallSection() {
   ]
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="install">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="install">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Quick Start</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             From zero to orchestration in 4 steps
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             Install Hermes Agent, clone the workflow repo with {ALL_SKILLS.length + 508} bundled skills, and run your first pipeline — all for free.
           </p>
         </div>
@@ -367,19 +367,19 @@ function InstallSection() {
             <div className={`card-core p-5 h-full ${step.highlight ? 'border-[rgba(61,220,132,0.2)] bg-[rgba(61,220,132,0.03)]' : ''}`}>
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a8cf4] to-[#7c5cf5] text-white text-xs font-bold shrink-0">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a8cf4] to-[#6bc5e8] text-white text-xs font-bold shrink-0">
                     {step.num}
                   </span>
                   <h3 className="text-base font-bold text-[#e4eaf5]">{step.n}</h3>
                 </div>
                 {step.badge && <span className="text-[10px] px-2 py-1 rounded-full bg-[rgba(240,208,96,0.12)] text-[#f0d060] border border-[rgba(240,208,96,0.2)] font-semibold">{step.badge}</span>}
               </div>
-              <p className="text-sm text-[#8895b8] mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: step.desc }} />
+              <p className="text-sm text-[#a0aec8] mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: step.desc }} />
               {step.code.map((c, ci) => (
                 <pre key={ci} className="font-mono text-[11px] bg-black/50 border border-[#1e3058] rounded-lg p-3 overflow-x-auto text-[#6bc5e8] leading-relaxed mb-2">{c}</pre>
               ))}
               {step.verify && <p className="text-[11px] text-[#5a6a90] mt-2">Verify: <code className="text-[#6bc5e8]">{step.verify}</code></p>}
-              {step.extra && <p className="text-[11px] text-[#8895b8] mt-2" dangerouslySetInnerHTML={{ __html: step.extra }} />}
+              {step.extra && <p className="text-[11px] text-[#a0aec8] mt-2" dangerouslySetInnerHTML={{ __html: step.extra }} />}
             </div>
           </Reveal>
         ))}
@@ -419,15 +419,15 @@ function AIPipelineVisual() {
   ]
 
   const paths = {
-    p1: 'M116,88 L158,88',
-    p2: 'M268,88 L306,88',
-    p3: 'M411,88 C425,88 435,50 448,50',
-    p4: 'M411,88 L448,88',
-    p5: 'M411,88 C425,88 435,126 448,126',
+    p1: 'M116,90 L158,90',
+    p2: 'M268,90 L306,90',
+    p3: 'M411,90 C425,90 435,46 448,46',
+    p4: 'M411,90 L448,90',
+    p5: 'M411,90 C425,90 435,138 448,138',
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#090909]/80 backdrop-blur-xl w-full max-w-[620px] mx-auto">
+    <div className="rounded-2xl overflow-hidden border border-white/[0.08] bg-[#090909]/80 backdrop-blur-xl w-full max-w-[720px] mx-auto">
       <div className="px-5 py-3 border-b border-white/[0.06] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse" />
@@ -436,7 +436,7 @@ function AIPipelineVisual() {
         <span className="text-[10px] text-white/[0.18] font-mono">/decide v3 · 0 errors</span>
       </div>
 
-      <svg width="100%" viewBox="0 0 580 172" className="block">
+      <svg width="100%" viewBox="0 0 580 220" className="block">
         <defs>
           <marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
             <path d="M2 1.5L7.5 5L2 8.5" fill="none" stroke="rgba(74,140,244,0.45)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -459,36 +459,36 @@ function AIPipelineVisual() {
           </circle>
         ))}
 
-        <rect x="16" y="66" width="100" height="44" rx="8" fill="#141414" stroke="rgba(255,255,255,0.09)" strokeWidth="0.5" />
-        <text x="66" y="83" textAnchor="middle" fontSize="9.5" fill="rgba(255,255,255,0.28)" fontFamily="system-ui" letterSpacing=".07em">TRIGGER</text>
-        <text x="66" y="100" textAnchor="middle" fontSize="12" fill="rgba(255,255,255,0.82)" fontFamily="system-ui">User Query</text>
+        <rect x="16" y="62" width="100" height="56" rx="8" fill="#141414" stroke="rgba(255,255,255,0.09)" strokeWidth="0.5" />
+        <text x="66" y="84" textAnchor="middle" fontSize="11" fill="rgba(255,255,255,0.28)" fontFamily="system-ui" letterSpacing=".07em">TRIGGER</text>
+        <text x="66" y="104" textAnchor="middle" fontSize="14" fill="rgba(255,255,255,0.82)" fontFamily="system-ui">User Query</text>
 
-        <rect x="158" y="66" width="110" height="44" rx="8" fill="#141414" stroke="rgba(255,255,255,0.09)" strokeWidth="0.5" />
-        <text x="213" y="83" textAnchor="middle" fontSize="9.5" fill="rgba(255,255,255,0.28)" fontFamily="system-ui" letterSpacing=".07em">MEMORY</text>
-        <text x="213" y="100" textAnchor="middle" fontSize="12" fill="rgba(255,255,255,0.82)" fontFamily="system-ui">Context</text>
+        <rect x="158" y="62" width="110" height="56" rx="8" fill="#141414" stroke="rgba(255,255,255,0.09)" strokeWidth="0.5" />
+        <text x="213" y="84" textAnchor="middle" fontSize="11" fill="rgba(255,255,255,0.28)" fontFamily="system-ui" letterSpacing=".07em">MEMORY</text>
+        <text x="213" y="104" textAnchor="middle" fontSize="14" fill="rgba(255,255,255,0.82)" fontFamily="system-ui">Context</text>
 
-        <rect x="306" y="53" width="105" height="70" rx="10" fill="#050D1C" stroke="#4a8cf4" strokeWidth="1" />
-        <text x="358" y="78" textAnchor="middle" fontSize="9.5" fill="rgba(122,169,247,0.65)" fontFamily="system-ui" letterSpacing=".07em">LLM AGENT</text>
-        <text x="358" y="97" textAnchor="middle" fontSize="13" fill="#fff" fontFamily="system-ui" fontWeight="500">Processing</text>
-        <circle cx="346" cy="113" r="2.8" fill="#4a8cf4" opacity="0.4">
+        <rect x="306" y="46" width="105" height="84" rx="10" fill="#050D1C" stroke="#4a8cf4" strokeWidth="1" />
+        <text x="358" y="76" textAnchor="middle" fontSize="11" fill="rgba(122,169,247,0.65)" fontFamily="system-ui" letterSpacing=".07em">LLM AGENT</text>
+        <text x="358" y="98" textAnchor="middle" fontSize="14" fill="#fff" fontFamily="system-ui" fontWeight="500">Processing</text>
+        <circle cx="346" cy="116" r="2.8" fill="#4a8cf4" opacity="0.4">
           <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" repeatCount="indefinite" />
         </circle>
-        <circle cx="358" cy="113" r="2.8" fill="#4a8cf4" opacity="0.4">
+        <circle cx="358" cy="116" r="2.8" fill="#4a8cf4" opacity="0.4">
           <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" begin="0.4s" repeatCount="indefinite" />
         </circle>
-        <circle cx="370" cy="113" r="2.8" fill="#4a8cf4" opacity="0.4">
+        <circle cx="370" cy="116" r="2.8" fill="#4a8cf4" opacity="0.4">
           <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" begin="0.8s" repeatCount="indefinite" />
         </circle>
 
         {[
-          { x: 448, y: 35, label: 'Skills', color: '#3ddc84' },
-          { x: 448, y: 73, label: 'Guardrail', color: '#f0d060', pulse: true },
-          { x: 448, y: 111, label: 'Obsidian', color: '#6bc5e8', pulse: true },
+          { x: 448, y: 28, label: 'Skills', color: '#3ddc84' },
+          { x: 448, y: 74, label: 'Guardrail', color: '#f0d060', pulse: true },
+          { x: 448, y: 120, label: 'Obsidian', color: '#6bc5e8', pulse: true },
         ].map((node, i) => (
           <g key={i}>
-            <rect x={node.x} y={node.y} width="116" height="30" rx="7" fill="#111" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
-            <text x={node.x + 58} y={node.y + 18.5} textAnchor="middle" fontSize="11" fill="rgba(255,255,255,0.62)" fontFamily="system-ui">{node.label}</text>
-            <circle cx={node.x + 102} cy={node.y + 8} r="3" fill={node.color} opacity={node.pulse ? 0.4 : 0.95}>
+            <rect x={node.x} y={node.y} width="116" height="36" rx="7" fill="#111" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+            <text x={node.x + 58} y={node.y + 22} textAnchor="middle" fontSize="14" fill="rgba(255,255,255,0.62)" fontFamily="system-ui">{node.label}</text>
+            <circle cx={node.x + 102} cy={node.y + 10} r="3" fill={node.color} opacity={node.pulse ? 0.4 : 0.95}>
               {node.pulse && <animate attributeName="opacity" values="0.4;1;0.4" dur={`${1.9 + i * 0.3}s`} repeatCount="indefinite" />}
             </circle>
           </g>
@@ -536,14 +536,14 @@ function PipelineSection() {
   ]
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="pipeline">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="pipeline">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Orchestration Layer</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             /decide — the routing brain
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             Every request runs through a 6-step reasoning protocol. /decide is the master orchestrator — it never skips context retrieval or the guardrail.
           </p>
         </div>
@@ -561,8 +561,8 @@ function PipelineSection() {
                 <span className="w-2 h-2 rounded-full" style={{ background: node.c, boxShadow: `0 0 10px ${node.c}` }} />
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: node.c }}>{node.t}</span>
               </div>
-              <h4 className="text-sm font-bold text-[#e4eaf5] mb-1">{node.n}</h4>
-              <p className="text-xs text-[#8895b8] leading-relaxed">{node.d}</p>
+              <h4 className="text-base font-bold text-[#e4eaf5] mb-1">{node.n}</h4>
+              <p className="text-sm text-[#a0aec8] leading-relaxed">{node.d}</p>
             </div>
           </Reveal>
         ))}
@@ -632,7 +632,9 @@ function CategoryBentoGrid({ cats, activeCat, onSelect }) {
 function SkillsSection() {
   const [cat, setCat] = useState('all')
   const [search, setSearch] = useState('')
+  const [expanded, setExpanded] = useState(false)
   const cats = Object.keys(skillsData)
+  const PREVIEW_COUNT = 8
 
   let items = cat === 'all' ? ALL_SKILLS : ALL_SKILLS.filter(s => s.c === cat)
   if (search) {
@@ -640,15 +642,19 @@ function SkillsSection() {
     items = items.filter(s => s.n.toLowerCase().includes(q) || s.d.toLowerCase().includes(q) || s.c.toLowerCase().includes(q))
   }
 
+  const isSearching = !!search
+  const visibleItems = isSearching || expanded ? items : items.slice(0, PREVIEW_COUNT)
+  const hasMore = !isSearching && !expanded && items.length > PREVIEW_COUNT
+
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="skills">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="skills">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Skill Catalog</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             {ALL_SKILLS.length}+ skills across {cats.length} domains
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             From coding to creative, research to workflow automation — every skill is a reusable procedural module you can load, chain, and extend.
           </p>
         </div>
@@ -656,7 +662,7 @@ function SkillsSection() {
 
       {/* Category bento overview */}
       <Reveal>
-        <CategoryBentoGrid cats={cats} activeCat={cat} onSelect={setCat} />
+        <CategoryBentoGrid cats={cats} activeCat={cat} onSelect={(c) => { setCat(c); setExpanded(false) }} />
       </Reveal>
 
       {/* Search + filter bar */}
@@ -689,7 +695,7 @@ function SkillsSection() {
 
       {/* Skills grid */}
       <SpotlightGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {items.map((s, i) => {
+        {visibleItems.map((s, i) => {
           const color = SKILL_CAT_COLORS[s.c] || '#7aa9f7'
           const icon = SKILL_ICONS[s.c] || 'Grid3x3'
           const featured = cat === 'all' && i < 3 && s.c === 'Software Development'
@@ -714,13 +720,24 @@ function SkillsSection() {
                     </div>
                   </div>
                   <h4 className="font-bold text-[#e4eaf5] mb-2 leading-snug">{s.n}</h4>
-                  <p className="text-xs text-[#8895b8] leading-relaxed flex-1">{s.d}</p>
+                  <p className="text-sm text-[#a0aec8] leading-relaxed flex-1">{s.d}</p>
                 </div>
               </div>
             </Reveal>
           )
         })}
       </SpotlightGrid>
+
+      {hasMore && (
+        <div className="text-center mt-10">
+          <button
+            onClick={() => setExpanded(true)}
+            className="btn-secondary"
+          >
+            Show all {items.length} skills
+          </button>
+        </div>
+      )}
 
       {items.length === 0 && (
         <div className="text-center py-16">
@@ -749,14 +766,14 @@ function ModelsSection() {
   ]
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="models">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="models">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Model Chain</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             5-Layer Free Model Routing
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             Every task is routed through a fallback chain — free first, paid only when necessary. DeepSeek V4 Flash is the daily driver.
           </p>
         </div>
@@ -772,7 +789,7 @@ function ModelsSection() {
                   {t.badge === 'RECOMMENDED' && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(240,208,96,0.12)] text-[#f0d060] border border-[rgba(240,208,96,0.15)] font-semibold">{t.badge}</span>}
                   <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold ml-auto md:ml-0" style={{ backgroundColor: `${t.color}15`, color: t.color }}>{t.price}</span>
                 </div>
-                <p className="text-sm text-[#8895b8] leading-relaxed">{t.desc}</p>
+                <p className="text-sm text-[#a0aec8] leading-relaxed">{t.desc}</p>
               </div>
               <div className="flex flex-wrap gap-1.5 md:justify-end md:min-w-[240px]">
                 {t.tags.map((tag, ti) => (
@@ -798,14 +815,14 @@ function GuardrailSection() {
   ]
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="guardrail">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="guardrail">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Safety Layer</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             Core Identity Guardrail
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             6 immutable rules that govern every session — file protection, secrets safety, injection immunity, system integrity, re-anchoring, safe fallback.
           </p>
         </div>
@@ -815,11 +832,11 @@ function GuardrailSection() {
         {items.map((item, i) => (
           <Reveal key={i} style={{ animationDelay: `${i * 60}ms` }}>
             <div className="spotlight-card p-5 h-full">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4a8cf4] to-[#7c5cf5] flex items-center justify-center mb-4 text-white text-sm font-bold">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4a8cf4] to-[#6bc5e8] flex items-center justify-center mb-4 text-white text-sm font-bold">
                 {String(i + 1).padStart(2, '0')}
               </div>
-              <h4 className="text-sm font-bold text-[#e4eaf5] mb-2">{item.n}</h4>
-              <p className="text-xs text-[#8895b8] leading-relaxed">{item.d}</p>
+              <h4 className="text-base font-bold text-[#e4eaf5] mb-2">{item.n}</h4>
+              <p className="text-sm text-[#a0aec8] leading-relaxed">{item.d}</p>
             </div>
           </Reveal>
         ))}
@@ -874,6 +891,8 @@ function AgentCategoryGrid({ cats, activeCat, onSelect }) {
 function AgentsSection() {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [expanded, setExpanded] = useState(false)
+  const PREVIEW_COUNT = 8
 
   let items = agentsData.filter(a => {
     if (filter !== 'all' && getAgentCat(a) !== filter) return false
@@ -884,15 +903,19 @@ function AgentsSection() {
     return true
   })
 
+  const isSearching = !!search
+  const visibleItems = isSearching || expanded ? items : items.slice(0, PREVIEW_COUNT)
+  const hasMore = !isSearching && !expanded && items.length > PREVIEW_COUNT
+
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="agents">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="agents">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Agent Roster</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             {agentsData.length} ECC Agents + OpenCode
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             The Agency agent roster: specialized agents across {AGENT_CATS.length} categories — coding, research, creative, DevOps, data science, and more.
           </p>
         </div>
@@ -921,11 +944,11 @@ function AgentsSection() {
       </Reveal>
 
       <Reveal>
-        <AgentCategoryGrid cats={AGENT_CATS} activeCat={filter} onSelect={setFilter} />
+        <AgentCategoryGrid cats={AGENT_CATS} activeCat={filter} onSelect={(c) => { setFilter(c); setExpanded(false) }} />
       </Reveal>
 
       <SpotlightGrid className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {items.map((a, i) => {
+        {visibleItems.map((a, i) => {
           const agentCat = getAgentCat(a)
           const color = AGENT_CAT_COLORS[agentCat] || '#7aa9f7'
           return (
@@ -943,7 +966,7 @@ function AgentsSection() {
                       </span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-mono border border-[#1e3058] bg-black/30 text-[#6bc5e8]">{a.m}</span>
                     </div>
-                    <p className="text-xs text-[#8895b8] leading-relaxed mb-3">{a.d}</p>
+                    <p className="text-sm text-[#a0aec8] leading-relaxed mb-3">{a.d}</p>
                     <div className="flex flex-wrap gap-1">{a.t.map((t, ti) => <span key={ti} className="text-[10px] px-2 py-0.5 rounded-md font-mono border border-[#1e3058] bg-black/30 text-[#6bc5e8]">{t}</span>)}</div>
                   </div>
                 </div>
@@ -952,6 +975,17 @@ function AgentsSection() {
           )
         })}
       </SpotlightGrid>
+
+      {hasMore && (
+        <div className="text-center mt-10">
+          <button
+            onClick={() => setExpanded(true)}
+            className="btn-secondary"
+          >
+            Show all {items.length} agents
+          </button>
+        </div>
+      )}
 
       {items.length === 0 && (
         <div className="text-center py-16">
@@ -972,14 +1006,14 @@ function KGSection() {
   ]
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad" id="kg">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="kg">
       <Reveal>
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="eyebrow mb-4">Knowledge Graph</div>
-          <h2 className="text-[clamp(1.8rem,3.5vw,3rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
             Graphify + Obsidian Bundle
           </h2>
-          <p className="text-[#8895b8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             AST code graph with community detection — knowledge graph refresh and ATM-Machine quality documentation.
           </p>
         </div>
@@ -996,6 +1030,56 @@ function KGSection() {
         ))}
       </div>
     </section>
+  )
+}
+
+function FooterCTA() {
+  return (
+    <section className="relative z-10 max-w-4xl mx-auto px-6 py-32 md:py-40 text-center">
+      <Reveal>
+        <div className="relative">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#4a8cf4] opacity-[0.06] rounded-full blur-[100px]" />
+          </div>
+          <div className="relative z-10">
+            <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+              Ready to build?
+            </h2>
+            <p className="text-[#a0aec8] max-w-[500px] mx-auto text-base leading-relaxed text-pretty mb-10">
+              One command. {ALL_SKILLS.length + 508}+ skills. Zero config. Your AI assistant gets a brain upgrade in under 60 seconds.
+            </p>
+            <div className="liquid-glass rounded-2xl border border-white/[0.08] p-6 max-w-[600px] mx-auto">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5a6a90] mb-3">Quick Install</div>
+              <code className="block font-mono text-sm text-[#6bc5e8] bg-black/40 px-4 py-3 rounded-xl whitespace-nowrap overflow-x-auto">
+                curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh
+              </code>
+              <div className="flex items-center justify-center gap-2 my-3 text-[#5a6a90] text-xs">then</div>
+              <code className="block font-mono text-sm text-[#6bc5e8] bg-black/40 px-4 py-3 rounded-xl whitespace-nowrap overflow-x-auto">
+                git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+              </code>
+            </div>
+            <div className="flex gap-3 flex-wrap justify-center mt-8">
+              <a href="#install" className="btn-primary">
+                Get Started <span className="btn-icon">→</span>
+              </a>
+              <a href="#skills" className="btn-secondary">
+                Browse Skills
+              </a>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  )
+}
+
+function SectionDivider() {
+  return (
+    <div className="relative z-10 max-w-6xl mx-auto px-6">
+      <div className="section-divider">
+        <div className="section-divider-dot" />
+      </div>
+    </div>
   )
 }
 
@@ -1021,19 +1105,26 @@ export default function App() {
         <div className="absolute w-[500px] h-[500px] rounded-full bg-[#6bc5e8] opacity-[0.03] blur-[100px] top-[40%] left-[50%] animate-float" style={{ animationDelay: '-14s' }} />
       </div>
 
-      <div id="scrollProgress" className="fixed top-0 left-0 h-[2px] z-50" style={{ background: 'linear-gradient(90deg, #4a8cf4, #9b7cf7, #6bc5e8)', width: 0, transition: 'width 0.1s ease-out' }} />
+      <div id="scrollProgress" className="fixed top-0 left-0 h-[2px] z-50" style={{ background: 'linear-gradient(90deg, #4a8cf4, #6bc5e8)', width: 0, transition: 'width 0.1s ease-out' }} />
 
       <Nav />
 
       <main id="top">
         <Hero />
         <InstallSection />
+        <SectionDivider />
         <PipelineSection />
+        <SectionDivider />
         <SkillsSection />
+        <SectionDivider />
         <ModelsSection />
+        <SectionDivider />
         <GuardrailSection />
+        <SectionDivider />
         <AgentsSection />
+        <SectionDivider />
         <KGSection />
+        <FooterCTA />
       </main>
 
       <footer className="relative z-10 border-t border-white/[0.06] py-10 text-center">

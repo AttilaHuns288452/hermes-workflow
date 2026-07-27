@@ -98,7 +98,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
     background-clip: text;
   }
   .text-gradient-blue {
-    background: linear-gradient(135deg, #4a8cf4, #9b7cf7);
+    background: linear-gradient(135deg, #4a8cf4, #6bc5e8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -229,7 +229,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
   }
   .premium-card h4 {
     transition: color 0.3s;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .premium-card:hover h4 {
     color: #fff;
@@ -334,7 +334,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
   /* Primary CTA button with nested icon */
   .btn-primary {
     @apply inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold no-underline transition-all duration-300;
-    background: linear-gradient(135deg, #4a8cf4, #7c5cf5);
+    background: linear-gradient(135deg, #4a8cf4, #6bc5e8);
     color: #fff;
     box-shadow: 0 4px 24px rgba(74, 140, 244, 0.25);
   }
@@ -373,7 +373,51 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
   }
 
   /* Section container */
-  .section-pad { @apply py-24 md:py-32; }
+  .section-pad { @apply py-32 md:py-40; }
+
+  /* Nav link underline animation */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 12px;
+    right: 12px;
+    height: 1.5px;
+    background: linear-gradient(90deg, #4a8cf4, #6bc5e8);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    border-radius: 1px;
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, rgba(74, 140, 244, 0.15));
+  }
+  .section-divider::after {
+    background: linear-gradient(90deg, rgba(74, 140, 244, 0.15), transparent);
+  }
+  .section-divider-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(74, 140, 244, 0.2);
+  }
 }
 
 /* ── Category Bento Cards ──────────────────────────────────────────────── */
