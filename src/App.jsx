@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Fragment, useCallback } from 'react'
 import skillsData from './data-skills.json'
 import agentsData from './data-agents.json'
 import catEmojiData from './data-cat-emoji.json'
+import integrationsData from './data-integrations.json'
 
 const ALL_SKILLS = []
 Object.entries(skillsData).forEach(([cat, skills]) =>
@@ -277,7 +278,7 @@ function Hero() {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] mb-8 animate-fade-up bg-[rgba(12,20,40,0.55)] border border-[rgba(255,255,255,0.06)] text-[#7aa9f7]">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse-slow shadow-[0_0_12px_rgba(61,220,132,0.5)]" />
-          {ALL_SKILLS.length}+ Skills · /decide v3 · 5-Layer Free Models
+          {ALL_SKILLS.length}+ Skills · /decide v3 · Free Models · Pantheon Swarm · SkillClaw
         </div>
 
         <h1 className="text-[clamp(2.4rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance mb-6 animate-fade-up" style={{ animationDelay: '0.15s' }}>
@@ -287,7 +288,7 @@ function Hero() {
         </h1>
 
         <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#a0aec8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models.
+          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models. Pantheon agent swarm auto-splits multi-step tasks across 7 specialists. Skills auto-evolve every session.
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center animate-fade-up" style={{ animationDelay: '0.45s' }}>
@@ -760,7 +761,6 @@ function ModelsSection() {
   const tiers = [
     { n: 'DeepSeek V4 Flash', badge: 'RECOMMENDED', price: 'free', desc: 'Main coding agent via OpenCode Zen API. Reliable, fast, no rate limits for typical use.', tags: ['opencode/deepseek-v4-flash-free', 'default'], color: '#3ddc84' },
     { n: 'Freebuff (6 models)', badge: 'fallback', price: 'fallback', desc: 'Second layer — 6 free model endpoints for redundancy.', tags: ['freebuff/*', 'openrouter:free/*'], color: '#f0d060' },
-    { n: 'FreeLLMAPI (:3001/v1)', badge: 'fallback', price: 'fallback', desc: 'Self-hosted OpenAPI-compatible endpoint on localhost:3001.', tags: ['freellmapi/*'], color: '#e4a847' },
     { n: 'OpenRouter:free (2 models)', badge: 'rate-limited', price: 'rate-limited', desc: 'OpenRouter free tier with daily rate limits.', tags: ['openrouter:free/*'], color: '#e4686a' },
     { n: 'Paid (last resort)', badge: 'premium', price: 'premium', desc: 'Paid models for rate-limited fallback — DeepSeek V4 Flash, MiMo 2.5, GLM 5.2.', tags: ['opencode-go/*'], color: '#7aa9f7' },
   ]
@@ -771,7 +771,7 @@ function ModelsSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">Model Chain</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            5-Layer Free Model Routing
+            4-Layer Free Model Routing
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
             Every task is routed through a fallback chain — free first, paid only when necessary. DeepSeek V4 Flash is the daily driver.
@@ -997,6 +997,53 @@ function AgentsSection() {
   )
 }
 
+function IntegrationsSection() {
+  const icons = {
+    'oh-my-opencode-slim': 'Zap',
+    'SkillClaw': 'RefreshCw',
+    'ECC Bridge': 'Share2',
+  }
+  const integrationIcons = {
+    Zap: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+    RefreshCw: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>,
+    Share2: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+  }
+
+  return (
+    <section id="integrations" className="section-pad relative z-10">
+      <div className="max-w-6xl mx-auto px-6">
+        <Reveal>
+          <div className="eyebrow mb-5">PLUGINS</div>
+          <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.15] tracking-[-0.02em] text-gradient mb-4">Integrations</h2>
+          <p className="text-[#8895b8] text-[15px] max-w-2xl leading-relaxed">
+            Three new pillars that extend what Hermes can do — multi-agent coding, self-improving skills, and free-model agent routing.
+          </p>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-5 mt-12">
+          {integrationsData.map((item, i) => {
+            const icon = integrationIcons[icons[item.n]] || integrationIcons.Zap
+            return (
+              <div key={i} className="spotlight-card p-6" style={{ '--cat-color': item.c }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${item.c}22, rgba(255,255,255,0.02))`, border: `1px solid ${item.c}15`, color: item.c }}>
+                  {icon}
+                </div>
+                <h3 className="text-[#e4eaf5] font-bold text-[17px] mb-2">{item.n}</h3>
+                <p className="text-[#8895b8] text-[13px] leading-relaxed mb-4">{item.d}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {item.t.map((tag, ti) => (
+                    <span key={ti} className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${item.c}15`, color: item.c }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function KGSection() {
   const stats = [
     { v: '8,267', l: 'Graph Nodes', c: '#7aa9f7' },
@@ -1119,6 +1166,7 @@ export default function App() {
         <SectionDivider />
         <ModelsSection />
         <SectionDivider />
+        <IntegrationsSection />
         <GuardrailSection />
         <SectionDivider />
         <AgentsSection />

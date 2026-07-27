@@ -309,6 +309,14 @@
     {
       "n": "Doubt-Driven Dev",
       "d": "Subject non-trivial decisions to fresh-context audit."
+    },
+    {
+      "n": "oh-my-opencode-slim",
+      "d": "Pantheon multi-agent swarm — 7 specialists for parallel coding."
+    },
+    {
+      "n": "SkillClaw",
+      "d": "Auto-evolving skills engine — learns from every session."
     }
   ],
   "Productivity & Comms": [
