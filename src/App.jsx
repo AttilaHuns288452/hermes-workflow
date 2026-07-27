@@ -265,7 +265,14 @@ function Nav() {
 
 function Hero() {
   const [mounted, setMounted] = useState(false)
+  const [copied, setCopied] = useState('')
   useEffect(() => { setMounted(true) }, [])
+  const copyCmd = (text, key) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(key)
+      setTimeout(() => setCopied(''), 2000)
+    })
+  }
 
   return (
     <section className="relative z-10 min-h-[100dvh] flex flex-col items-center justify-center text-center px-6 pt-24 pb-16 overflow-hidden">
@@ -287,9 +294,19 @@ function Hero() {
           <span className="text-[#e4eaf5]">Engine</span>
         </h1>
 
-        <p className="text-[clamp(1rem,1.3vw,1.15rem)] text-[#a0aec8] max-w-[720px] mx-auto mb-5 leading-relaxed text-pretty animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          <strong className="text-[#e4eaf5]">One install, {ALL_SKILLS.length + 508}+ skills.</strong> Clone this repo, run one command, and your AI assistant instantly knows how to code, design, research, deploy, analyze markets, produce media, and more — all on free models. Pantheon agent swarm auto-splits multi-step tasks across 7 specialists. Skills auto-evolve every session.
-        </p>
+        <div className="max-w-[640px] mx-auto mb-5 flex flex-col gap-2 items-start text-left animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          {[
+            `One install — ${ALL_SKILLS.length + 508}+ skills, code to media to market analysis`,
+            'Free models only — no API key, no credit card, no vendor lock-in',
+            'Pantheon swarm auto-splits multi-step tasks across 7 specialists',
+            'Skills auto-evolve every session via SkillClaw',
+          ].map((b, i) => (
+            <div key={i} className="flex items-start gap-2 text-sm text-[#a0aec8]">
+              <span className="text-[#3ddc84] mt-0.5 shrink-0">✓</span>
+              <span>{b}</span>
+            </div>
+          ))}
+        </div>
 
         <div className="flex gap-3 flex-wrap justify-center animate-fade-up" style={{ animationDelay: '0.45s' }}>
           <a href="#install" className="btn-primary">
@@ -303,9 +320,19 @@ function Hero() {
         <div className="mt-5 inline-block animate-fade-up" style={{ animationDelay: '0.55s' }}>
           <div className="liquid-glass rounded-xl border border-white/[0.06] px-4 py-2.5 inline-flex items-center gap-3 flex-wrap justify-center">
             <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5a6a90]">Quick Install</span>
-            <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 rounded-lg whitespace-nowrap">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</code>
+            <div className="relative">
+              <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</code>
+              <button onClick={() => copyCmd('curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', 'curl')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#5a6a90]">
+                {copied === 'curl' ? <span className="text-[#3ddc84]">Copied!</span> : 'Copy'}
+              </button>
+            </div>
             <span className="text-[10px] text-[#5a6a90]">+</span>
-            <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288452/hermes-workflow.git</code>
+            <div className="relative">
+              <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288452/hermes-workflow.git</code>
+              <button onClick={() => copyCmd('git clone https://github.com/AttilaHuns288452/hermes-workflow.git', 'git')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#5a6a90]">
+                {copied === 'git' ? <span className="text-[#3ddc84]">Copied!</span> : 'Copy'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -333,6 +360,14 @@ function Hero() {
               </div>
               <div className="text-[10px] text-[#5a6a90] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
             </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2 flex-wrap justify-center mt-6 animate-fade-up" style={{ animationDelay: '0.7s' }}>
+          {['Open Source', 'MIT License', 'Free Models', 'No API Key Required'].map((b) => (
+            <span key={b} className="text-[10px] uppercase tracking-[0.12em] border border-white/[0.06] bg-[rgba(12,20,40,0.55)] text-[#5a6a90] rounded-full px-3 py-1">
+              {b}
+            </span>
           ))}
         </div>
       </div>
