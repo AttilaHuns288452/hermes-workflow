@@ -6,11 +6,11 @@
     },
     {
       "n": "Update",
-      "d": "One-command ecosystem onboarding: clone→setup→Graphify→Obsidian→KG."
+      "d": "One-command ecosystem onboarding: clone\u2192setup\u2192Graphify\u2192Obsidian\u2192KG."
     },
     {
       "n": "Graphify Integrate",
-      "d": "Build code knowledge graph → export → register MCP."
+      "d": "Build code knowledge graph \u2192 export \u2192 register MCP."
     },
     {
       "n": "Test-Driven Dev",
@@ -198,7 +198,7 @@
     },
     {
       "n": "Baoyu Infographic",
-      "d": "21 layouts × 21 styles of infographics."
+      "d": "21 layouts \u00d7 21 styles of infographics."
     },
     {
       "n": "ComfyUI",
@@ -268,15 +268,15 @@
     },
     {
       "n": "/decide",
-      "d": "Master orchestrator — 6-step reasoning protocol."
+      "d": "Master orchestrator \u2014 6-step reasoning protocol."
     },
     {
       "n": "/do",
-      "d": "Execution engine — runs after /decide routes tasks."
+      "d": "Execution engine \u2014 runs after /decide routes tasks."
     },
     {
       "n": "Token Saver",
-      "d": "Pre-file-read probe. 56.2× token reduction."
+      "d": "Pre-file-read probe. 56.2\u00d7 token reduction."
     },
     {
       "n": "Session Memory",
@@ -312,17 +312,17 @@
     },
     {
       "n": "oh-my-opencode-slim",
-      "d": "Pantheon multi-agent swarm — 7 specialists for parallel coding."
+      "d": "Pantheon multi-agent swarm \u2014 7 specialists for parallel coding."
     },
     {
       "n": "SkillClaw",
-      "d": "Auto-evolving skills engine — learns from every session."
+      "d": "Auto-evolving skills engine \u2014 learns from every session."
     }
   ],
   "Productivity & Comms": [
     {
       "n": "API Mega List",
-      "d": "10,498 APIs across 18 categories — searchable."
+      "d": "10,498 APIs across 18 categories \u2014 searchable."
     },
     {
       "n": "Airtable",
@@ -388,11 +388,11 @@
   "Media & Content": [
     {
       "n": "YouTube Content",
-      "d": "Transcripts → summaries, threads, blogs."
+      "d": "Transcripts \u2192 summaries, threads, blogs."
     },
     {
       "n": "MoneyPrinterTurbo",
-      "d": "AI short video: script→footage→TTS→render."
+      "d": "AI short video: script\u2192footage\u2192TTS\u2192render."
     },
     {
       "n": "MoneyPrinter V2",
@@ -442,7 +442,7 @@
     },
     {
       "n": "LLM Wiki",
-      "d": "Karpathy's LLM Wiki — interlinked markdown KB."
+      "d": "Karpathy's LLM Wiki \u2014 interlinked markdown KB."
     },
     {
       "n": "Polymarket",
@@ -493,10 +493,6 @@
     {
       "n": "GitHub Auth",
       "d": "HTTPS tokens, SSH keys, gh CLI setup."
-    },
-    {
-      "n": "Code Review",
-      "d": "PR diffs and inline comments via gh/REST."
     },
     {
       "n": "GitHub Issues",
@@ -604,11 +600,11 @@
     },
     {
       "n": "Obsidian Codebase Graph",
-      "d": "File tree → wikilinked markdown."
+      "d": "File tree \u2192 wikilinked markdown."
     },
     {
       "n": "Obsidian KG",
-      "d": "Vault → interactive galaxy graph."
+      "d": "Vault \u2192 interactive galaxy graph."
     },
     {
       "n": "Project Docs",
@@ -700,7 +696,7 @@
     },
     {
       "n": "Hermes Kanban Setup",
-      "d": "Built-in SQLite task board — dispatcher, worker profiles, auto-decomposition."
+      "d": "Built-in SQLite task board \u2014 dispatcher, worker profiles, auto-decomposition."
     },
     {
       "n": "Profile Factory",
