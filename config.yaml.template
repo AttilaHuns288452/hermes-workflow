@@ -1,132 +1,118 @@
 # =============================================================================
 # Hermes Workflow — config.yaml.template
 # =============================================================================
-# Copy this file to ~/.hermes/config.yaml and replace all placeholders
-# with your local paths and credentials.
-#
-# Required:
-#   - YOUR_USERNAME        → your Windows/macOS/Linux username
-#   - YOUR_VAULT_PATH      → path to your Obsidian vault (e.g. ~/Documents/Obsidian Vault)
-#   - YOUR_CODEGRAPH_CWD   → directory where CodeGraph should index (e.g. ~/Documents/Projects)
-#   - YOUR_GRAPHIFY_CWD    → path to your graphify repo clone
-#   - LLMQUANT_API_KEY     → your LLMQuant Data API key (if using quant skills)
-#
-# Optional:
-#   - OPENROUTER_API_KEY   → if you have an OpenRouter paid tier
-#   - FREELLMAPI_PORT      → default 3001
+# Copy to ~/.hermes/config.yaml (Windows: %APPDATA%/hermes/config.yaml).
+# Replace YOUR_USERNAME with your OS username. Add API keys where noted.
 # =============================================================================
+#
+# REPLACE THESE:
+#   YOUR_USERNAME              → your Windows username (e.g. "Attila")
+#   OPENROUTER_API_KEY         → sk-or-... from openrouter.ai/keys
+#   TWENTYFIRST_API_KEY        → 21st_... from 21st.dev
+#   FIRECRAWL_API_KEY          → fc-... from firecrawl.dev
+#   LLMQUANT_API_KEY           → lqd_data_... from llmquant.com
+#   COMPOSIO_API_KEY           → ck_... from app.composio.dev
+#   FREELMAPI_API_KEY          → from FreeLLMAPI dashboard
 
-# ---------------------------------------------------------------------------
-# Agent routing — makes /decide the default orchestrator
-# ---------------------------------------------------------------------------
-agent:
-  routing: always
-  default_skill: decide
-  skills_path: ~/.hermes/skills
+model:
+  default: deepseek-v4-flash
+  provider: opencode-go
 
-# ---------------------------------------------------------------------------
-# Skill priority — execution order in the pipeline
-# ---------------------------------------------------------------------------
+providers:
+  openrouter:
+    key_env: OPENROUTER_API_KEY
+  freellmapi:
+    base_url: http://localhost:3001/v1
+    default_model: auto
+    discover_models: true
+    key_env: FREELMAPI_API_KEY
+
+toolsets: [hermes-cli]
+
+# --- SKILLS ---------------------------------------------------------------
 skills:
-  workflow/decide:
-    enabled: true
-    priority: 1
-  workflow/core-identity-guardrail:
-    enabled: true
-    priority: 2
-  workflow/token-saver:
-    enabled: true
-    priority: 3
-  workflow/model-router:
-    enabled: true
-    priority: 4
-  workflow/obsidian-docs:
-    enabled: true
-    priority: 5
+  external_dirs:
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/agent-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/garden-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/claude-seo/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/obsidian-skills/skills
+    - C:/Users/YOUR_USERNAME/.agents/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/design-skills-ihlamury/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/awesome-design-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/ui-skills-ibelick/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/emilkowalski-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/designer-toolkit/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-ops/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-research/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-systems/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/interaction-design/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/prototyping-testing/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/ui-design/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/ux-strategy/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/visual-critique/skills
 
-# ---------------------------------------------------------------------------
-# MCP Servers — knowledge-graph and code-intelligence backends
-# ---------------------------------------------------------------------------
+# --- MCP SERVERS ----------------------------------------------------------
 mcp_servers:
-  # CodeGraph MCP — live symbol search, caller/callee tracing
-  codegraph:
-    command: "codegraph"
-    args: ["serve"]
-    cwd: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects"          # ← CHANGE ME
-    env:
-      PATH: "C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm;%PATH%"  # ← CHANGE ME
-    connect_timeout: 30
-
-  # Graphify MCP — AST-based code knowledge graph
-  graphify:
-    command: "python"
-    args: ["-m", "graphify.serve"]
-    cwd: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects\\graphify"  # ← CHANGE ME
-    env:
-      PATH: "C:\\Users\\YOUR_USERNAME\\.local\\bin;%PATH%"           # ← CHANGE ME
-    connect_timeout: 30
-
-  # VS Code MCP — live editor integration
-  vscode:
-    command: "npx"
-    args: ["-y", "vscode-mcp-server"]
-    connect_timeout: 60
-
-  # LLMQuant Data MCP — financial data feeds (optional)
-  llmquant-data:
-    command: "npx"
-    args: ["-y", "@llmquant/data-mcp"]
-    env:
-      LLMQUANT_API_KEY: "lqd_data_YOUR_API_KEY_HERE"            # ← CHANGE ME
-    connect_timeout: 60
-
-  # Obsidian Knowledge Graph MCP — vault scanning + galaxy render
-  obsidian-kg:
-    command: "python"
-    args: ["-m", "obsidian_kg_mcp"]
-    cwd: "C:\\Users\\YOUR_USERNAME\\.hermes\\tools"               # ← CHANGE ME
-    connect_timeout: 30
-
-  # Agent Memory MCP — persistent cross-session memory
+  21st:
+    url: https://21st.dev/api/mcp
+    headers:
+      x-api-key: TWENTYFIRST_API_KEY
   agentmemory:
-    command: "npx"
+    command: npx
     args: ["-y", "@agentmemory/agentmemory", "mcp"]
     connect_timeout: 60
-    env:
-      PATH: "C:\\Users\\YOUR_USERNAME\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm;%PATH%"  # ← CHANGE ME
+  codegraph:
+    command: codegraph
+    args: [serve, --mcp]
+    connect_timeout: 60
+    timeout: 120
+  firecrawl:
+    url: https://mcp.firecrawl.dev/YOUR_USERNAME
+    headers:
+      x-api-key: FIRECRAWL_API_KEY
+  graphify:
+    command: python
+    args: ["-m", "graphify.serve"]
+    cwd: C:/Users/YOUR_USERNAME/Documents/Projects/graphify
+    connect_timeout: 90
+  llmquant-data:
+    command: npx
+    args: ["-y", "@llmquant/data-mcp"]
+    connect_timeout: 60
+  obsidian-kg:
+    command: python
+    args: ["-m", "obsidian_kg_mcp"]
+    cwd: C:/Users/YOUR_USERNAME/.hermes/tools
+  opendesign:
+    enabled: false
 
-# ---------------------------------------------------------------------------
-# Custom LLM providers — FreeLLMAPI local proxy (free model layer 3)
-# ---------------------------------------------------------------------------
-# FreeLLMAPI aggregates 107 free models from 16 providers behind one
-# OpenAI-compatible endpoint. It runs TWO services:
-#   - API backend:   http://localhost:3001/v1   (for model inference)
-#   - Admin dashboard: http://localhost:5173     (for managing keys/settings)
-#
-# SETUP (first time only):
-#   1. Start FreeLLMAPI: cd ~/Projects/freellmapi && npm run dev
-#   2. Open http://localhost:5173 and create admin account
-#   3. Get your unified API key from the dashboard Settings page
-#   4. Add upstream provider keys via the dashboard Keys page
-#   5. Set the API key below (or via hermes auth add freellmapi --type api-key --api-key <key>)
-#   6. Dashboard login: admin@freellmapi.local / freellmapi-admin (first-run)
-# ---------------------------------------------------------------------------
-custom_providers:
-  freellmapi:
-    type: openai
-    api_base: http://localhost:3001/v1
-    api_key: YOUR_FREELLMAPI_UNIFIED_API_KEY_HERE   # ← Get from dashboard Settings page
-    default_model: auto
+# --- KANBAN ---------------------------------------------------------------
+kanban:
+  dispatch_in_gateway: true
+  dispatch_interval_seconds: 60
+  failure_limit: 2
+  orchestrator_profile: default
+  auto_decompose: true
+  auto_decompose_per_tick: 3
 
-# ---------------------------------------------------------------------------
-# Obsidian vault configuration (used by note-taking skills)
-# ---------------------------------------------------------------------------
-obsidian:
-  vault_path: "C:\\Users\\YOUR_USERNAME\\Documents\\Obsidian Vault"  # ← CHANGE ME
+# --- AUXILIARY MODELS -----------------------------------------------------
+auxiliary:
+  vision:
+    provider: opencode-zen
+    model: mimo-v2.5-free
+  kanban_decomposer:
+    provider: auto
+    timeout: 180
 
-# ---------------------------------------------------------------------------
-# Optional: CodeGraph indexing behaviour
-# ---------------------------------------------------------------------------
-# codegraph:
-#   watch: true
-#   projects_root: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects"
+# --- DELEGATION -----------------------------------------------------------
+delegation:
+  model: deepseek-v4-flash-free
+  provider: opencode-zen
+  inherit_mcp_toolsets: true
+  max_concurrent_children: 3
+
+# --- BACKUP ---------------------------------------------------------------
+backup:
+  quick: true
+  cron: "0 3 * * *"
