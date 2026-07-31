@@ -1,14 +1,14 @@
 # 🧠 Skill Catalog — Full Hermes Agent Ecosystem
 
-**139 skills · 19 categories · 1 integrated pipeline**
+**141 skills · 19 categories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 Each entry shows the skill name and what it does, following the actual
-`.hermes_ecosystem.json` classification (139 skills accounted across 19 categories).
+`.hermes_ecosystem.json` classification (141 skills accounted across 19 categories).
 
-> **Note on count:** The ecosystem JSON declares `"total_skills": 139`. The
-> category arrays sum to 136 listed entries — one entry (`codex.bak`) may be
-> a backup/alias variant counted separately. All 139 referenced slots are
+> **Note on count:** The ecosystem JSON declares `"total_skills": 141`. The
+> category arrays sum to 138 listed entries — one entry (`codex.bak`) may be
+> a backup/alias variant counted separately. All 141 referenced slots are
 > described below.
 
 ---
@@ -38,7 +38,9 @@ domain-specific systems. Many are in the `root` category.
 ### decide
 - **What:** Master orchestrator — 5-step reasoning protocol for every request.
   Decomposes prompts, scores routing confidence, resolves skill conflicts,
-  enforces execution order. Routes to all downstream skills.
+  enforces execution order. Routes to all downstream skills. Static routing
+  table (~40 entries) with LightRAG TF-IDF fallback covering all 665 skills —
+  no skill is orphaned.
 - **Pipeline:** Step 3 (after session_memory → guardrail). Feeds all steps.
 - **File:** `skills/decide/SKILL.md`
 
@@ -367,7 +369,16 @@ Visual, ASCII, audio, design, and creative coding tools.
 
 ---
 
-## Category: devops (2 skills)
+## Category: devops (3 skills)
+
+### hermes-kanban-setup
+- **What:** Sets up the built-in Hermes Kanban board — SQLite-backed task
+  board with dispatcher, worker profiles, and auto-decomposition.
+  `hermes kanban init`, `hermes kanban create`, and `hermes dashboard`
+  → Kanban tab. The default profile handles orchestration;
+  KANBAN_GUIDANCE auto-injects the decompose/route/complete lifecycle.
+- **Trigger:** "set up kanban", "hermes kanban", "multi-agent board".
+- **Note:** This is the built-in Hermes board — NOT agent-kanban (ak).
 
 ### kanban-orchestrator
 - **What:** Manages multi-agent task orchestration via Kanban boards —
@@ -803,12 +814,19 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 
 ---
 
-## Category: workflow (5 skills)
+## Category: workflow (7 skills)
 
 ### free-ai-model-router
 - **What:** Routes every AI task to the best available free model across
   Hermes, OpenCode, and OpenDesign. 5-layer fallback chain.
 - **Pipeline:** Step 6 (after domain skills execute — model selection).
+
+### lightrag-skill-finder
+- **What:** Local TF-IDF skill search over all 665 skills — sub-second,
+  zero API calls. `python lightrag_index/find.py "<query>"`. Index
+  auto-rebuilds daily at 4am. Also serves as the /decide routing fallback
+  so no skill is ever orphaned.
+- **Trigger:** Skill discovery, /decide fallback routing.
 
 ### model-recommender-workflow
 - **What:** Uses the Model Recommender CLI to select free models for any
@@ -835,6 +853,16 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
   14/16 code projects have Graphify indices.
 - **Pipeline:** Step 4 (after /decide routes, before domain skills).
   Verified savings: 56.2× average (max 157.7×).
+
+### orchestrator-profile-factory
+- **What:** Profile creation playbook for the kanban orchestrator — creates
+  specialized worker profiles on demand from the golden `learning` template.
+  `hermes profile create <role> --clone-from learning`. Decision flow:
+  check existing profiles → reuse or create → kanban_create.
+- **Trigger:** "create profile", "new worker", "spawn worker profile".
+- **Sync:** All 5 profiles share 19 skill dirs + 9 MCP servers; new profiles
+  inherit the same toolchain via `--clone-from learning`. Drift checked
+  daily at 6am by the profile config cron.
 
 ---
 

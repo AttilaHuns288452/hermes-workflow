@@ -697,6 +697,18 @@
     {
       "n": "Capafy User",
       "d": "Capafy buyer entry point."
+    },
+    {
+      "n": "Hermes Kanban Setup",
+      "d": "Built-in SQLite task board — dispatcher, worker profiles, auto-decomposition."
+    },
+    {
+      "n": "Profile Factory",
+      "d": "Auto-create worker profiles from golden template."
+    },
+    {
+      "n": "LightRAG Skill Finder",
+      "d": "TF-IDF semantic skill search over 665 skills, 0 API calls."
     }
   ]
 }

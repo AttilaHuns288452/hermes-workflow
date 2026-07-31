@@ -194,6 +194,7 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const links = [
     { h: '#install', l: 'Install' },
+    { h: '#features', l: 'Features' },
     { h: '#pipeline', l: 'Pipeline' },
     { h: '#skills', l: 'Skills' },
     { h: '#models', l: 'Models' },
@@ -285,7 +286,7 @@ function Hero() {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] mb-8 animate-fade-up bg-[rgba(12,20,40,0.55)] border border-[rgba(255,255,255,0.06)] text-[#7aa9f7]">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse-slow shadow-[0_0_12px_rgba(61,220,132,0.5)]" />
-          {ALL_SKILLS.length}+ Skills · /decide v3 · Free Models · Pantheon Swarm · SkillClaw
+          {ALL_SKILLS.length}+ Skills · /decide v3 · Free Models · Pantheon Swarm · SkillClaw · Kanban · LightRAG
         </div>
 
         <h1 className="text-[clamp(2.4rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance mb-6 animate-fade-up" style={{ animationDelay: '0.15s' }}>
@@ -448,6 +449,8 @@ function AIPipelineVisual() {
     'Decomposing request into sub-tasks',
     'Token Saver probe: CodeGraph + Graphify',
     'Loading domain skills: /decide, firecrawl, github',
+    'LightRAG fallback: 665 skills indexed, 0 API calls',
+    'Kanban: task auto-decomposed → worker assigned',
     'Routing to DeepSeek V4 Flash (free)',
     'Executing pipeline across 3 skills',
     'Documenting to Obsidian + KG refresh',
@@ -567,6 +570,7 @@ function PipelineSection() {
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
     { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: '35×–1,233× reduction via CodeGraph + Graphify' },
     { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
+    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 665 skills · sub-second · 0 API calls' },
     { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'DeepSeek V4 Flash · 5-layer fallback chain' },
     { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
   ]
@@ -599,6 +603,50 @@ function PipelineSection() {
               </div>
               <h4 className="text-base font-bold text-[#e4eaf5] mb-1">{node.n}</h4>
               <p className="text-sm text-[#a0aec8] leading-relaxed">{node.d}</p>
+            </div>
+          </Reveal>
+        ))}
+      </SpotlightGrid>
+    </section>
+  )
+}
+
+/* ── New Features (Kanban, LightRAG, Profile Factory, automation) ─────── */
+function FeaturesSection() {
+  const features = [
+    { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Built-in SQLite-backed task board with dispatcher, worker profiles, and auto-decomposition. `hermes kanban init`, `hermes kanban create`, or open `hermes dashboard` → Kanban tab.', code: 'hermes kanban create "Ship landing page" --assign worker-web' },
+    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 665 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
+    { t: 'FACTORY', c: '#f0d060', n: 'Orchestrator Profile Factory', d: 'Auto-creates worker profiles from the golden template. Decision flow: check profiles → reuse or create → kanban_create.', code: 'hermes profile create <role> --clone-from learning' },
+    { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: '4 local cron jobs: LightRAG daily rebuild, gateway health every 30m, profile config drift daily 6am, state backup daily 3am. Silence = healthy.', code: 'hermes cron list # all 4 green' },
+    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 665 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
+    { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'All 5 profiles share 19 skill dirs + 9 MCP servers. New profiles inherit the same toolchain via --clone-from learning.', code: 'hermes profile create researcher --clone-from learning' },
+  ]
+
+  return (
+    <section className="relative z-10 max-w-6xl mx-auto px-6 section-pad scroll-mt-24" id="features">
+      <Reveal>
+        <div className="text-center mb-16">
+          <div className="eyebrow mb-4">What&apos;s New</div>
+          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
+            Built-in orchestration, zero API calls
+          </h2>
+          <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
+            Kanban task board, local skill search, on-demand worker profiles, and hands-off maintenance — all running on your machine, all free.
+          </p>
+        </div>
+      </Reveal>
+
+      <SpotlightGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {features.map((f, i) => (
+          <Reveal key={f.n} style={{ animationDelay: `${i * 60}ms` }}>
+            <div className="spotlight-card p-5 h-full">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full" style={{ background: f.c, boxShadow: `0 0 10px ${f.c}` }} />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: f.c }}>{f.t}</span>
+              </div>
+              <h4 className="text-base font-bold text-[#e4eaf5] mb-1">{f.n}</h4>
+              <p className="text-sm text-[#a0aec8] leading-relaxed mb-3">{f.d}</p>
+              <code className="block text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-2.5 py-1.5 rounded-lg whitespace-nowrap overflow-x-auto">{f.code}</code>
             </div>
           </Reveal>
         ))}
@@ -1196,6 +1244,8 @@ export default function App() {
         <InstallSection />
         <SectionDivider />
         <PipelineSection />
+        <SectionDivider />
+        <FeaturesSection />
         <SectionDivider />
         <SkillsSection />
         <SectionDivider />
