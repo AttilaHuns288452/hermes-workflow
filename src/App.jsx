@@ -320,17 +320,17 @@ function Hero() {
 
         <div className="mt-5 inline-block animate-fade-up" style={{ animationDelay: '0.55s' }}>
           <div className="liquid-glass rounded-xl border border-white/[0.06] px-4 py-2.5 inline-flex items-center gap-3 flex-wrap justify-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5a6a90]">Quick Install</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8895b8]">Quick Install</span>
             <div className="relative">
               <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh</code>
-              <button onClick={() => copyCmd('curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', 'curl')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#5a6a90]">
+              <button onClick={() => copyCmd('curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', 'curl')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#8895b8]">
                 {copied === 'curl' ? <span className="text-[#3ddc84]">Copied!</span> : 'Copy'}
               </button>
             </div>
-            <span className="text-[10px] text-[#5a6a90]">+</span>
+            <span className="text-[10px] text-[#8895b8]">+</span>
             <div className="relative">
               <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288452/hermes-workflow.git</code>
-              <button onClick={() => copyCmd('git clone https://github.com/AttilaHuns288452/hermes-workflow.git', 'git')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#5a6a90]">
+              <button onClick={() => copyCmd('git clone https://github.com/AttilaHuns288452/hermes-workflow.git', 'git')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#8895b8]">
                 {copied === 'git' ? <span className="text-[#3ddc84]">Copied!</span> : 'Copy'}
               </button>
             </div>
@@ -359,14 +359,14 @@ function Hero() {
                   mounted ? <AnimatedCounter value={s.v} suffix={s.suffix || ''} /> : <>{s.v}{s.suffix || ''}</>
                 )}
               </div>
-              <div className="text-[10px] text-[#5a6a90] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
+              <div className="text-[10px] text-[#8895b8] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
             </div>
           ))}
         </div>
 
         <div className="flex gap-2 flex-wrap justify-center mt-6 animate-fade-up" style={{ animationDelay: '0.7s' }}>
           {['Open Source', 'MIT License', 'Free Models', 'No API Key Required'].map((b) => (
-            <span key={b} className="text-[10px] uppercase tracking-[0.12em] border border-white/[0.06] bg-[rgba(12,20,40,0.55)] text-[#5a6a90] rounded-full px-3 py-1">
+            <span key={b} className="text-[10px] uppercase tracking-[0.12em] border border-white/[0.06] bg-[rgba(12,20,40,0.55)] text-[#8895b8] rounded-full px-3 py-1">
               {b}
             </span>
           ))}
@@ -416,7 +416,7 @@ function InstallSection() {
               {step.code.map((c, ci) => (
                 <pre key={ci} className="font-mono text-[11px] bg-black/50 border border-[#1e3058] rounded-lg p-3 overflow-x-auto text-[#6bc5e8] leading-relaxed mb-2">{c}</pre>
               ))}
-              {step.verify && <p className="text-[11px] text-[#5a6a90] mt-2">Verify: <code className="text-[#6bc5e8]">{step.verify}</code></p>}
+              {step.verify && <p className="text-[11px] text-[#8895b8] mt-2">Verify: <code className="text-[#6bc5e8]">{step.verify}</code></p>}
               {step.extra && <p className="text-[11px] text-[#a0aec8] mt-2" dangerouslySetInnerHTML={{ __html: step.extra }} />}
             </div>
           </Reveal>
@@ -680,7 +680,7 @@ function CategoryBentoGrid({ cats, activeCat, onSelect }) {
           <span className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: '#7aa9f7' }}>All</span>
         </div>
         <div className="text-xl font-extrabold text-[#e4eaf5] mb-0.5">{ALL_SKILLS.length}</div>
-        <div className="text-[10px] text-[#5a6a90]">total skills</div>
+        <div className="text-[10px] text-[#8895b8]">total skills</div>
       </div>
 
       {cats.map(c => {
@@ -705,7 +705,7 @@ function CategoryBentoGrid({ cats, activeCat, onSelect }) {
               <span className="text-[9px] font-semibold uppercase tracking-[0.12em] category-label">{c}</span>
             </div>
             <div className="text-xl font-extrabold text-[#e4eaf5] mb-0.5">{count}</div>
-            <div className="text-[10px] text-[#5a6a90]">skills</div>
+            <div className="text-[10px] text-[#8895b8]">skills</div>
           </div>
         )
       })}
@@ -754,7 +754,7 @@ function SkillsSection() {
       <Reveal>
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5a6a90]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8895b8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" strokeLinecap="round" />
             </svg>
@@ -768,9 +768,9 @@ function SkillsSection() {
             />
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-[#5a6a90]">{items.length} result{items.length !== 1 ? 's' : ''}</span>
+            <span className="text-[#8895b8]">{items.length} result{items.length !== 1 ? 's' : ''}</span>
             {cat !== 'all' && (
-              <button onClick={() => { setCat('all'); setSearch('') }} className="text-[10px] px-2 py-1 rounded-full border border-[rgba(255,255,255,0.06)] text-[#5a6a90] hover:text-[#e4eaf5] hover:border-[#4a8cf4]/30 transition-all">
+              <button onClick={() => { setCat('all'); setSearch('') }} className="text-[10px] px-2 py-1 rounded-full border border-[rgba(255,255,255,0.06)] text-[#8895b8] hover:text-[#e4eaf5] hover:border-[#4a8cf4]/30 transition-all">
                 Clear
               </button>
             )}
@@ -827,13 +827,13 @@ function SkillsSection() {
       {items.length === 0 && (
         <div className="text-center py-16">
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[rgba(122,169,247,0.08)] border border-white/[0.05] flex items-center justify-center">
-            <svg className="w-6 h-6 text-[#5a6a90]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-6 h-6 text-[#8895b8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" strokeLinecap="round" />
             </svg>
           </div>
           <h3 className="text-sm font-semibold text-[#e4eaf5] mb-1">No skills match your search</h3>
-          <p className="text-xs text-[#5a6a90] mb-4">Try a different category or search term.</p>
+          <p className="text-xs text-[#8895b8] mb-4">Try a different category or search term.</p>
           <button onClick={() => { setSearch(''); setCat('all') }} className="btn-primary text-xs px-4 py-2">Clear filters</button>
         </div>
       )}
@@ -938,7 +938,7 @@ function GuardrailSection() {
             ].map((s, i) => (
               <div key={i} className="text-center p-3 rounded-xl bg-black/30 border border-[#1e3058]">
                 <div className="text-gradient-green text-xl font-extrabold">{s.v}</div>
-                <div className="text-[10px] text-[#5a6a90] uppercase tracking-[0.08em] mt-1">{s.l}</div>
+                <div className="text-[10px] text-[#8895b8] uppercase tracking-[0.08em] mt-1">{s.l}</div>
               </div>
             ))}
           </div>
@@ -1008,7 +1008,7 @@ function AgentsSection() {
       <Reveal>
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5a6a90]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8895b8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" strokeLinecap="round" />
             </svg>
@@ -1022,7 +1022,7 @@ function AgentsSection() {
             />
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-[#5a6a90]">{items.length} result{items.length !== 1 ? 's' : ''}</span>
+            <span className="text-[#8895b8]">{items.length} result{items.length !== 1 ? 's' : ''}</span>
           </div>
         </div>
       </Reveal>
@@ -1073,7 +1073,7 @@ function AgentsSection() {
 
       {items.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-[#5a6a90] text-sm">No agents match your search.</p>
+          <p className="text-[#8895b8] text-sm">No agents match your search.</p>
           <button onClick={() => { setSearch(''); setFilter('all') }} className="cat-btn mt-3 active">Clear filters</button>
         </div>
       )}
@@ -1155,7 +1155,7 @@ function KGSection() {
           <Reveal key={i} style={{ animationDelay: `${i * 80}ms` }}>
             <div className="card-core p-5 text-center">
               <div className="text-2xl font-extrabold mb-1" style={{ color: s.c }}>{s.v}</div>
-              <div className="text-[10px] text-[#5a6a90] uppercase tracking-[0.08em]">{s.l}</div>
+              <div className="text-[10px] text-[#8895b8] uppercase tracking-[0.08em]">{s.l}</div>
             </div>
           </Reveal>
         ))}
@@ -1180,11 +1180,11 @@ function FooterCTA() {
               One command. {ALL_SKILLS.length + 508}+ skills. Zero config. Your AI assistant gets a brain upgrade in under 60 seconds.
             </p>
             <div className="liquid-glass rounded-2xl border border-white/[0.08] p-6 max-w-[600px] mx-auto">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5a6a90] mb-3">Quick Install</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8895b8] mb-3">Quick Install</div>
               <code className="block font-mono text-sm text-[#6bc5e8] bg-black/40 px-4 py-3 rounded-xl whitespace-nowrap overflow-x-auto">
                 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh
               </code>
-              <div className="flex items-center justify-center gap-2 my-3 text-[#5a6a90] text-xs">then</div>
+              <div className="flex items-center justify-center gap-2 my-3 text-[#8895b8] text-xs">then</div>
               <code className="block font-mono text-sm text-[#6bc5e8] bg-black/40 px-4 py-3 rounded-xl whitespace-nowrap overflow-x-auto">
                 git clone https://github.com/AttilaHuns288452/hermes-workflow.git
               </code>
@@ -1262,7 +1262,7 @@ export default function App() {
       </main>
 
       <footer className="relative z-10 border-t border-white/[0.06] py-10 text-center">
-        <p className="text-xs text-[#5a6a90]">
+        <p className="text-xs text-[#8895b8]">
           Hermes Workflow by <a href="https://github.com/AttilaHuns288452" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">AttilaHuns288452</a> · Built for <a href="https://hermes-agent.nousresearch.com" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">Hermes Agent</a> by Nous Research
         </p>
       </footer>
