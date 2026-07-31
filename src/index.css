@@ -41,6 +41,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 
 @layer base {
   body {
+    background: #080b14;
+    color-scheme: dark;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -116,6 +118,10 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
   }
 
   /* Reveal — visible by default, animation is progressive enhancement */
+  .reveal:not(.visible) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
   .reveal {
     opacity: 1;
     transform: translateY(0);
