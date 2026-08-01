@@ -30,6 +30,22 @@
 | **📘 Obsidian KG** | Vault → knowledge graph with community detection, ATM-Machine quality docs |
 | **🛡️ Guardrail** | 6 immutable rules — file protection, secrets safety, injection immunity, system integrity |
 
+## 🔌 MCP Servers & Tools
+
+All wired in `config.yaml.template` — clone, install, and these point at your local setup:
+
+| Tool | GitHub | What it does |
+|------|--------|--------------|
+| **CodeGraph** | [colbymchenry/codegraph](https://github.com/colbymchenry/codegraph) | AST code index + MCP — the Token Saver probe chain |
+| **Graphify** | [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) | Code knowledge graph with community detection |
+| **LightRAG** | [HKUDS/LightRAG](https://github.com/HKUDS/LightRAG) | Skill retrieval index for `/decide` routing |
+| **AgentMemory** | [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | Cross-session memory MCP |
+| **LLMQuant Data** | [LLMQuant](https://github.com/LLMQuant) | Financial data MCP — SEC filings, 13F, macro, crypto, prediction markets |
+| **21st Magic MCP** | [21st-dev/magic-mcp](https://github.com/21st-dev/magic-mcp) | UI component & design-system search |
+| **Firecrawl** | [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) | Web scraping, search & research agent MCP |
+| **Agent Kanban** | [saltbo/agent-kanban](https://github.com/saltbo/agent-kanban) | Kanban task board (plus built-in `hermes kanban`) |
+| **Obsidian KG** | custom — `~/.hermes/tools/obsidian_kg_mcp.py` | Vault → knowledge graph (nodes + edges) |
+
 ## 🚀 Quick Start
 
 ```bash
