@@ -30,3 +30,7 @@ dist
 
 graphify-out/
 index-tailwind.html
+
+# Python
+__pycache__/
+*.pyc
