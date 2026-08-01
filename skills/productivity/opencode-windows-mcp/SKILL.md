@@ -30,7 +30,7 @@ Use `mcp_servers` in `opencode.jsonc`. Example for `agentmemory`:
       "command": "npx",
       "args": ["-y", "@agentmemory/agentmemory", "mcp"],
       "env": {
-        "PATH": "C:\\Users\\Attila\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\Attila\\AppData\\Roaming\\npm"
+        "PATH": "C:\\Users\\YOUR_USERNAME\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm"
       }
     }
   }

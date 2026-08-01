@@ -238,7 +238,7 @@ mcp_servers:
   obsidian-kg:
     command: \"python\"
     args: [\"-m\", \"obsidian_kg_mcp\"]
-    cwd: \"C:\\\\Users\\\\Attila\\\\.hermes\\\\tools\"
+    cwd: \"C:\\\\Users\\\\YOUR_USERNAME\\\\.hermes\\\\tools\"
     connect_timeout: 30
 ```
 
