@@ -34,3 +34,6 @@ index-tailwind.html
 # Python
 __pycache__/
 *.pyc
+
+# Temp state
+.temp/
