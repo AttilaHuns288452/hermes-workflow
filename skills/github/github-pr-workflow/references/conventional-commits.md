@@ -7,7 +7,7 @@ Format: `type(scope): description`
 | Type | When to use | Example |
 |------|------------|---------|
 | `feat` | New feature or capability | `feat(auth): add OAuth2 login flow` |
-| `fix` | Bug fix | `fix(api): handle null response from /users endpoint` |
+| `fix` | Bug fix | `fix(api): handle null response on get-profile endpoint` |
 | `refactor` | Code restructuring, no behavior change | `refactor(db): extract query builder into separate module` |
 | `docs` | Documentation only | `docs: update API usage examples in README` |
 | `test` | Adding or updating tests | `test(auth): add integration tests for token refresh` |

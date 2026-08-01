@@ -2,9 +2,9 @@
 """Render an Obsidian knowledge-graph JSON into a standalone HTML file using vis-network CDN.
 
 Usage (inside skill_manage context this is a reference asset — call it via terminal):
-    python C:\\Users\\YOUR_USERNAME\\.hermes\\skills\\note-taking\\obsidian\\scripts\\render_kg.py \\
-        C:\\Users\\YOUR_USERNAME\\Documents\\Obsidian Vault\\kg_output.json \\
-        C:\\Users\\YOUR_USERNAME\\Documents\\Obsidian Vault\\knowledge_graph.html
+    python C:\\Users\\Attila\\.hermes\\skills\\note-taking\\obsidian\\scripts\\render_kg.py \\
+        C:\\Users\\Attila\\Documents\\Obsidian Vault\\kg_output.json \\
+        C:\\Users\\Attila\\Documents\\Obsidian Vault\\knowledge_graph.html
 
 If no args given, reads ~/Documents/Obsidian Vault/kg_output.json
 and writes ~/Documents/Obsidian Vault/knowledge_graph.html.

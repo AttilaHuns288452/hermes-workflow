@@ -24,7 +24,7 @@
 - Minimum button visual contrast: button Fill must differ from Form BackColor.
 - Never use near-black button fill (`#1A1A1A`) on a dark form (`#1E1E1E`).
 - Hover state: lighten button base color 15-20%.
-- Windows/MSYS shell paths: use POSIX `/c/Users/YOUR_USERNAME/...` or live with current cwd inside project dir.
+- Windows/MSYS shell paths: use POSIX `/c/Users/Attila/...` or live with current cwd inside project dir.
 
 ## Failure Modes to Avoid
 

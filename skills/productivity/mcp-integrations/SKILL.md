@@ -1,7 +1,7 @@
 ---
 name: mcp-integrations
 description: "MCP server setup patterns and integration workflows for Hermes Agent. Covers: adding MCP servers to config.yaml, configuring stdio/HTTP transports, connecting Composio, troubleshooting common MCP issues, handling security-sensitive config edits on Windows, and batch-skill import from external caches."
-version: 1.2.0
+version: 1.4.0
 author: Hermes Agent
 platforms: [linux, macos, windows]
 ---
@@ -18,9 +18,7 @@ This skill covers adding MCP servers to Hermes Agent, with verified operational 
 - Node.js for npx servers, `uv`/`uvx` for Python-based servers
 
 ```bash
-pip install mcp
-# Or if using Hermes bundled Python:
-# $HERMES_HOME/hermes-agent/venv/Scripts/python -m pip install mcp
+/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/python -m pip install mcp
 ```
 
 ## Core Patterns
@@ -37,7 +35,7 @@ mcp_servers:
     url: \"https://connect.composio.dev/mcp\"
 EOF
 tail -10 ~/.hermes/config.yaml   # verify
-hermes mcp list   # or $HERMES_HOME/hermes-agent/venv/Scripts/hermes mcp list
+/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes mcp list
 ```
 
 ### 2. Composio setup (composio.dev/hermes)
@@ -58,7 +56,7 @@ Restart Hermes. The first Composio-backed request will trigger the OAuth flow. T
 
 **Known pitfall:** Do NOT add `headers:` with `x-consumer-api-key` for the Composio `/mcp` endpoint. That produces persistent `401 Unauthorized` responses. Normal built-in OAuth login covers authentication here.
 
-**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `$HOME/Documents/apikeys/composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
+**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `C:\Users\Attila\Documents\apikeys\composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
 
 ### 2. LLMQuant Data setup
 
@@ -174,6 +172,44 @@ mcp_servers:
 
 Allowed config keys: `command|url`, `args|headers`, `env`, `timeout`, `connect_timeout`.
 
+### Firecrawl MCP
+
+Firecrawl exposes a remote MCP endpoint at `https://mcp.firecrawl.dev/v2/mcp`. Auth is via API key embedded in the URL path:
+
+```yaml
+  firecrawl:
+    url: https://mcp.firecrawl.dev/fc-YOUR_API_KEY/v2/mcp
+    enabled: true
+```
+
+**Pitfall — `yaml.dump` 80-char line wrap corrupts long URLs:** `yaml.dump` defaults to 80-character `width`. URLs longer than ~68 chars (including the `    url: ` prefix) get wrapped at an arbitrary position, inserting `...` as a YAML continuation marker — which silently corrupts the URL. Fix: pass `width=999` to `yaml.dump()`.
+```python
+yaml.dump(cfg, f, default_flow_style=False, width=999)
+```
+
+**Pitfall — `add-mcp` doesn't support Hermes:** The `add-mcp` CLI tool lists Hermes as an invalid agent. It supports `opencode`, `claude-code`, `cursor`, `vscode`, `zed`, `windsurf` — not Hermes. Add Firecrawl MCP directly to `config.yaml` via terminal-driven Python yaml edit.
+
+**CLI-only alternative (no MCP):**
+```bash
+npx -y firecrawl-cli@latest init --all -k fc-YOUR_API_KEY
+```
+This installs 32 skills under `~/.hermes/skills/firecrawl*` and the `firecrawl` CLI globally. Use `firecrawl scrape/search/interact` directly from terminal.
+
+**Pitfall — MCP works but CLI/SDK-path skills fail:** the MCP server gets its key from the URL, but skills that inject `FIRECRAWL_API_KEY` into project `.env` files (`firecrawl-build-*`, `firecrawl-cli`) read the standalone env var — which is usually EMPTY even when the MCP is healthy. Fix: extract the working token from the MCP URL and write it to `~/.hermes/.env`:
+
+```python
+import re
+cfg = open(r'C:/Users/Attila/AppData/Local/hermes/config.yaml', encoding='utf-8').read()
+token = re.search(r'mcp\.firecrawl\.dev/(fc-[A-Za-z0-9_-]+)/v2/mcp', cfg).group(1)
+env = open(r'C:/Users/Attila/AppData/Local/hermes/.env', encoding='utf-8').read()
+new = re.sub(r'^#?\s*FIRECRAWL_API_KEY=.*$', 'FIRECRAWL_API_KEY=' + token, env, flags=re.M)
+if new == env: new = env + '\nFIRECRAWL_API_KEY=' + token + '\n'
+open(r'C:/Users/Attila/AppData/Local/hermes/.env', 'w', encoding='utf-8').write(new)
+```
+Verify with a live MCP call (`firecrawl_search`) — a returned `creditsUsed` proves the key is valid. Rotate both together: MCP URL and `.env`.
+
+Full setup narrative in `references/firecrawl-mcp-setup.md`.
+
 ### 4. Batch skill import from Codex cache
 
 When copying SKILL.md files from the Codex plugin cache, use a recursive copy into Hermes skills. There is no shortcut for installing all of them at once; copy directory by directory.
@@ -208,14 +244,17 @@ For cron, prefer testing by direct execution once before declaring success.
 ## Open Design Notes
 - Windows install path can contain spaces, so `command` should quote or escape it properly.
 - Hermes now supports the Open Design stdio MCP server on Windows:
-  `Open Design.exe` with env:
+  `C:\\Users\\Attila\\AppData\\Local\\Programs\\Open Design release-stable-win\\Open Design.exe` with env:
   `OD_DATA_DIR`, `OD_SIDECAR_NAMESPACE`, `ELECTRON_RUN_AS_NODE`.
+- **Daemon sidecar required.** The stdio MCP server (spawned by Hermes) provides the tool definitions, but the tools themselves connect to a local HTTP daemon on port 7456. If the daemon isn't running, all tool calls fail with `cannot reach the Open Design daemon at http://127.0.0.1:7456`. Start it manually: `ELECTRON_RUN_AS_NODE=1 ./"Open Design.exe" .../cli.js --port 7456 --no-open`.
 - This does not currently indicate rich generative/code-agent bridge support. Focused integration path is still reading design files via MCP; generative capabilities remain unverified.
 - `bloom`/`blind` options shown by some daemon logs are implementation-specific. Keep `initializationOptions` minimal unless documentation explicitly requires them.
 
 ## VS Code MCP Server
 
 The `vscode-mcp-server` npm package exposes VS Code editor actions (open files, list workspace files, goto line, run tasks) as MCP tools. Use `npx -y` for zero-setup install; it auto-fetches the latest server binary without requiring global installation.
+
+**VS Code MCP Extension required.** The npm package alone is not enough — you also need the **VS Code MCP Extension** installed and running inside VS Code. Without it, `check_extension_status` returns `not installed`. Install it with `code --install-ublisher.vscode-mcp-extension>` (exact ID depends on the extension — check the marketplace), then restart VS Code and verify with the `check_extension_status` tool.
 
 ```yaml
 mcp_servers:
@@ -231,16 +270,18 @@ Tools are prefixed `mcp_vscode_*`. Restart Hermes after adding.
 
 ## Obsidian Knowledge Graph Server
 
-Custom MCP server at `~/.hermes/tools/obsidian_kg_mcp.py` scans an Obsidian vault into a structured node/edge graph (folders, notes, code blocks, tags, wikilinks, aliases, cross-note concepts). Register as a stdio server:
+Custom MCP server at `~/.hermes/tools/obsidian_kg_mcp.py` scans an Obsidian vault into a structured node/edge graph (folders, notes, code blocks, tags, wikilinks, aliases, cross-note concepts). Written using FastMCP (MCP SDK 1.x). Register as a stdio server:
 
 ```yaml
 mcp_servers:
   obsidian-kg:
-    command: \"python\"
-    args: [\"-m\", \"obsidian_kg_mcp\"]
-    cwd: \"C:\\\\Users\\\\YOUR_USERNAME\\\\.hermes\\\\tools\"
+    command: python
+    args: ["-m", "obsidian_kg_mcp"]
+    cwd: C:\Users\Attila\.hermes\tools
     connect_timeout: 30
 ```
+
+**SDK migration note:** If this server was written for MCP SDK 0.x (old `Server`/`@app.list_tools()`/`@app.call_tool()` pattern) and fails with `AttributeError: 'dict' object has no attribute 'tools_changed'`, rewrite using FastMCP (`mcp.server.fastmcp`). See `references/mcp-sdk-migration.md` for the migration guide.
 
 Primary tool: `obsidian_knowledge_graph` (params: `vault_path`, `include_code_blocks`, `include_concepts`, `concept_min_occurrences`). Vault → folders → notes → code blocks. Edges: `contains`, `links_to`, `tagged`, `shared_concept`, `alias_of`.
 
@@ -277,7 +318,9 @@ Zoneless Python package imports — `import mcp`, `import pyvis`, `networkx` —
 | `import mcp` hangs or fails in `execute_code` / terminal | The `mcp` package import triggers transitive dependency load that can exceed approval timeouts. Run `python -c \"import mcp; print(mcp.__file__)\"` in a terminal with sufficient timeout, or `pip install --upgrade mcp` if missing. Do not use `execute_code` for this check — the sandbox env scrub on Windows may drop `SYSTEMROOT`, causing `WinError 10106` before the import completes. |
 | `npx` server package not found globally on Windows | Do not assume the server is globally installed just because `npx` is on PATH. Verify with `npm ls -g --depth=0 <pkg-name>` before writing a hardcoded `.cmd` path. When unsure, use the `npx -y <pkg-name>` pattern — it auto-installs the latest version regardless of global state. |
 | `write_file` succeeded but content is wrong | `lint: {status: \"ok\"}` only validates Python/YAML/JSON syntax; it does not validate that the written content matches your intent or that the target file was actually created. Always `read_file` the path after writing to confirm existence and content before treating the write as a real success. |
-| `@llmquant/data-mcp` returns `401 Unauthorized` | First verify the key in the LLMQuant dashboard; if the dashboard shows it valid, verify no `headers:` are set and that `LLMQUANT_API_KEY` is present in the MCP server `env:` block. |
+| MCP server silent exit / not appearing | Test with `echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | <command>` — a valid MCP server responds with JSON-RPC. If nothing comes back, the command itself fails (missing package, wrong args, PATH issue). Also test `tools/list` by piping a second JSON line. See `references/mcp-server-testing.md`. || `@llmquant/data-mcp` returns `401 Unauthorized` | First verify the key in the LLMQuant dashboard; if the dashboard shows it valid, verify no `headers:` are set and that `LLMQUANT_API_KEY` is present in the MCP server `env:` block. |
+| Open Design MCP tools fail with `cannot reach the Open Design daemon at http://127.0.0.1:7456` | The stdio MCP server runs as an ELECTRON_RUN_AS_NODE child process (spawned by Hermes), but the OD daemon must also be listening on port 7456 for tools to work. Start it separately: `ELECTRON_RUN_AS_NODE=1 ./"Open Design.exe" resources/app/node_modules/@open-design/daemon/dist/cli.js --port 7456 --no-open` from the install dir. Verify with `netstat -ano | grep ':7456'`. |
+| VS Code MCP server returns `No VS Code projects found` / `Extension not installed` | The `vscode-mcp-server` npm package requires the **VS Code MCP Extension** installed inside VS Code (`code --install-extension <extension-id>`). npx alone is not enough — VS Code must be running with the extension active for the tools to resolve a workspace. |
 
 ## Security Notes
 
@@ -285,6 +328,23 @@ Zoneless Python package imports — `import mcp`, `import pyvis`, `networkx` —
 - Credential-like strings in MCP errors are auto-redacted.
 - Sensitive config writes can be rejected; use supported CLI paths.
 - Prefer `LLMQUANT_API_KEY` in `env:` over embedding it in a url/path/tool registry.
+
+## agent-browser CLI (browser automation)
+
+The `agent-browser` skill (from the agent-browser npm ecosystem) is a **discovery stub** — it points at CLI-provided skill content (`agent-browser skills get core`) and does NOT contain usage instructions. Before relying on it:
+
+```bash
+which agent-browser || npm i -g agent-browser && agent-browser install   # installs Chrome ~151 (~192MB) under ~/.agent-browser/browsers/
+agent-browser skills list          # core, dogfood, electron, slack, vercel-sandbox, agentcore
+```
+
+**Smoke test before use** (proves CLI + Chrome + CDP all work):
+```bash
+agent-browser open "https://example.com"     # expect "✓ <page title>" — first launch is slow, use timeout 60
+agent-browser screenshot <path>              # positional path; --path is NOT a valid flag ("Element not found" error)
+```
+
+Verify the screenshot with `vision_analyze` before trusting rendering. Chrome download lives in `~/.agent-browser/browsers/` (separate from Playwright's cache at `~/AppData/Local/ms-playwright` — both can coexist).
 
 ## agentmemory setup
 
@@ -311,7 +371,7 @@ with zipfile.ZipFile(io.BytesIO(data)) as z:
     with open(os.path.join(dest_dir, 'iii.exe'), 'wb') as f:
         f.write(z.read('iii.exe'))
 PY
-'iii.exe' --version  # or $HOME/.local/bin/iii.exe
+'C:\Users\Attila\.local\bin\iii.exe' --version
 ```
 
 Restart the shell or export PATH if needed before launching `agentmemory`.
@@ -340,18 +400,21 @@ npx skills add rohitg00/agentmemory -y
 
 ### MCP config
 
+The `mcp` subcommand is required — without it, `npx @agentmemory/agentmemory` starts the background worker (which blocks), not the MCP stdio server.
+
 ```yaml
 mcp_servers:
   agentmemory:
     command: "npx"
     args:
       - -y
-      - "@agentmemory/agentmemory@latest"
+      - "@agentmemory/agentmemory"
+      - mcp
     connect_timeout: 60
     timeout: 120
 ```
 
-**Windows note:** Even when `agentmemory` is not globally discoverable, `npx -y @agentmemory/agentmemory@latest` fetches from npm directly. Avoid hardcoded `.cmd` global-bin paths.
+**Wrong package trap:** The npm package is `@agentmemory/agentmemory`, NOT `agentmemory-mcp`. Using `agentmemory-mcp` in the command silently fails — npx will not find it in the registry. Always verify the correct package name with `npm view @agentmemory/agentmemory` before configuring.
 
 ### Troubleshooting
 
@@ -370,9 +433,12 @@ mcp_servers:
 - `@llmquant/data-mcp`: npm `0.3.4`, GitHub repo verified public at https://github.com/LLMQuant/data-mcp
 - Hermes config edit fallback: direct terminal Python file edit may succeed when tool-layer and CLI protections both block the change
 - `agentmemory`: npm `0.9.27`, engine `iii` `0.11.2`, Windows manual ZIP engine installation (2026-06)
+- Firecrawl CLI: npm `1.19.27`, MCP at `https://mcp.firecrawl.dev/fc-<key>/v2/mcp` (2026-07)
 
 ## References
 
 - `references/composio-hermes-setup.md` — known good config, 401 pitfalls, OAuth flow notes
 - `references/llmquant-data-mcp.md` — npm publish metadata, CLI smoke-test results, `401` reproduction, docs source link, current tool inventory
 - `references/agentmemory-install.md` — condensed external install guidance plus observed Windows behavior
+- `references/mcp-server-testing.md` — testing MCP servers via piped JSON-RPC (init + tools/list)
+- `references/mcp-sdk-migration.md` — migrating custom MCP servers from old `Server` API to FastMCP (SDK 0.x → 1.x)

@@ -87,6 +87,16 @@ After first use: `echo "freellmapi_key.txt" >> .gitignore && rm freellmapi_key.t
 4. **OpenRouter :free** (2 working models, least reliable)
 5. **Paid safety net** (claude-sonnet-4 via OpenRouter)
 
+## Per-Model Fallback: Free → Paid
+
+Each model has a free tier and a paid fallback. **Free is primary; paid is fallback only.** Never start with a paid model — always route to the `-free` variant first. Escalate to paid only when the free tier has been tried and confirmed failing (error response, timeout > 60s, or 429 rate limit).
+
+| Primary (free) | Fallback (paid) | Notes |
+|---------------|----------------|-------|
+| `opencode/deepseek-v4-flash-free` | `opencode-go/deepseek-v4-flash` | Free for coding; paid fallback on sustained failure |
+| `opencode/mimo-v2.5-free` | `opencode-go/mimo-v2.5` | Free for vision; paid fallback when free unavailable |
+| `opencode/nemotron-3-ultra-free` | `opencode-go/glm-5.2` (overseer only) | Free reasoning; GLM 5.2 is overseer fallback after 20+ failures of all free and paid deepseek/mimo |
+
 ## Graphify (Code Graph Brain — Secondary Context)
 
 **Graphify** (`uv tool install graphifyy`) builds an AST code knowledge graph for every project and exports it as wikilinked Obsidian notes. It runs as a mandatory workflow layer alongside Obsidian.
@@ -141,6 +151,7 @@ If OpenCode's bundled models fail, try OpenRouter `:free` models. Most return se
 - **Always specify `--model` explicitly.** OpenCode without `--model` may select an unsuitable model (e.g., image-only models like `google/gemini-3-pro-image-preview`). Use `--model opencode/<model>` for OpenCode bundled models, `--model openrouter/<model>` for OpenRouter models.
 - **Discover models from the CLI, not the website.** The authoritative list of what's available is `opencode models`. The OpenRouter website shows many `:free` models that return server errors when used through OpenCode. Always probe before committing.
 - **Timeouts ≠ unavailability.** Some free models are slow. Set generous timeouts (≥120s) for free-tier models and only fall through after a confirmed failure.
+- **HTTP 400 ≠ rate limit.** A 400 "Upstream request failed" means the API server rejected the *request format*, not the volume. Rate limits return 429 or 402. Common cause: trailing whitespace in the API key. See `references/opencode-go-auth-issues.md`.
 - **FreeLLMAPI "Invalid API key" — sync in EITHER direction.** The unified API key in FreeLLMAPI's SQLite DB (`freeapi.db`) can diverge from the key in `~/.hermes/.env` in *either* direction: the DB may have a rotated key while .env has the old one, OR (less commonly) the .env was updated with a new key while the DB stayed on the old one. Always check both sources and sync the outdated one. The `references/freellmapi-setup.md` covers the full diagnosis chain including SQLite reads and reverse-sync (DB ← .env).
 **Root cause**: FreeLLMAPI's `initDb()` → `migrateDbSchema()` generates a fresh `unified_api_key` via `crypto.randomBytes(24)` whenever the `settings` table row is missing — which happens when the DB file is deleted, recreated, or the row is manually cleared. A server restart alone does NOT regenerate the key (the row persists across restarts), but a clean install, `rm server/data/freeapi.db`, or running `regenerateUnifiedKey()` does. Fix: sync Hermes `.env` to match the DB key via the settings API (`GET /api/settings/api-key` with a dashboard token), or update the DB directly.
 
@@ -434,3 +445,4 @@ Trigger this skill on:
 - `references/freellmapi-setup.md` — FreeLLMAPI local proxy setup: build from source, dashboard auth, unified API key, upstream provider keys, Hermes integration, troubleshooting
 - `references/freellmapi-extension-patterns.md` — Patterns for extending FreeLLMAPI with new routes, pages, and managing upstream provider keys (API reference, route registration, auth flow, custom providers)
 - `scripts/verify-freellmapi.py` — verification script: `python scripts/verify-freellmapi.py --key freellmapi-xxx [--test-chat]`
+- `references/opencode-go-auth-issues.md` — trailing whitespace in OpenCode Go API key causing HTTP 400, detection script, and ponytail plugin workaround

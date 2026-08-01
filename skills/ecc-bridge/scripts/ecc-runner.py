@@ -41,10 +41,14 @@ SAFE_AGENTS = {
     "pr-test-analyzer": {"skill_name": "ecc-pr-test-analyzer", "best_model": "opencode/deepseek-v4-flash-free"},
     "type-design-analyzer": {"skill_name": "ecc-type-design-analyzer", "best_model": "opencode/deepseek-v4-flash-free"},
     "code-simplifier": {"skill_name": "ecc-code-simplifier", "best_model": "opencode/deepseek-v4-flash-free"},
-    "doc-updater": {"skill_name": "ecc-doc-updater", "best_model": "opencode/north-mini-code-free"},
+    "doc-updater": {"skill_name": "ecc-doc-updater", "best_model": "opencode/deepseek-v4-flash-free"},
     "database-reviewer": {"skill_name": "ecc-database-reviewer", "best_model": "opencode/deepseek-v4-flash-free"},
     "refactor-cleaner": {"skill_name": "ecc-refactor-cleaner", "best_model": "opencode/deepseek-v4-flash-free"},
-    "performance-optimizer": {"skill_name": "ecc-performance-optimizer", "best_model": "opencode/mimo-v2.5-free"},
+    "performance-optimizer": {"skill_name": "ecc-performance-optimizer", "best_model": "opencode/deepseek-v4-flash-free"},
+    # Vision agents — need multimodal
+    "image-prompt-engineer": {"skill_name": "ecc-image-prompt-engineer", "best_model": "opencode/mimo-v2.5-free"},
+    "visual-storyteller": {"skill_name": "ecc-visual-storyteller", "best_model": "opencode/mimo-v2.5-free"},
+    "ui-designer": {"skill_name": "ecc-ui-designer", "best_model": "opencode/mimo-v2.5-free"},
 }
 
 # All 64 ECC agents mapped to free-model compatibility tiers

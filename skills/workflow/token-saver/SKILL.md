@@ -29,10 +29,12 @@ Extract `$PROJECT` from the file path. All projects live at `~/Documents/Project
 
 ### Step B — Probe CodeGraph (MCP Tools First)
 
-Use the built-in MCP tools — no terminal command needed, always available:
+Use the built-in MCP tools — no terminal command needed, always available.
+
+**⚠️ IMPORTANT:** If CWD is not inside a project (e.g. `C:\Users\Attila`), you MUST pass `projectPath` or the MCP server can't find the index:
 
 ```
-mcp_codegraph_codegraph_explore(query="function_name")     # PRIMARY — single call returns defs + source
+mcp_codegraph_codegraph_explore(query="function_name", projectPath="C:\\Users\\Attila\\Documents\\Projects\\$PROJECT")  # PRIMARY — single call returns defs + source
 mcp_codegraph_codegraph_search(query="function_name")      # Broader name search
 mcp_codegraph_codegraph_callers(symbol="function_name")    # Who calls it
 mcp_codegraph_codegraph_callees(symbol="function_name")    # What it calls
@@ -40,7 +42,7 @@ mcp_codegraph_codegraph_impact(symbol="function_name")     # Refactoring impact
 mcp_codegraph_codegraph_files(pattern="*.tsx")             # File tree
 ```
 
-- **Always works** — CodeGraph covers ALL 1,607 files across all projects (44.46 MB index, 25,135 nodes, 61,386 edges)
+- **Always works** — CodeGraph covers ALL 3,425 files across all projects (104.46 MB index, 52,747 nodes, 125,822 edges)
 - **Cost: ~300 tokens** vs reading files directly (~15K+ tokens)
 - Returns source code + file paths and line numbers → you know exactly where to read if needed
 
@@ -158,8 +160,8 @@ Tier 1 (atomic) requests skip the probe.
 - `references/graphify-index-building.md` — Large project build patterns (ECC 34MB/5,821 files), background mode, skip logic
 
 ```bash
-# CodeGraph MCP tools (preferred — always available, no CWD dependency)
-mcp_codegraph_codegraph_explore(query="symbol_name")
+# CodeGraph MCP tools (preferred — pass projectPath when CWD is outside a project)
+mcp_codegraph_codegraph_explore(query="symbol_name", projectPath="C:\\Users\\Attila\\Documents\\Projects\\$PROJ")
 mcp_codegraph_codegraph_search(query="symbol_name")
 
 # CodeGraph — terminal fallback (use if MCP tools unavailable)

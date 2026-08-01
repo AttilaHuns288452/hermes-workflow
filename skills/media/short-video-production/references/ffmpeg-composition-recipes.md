@@ -53,7 +53,7 @@ subprocess.run(cmd, capture_output=True, text=True, timeout=600"
 ## Quick Composition Script (shell)
 
 ```bash
-cd $HOME/OpenMontage/projects/tiktok-viral && \
+cd /c/Users/Attila/OpenMontage/projects/tiktok-viral && \
 ffmpeg -y \
   -loop 1 -t 21.5 -i images/01_spotlight.png \
   -loop 1 -t 10 -i images/02_peak_end.png \

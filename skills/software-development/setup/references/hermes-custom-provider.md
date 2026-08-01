@@ -29,6 +29,11 @@ echo 'MY_API_KEY_ENV_VAR=sk-your-key-here' >> ~/.hermes/.env
 
 Never put the key directly in `config.yaml` unless it's ephemeral — `.env` is automatically loaded by the Hermes runtime and kept out of version control.
 
+**⚠️ Duplicate env var trap:** If `.env` accidentally has two lines with the same variable name (e.g. two `FREELMAPI_API_KEY=...`), the shell or Hermes runtime reads the **last** one, not the first. Always verify there's exactly one occurrence of each key:
+```bash
+grep -c "^MY_API_KEY_ENV_VAR=" ~/.hermes/.env  # should be 1
+```
+
 ### 2. Set the model config
 
 Use `hermes config set` with dot notation — it writes to the correct YAML keys and accepts nested values:
@@ -52,12 +57,38 @@ hermes config set providers.my-endpoint.discover_models true
 
 ```bash
 curl -s http://localhost:3001/v1/chat/completions \
-  -H "Authorization: Bearer $(python -c "import os; print(os.environ.get('MY_API_KEY_ENV_VAR',''))")" \
+  -H "Authorization: Bearer $(python -c "import os; print(os.environ.get('MY_API_KEY_ENV_VAR',''))")\
   -H "Content-Type: application/json" \
   -d '{"model":"auto","messages":[{"role":"user","content":"hi"}],"max_tokens":10}'
 ```
 
 Then start a new `hermes chat` session—the config is picked up fresh on each session start.
+
+## Alternative: Auth Credential Instead of `providers` Section
+
+If your `config.yaml` doesn't have a `providers.*` section (e.g. it only has `mcp_servers:`), you can skip Step 3 entirely and store the API key via the Hermes auth system instead:
+
+```bash
+# Remove any stale credential first
+hermes auth remove <provider-name> <index>   # e.g. hermes auth remove freellmapi 1
+
+# Add the credential with the correct key
+hermes auth add <provider-name> --type api-key --api-key "sk-your-key-here" --label "Description"
+
+# Example for a custom endpoint at localhost:3001:
+hermes auth add freellmapi --type api-key --api-key "freellmapi-2a3b4c5..." --label "FreeLLMAPI Key"
+```
+
+This registers the key in the `custom:<provider-name>` credential namespace. Hermes's `custom` provider type picks it up automatically when `model.provider=custom` and `model.base_url` are set.
+
+The full config then needs only:
+```bash
+hermes config set model.provider custom
+hermes config set model.base_url "http://localhost:3001/v1"
+hermes config set model.default auto
+```
+
+No `providers.*` section, no `key_env` — the auth credential provides the API key directly.
 
 ## Config Schema (from Hermes source)
 
