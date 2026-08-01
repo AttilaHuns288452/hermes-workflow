@@ -2,11 +2,11 @@
 
 # 🧞 Hermes Workflow
 
-**668+ agent skills · /decide routing brain · 4-layer free model chain**
+**508 agent skills · /decide routing brain · 4-layer free model chain**
 
 [![GitHub stars](https://img.shields.io/github/stars/AttilaHuns288452/hermes-workflow?style=flat&label=Stars&labelColor=0b0f1c&color=3ddc84)](https://github.com/AttilaHuns288452/hermes-workflow/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
-[![Skills](https://img.shields.io/badge/Skills-668%2B-4a8cf4?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
+[![Skills](https://img.shields.io/badge/Skills-508-4a8cf4?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Agents](https://img.shields.io/badge/ECC%20Agents-64-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#agents)
 [![Model](https://img.shields.io/badge/Model-DeepSeek%20V4%20Flash-f0d060?style=flat&labelColor=0b0f1c)](https://opencode-zen.dev)
 [![Token Savings](https://img.shields.io/badge/Token%20Save-35%C3%97%E2%80%931233%C3%97-e4686a?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#pipeline)
@@ -14,7 +14,7 @@
 
 ---
 
-**One install, zero config.** Clone this repo, run one command, and your AI assistant gets 668+ skills across 10 domains — coding, design, finance, media, research, DevOps, and more — all on free models.
+**One install, zero config.** Clone this repo, run one command, and your AI assistant gets 508 skills across 10 domains — coding, design, finance, media, research, DevOps, and more — all on free models.
 
 </div>
 
@@ -36,16 +36,16 @@
 curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh
 git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow
-# Install 668+ skills in one shot
-find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes skills install "$dir"; done
+# Install 508 skills in one shot
+find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes skills install -y "$dir"; done
 ```
 
-**First pipeline:** `hermes run "What does the decide skill do?"`
+**First pipeline:** `hermes -z "What does the decide skill do?"`
 
 ## 📊 Stats
 
 ```
-📦 668+   Skills across 10 domains
+📦 508    Skills across 10 domains
 🧠 64     ECC specialized agents
 ⚡ 52,747 CodeGraph nodes · 125,822 edges · 3,425 files indexed
 💸 $0     Free model chain — DeepSeek V4 Flash → Freebuff → OpenRouter → Paid fallback
