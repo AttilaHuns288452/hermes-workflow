@@ -1,6 +1,6 @@
 ---
 name: obsidian
-description: Read, search, create, and edit notes in the Obsidian vault. Also covers Obsidian Flavored Markdown (wikilinks, callouts, embeds, properties), Bases (.base), JSON Canvas (.canvas), and Obsidian CLI. Upstream: kepano/obsidian-skills.
+description: "Read, search, create, and edit notes in the Obsidian vault. Also covers Obsidian Flavored Markdown (wikilinks, callouts, embeds, properties), Bases (.base), JSON Canvas (.canvas), and Obsidian CLI. Upstream: kepano/obsidian-skills."
 platforms: [linux, macos, windows]
 tags: [obsidian, notes, knowledge-management, vault, wikilinks, callouts, canvas, bases]
 related_skills:

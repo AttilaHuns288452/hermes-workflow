@@ -457,7 +457,7 @@ This is the **recommended standalone pipeline** for creating a VHS/90s radio-sty
 **Pexels key sharing:** MoneyPrinterTurbo's key in `config.toml` can be read by scripts running from MoneyPrinterV2's venv:
 ```python
 import tomllib
-with open(r"$HOME/Documents/Projects/MoneyPrinterTurbo/config.toml", "rb") as f:
+with open(r"C:\Users\Attila\Documents\Projects\MoneyPrinterTurbo\config.toml", "rb") as f:
     cfg = tomllib.load(f)
 pexels_key = cfg.get("pexels_api_keys", [""])[0]
 ```

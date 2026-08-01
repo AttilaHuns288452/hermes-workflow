@@ -116,6 +116,23 @@ new: <li>last item</li>\n</ol>\n\n<h2>Next Section
 
 ## Pitfalls
 
+### Vite Build Fails: "Failed to resolve ... from index.html"
+
+**Distinct from JSX parse errors.** This is a Vite config issue, not a tag-mismatch issue. If the build error looks like:
+
+```
+Error: Failed to resolve /repo-name/assets/index-XXXXXXX.js from index.html
+```
+
+The root `index.html` has been overwritten with **built output** (hardcoded hashed asset references) instead of referencing the Vite source entry (`/src/main.jsx`). This happens when someone copies `docs/index.html` or `dist/index.html` to the repo root.
+
+**Fix:** Restore root `index.html` to reference `/src/main.jsx`:
+```html
+<script type="module" src="/src/main.jsx"></script>
+```
+
+Then `npm run build` to regenerate the `docs/` or `dist/` output. See `hermes-workflow-documentation` skill → `references/vite-github-pages-deploy.md` for full context.
+
 ### Fuzzy Patch Tool Can Consume More Than Intended
 
 When using `patch()` with `replace_all=True` on JSX files, the fuzzy matcher may match beyond the intended boundary. Warning signs:

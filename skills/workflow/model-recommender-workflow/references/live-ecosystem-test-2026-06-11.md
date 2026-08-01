@@ -120,7 +120,7 @@ Layer 5: Paid Safety Net      → 1 model   → claude-sonnet-4 (OpenRouter)
 
 4. **Graphify docs need API key**: `--backend gemini` requires `GEMINI_API_KEY` for semantic extraction of .md/.txt files. Code-only repos work without.
 
-5. **Windows paths in Graphify export**: Use forward slashes: `--dir "$HOME/Documents/Obsidian Vault/..."`.
+5. **Windows paths in Graphify export**: Use forward slashes: `--dir "C:/Users/Attila/Documents/Obsidian Vault/..."`.
 
 6. **Model recommender CLI self-update**: `free-coding-models` periodically prompts for interactive update. Check for running update before probing.
 

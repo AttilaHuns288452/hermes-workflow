@@ -65,7 +65,7 @@ PUSH STATUS: REVIEW NEEDED
 
 ```bash
 # 1. Redact the leaked token
-sed -i 's/your-dashboard-token-here/freellmapi_unified_api_key_here/' skills/workflow/free-ai-model-router/references/freellmapi-setup.md
+sed -i 's/62693564-b5c7-4b32-8b3a-a6a9/freellmapi_unified_api_key_here/' skills/workflow/free-ai-model-router/references/freellmapi-setup.md
 
 # 2. Create .gitignore (use heredoc from terminal, not write_file — avoids Windows path mismatch)
 cat > .gitignore << 'GITEOF'

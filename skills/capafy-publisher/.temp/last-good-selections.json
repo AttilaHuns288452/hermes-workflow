@@ -1,0 +1,13 @@
+{
+  "title": "MacroPulse",
+  "description": "Route data-primitive research tasks to focused LLMQuant Data workflows — SEC filings, 13F holder analysis, macro regime snapshots, and source-grounded macro briefs.",
+  "skills": [
+    {
+      "path": ".hermes/skills/llmquant-data",
+      "name": "llmquant-data",
+      "purpose": "Routes data-primitive research tasks to focused LLMQuant Data workflows for SEC filings, 13F holders, macro snapshots, and macro briefs"
+    }
+  ],
+  "plugins": [],
+  "crons": []
+}

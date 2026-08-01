@@ -142,7 +142,7 @@ curl -s -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/m
 
 ---
 
-## Step 7: Install the Skills (508 total)
+## Step 7: Install the Skills (694 total)
 
 ```bash
 # Install all skills recursively from the repo
@@ -151,7 +151,7 @@ find ./skills -name 'SKILL.md' -exec dirname {} \; | while read dir; do
 done
 ```
 
-> The repo mirrors every skill from the Hermes Agent installation — all 508 SKILL.md files across the skill tree. Installing them loads the full pipeline: `/decide` routing brain, core identity guardrail, token saver probe chain, model router, ECC agent bridge, LLMQuant skills, creative/media/research workflows, and the mandatory Obsidian documentation bundle.
+> The repo mirrors every skill from the Hermes Agent installation — all 694 SKILL.md files across the skill tree. Installing them loads the full pipeline: `/decide` routing brain, core identity guardrail, token saver probe chain, model router, ECC agent bridge, LLMQuant skills, creative/media/research workflows, and the mandatory Obsidian documentation bundle.
 
 ---
 
