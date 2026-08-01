@@ -141,6 +141,54 @@ Every page needs appropriate schema markup:
 | Affiliate placement | Global footer | Dedicated page + disclosure |
 | Schema markup | None | FAQPage + Article + Organization |
 
+## Copyrighted Image Violations (Anime/Fan/Celebrity Sites)
+
+AdSense also rejects sites that display **copyrighted images without license**. This is the #1 violation for anime/fan/celebrity/gallery sites and is distinct from "low quality content."
+
+**Symptoms:**
+- AdSense rejection/flag mentions "copyrighted content" or "unauthorized content"
+- Site uses character images from AniList, official game art, movie stills, or celebrity photos
+- Site is a fan project, quiz, wiki, or gallery using third-party artwork
+
+**The DiceBear Solution (no API key, no server, zero copyright risk):**
+
+DiceBear generates unique, royalty-free avatars from any text seed. The pattern is two functions and works in any JS/TS frontend:
+
+```ts
+// lib/images.ts
+export function getCharacterImage(name: string, realImageUrl?: string): string {
+  if (realImageUrl) return realImageUrl; // fallback for non-copyrighted images
+  const seed = encodeURIComponent(name.replace(/\s+/g, '_'));
+  return `https://api.dicebear.com/9.x/lorelei/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1d4f9`;
+}
+
+export function getCharacterImageWithGender(
+  name: string, gender: string, realImageUrl?: string
+): string {
+  if (realImageUrl) return realImageUrl;
+  const seed = encodeURIComponent(name.replace(/\s+/g, '_'));
+  if (gender === 'husbando') {
+    return `https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}&backgroundColor=d1d4f9,c0aede,b6e3f4`;
+  }
+  return `https://api.dicebear.com/9.x/lorelei/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf`;
+}
+```
+
+**Deploy steps:**
+1. Strip ALL `imageUrl` fields pointing to external copyrighted sources (grep + sed)
+2. Wire the DiceBear fallback (already shown above — drop into `lib/images.ts`)
+3. Replace `<img src={...}>` calls with `getCharacterImageWithGender(name, gender, imageUrl)`
+4. Add `onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}` for safety
+
+See `references/dicebear-avatar-replacement.md` for full integration code including the exact sed commands and character data cleanup.
+
+**⚠️ Critical:** Image cropping APIs (apilayer smart crop, remove.bg, etc.) do NOT solve this violation. A cropped copyrighted image is still a copyrighted image. The only fix is replacing with royalty-free generated content.
+
+**Also fix these companion pages** — same as Phase 1 of the content overhaul but mandatory:
+- Expand privacy policy to cover cookie/AdSense disclosure (min 800 words)
+- Add an About page with content disclaimer and contact info
+- Expand Terms with IP disclaimer (all trademarks belong to respective owners)
+
 ## AdSense Rejection Response Flow
 
 When user says "AdSense rejected my site for low quality content":

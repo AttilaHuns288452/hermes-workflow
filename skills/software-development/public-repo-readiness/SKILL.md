@@ -1,6 +1,6 @@
 ---
 name: public-repo-readiness
-description: Audit a GitHub repository for public-readiness — security exposure (secrets, local paths), .gitignore hygiene, documentation accuracy (README claims matching reality), template/placeholder verification, and file consistency checks. Use when the user asks "is my repo safe to make public?", "clean up my repo before publishing", "audit my repo for secrets", or "verify my repo is ready for public contributors".
+description: Audit AND enhance a GitHub repository for public-readiness — security exposure (secrets, local paths), .gitignore hygiene, documentation accuracy (README claims matching reality), README & website improvement, template/placeholder verification, and file consistency checks. Use when the user asks "is my repo safe to make public?", "clean up my repo before publishing", "audit my repo for secrets", "verify my repo is ready for public contributors", or "improve the README and website".
 version: 1.0.0
 author: Hermes Agent
 user-invocable: true
@@ -10,9 +10,13 @@ triggers:
   - repo security
   - repo readiness
   - repo safe to publish
+  - improve repo
+  - enhance repo
+  - improve readme
+  - repo website
 metadata:
   decide:
-    keywords: [audit, public, repo, security, readiness, gitignore, secret, publish, github, cleanup]
+    keywords: [audit, public, repo, security, readiness, gitignore, secret, publish, github, cleanup, improve, enhance, readme, website, github pages]
     domain: software-development
     confidence: high
 ---
@@ -54,10 +58,80 @@ grep -rnP '(TOKEN|SECRET|PASSWORD|CREDENTIALS)\s*[=:]\s*["'\''][^"'\''\s]{8,}' .
 grep -rnP '(C:\\Users\\|/home/|/Users/)' . --include='*' 2>/dev/null | grep -v '\.git/'
 ```
 
-**Check template files specifically:**
-- `config.yaml.template` — ALL values should be placeholders (`YOUR_NAME`, `<your-key>`, `CHANGE_ME`)
-- `.env.example` — ALL values should be placeholders
-- Any `.env.*` files should use placeholder values only
+**One sweep command — personal paths only (most common leak):**
+```bash
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.yml' \
+  --include='*.html' --include='*.sh' --include='*.ps1' --include='*.bat' \
+  --include='*.json' --include='*.toml' --include='*.cfg' --include='*.ini' \
+  -iE '(C:\.Users\\|/home/|/Users/)' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/'
+```
+
+**One sweep command — API keys / tokens:**
+```bash
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.yml' \
+  --include='*.json' --include='*.toml' --include='*.cfg' --include='*.ini' \
+  -iE '(sk-[a-zA-Z0-9]{20,}|gh[porsu]_[a-zA-Z0-9]{36,}|AKIA[0-9A-Z]{16})' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/' \
+  | grep -v 'sk-xxx\|ghp_xxx\|YOUR_\|\.\.\.\|example\|template'
+```
+
+**One sweep command — named service remotes:**
+```bash
+# Check for rclone remote names, docker hub user names, AWS account IDs, etc.
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.sh' \
+  --include='*.ps1' --include='*.bat' \
+  -iE '(remote_name\s*=|rclone remote|gdrive:)' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/' \
+  | grep -v 'my_gdrive\|YOUR_\|example\|placeholder'
+```
+
+**Note on file types:** On a Windows-hosted Git Bash, `--include='*.ps1'` and `--include='*.bat'` are critical — PowerShell scripts commonly contain hardcoded remote names and user-specific paths that plain Python/MD scans miss.
+
+**Note on escaping:** When using `sed` to replace Windows paths (which contain backslashes), prefer the `patch` tool over `sed` to avoid escaping nightmares. The `sed` backslash escape chain for a path like `C:\Users\Attila\...` is error-prone:
+```bash
+# sed: pain (need quadruple escaping for backslashes and brackets)
+sed -i 's|C:\\Users\\Attila|$HOME|g' file.md   # may fail on bracket chars
+
+# patch: clean (use the tool directly, not sed via terminal)
+patch path="file.md" old_string="C:\Users\Attila\..." new_string="$HOME/..."
+```
+
+## The Scan → Fix → Re-Scan Loop
+
+After any bulk operation that modifies files in the repo (sync, merge, bulk find-replace), always close the loop:
+
+```bash
+# 1. Full sweep
+echo "BEFORE:"
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.ps1' \
+  -iE '(C:\.Users\\|/home/|/Users/)' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/'
+
+# 2. Fix everything found (use patch tool per file)
+
+# 3. Re-verify — zero expected
+echo "AFTER: should be empty"
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.ps1' \
+  -iE '(C:\.Users\\|/home/|/Users/)' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/'
+echo "DONE"
+```
+
+If the "after" scan still shows hits, those are the files you missed — iterate until zero.
+
+**Note on `.pyc` cache files:** Compiled Python bytecode in `__pycache__/` directories may contain embedded strings (including paths) from the source code. These binary files won't show up in text grep scans. If a `__pycache__/` directory is tracked in git, either:
+- `git rm -r --cached __pycache__/ && echo '__pycache__/' >> .gitignore`
+- Or use binary grep: `grep -rlaP '[^\x00-\x7F]' __pycache__/ 2>/dev/null` to check for unexpected binary content
+
+**Pillar 1 full checklist:**
+- [ ] Personal filesystem paths found and replaced
+- [ ] API keys / tokens verified (doc-examples only)
+- [ ] Named service remotes (rclone, docker, etc.) sanitized
+- [ ] Template files use placeholders only
+- [ ] Build artifacts excluded from git tracking
+- [ ] `.pyc` / cached files un-tracked
+- [ ] Re-verified after every sync/overwrite
 
 **Check build artifacts:**
 - Build output directories (`dist/`, `build/`, `.next/`, `graphify-out/`, etc.) often embed local paths
@@ -102,6 +176,7 @@ Verify all human-facing claims match reality. This is critical because stale doc
 - [ ] Dashboard or catalog pages use the same counts
 - [ ] SETUP.md install commands actually work (test the exact command)
 - [ ] Quick-start code blocks compile/run
+- [ ] Every documented CLI command exists in `--help` output (see Verify Documented Commands below)
 - [ ] Feature lists match what's actually in the repo
 - [ ] Links to other docs are not broken (check for `file.md` that doesn't exist)
 
@@ -126,6 +201,20 @@ done
 - dashboard.html — counts in JS data
 - SETUP.md — install commands, step count, tool list
 - Any SKILLS_CATALOG.md, INTEGRATION.md, or other overview docs
+- Compiled bundles and `legacy/` pages — they embed copies of commands; grep them too (`grep -rn 'hermes run' . --include='*.html' --include='*.js'`)
+
+### Verify Documented Commands Actually Run
+
+Eyeballing commands is not verification — run them in a fresh `git clone --depth 1` against the real CLI:
+
+1. **Subcommand must exist**: `hermes --help` (or `<tool> --help`) lists valid subcommands. Anything absent (e.g. `hermes run`) prints usage and exits non-zero. Docs must use `hermes -z "prompt"` for one-shot prompts.
+2. **Non-interactive loops need `-y`**: `hermes skills install <dir>` WITHOUT `-y` prints `Fetching: <dir>` then exits 0 **without installing** — silent abort. Install-all loops must be `hermes skills install -y "$dir"`. Verify by installing one skill with and without `-y` first.
+3. **Truncated placeholders break copy-paste**: docs that show `$FREEL..._KEY` (literal ellipsis) fail verification. Grep docs for `...` inside env-var names before shipping.
+4. **Fix source, rebuild the site**: if the website embeds commands (e.g. `src/App.jsx`), patch the source then `npm run build` (outDir `docs/`) and commit the rebuilt bundle. Never hand-patch minified JS; `git checkout -- docs/` to discard noise from test builds.
+5. **JS/JSX string escaping**: shell commands in single-quoted JS strings lose backslashes — `\;` renders as `;` (breaks `find -exec ... \;`). Source needs `\\;` so the UI shows `\;`.
+6. **Package-name vs binary-name**: verify install commands resolve to the right binary — e.g. `uv tool install graphifyy` ships `graphify` + `graphify-mcp`; `npm i -g @colbymchenry/codegraph` ships `codegraph`. Check via `npm view <pkg> bin` / pip `entry_points` rather than assuming the binary name.
+
+See `references/hermes-cli-verified-commands.md` for the tested command table.
 
 **CRLF/LF consistency (for cross-platform repos):**
 ```bash
@@ -211,6 +300,139 @@ When the repo is a mirror of a Hermes Agent skill installation:
 - Check `~/.gitconfig`, `~/.bashrc`, `~/.zshrc` for any token values
 - Ensure SSH config uses placeholders for hostnames/IPs
 - Check shell history files for inline credentials
+
+## Pillar 5 — README & Website Enhancement
+
+When the user asks to improve a GitHub repo's README or GitHub Pages website, follow this workflow:
+
+### Discovery Phase
+
+Scrape the live README, website source files, and key code files (App.jsx, index.css, package.json, vite.config.js) before changing anything. Get the full picture of current claims, structure, and build config.
+
+### README Enhancement
+
+Update README when new integrations or capabilities are added:
+
+- **Hero section** — update count/summary lines
+- **New sections** — add dedicated integration sections with what-it-does, key capabilities, model/routing assignments
+- **Quick Start + Built With** — keep current
+
+### Website Enhancement (React + Tailwind / Vite → docs/)
+
+**Adding a new section:**
+1. Create `src/data-<topic>.json` with structured content
+2. Add a React component in `src/App.jsx` using existing patterns (Reveal, spotlight-card, premium-card, eyebrow badge, category colours)
+3. Import the data file at top of App.jsx
+4. Add `<Section />` to the main `<main>` render
+5. Update OG meta tags in `index.html`
+
+**Vite entry handling (CRITICAL):** If root `index.html` references built assets (`assets/index-*.js`) instead of source (`/src/main.jsx`), rewrite it to the proper Vite dev entry format keeping all OG meta tags and font preloads.
+
+**Build & Deploy:**
+```bash
+npm install && npm run build    # outputs to docs/
+cp docs/index.html index.html   # sync root for GH Pages
+git add -A && git commit -m "<section>" && git push
+```
+
+### Design Patterns to Follow
+
+- **Dark theme** — `#080b14` surface, `#e4eaf5` text, `#8895b8` secondary
+- **Glass cards** — `spotlight-card` / `premium-card` classes with radial hover glow
+- **Reveal** — `Reveal` component (IntersectionObserver fade-up)
+- **Section structure** — `section-pad`, `eyebrow` badge, gradient heading
+- **Icons** — inline SVG (Lucide-style), no extra deps
+- **Category colours** — green `#3ddc84`, purple `#9b7cf7`, cyan `#6bc5e8`, gold `#f0d060`, rose `#e4686a`, blue `#4a8cf4`
+- Use `patch` (not sed) for React source edits
+- No motion libs unless asked — IntersectionObserver covers it
+- OG description should mention new integrations
+- Shallow clone with `--depth 1` for repos with 2000+ files
+
+### Verification
+
+```bash
+npm run build   # check no errors
+cp docs/index.html index.html
+git push
+# Wait ~30s then scrape live GH Pages URL to confirm
+```
+
+## ⚠️ Critical Pitfalls
+
+### Pitfall 1: Sanitization Ordering — Sanitize After Sync, Not Before
+
+When mirroring a local setup (skills, scripts, configs) into a public repo, the ordering of operations matters enormously:
+
+**WRONG ORDER:**
+1. Sanitize files (remove personal paths, secrets) ← Gets overwritten
+2. Sync/overwrite from local source ← **Undoes all your fixes**
+3. Commit → **Leaks personal data**
+
+**CORRECT ORDER:**
+1. Sync/overwrite from local source first
+2. Re-run the full security scan (Pillar 1)
+3. Sanitize any newly-introduced personal paths
+4. Verify doc counts match new reality (Pillar 3)
+5. Commit
+
+This is especially dangerous with **`cp`-based syncs** where you copy entire skill directories. Every `cp` that overwrites a sanitized file re-introduces the leak. After syncing, always re-run the grep scans from Pillar 1 before committing.
+
+**Concrete `cp` overwrite scenario:**
+```bash
+# You spent 30 minutes sanitizing skills/productivity/mcp-integrations/SKILL.md
+# Then you do:
+cp -r /c/Users/Attila/AppData/Local/hermes/skills/* repo/skills/
+# ↑ This overwrites your sanitized SKILL.md with the original containing paths
+# You must re-sanitize after every such copy
+```
+
+**The fix loop:**
+```bash
+# 1. Sync (copies everything, overwriting sanitized files)
+cp -r "$SOURCE/skills/"* "$REPO/skills/"
+cp -r "$SOURCE/scripts/"* "$REPO/scripts/"
+
+# 2. Scan immediately
+grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.html' --include='*.sh' --include='*.ps1' \
+  -iE '(/Users/|/home/|C:\.Users\\)' . 2>/dev/null \
+  | grep -v 'graphify-out/' | grep -v '\.git/' | grep -v 'node_modules/'
+
+# 3. Sanitize all findings
+# 4. Re-verify (zero findings expected)
+# 5. Commit
+```
+
+### Pitfall 2: Graphify AST Cache False Positives
+
+The `graphify-out/cache/ast/` directory contains JSON dumps of code ASTs. These embed **absolute filesystem paths** in node labels (e.g., `"id": "c_users_attila_documents_projects_..."`). When running grep-based scans for local paths:
+
+```bash
+# BAD — produces hundreds of false positives from AST cache
+grep -rn 'C:\\Users\\\\' . --include='*.json'
+
+# GOOD — exclude graphify-out from the scan
+grep -rn 'C:\\Users\\\\' . --include='*.json' | grep -v 'graphify-out/'
+```
+
+The directory is already `.gitignore`-safe (build artifact), but grep scans against the checked-out repo will flag every AST node containing a username. Always exclude `graphify-out/` from path-based grep scans, or strip the directory with `git rm -r --cached graphify-out/` and re-scan.
+
+### Pitfall 3: Post-Sync Static Count Drift
+
+After syncing skills into a mirror repo, the skill count changes. Every static file that hardcodes a number will be wrong. Search and fix across ALL of these:
+
+```bash
+files_with_counts=(README.md SETUP.md index.html dashboard.html)
+for f in "${files_with_counts[@]}"; do
+  if [ -f "$f" ]; then
+    old_count=$(grep -oP '(?<=\b)[0-9]{2,}(?=\s*(Skills|skills|SKILL))' "$f" 2>/dev/null || echo 0)
+    echo "$f: claims $old_count"
+  fi
+done
+actual=$(find skills/ -name 'SKILL.md' | wc -l)
+echo "Actual: $actual"
+```
+
+The most common stale references are `<div class="num">SKILL_COUNT</div>` in HTML hero stats, and `(SKILL_COUNT total)` in SETUP.md step headers. The `sed` pattern above handles most cases but always verify after running it.
 
 ## Fix Workflow
 

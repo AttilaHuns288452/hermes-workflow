@@ -21,10 +21,17 @@ triggers:
 
 ECC agents are `.md` skill files designed for Claude Code with `model: sonnet`/`model: opus` requirements.  
 This bridge **extracts their prompt body**, strips the paid-model requirement, and routes them through  
-the **free model chain** (OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
+the **free model chain** (opencode/deepseek-v4-flash-free for code agents, opencode/mimo-v2.5-free for vision agents → OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
 
 **57 of 64 agents** are compatible with free models (all haiku/sonnet agents).  
 **6 opus agents** (architect, chief-of-staff, gan-*, healthcare-reviewer, planner) may show quality degradation.
+
+### Model Mapping
+
+| Agent Type | Free Model | Fallback |
+|-----------|-----------|----------|
+| Code/analysis agents (comment-analyzer, code-simplifier, refactor-cleaner, etc.) | `opencode/deepseek-v4-flash-free` | `opencode-go/deepseek-v4-flash` |
+| Vision/multimodal agents (image-prompt-engineer, visual-storyteller, ui-designer) | `opencode/mimo-v2.5-free` | `opencode-go/mimo-v2.5` |
 
 ## Triggers (when this skill is activated)
 
@@ -42,6 +49,36 @@ the **free model chain** (OpenCode bundled free → Freebuff → FreeLLMAPI → 
 | "list ECC agents" / "which agents are safe for free" | Agent index (list-safe) |
 | "run ECC agent <name>" | Agent lookup + execution |
 
+## Parallel Multi-Agent Quality Gate (⭐ recommended)
+
+**When:** After building a feature/project, before shipping. Dispatch
+3-4 ECC review agents via `delegate_task(tasks=...)`. All return in ~3 min.
+Proven: caught 38 issues in CashFlow OS that primary builder missed.
+
+```ts
+delegate_task(tasks=[
+  { goal: "Review database schema — RLS, indexes, constraints, cascades",
+    context: "Project: <path>. Check supabase/migrations/*.sql." },
+  { goal: "Scan codebase for silent failures — empty catches, unhandled promises, missing error states",
+    context: "Project: <path>. Check all .ts/.tsx files." },
+  { goal: "Full code quality review — DRYness, TypeScript safety, React patterns, imports",
+    context: "Project: <path>. Check all source files." },
+])
+```
+
+**Agent mapping (use these goals, not ECC agent names):**
+
+| Dimension | Goal | ECC Equivalent |
+|-----------|------|---------------|
+| Database | Schema review | `database-reviewer` |
+| Error handling | Silent failure hunt | `silent-failure-hunter` |
+| Code quality | DRYness, types, patterns | `code-reviewer` |
+| Build/TS | Build errors, warnings | `build-error-resolver` |
+
+**Apply results:** fix root causes first (one fix often cascades to 10+ issues).
+
+See `references/fullstack-quality-gate.md` for the CashFlow OS session evidence.
+
 ## Invocation Patterns
 
 ### Pattern 1 — Load agent prompt into this conversation (analysis/review agents)
@@ -51,25 +88,28 @@ type-design-analyzer, database-reviewer), load the agent's prompt directly into 
 so the current free model executes the review:
 
 ```bash
-python $HERMES_HOME/skills/ecc-bridge/scripts/ecc-runner.py <agent-name>
+python C:\Users\Attila\AppData\Local\hermes\skills\ecc-bridge\scripts\ecc-runner.py <agent-name>
 ```
 
 Take the output and use it as the **system prompt** for this conversation. The agent body  
 contains the analysis framework, criteria, and output format — apply the user's code or  
 filesystem context against those criteria.
 
-### Pattern 2 — Delegate to OpenCode (code-modification agents)
+### Pattern 2 — Delegate to OpenCode (code-modification and analysis agents)
 
 For agents that write/change files (code-simplifier, refactor-cleaner, doc-updater,  
-performance-optimizer), extract the prompt and pipe it to OpenCode with a free model:
+performance-optimizer), OR for analysis agents run through OpenCode (comment-analyzer,  
+silent-failure-hunter), extract the prompt and pipe it to OpenCode with a free model:
 
 ```bash
-# Extract prompt, pipe to opencode
-python ecc-runner.py code-simplifier > /tmp/ecc-prompt.md
+# Extract prompt to a Windows-safe path (NOT /tmp — MSYS issue)
+python ecc-runner.py code-simplifier > ecc-prompt.md
 opencode run --model opencode/deepseek-v4-flash-free \
-  --file /tmp/ecc-prompt.md \
+  --file ecc-prompt.md \
   "Simplify the code in the current working directory"
 ```
+
+**Windows tip:** Never use `/tmp/ecc-prompt.md` — MSYS doesn't resolve it. Use a relative path or a full `C:/Users/...` path. See `references/2026-07-11-comment-analyzer-opencode-pipeline.md` for a proven example.
 
 ### Pattern 3 — Delegate to Freebuff (alternative coding agent)
 
@@ -85,15 +125,18 @@ freebuff run --model "DeepSeek V4 Flash" \
 
 | ECC Agent | Original Model | Recommended Free Model | Tier |
 |-----------|---------------|----------------------|------|
-| doc-updater | haiku | `opencode/north-mini-code-free` | strong ✅ |
+| doc-updater | haiku | `opencode/deepseek-v4-flash-free` | strong ✅ |
 | comment-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
 | silent-failure-hunter | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
 | pr-test-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
 | type-design-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
 | code-simplifier | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| database-reviewer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
+| database-reviewer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
 | refactor-cleaner | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| performance-optimizer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
+| performance-optimizer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
+| image-prompt-engineer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
+| visual-storyteller | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
+| ui-designer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
 
 All 47 other sonnet agents and doc-updater (haiku) follow the same pattern.  
 Opus agents (6): architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner,  
@@ -122,7 +165,44 @@ When the bridge extracts an agent prompt:
 | | Shell commands (diagnostic) |
 | | Workflow steps |
 
-## Execution Order Within This Skill
+### Pattern 4 — Parallel Multi-Agent Quality Gate (⭐ recommended for any non-trivial build)
+
+**When:** After building a feature or project, before shipping. Dispatches 3-4 ECC
+review agents in parallel via `delegate_task(tasks=...)`. Each covers a different
+quality dimension. All return within ~3 minutes. Proven: caught 38 issues in CashFlow OS
+that the primary builder missed.
+
+```ts
+delegate_task(tasks=[
+  {
+    goal: "Review the database schema for RLS correctness, missing indexes, constraints",
+    context: "Project: <path>. Check supabase/migrations/*.sql. Focus on RLS, cascades, constraints."
+  },
+  {
+    goal: "Scan the codebase for silent failures, unhandled errors, swallowed exceptions",
+    context: "Project: <path>. Check all .ts/.tsx files. Focus on empty catch blocks, unhandled promises, missing error states."
+  },
+  {
+    goal: "Full code quality review — DRYness, TypeScript safety, React patterns, import hygiene",
+    context: "Project: <path>. Check all source files. Focus on duplicated code, any casts, unused imports, naming."
+  },
+])
+```
+
+**Recommended agent mapping (use these goals, not ECC agent names directly):**
+
+| Dimension | Goal | ECC Agent Equivalent |
+|-----------|------|---------------------|
+| Database | Schema review | `database-reviewer` |
+| Error handling | Silent failure hunt | `silent-failure-hunter` |
+| Code quality | DRYness, types, patterns | `code-reviewer` |
+| Build/TS | Build errors, warnings | `build-error-resolver` |
+
+**Apply results in priority order:** fix root causes first (e.g. extract duplicated
+`getEntity()`), then cascading fixes (structured errors), then low-severity (unused imports).
+One root-cause fix often cascades to resolve 10+ reported issues.
+
+See `references/fullstack-quality-gate.md` for the CashFlow OS session example.
 
 1. User invokes with a trigger phrase referencing an ECC agent
 2. Run `python ecc-runner.py <agent> <context>` to extract the stripped prompt
@@ -181,6 +261,12 @@ become the review checklist. Common findings from the inaugural self-audit:
 - **Code-modification agents can break things**: code-simplifier, refactor-cleaner, performance-optimizer make file changes. Always verify with build + tests after running.
 - **OpenCode write mode**: code-modification agents need write mode. Ensure `opencode run` is in write mode (default). If no write mode, the agent will only produce a diff description.
 - **Agent doesn't know about the current project**: When loading the agent prompt into this conversation, the current context (files, project structure) provides the codebase awareness the agent needs. When delegating to OpenCode, workdir must be set to the project root.
+- **OpenCode stale DB**: If `opencode run` fails with "Unexpected server error" / SQLite "no such column: replacement_seq", the local DB schema is stale from a version upgrade. Fix: kill any opencode processes, delete `~/.local/share/opencode/opencode.db`, retry.
+- **Windows /tmp doesn't exist**: When writing temp prompt files, use a project-relative path or full `C:/Users/...` path. MSYS `/tmp` fails silently — `opencode run` with `--file /tmp/foo` reports "File not found".
+- **MSYS path doubling when running ecc-runner.py**: `python ~/AppData/Local/.../ecc-runner.py list` fails with `C:\c\Users\Attila\...` because MSYS resolves `~` to `/c/Users/Attila` then Python prepends a drive letter. Use native Windows path: `python "C:/Users/Attila/AppData/Local/hermes/skills/ecc-bridge/scripts/ecc-runner.py"`.
+- **Multiple ECC agents in one OpenCode call**: Pass multiple `--file` flags to combine agent frameworks in a single pass. Tested: `opencode run 'read and improve X' --file architect-prompt.md --file reviewer-prompt.md`. OpenCode reads all attached files alongside the task.
 - **Undefined variable on unexpected model field**: If the `index_all_agents()` function (or equivalent) encounters a `model:` value that isn't `haiku`/`sonnet`/`opus`, the `tier` variable is never assigned — `NameError` at the next line. Always add an `else: tier = "unknown"` fallback.
 - **Duplicate keys in mapping dicts**: When maintaining `SAFE_AGENTS` (or agent-name-to-free-model mappings), a copy-pasted duplicate key silently overwrites the first entry. After every edit, grep for duplicates: `grep -c '"agent-name"' scripts/ecc-runner.py`.
 - **None-check before regex .group()**: When extracting frontmatter, a regex that doesn't match returns `None` — calling `.group(1)` raises `AttributeError`. Always guard frontmatter extraction with `if m is not None:` before accessing captured groups.
+- **Supabase trigger migration splitting**: PL/pgSQL function bodies with `$$` blocks contain internal semicolons. Splitting a migration SQL file by semicolons for REST API execution WILL corrupt function bodies. Move complex trigger logic to app code (`signUp` server action or middleware) instead.
+- **Next.js `redirect()` in server actions ≠ form action**: `redirect()` throws `NEXT_REDIRECT` internally. When called imperatively from a `form onSubmit` handler (not the `action` prop), Next.js doesn't catch it — the promise rejects silently with no navigation and no error UI. Fix: return `{success: true}` from server actions, let the client call `router.push()`.

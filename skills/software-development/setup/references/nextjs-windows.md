@@ -16,20 +16,48 @@ Error: ENOENT: no such file or directory, open 'C:\Users\<user>\...\.next\requir
 
 **Root cause:** When `next build` or `next dev` runs inside a project subdirectory (e.g. `website/` of a monorepo), Turbopack scans up the directory tree for lockfiles. If it finds a lockfile closer to the filesystem root (e.g. a stray `package-lock.json` in `C:\Users\<user>\`), it selects that as the workspace root instead of the project directory. The build then fails because paths relative to the wrong root don't resolve to `.next/`.
 
-**Fix in `next.config.ts`:**
+**Root lockfiles are often created by accident:** running `npm install` from the wrong directory (e.g., `cd ~ && npm install @vercel/analytics` instead of first `cd ~/project`) drops a `package-lock.json` at the user home level. Turbopack finds this and gets confused. **Fix:** delete the root lockfile and pin the project root.
+
+**Fix in `next.config.ts` (two options):**
 ```typescript
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+// Option A — use __dirname for the exact directory of the config file
+const nextConfigA: NextConfig = {
   turbopack: {
     root: __dirname,
+  },
+};
+
+// Option B — use process.cwd() for the build-time working directory
+const nextConfigB: NextConfig = {
+  turbopack: {
+    root: process.cwd(),
   },
 };
 
 export default nextConfig;
 ```
 
-This explicitly pins the root to the project directory, bypassing auto-detection.
+Both work; `process.cwd()` is preferred for Vercel builds where the working directory is already the project root.
+
+---
+
+## metadataBase Required for Custom Domains
+
+**Symptom:** Build passes but OG/Twitter preview cards show `http://localhost:3000` as the image URL:
+```
+⚠ metadataBase property in metadata export is not set for resolving social open graph
+or twitter images, using "http://localhost:3000".
+```
+
+**Fix:** Add `metadataBase` at the top of the `metadata` export in `app/layout.tsx`:
+```typescript
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.your-custom-domain.com"),
+  // ... rest of metadata
+};
+```
 
 ---
 

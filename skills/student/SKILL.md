@@ -26,6 +26,7 @@ triggers:
 | **C# fundamentals** | WinForms (button click events, TextBox, Label), TryParse, basic validation, event handlers, string manipulation |
 | **SQL / relational databases** | CREATE TABLE, INSERT, SELECT, WHERE, JOIN, basic subqueries, primary/foreign keys, basic CRUD operations |
 | **CRUD app design** | Console menu pattern (while-true/switch), account management, grade tracking, calculator apps, input validation, sequential logic flow |
+| **Tailwind CSS basics** | Utility-first classes (flex, grid, padding, margin, colors, borders, rounded, shadow), responsive prefixes (sm:/md:/lg:), hover/focus/group variants, gradients via bg-gradient-to-*, Tailwind v4 @theme inline config, integrating Tailwind in Next.js + React components |
 
 Style evidence from my actual code (see `~/Documents/Programs/`):
 - Clear long variable names (`fullName`, `birthYearText`, `accountNumber`)
@@ -41,7 +42,8 @@ Style evidence from my actual code (see `~/Documents/Programs/`):
 | Domain | Detail |
 |--------|--------|
 | **HTML** | Basic structure, forms, elements |
-| **CSS** | Basic layout, colors, fonts — NOT responsive design, animations, or flexbox/grid |
+| **CSS** | Basic layout, colors, fonts, responsive via Tailwind utility classes — covers what Tailwind abstracts away |
+| **React / Next.js (pattern copyist)** | Can read, copy, and modify existing React components by pattern-matching — JSX, props, useState/useEffect, map() loops in JSX, ternary/&& in templates, import/export. Cannot write React from scratch without a reference. Does NOT know JavaScript — treats React patterns as template syntax, not typed JS. |
 | **Basic REST** | Understands endpoints, GET/POST, but not API design patterns or full-stack integration |
 
 ### ❌ Weak / Avoid Without Explanation (flag before using)
@@ -50,7 +52,6 @@ Style evidence from my actual code (see `~/Documents/Programs/`):
 |--------|-----------------|
 | **JavaScript / TypeScript** | Very limited exposure. Explain every non-trivial pattern (arrow functions, destructuring, promises/async-await, closures, prototypes). Bridge to C# when possible. |
 | **Python** | Minimal exposure. Explain: indentation-as-syntax, `__init__`, `self`, f-strings, type hints, decorators, list comprehensions. Bridge to Java/C#. |
-| **React / Next.js** | Never used. Explain component model, state/hooks, props, JSX. |
 | **async/await (any language)** | Unfamiliar. Explain as "like C# async/await" (I know the concept from C# WinForms event model). |
 | **Supabase-specific patterns** | No experience. Explain each query pattern, auth model, and SDK call. |
 | **Algorithmic trading logic** | Don't assume finance domain knowledge beyond basic math. |
@@ -190,4 +191,8 @@ Combined with coding keywords: create, program, build, write, implement, code, d
 ### Model Tier Guidance
 
 - **Default:** Route to the simpler/cheaper model tier. Student-level code doesn't need frontier reasoning.
-- **Exception:** If the task is inherently complex AND the user explicitly says "student mode" (e.g., "build a trading bot as a student"), keep a competent model but strictly enforce the **output style** rules from Sections 2 and 3.
+- If the task is inherently complex AND the user explicitly says "student mode" (e.g., "build a trading bot as a student"), keep a competent model but strictly enforce the **output style** rules from Sections 2 and 3.
+
+## See Also
+
+- `references/vite-react-common-pitfalls.md` — Common beginner mistakes in Vite + React projects (image paths, JSX conventions, Tailwind layout). Load when the user hits a React-specific bug or asks about UI layout.

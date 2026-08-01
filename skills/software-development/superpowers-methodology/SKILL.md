@@ -163,9 +163,15 @@ Use the full pipeline for:
 - Configuration-only changes
 - Throwaway prototypes
 
+## Post-Build Review (Multi-Perspective Protocol)
+
+After any milestone ships, run a 5-persona critique: everyday user, power user, business owner, staff, accountant. Produces prioritized fix list. See `references/multi-perspective-review.md` for the full protocol.
+
+Proven: CashFlow OS v1 review caught 10 issues (missing audit trail, currency hardcoded, quick-add bloated). All fixable within session.
+
 ## References
 
 - **Superpowers repo:** https://github.com/obra/superpowers — original source of this methodology
-- **Superpowers skills (external_dirs):** `C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills/`
+- **Superpowers skills (external_dirs):** `C:/Users/Attila/Documents/Repos/external-skills/superpowers/skills/`
 - **Release announcement:** https://blog.fsck.com/2025/10/09/superpowers/
 - **Superpowers evals:** https://github.com/prime-radiant-inc/superpowers-evals/

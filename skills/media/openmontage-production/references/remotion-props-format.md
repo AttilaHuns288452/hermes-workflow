@@ -102,11 +102,11 @@ interface AudioConfig {
 {
   "audio": {
     "narration": {
-      "src": "file:///$HOME/OpenMontage/projects/my-video/assets/audio/narration.mp3",
+      "src": "file:///C:/Users/Attila/OpenMontage/projects/my-video/assets/audio/narration.mp3",
       "volume": 1.0
     },
     "music": {
-      "src": "file:///$HOME/OpenMontage/projects/my-video/assets/music/background.mp3",
+      "src": "file:///C:/Users/Attila/OpenMontage/projects/my-video/assets/music/background.mp3",
       "volume": 0.1,
       "offsetSeconds": 0,
       "fadeInSeconds": 2,
@@ -231,7 +231,7 @@ Controls visual styling of the Explainer. If omitted, default dark theme is used
       "type": "generated",
       "in_seconds": 5.5,
       "out_seconds": 20,
-      "source": "file:///$HOME/.../scene-2-juan.png",
+      "source": "file:///C:/Users/Attila/.../scene-2-juan.png",
       "animation": "ken-burns",
       "overlays": [
         {"text": "JUAN — Failed Hustles",
@@ -300,3 +300,9 @@ Controls visual styling of the Explainer. If omitted, default dark theme is used
 5. **Image cuts with `animation: "ken-burns"` need no `generated_content`**: The two are mutually exclusive per cut — `generated_content` is for text_card scenes, `animation` is for image scenes.
 
 6. **Formatting `generated_content.subtitle`: Use `\n`** — For multi-line text in `end_screen.main_text` or subtitle fields, use `\n` as the line separator (JSON escape `\\n`).
+
+7. **`kpi_grid` values must be NUMBERS, not strings** — `"value": "12,400+"` renders `NaN` on the cards (count-up animation does arithmetic). Use `"value": 12400` and let KPIGrid format it (`12.4K`). Labels carry any suffix.
+
+8. **`theme` is a NAME string; the object goes in `themeConfig`** — `resolveTheme()` (Root.tsx) treats `props.theme` as a key into `THEMES[...]`; a full object there is ignored and **silently falls back to dark `DEFAULT_THEME`**. Passing `"theme": {...}` is the #1 cause of "I set light colors but the render is dark". Correct: `"themeConfig": {...}` (custom theme) or `"theme": "flat-motion-graphics"` (named theme).
+
+9. **`stat_reveal` / `section_title` are OVERLAY types, NOT cut types** — used as a `cut`, they fall through the renderer switch and display the cut `id` as visible text (e.g. "c5" on screen). For a full-scene stat use `stat_card` (`stat` + `subtitle`). `stat_reveal` only works inside `overlays[]`.

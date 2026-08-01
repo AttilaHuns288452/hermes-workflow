@@ -57,13 +57,34 @@ The static dashboard at `~/Documents/Projects/hermes-dashboard/index.html` (755 
 
 No backend server required — it's fully client-side with hardcoded static data.
 
+## Architecture
+
+`hermes dashboard` and `hermes serve` share the same `web_server.start_server` handler:
+
+| Command | SPA served? | Gateway running? | Use case |
+|---------|-------------|------------------|----------|
+| `hermes dashboard --port N` | ✅ Yes | ✅ Yes | Browser UI — **preferred for agents** |
+| `hermes serve --port N` | ❌ No | ✅ Yes | Headless backend for desktop app / remote clients |
+| Desktop Electron app | ✅ Yes (embedded) | ✅ Yes (child process) | User-facing desktop GUI |
+
+**Key insight:** `hermes dashboard` serves **everything on one port** — SPA, API, WebSocket, gateway. No need to start gateway separately. The gateway API server runs internally (typically port 8642) and is proxied through the dashboard port.
+
+**Flow:** Browser loads SPA from `http://127.0.0.1:N/` → SPA connects to gateway WebSocket at `ws://127.0.0.1:N/api/ws` → gateway handles chat/sessions/skills.
+
 ## Serving
 
 ### Official Dashboard (9119 — Priority)
 ```bash
-hermes dashboard --port 9119 --host 127.0.0.1 --no-open
+HERMES_SERVE_HEADLESS=0 hermes dashboard --port 9119 --host 127.0.0.1 --no-open
 ```
 Opens at `http://127.0.0.1:9119`. This is the primary dashboard — always try this first when asked for the dashboard.
+
+**⚠️ CRITICAL: `HERMES_SERVE_HEADLESS=0` is REQUIRED in agent sessions.** The desktop session sets `HERMES_SERVE_HEADLESS=1`, which causes `hermes dashboard` to start in API-only mode (returns `{"error":"Headless backend (hermes serve): web UI disabled..."}` on every path). Always prefix with the override.
+
+**Port conflicts:** If port 9119 is in use, use a different port (e.g. 9121). The dashboard prints `HERMES_DASHBOARD_READY port=N` when ready. Verify with:
+```bash
+curl -s http://127.0.0.1:N/api/status | python -c "import sys,json; d=json.load(sys.stdin); print('Gateway:', d['gateway_state'], '| SPA:', 'OK')"
+```
 
 Check if already running:
 ```bash
@@ -187,9 +208,30 @@ Without this, the fetch login call fails silently with a CORS error and the page
 
 **Symptoms**: Port 9119 responds with a blank error screen, desktop.log shows "Hermes backend exited (1)" then "reset requested by renderer" in a loop.
 
-**Root cause**: The desktop Electron app launches a Hermes backend process that makes an API call during boot. If the default model provider returns HTTP 402 (insufficient credits), the backend exits immediately with code 1, before the IPC handshake completes. The desktop renderer retries indefinitely, failing every time.
+**Two distinct root causes — diagnose first:**
 
-Alternatively, when running `hermes dashboard` CLI mode, the SPA shows "Desktop IPC bridge is unavailable" because it expects `window.hermesDesktop` (the Electron IPC bridge) which doesn't exist in a browser context. This is the *same* error screen as the backend crash but has a different root cause.
+| Symptom | Root cause | Fix |
+|---------|-----------|-----|
+| "Desktop IPC bridge is unavailable" in browser console, no network errors | SPA expects `window.hermesDesktop` (Electron IPC bridge) which doesn't exist in browser context | Use `hermes dashboard` (not Electron app) — it serves the SPA with WebSocket transport |
+| "Desktop boot failed" + network tab shows failed API calls | Backend process exited (e.g. OpenRouter 402 credits) before IPC handshake | Switch model provider or fix credits |
+| SPA loads but shows "Gateway Not Running" in status bar | Gateway not started, or dashboard started in headless mode | Ensure `HERMES_SERVE_HEADLESS=0` and gateway is running |
+
+**Quick diagnosis:**
+```bash
+# 1. Check if the server is actually serving the SPA
+curl -s http://127.0.0.1:9119 | grep -o '<title>[^<]*</title>'
+# → "Hermes" = SPA loaded correctly
+
+# 2. Check gateway status via API
+curl -s http://127.0.0.1:9119/api/status | python -c "
+import sys,json; d=json.load(sys.stdin)
+print(f'Gateway: {d[\"gateway_state\"]} | Sessions: {d[\"active_sessions\"]} | Auth: {d[\"auth_required\"]}')"
+
+# 3. If SPA loads but gateway is down, restart the dashboard
+HERMES_SERVE_HEADLESS=0 hermes dashboard --port 9119 --no-open
+```
+
+**Note:** The CLI `hermes dashboard` command serves both the SPA and gateway on the same port. When running in a browser, the SPA connects to the gateway via WebSocket at `/api/ws`. The "IPC bridge unavailable" error means the SPA loaded but can't find the Electron bridge — this is expected in browser mode and the WebSocket fallback should work.
 
 **Detect which cause:**
 ```
@@ -204,15 +246,7 @@ Check browser console:
     → "Hermes" = SPA loaded but IPC bridge missing
 ```
 
-**Fix sequence**:
-1. Kill the broken desktop process:
-   ```bash
-   # On Windows (git-bash/MSYS):
-   netstat -ano | grep 9119                # find PID
-   taskkill //F //PID <PID>                # kill it
-   # On Linux/macOS:
-   kill $(lsof -ti:9119)
-   ```
+**Fix sequence**:\n1. Kill the broken desktop process:\n   ```bash\n   # On Windows (git-bash/MSYS — use `-f -pid` NOT `//F //PID`)\n   netstat -ano | grep 9119                # find PID\n   taskkill -f -pid <PID>                  # git-bash syntax\n   # On Linux/macOS:\n   kill $(lsof -ti:9119)\n   ```
 2. Switch the default model to a working free provider:
    ```bash
    hermes config set model.default deepseek-v4-flash-free
@@ -255,14 +289,29 @@ hermes dashboard --status
 # Kill stale instances
 hermes dashboard --stop
 
-# Or kill manually (Windows git-bash)
+# Or kill manually (Windows git-bash — use -f -pid NOT //F //PID)
 netstat -ano | grep 9119
-taskkill //F //PID <PID>
+taskkill -f -pid <PID>    # git-bash syntax (//F //PID breaks)
 ```
 
 Then retry:
 ```bash
-hermes dashboard --port 9119 --no-open --skip-build
+HERMES_SERVE_HEADLESS=0 hermes dashboard --port 9119 --no-open
+```
+
+**Alternative:** If port 9119 is stubborn (stale Python/Node processes), use a different port:
+```bash
+HERMES_SERVE_HEADLESS=0 hermes dashboard --port 9121 --no-open
+# Dashboard prints: HERMES_DASHBOARD_READY port=9121
+# Access at http://127.0.0.1:9121
+```
+
+**Verification after start:**
+```bash
+curl -s http://127.0.0.1:9121/api/status | python -c "
+import sys,json; d=json.load(sys.stdin)
+print(f'Gateway: {d[\"gateway_state\"]} (PID {d[\"gateway_pid\"]})')
+print(f'Profiles: {d[\"profiles\"]}')"
 ```
 
 ### Config changes not reflected in dashboard
@@ -362,10 +411,12 @@ The `/decide` skill routes ecosystem/dashboard queries here:
 
 ## Pitfalls
 
-- **Two ways to serve 9119 exist — and they differ**: The `hermes dashboard` CLI command and the Electron Desktop GUI app both bind port 9119 but work completely differently. The CLI dashboard is a standalone web server and the preferred way to serve the dashboard. The Desktop app spawns a child Hermes backend via IPC and crashes if that backend can't boot (e.g. OpenRouter 402). When fixing a broken dashboard, kill the desktop process and use `hermes dashboard --skip-build` instead.
+- **`HERMES_SERVE_HEADLESS` env var forces API-only mode**: The desktop session sets `HERMES_SERVE_HEADLESS=1`. When this is set, `hermes dashboard` returns `{"error":"Headless backend (hermes serve): web UI disabled..."}` on every path — even though it prints `HERMES_DASHBOARD_READY port=N`. **Always prefix with `HERMES_SERVE_HEADLESS=0`.**
+- **`hermes dashboard` serves BOTH SPA and gateway on one port**: Do NOT start `hermes gateway run` separately — the dashboard command already includes the gateway. Starting both causes port conflicts and confusing behavior.
+- **Two ways to serve the web UI — and they differ**: `hermes dashboard` (CLI) is a standalone server that serves SPA + gateway. The Desktop Electron app spawns a child process via IPC. The CLI version is more reliable for agents.
 - **Two dashboards exist**: Don't confuse the official dashboard (9119) with the static ecosystem visualization (8080). Always prefer 9119.
 - **Official dashboard reads state, not live stream**: The 9119 dashboard reads from Hermes state DB on page load — it does NOT auto-refresh. Refresh the page (Ctrl+R) to see latest data.
-- **Config edits must use `hermes config set`**: The agent cannot write config.yaml directly (security restriction). Always use `hermes config set <key> <value>` to fix config. This also avoids YAML parser issues with null values like `context_file_max_chars: null`.
+- **Config edits must use `hermes config set`**: The agent cannot write config.yaml directly (security restriction). Always use `hermes config set <key> <value>`.
 - **Static dashboard is purely static** — don't promise live data. Clarify it reflects a snapshot.
 - **File is dead unless served**: The static HTML file needs an HTTP server — opening directly in a browser (`file://`) will not load vis-network.js from CDN correctly.
 - **Python HTTP server** is single-threaded and slow on concurrent requests. For reliability, use Node.js `npx serve` or a proper web server.

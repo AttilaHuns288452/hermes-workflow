@@ -51,7 +51,7 @@ Before you start a new publish, assess your candidate skill against the three ti
 |---|---|
 | **Title** | `Agent Name` |
 | **Expertise** | *"First-person expertise paragraph"* |
-| **Logo** | Upload from `$HERMES_HOME/[name]-logo.png` |
+| **Logo** | Upload from `C:\Users\Attila\AppData\Local\hermes\[name]-logo.png` |
 | **Category** | `Primary Category` |
 | **Additional** | `Secondary Category` |
 | **Tags** | `tag1, tag2, tag3, tag4, tag5` |
@@ -59,7 +59,7 @@ Before you start a new publish, assess your candidate skill against the three ti
 
 ### Details / README
 
-Paste from `$HOME/Documents/[agent-name]-readme.md`
+Paste from `C:\Users\Attila\Documents\[agent-name]-readme.md`
 
 ### Pricing
 
@@ -108,7 +108,7 @@ Generate with `image_generate` during the publish workflow:
 
 **Save locally and give user the absolute path for upload:**
 ```
-$HERMES_HOME/[agent-name]-logo.png
+C:\Users\Attila\AppData\Local\hermes\[agent-name]-logo.png
 ```
 
 ### Category (Primary)

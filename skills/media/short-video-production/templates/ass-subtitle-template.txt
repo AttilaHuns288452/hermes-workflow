@@ -1,0 +1,48 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV
+Style: caption,Arial,30,&H00FFFFFF,&H00000000,&H00000000,&H80000000,0,0,3,2,1,2,10,10,120
+Style: scene_title,Arial,20,&H00FFFFFF,&H00000000,&H00000000,&H40000000,0,0,3,1,1,8,10,10,0
+Style: label_left,Arial,22,&H00FFFFFF,&H00000000,&H00000000,&H40000000,1,0,3,2,1,1,20,10,10
+Style: label_right,Arial,22,&H00FFFFFF,&H00000000,&H00000000,&H40000000,1,0,3,2,1,7,10,20,10
+Style: wealth,Arial,16,&H0000FF00,&H00000000,&H00000000,&H80000000,0,0,3,1,1,1,10,10,10
+Style: debt,Arial,16,&H006666FF,&H00000000,&H00000000,&H80000000,0,0,3,1,1,7,10,10,10
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+# === Usage Guide ===
+# Alignment codes: \an1=bot-left \an2=bot-center \an3=bot-right
+#                  \an4=mid-left \an5=mid-center \an6=mid-right
+#                  \an7=top-left \an8=top-center \an9=top-right
+#
+# Colors: PrimaryColour=&H00BBGGRR (hex with BGR byte order)
+#   &H00FFFFFF = white   &H0000FF00 = green   &H006666FF = red
+#
+# Styles:
+#   caption  = white text, black outline, bottom-center (y=1920-120)
+#   scene_title = white 60% opacity, top-center (y=10)
+#   label_left  = bold white, top-left (x=20, y=20)
+#   label_right = bold white, top-right (x=1080-right, y=20)
+#   wealth   = green 60% opacity, bottom-left
+#   debt     = red 60% opacity, bottom-right
+
+# === Scene Titles ===
+# Dialogue: 0,START,END,scene_title,,0,0,0,,{\an8}TEENAGE YEARS
+# Dialogue: 0,START,END,scene_title,,0,0,0,,{\an8}ADULT YEARS
+# Dialogue: 0,START,END,scene_title,,0,0,0,,{\an8}OLD AGE
+
+# === Left/Right Labels ===
+# Dialogue: 0,START,END,label_left,,0,0,0,,{\an1}THE SAVER
+# Dialogue: 0,START,END,label_right,,0,0,0,,{\an7}THE SPENDER
+
+# === Wealth/Debt Counters ===
+# Dialogue: 0,START,END,wealth,,0,0,0,,{\an1}SAVED: $5K
+# Dialogue: 0,START,END,debt,,0,0,0,,{\an7}DEBT: $0
+
+# === Narration Captions (bottom center) ===
+# Dialogue: 1,START,END,caption,,0,0,0,,{\an2}Two people. Same age.

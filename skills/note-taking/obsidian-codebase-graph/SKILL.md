@@ -24,6 +24,8 @@ Use this for codebases, especially:
 
 Trigger phrases include:
 - "note to Obsidian"
+- "update the obsidian notes"
+- "create the obsidian notes after creating a project"
 - "map this project to Obsidian"
 - "create an Obsidian graph from this codebase"
 - "sync the codebase into notes"

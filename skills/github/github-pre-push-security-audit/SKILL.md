@@ -208,3 +208,11 @@ If there are zero findings in a severity tier, omit that tier entirely.
 ## Pitfalls
 
 - **Meta-pitfall: reference files can leak the same secrets they teach you to redact** — If your audit produces a `session-audit-example.md` reference file containing `sed` commands or code examples that use the real leaked value (e.g., `sed -i 's/REAL_TOKEN/placeholder/'`), that reference file itself becomes a leak. Always use a fake/placeholder token in example commands: `sed -i 's/your-dashboard-token-here/placeholder/'`. Run the same secret-scan patterns against the skill's own `references/` directory before committing.
+
+- **Graphify-out AST cache false positives** — If the repo has a `graphify-out/` directory (or similar build artifact caches), every grep scan for local paths or usernames will be flooded with false positives. AST caches store absolute filesystem paths embedded in JSON node labels. Always exclude them:
+  ```bash
+  grep -rn 'C:\\Users\\\\' repo/ --include='*.json' | grep -v 'graphify-out/'
+  ```
+  Better: verify `graphify-out/` is in `.gitignore` and check whether it's still tracked with `git ls-files | grep graphify-out`. If tracked, `git rm -r --cached graphify-out/` before running the audit.
+
+- **Sanitization ordering when mirroring a local setup** — If you sanitize files FIRST and then sync/overwrite from a local source, the sync undoes every fix. Always: (1) sync first, (2) scan, (3) sanitize, (4) verify, (5) commit.
