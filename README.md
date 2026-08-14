@@ -37,10 +37,10 @@ curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh
 git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow
 # Install 813 skills in one shot
-find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes skills install "$dir"; done
+find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes skills install -y "$dir"; done
 ```
 
-**First pipeline:** `hermes run "What does the decide skill do?"`
+**First pipeline:** `hermes -z "What does the decide skill do?"`
 
 ## 📊 Stats
 
