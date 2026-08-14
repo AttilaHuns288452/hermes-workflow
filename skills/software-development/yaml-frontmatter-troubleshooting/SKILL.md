@@ -85,6 +85,18 @@ When `platforms:` is absent, some Hermes runtimes treat the skill as unavailable
 
 **Fix:** Always include `platforms: [linux, macos, windows]` or the subset your skill actually supports.
 
+## Trap 6: `references:` paths that don't resolve
+
+The loader resolves `references:` entries **relative to the skill's own `references/` dir**. Two common authoring bugs:
+- **Doubled prefix**: `references: [references/auth-flow.md]` (copy-pasted from a link) resolves to `references/references/auth-flow.md` → the linked file is unreachable. Fix: strip the prefix → `auth-flow.md`.
+- **Escaping the skill dir**: `references: [../../references/workflow-authoring.md]` points outside the skill → dangling. Fix: copy the file into the skill's `references/` and reference it bare, or drop the entry.
+
+Symptom in the loader/audit: "MISSING references/references/...: <skill>". The skill still loads (frontmatter parses) but its linked files are dead.
+
+## Bulk audit across all skill dirs
+
+Re-runnable scanner (frontmatter parse + missing linked files + required commands + name collisions): `scripts/audit-skill-dirs.py`. Run `python scripts/audit-skill-dirs.py` from the skill dir; it walks the primary skills dir + every `skills.external_dirs` entry from `config.yaml` and prints `ISSUES: N` (one line per broken file). Fix output of 0 before declaring a skills library healthy. Note: name collisions between the primary dir and `~/.agents/skills` are the by-design mirror sync (primary wins) — only flag collisions where BOTH copies differ in content.
+
 ## Quick Diagnostic
 
 ```bash

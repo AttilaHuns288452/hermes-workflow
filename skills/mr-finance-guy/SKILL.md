@@ -570,7 +570,7 @@ The rendered MP4 lands at `~/OpenMontage/remotion-composer/out/{name}.mp4`.
 
 All 18 Mr. Finance Guy character sprites with transparent backgrounds live at:
 ```
-C:\Users\Attila\Downloads\Channel\Character_models_poses\bg_removed\
+C:\Users\YOUR_USERNAME\Downloads\Channel\Character_models_poses\bg_removed\
 ```
 
 See `references/character-sprites.md` for the full expression-to-filename map.

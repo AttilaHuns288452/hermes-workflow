@@ -14,7 +14,7 @@ machine.
 
 ## Prerequisites
 
-- Authenticated rclone remote with `scope = drive` (e.g. `sabiniano_gdrive`).
+- Authenticated rclone remote with `scope = drive` (e.g. `YOUR_RCLONE_REMOTE`).
 - `rclone` on PATH.
 - For archives: `Compress-Archive` available on Windows.
 - Hermes cron for scheduling.

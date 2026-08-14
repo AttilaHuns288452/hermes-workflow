@@ -129,10 +129,10 @@ for profile_dir in (hermes_root / "profiles").iterdir():
 When writing Python backup/restore scripts that reference Windows paths:
 
 1. **`\U` in `\Users` causes SyntaxError in docstrings.**
-   `C:\Users\Attila\...` contains `\U` which Python interprets as the start
+   `C:\Users\YOUR_USERNAME\...` contains `\U` which Python interprets as the start
    of a `\UXXXXXXXX` Unicode escape sequence. Fixes:
    - Use a raw docstring: `r"""..."""` (but watch for em-dashes on first line)
-   - Use forward slashes: `"C:/Users/Attila/AppData/..."`
+   - Use forward slashes: `"C:/Users/YOUR_USERNAME/AppData/..."`
    - Use `os.environ.get("HERMES_HOME", "...")` to avoid hardcoding
 
 2. **Hidden files (.env) are skipped by `rglob("*")` correctly** — the glob

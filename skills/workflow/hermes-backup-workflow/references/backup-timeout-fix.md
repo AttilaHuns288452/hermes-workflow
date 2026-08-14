@@ -25,7 +25,7 @@ When the script times out during ZIP creation (Step 7), the partial ZIP file tha
 
 Detection:
 ```bash
-rclone ls "sabiniano_gdrive:Hermes Backup" | awk '$1 < 1000 {print "FAILED: " $2}'
+rclone ls "YOUR_RCLONE_REMOTE:Hermes Backup" | awk '$1 < 1000 {print "FAILED: " $2}'
 ```
 
 ## Fastest Alternative: rclone sync (no ZIP)
@@ -34,8 +34,8 @@ Skip the ZIP entirely. rclone handles file-by-file upload directly, which is muc
 
 ```bash
 # Full backup with exclusions
-rclone sync /c/Users/Attila/AppData/Local/hermes \
-  "sabiniano_gdrive:Hermes Backup/$(date +%F)/" \
+rclone sync /c/Users/YOUR_USERNAME/AppData/Local/hermes \
+  "YOUR_RCLONE_REMOTE:Hermes Backup/$(date +%F)/" \
   --exclude "hermes-agent/**" \
   --exclude "lsp/**" \
   --exclude "**/__pycache__/**" \

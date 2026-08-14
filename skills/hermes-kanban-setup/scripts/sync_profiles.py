@@ -8,7 +8,7 @@ import yaml
 import os
 import sys
 
-HERMES_HOME = os.path.expandvars(r"C:\Users\Attila\AppData\Local\hermes")
+HERMES_HOME = os.path.expandvars(r"C:\Users\YOUR_USERNAME\AppData\Local\hermes")
 GLOBAL_CONFIG = os.path.join(HERMES_HOME, "config.yaml")
 PROFILES_DIR = os.path.join(HERMES_HOME, "profiles")
 

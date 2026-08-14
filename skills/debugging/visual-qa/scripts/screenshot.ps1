@@ -2,7 +2,7 @@
 # Usage: Edit $url and $outPath, then run via: powershell -ExecutionPolicy Bypass -File this.ps1
 
 $url = "http://localhost:9876"           # CHANGE THIS
-$outPath = "C:\Users\Attila\Downloads\screenshot.png"  # CHANGE THIS
+$outPath = "C:\Users\YOUR_USERNAME\Downloads\screenshot.png"  # CHANGE THIS
 
 # Kill existing Edge to avoid session restore
 taskkill /f /im msedge.exe 2>$null

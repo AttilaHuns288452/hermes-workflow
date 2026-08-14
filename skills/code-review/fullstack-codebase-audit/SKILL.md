@@ -42,6 +42,28 @@ Example of disconnected: UI writes entity ID to `localStorage`, page reads it fr
 ### Static files that don't run
 Next.js: middleware must be `src/middleware.ts`. A file at `src/proxy.ts` with a `config.matcher` that's never imported is dead code. Check next.config.ts for imports/external rewrites.
 
+### Migration × App Contract (combined-diff review)
+
+When one diff ships a migration that tightens RLS together with app changes, the mismatch lives BETWEEN them — neither file shows it alone. For every column a new/changed policy constrains (e.g. INSERT `WITH CHECK status='pending' OR role='owner'`), grep the server actions for the values they actually insert/update. App-derived values (`status: canApprove(role) ? "approved" : "pending"`) can violate the new policy for a middle role (managers) the policy author forgot — the write is rejected at runtime with a raw RLS error and no test catches it. Same for UPDATE policies: a new `WITH CHECK` on a column the app's update path legitimately flips breaks that flow if no other policy covers it. This is the app-side sanity check owed when a DB migration ships in the same sprint.
+
+### Design-Sweep Regressions (theming)
+
+A sweep that swaps hardcoded colors for `var(--*)` tokens can break the OTHER theme mode:
+
+- Background switched to `var(--card)` (white in light mode) while inner text/bubbles stay hardcoded `text-white` / `bg-white/10` → white-on-white in light mode. A panel that was pinned dark with hardcoded white text needs a pinned dark surface or var-driven text. Check both theme modes, not just the one the screenshots show.
+- Verify swept classes resolve: `text-red`, `bg-green-soft`, `border-green/30` only exist if `globals.css` maps `--color-*` in Tailwind v4 `@theme`. Grep the token file instead of trusting class names.
+
+### Failure-Path Guard Consistency & Stale Guards
+
+- All failure branches of one load path must use the SAME guard: a `catch` that only sets error when `!initialData` while the sibling `if (!data)` branch sets it unconditionally means a transient background refetch replaces valid SSR data with the error screen.
+- Stale-response guard key: the request-id should BE the query parameter (date/filter) so same-key responses are interchangeable and a newer key supersedes. Verify the guard is checked on success, error, AND finally paths (skipping it on one path leaves `setLoading(false)` clobbering a newer load).
+
+### Efficient Large-Diff Review
+
+- Kick off `npx tsc --noEmit` in the background FIRST; dump `git diff HEAD > /tmp/x.diff` and page it in chunks while tsc runs.
+- After reading the diff, grep every caller of each function whose shape changed (`grep -rn "fnName" src`, excluding the definition). Union-return changes (`{ error } | data`) only break callers the type system can't see — `as any`, `Extract<Awaited<...>>` gymnastics, callers treating `[]`/null as the only failure shape. Verify each caller handles both branches.
+- Output contract for gate reviews: VERDICT (APPROVE / REQUEST_CHANGES) + numbered findings `severity | file:line | issue | one-line fix`, then a "verified clean" list of what was checked and passed.
+
 ## Silent Error Patterns
 
 Look for server actions that call `supabase.from("x").delete()` or `.update()` and **immediately** return `{ success: true }` without examining the returned `error` object. These are the most common source of false-positive UX.
@@ -68,6 +90,7 @@ Three levels to audit:
 1. **Empty catch** — `} catch {` with no body. Grep: `catch\s*\{` then check for empty braces in context. These suppress all errors unconditionally.
 2. **Typed catch** — `catch (e: any)` — redundant annotation (TypeScript infers `unknown`). Prefer `catch (e: unknown)` with `instanceof Error` guard.
 3. **Console-only catch** — `catch (e) { console.error(...) }` — silently swallows production errors. Acceptable for third-party API fallbacks (market-data, weather, etc.) where the fallback is a null return. Flag it when the function continues as if the operation succeeded.
+4. **Dead error state** — `.then(...).catch(() => setErr(true))` wired around a function that can never reject (server actions that swallow errors and return `[]`/null). The error UI is unreachable — failures surface as an empty state instead. Before trusting any `.catch(() => setError())`, confirm the called function actually throws on failure.
 
 ### Unhandled Promise Rejections in Effects
 
@@ -86,6 +109,27 @@ useEffect(() => { fetch(); }, []);
 ```
 
 For mount-only calls, this is functionally correct but a lint-suppression comment (or wrapping with `useCallback`) clarifies intent. Flag it during audit.
+
+### Conditional Hooks After Early Returns
+
+The crash the typechecker can't see. Grep each component body for early returns (`if (loading) return`, `if (error) return`) and count hooks on each side:
+
+```tsx
+if (loading) return <Skeleton />      // 23 hooks called
+if (error) return <ErrorCard />       // still 23
+const stats = useMemo(...)            // 27th hook — only runs on happy-path renders
+```
+
+Hook count/order must be identical on every render. Early returns before later hooks make the count vary → React throws **"Rendered more hooks than during the previous render"** the moment the loading/error branch renders (mount with `initialData=null`, or an error → "Try again" retry path that sets `loading=true` then completes). Verified in practice: `tsc --noEmit` AND eslint-config-next's react-hooks v6 rules BOTH miss this pattern — only manual hook counting catches it. Fix: hoist the `useMemo`/`useState` calls above the early returns, or move the early-return branches into a child render helper.
+
+### React 19 Lint Rules (eslint-config-next, react-hooks v6)
+
+`npx eslint <changed files>` now surfaces rules tsc never sees — triage them:
+
+- `react-hooks/refs` — `ref.current = x` during render ("latest ref" pattern). Real lint error; in most cases the simpler fix is folding the value into `useCallback` deps (`useCallback(fn, [currency])`) — the ref exists to stabilize identity that the deps array already provides.
+- `react-hooks/set-state-in-effect` — flags mount-sync patterns (localStorage restore, `setLoading(false)` after initializing from props). Usually benign/correct; the canonical fix is `useSyncExternalStore` or dropping the redundant line.
+- `react-hooks/purity` — flags `Date.now()`/`Math.random()` in any function defined in render scope, including **event handlers** (false positive — handlers are not render). Suppress with a comment rather than "fixing" it.
+- `@typescript-eslint/no-explicit-any` on joined data (`.categories?.name`) — real error; fix with a one-interface join type, not a lint disable.
 
 ### Naming Convention Red Flags
 
@@ -116,6 +160,19 @@ Middleware ONLY runs from `src/middleware.ts` (or project root `middleware.ts`).
 ### LocalStorage for cross-request state
 Values written to `localStorage` in a client component are invisible to server actions, lost on browser clear, and absent in incognito. Flag any localStorage-based "current workspace" or "current entity" mechanism — it's disconnected by design from the backend.
 
+### MCP Streamable HTTP Routes (Next.js route handlers)
+
+Checklist for `/api/mcp` JSON-RPC 2.0 endpoints:
+
+- **Auth before body parse** — 401 with a JSON-RPC error (`{code:-32001}`), never HTML.
+- **Notifications** (no `id`, or `id: null`) must get NO response — in both the single-message path and the batch path (drop from array; empty batch → 202/204 with empty body). A `case "tools/call": return handleToolCall(m.id, ...)` that ignores the notification flag replies to notifications — spec violation.
+- **Error codes** — -32700 parse, -32600 invalid request, -32601 method not found, -32602 invalid params; invalid-request responses use `id: null`. `id ?? null` must be nullish coalescing, not `||` (id `0` is legal).
+- **Tool failure signaling** — `isError: true` + `content:[{type:"text", text: JSON.stringify(...)}]` for null/undefined/`{error}` results and thrown errors. A `typeof result === "object" && "error" in result` check is safe only because null is excluded first — `in` on a non-object throws.
+- **Bearer→cookie injection** — injecting a session cookie so downstream server actions run authenticated relies on Next's `RequestCookies.set()` mutating the per-request store AND @supabase/ssr reading cookies lazily via `getAll()` (clients created before injection still see it). Works today, silently fragile on Next upgrades — flag for a comment pinning both invariants.
+- **CORS** — `Access-Control-Allow-Origin: *` + bearer token is fine (no credentials mode); cookie auth stays CSRF-safe only with `SameSite=Lax` and no `Access-Control-Allow-Credentials`.
+- **Rate limit `tools/call`** — it's an authenticated DB-query surface; if sibling routes (e.g. `/api/ai/chat`) have a sliding-window limiter and MCP doesn't, that's a finding.
+- **Arg clamping** — `Math.floor(Number(v)) || dflt` swallows valid `0` (limit=0 becomes the default). Use `Number.isFinite(Number(v)) ? clamped : dflt`.
+
 ## Stale Type Detection
 
 If the migrations end at `008_*.sql` and the types file covers only the first 2 tables (entities, categories, transactions, assets, debts), the type system is lying. Every migration that adds a table or column without updating the types file creates a blind spot.
@@ -124,9 +181,11 @@ If the migrations end at `008_*.sql` and the types file covers only the first 2 
 
 For focused review of a git diff (not a whole codebase), see `references/git-diff-review-checklist.md`. It covers the 6-axis checklist, severity-ranked reporting format, and concrete example output.
 
+For a worked React/TS + MCP route review pass (hook-counting, lint triage, severity table), see `references/react-ts-hooks-mcp-review.md`.
+
 ## Verification
 
-After the audit, `npm run build` or `tsc --noEmit` catches type-level issues. It will NOT catch:
+After the audit, run `tsc --noEmit` AND `npx eslint <changed files>` (lint catches `no-explicit-any` and the react-hooks v6 rules tsc misses — but triage its false positives, see "React 19 Lint Rules" above). `npm run build` or `tsc --noEmit` catches type-level issues. It will NOT catch:
 - Dynamic class name generation (Tailwind v4)
 - Dead middleware files
 - localStorage/server-action state disconnect
@@ -134,5 +193,8 @@ After the audit, `npm run build` or `tsc --noEmit` catches type-level issues. It
 - `as any` casts on joined data (TypeScript allows them)
 - Empty catch blocks
 - `.then()` without `.catch()` in effects
+- Conditional hooks after early returns (verified: both tsc and eslint miss it — count hooks manually)
 - Naming convention issues
 - One-letter state variables
+
+Host quirk: on this Windows host, `search_files`/ripgrep can fail on project paths with "IO error ... cannot find the path" — fall back to terminal `grep -n` (works; the read/search tools and shell disagree on path translation).

@@ -69,6 +69,16 @@ export default function Quiz() {
 
 **Symptoms:** Clicking a button (e.g. gender select) wipes the entire page and shows "This page couldn't load". The page works initially but crashes on first interaction. The bug appears identically in `output: "export"` static builds AND SSR builds because it's a runtime hook-ordering issue, not a hydration issue.
 
+### Type 3: Invalid DOM nesting ("In HTML, <div> cannot be a descendant of <p>")
+
+Not error #310, but a hydration-fatal DOM structure error. Common in swarm-built card components: `<Badge>` (renders a `<div>`) placed inside `<p className="font-medium">{name}<Badge/></p>`. `<p>` may only contain phrasing content.
+
+- Console (dev): `In HTML, %s cannot be a descendant of <%s>... This will cause a hydration error` — and the **Next.js dev error overlay opens** (a `[role="dialog"]` with `data-nextjs-dialog-sizer`; shows as a red "N Issues" badge in screenshots).
+- **The overlay also blocks Playwright clicks** on the page behind it ("locator resolved to `<button>`" but never actionable) — a side effect that wastes E2E debugging time.
+- Prod: the mismatch hits the app error boundary ("Something went wrong").
+- **Fix:** wrap name + badges in a block container: `<div className="flex flex-wrap items-center gap-2"><p className="font-medium">{name}</p><Badge …/></div>`.
+- **Hunt:** grep new/rewritten card components for `<Badge` (or any `<div>`-rendering child) nested inside a `<p>` before E2E; catch it live with `p.on("console", …)` error listener in Playwright.
+
 **Detection via error boundary:** Add `app/error.tsx` that displays `error.message`:
 ```tsx
 "use client";

@@ -45,7 +45,7 @@ npm view @agentmemory/agentmemory version
 Set the working directory to match what the Hermes config specifies:
 
 ```bash
-cd /c/Users/Attila/.hermes/tools && python -m obsidian_kg_mcp
+cd /c/Users/YOUR_USERNAME/.hermes/tools && python -m obsidian_kg_mcp
 ```
 
 If the server reads relative paths or local config files, the wrong cwd produces silent file-not-found errors.

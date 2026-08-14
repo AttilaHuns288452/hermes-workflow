@@ -78,6 +78,8 @@ unset DEEPTUTOR_HOME
 
 **Venv leakage variant:** On this machine, the Hermes venv's site-packages is always in sys.path. When running `poetry run` or `pipenv run` from a Hermes-activated shell, the target venv's modules can be shadowed by Hermes venv modules. Fix: `PYTHONPATH='' poetry run ...` or `$env:PYTHONPATH=''` in PowerShell scripts. See `references/autogpt-pydantic-core-venv-leakage.md`.
 
+**UV-isolated envs are NOT immune:** the same leak hits `uvx`, `uv tool install` envs, and fresh `uv venv` envs — a global `PYTHONPATH` pointing at the Hermes venv (`echo $PYTHONPATH` shows it) shadows their site-packages too, so `uv tool install`-ed CLIs can import the wrong module versions (real case: `mcp-server-linkedin --login` died with `ImportError: cannot import name 'TextSizing' from 'wcwidth'` resolving to the Hermes venv's old wcwidth even inside a brand-new venv). Fix: `env -u PYTHONPATH <cmd>` (or `set PYTHONPATH=` in cmd). See `references/uv-tool-and-venv-leakage.md`.
+
 ### 4. Check for Non-TTY Port Conflict Resolution
 
 Many tools detect port conflicts interactively using `sys.stdin.isatty()`. When launched from a process manager (Electron app, systemd, Docker, CI), stdin is NOT a TTY, so the prompt raises `SystemExit` silently — the process dies before printing anything.
@@ -216,6 +218,7 @@ python -c "import os; print(os.environ['PATH'])"  # vs when running the .exe
 | Subprocess produces no output | Pipe buffering on Windows | Set `PYTHONUNBUFFERED=1` |
 | Installed CLI hangs, `python -c` works | CLI wrapper layer (entry point) | Run `python -v -m pkg.cli` to find where it blocks |
 | `poetry run` imports wrong venv's modules | Venv leakage via sys.path | `PYTHONPATH='' poetry run ...`; see `references/autogpt-pydantic-core-venv-leakage.md` |
+| `uvx` / `uv tool`-installed CLI imports Hermes venv modules | Global PYTHONPATH shadows isolated envs | `env -u PYTHONPATH <cmd>`; see `references/uv-tool-and-venv-leakage.md` |
 | CLI hangs in git-bash but works in cmd.exe | prompt_toolkit + MSYS2/cygwin | Use `-Q` flag or run from Windows Terminal; `hermes doctor` slow at "connectivity checks" (26 parallel pings, one blocks) — not a bug |
 
 ## Concrete Examples
@@ -225,3 +228,5 @@ python -c "import os; print(os.environ['PATH'])"  # vs when running the .exe
 📎 [`references/hermes-cli-entrypoint-hang.md`](references/hermes-cli-entrypoint-hang.md) — Hermes Agent CLI hangs on `hermes chat -q` but direct `cli.main()` call works: debugging walkthrough for the CLI entry point vs direct Python API divergence on Windows.
 
 📎 [`references/autogpt-pydantic-core-venv-leakage.md`](references/autogpt-pydantic-core-venv-leakage.md) — `poetry run` from Hermes-activated shell picks up Hermes venv's broken pydantic_core instead of the target venv. Fix: `$env:PYTHONPATH=''` before poetry run. Applies to any venv-in-venv leakage on this machine.
+
+📎 [`references/uv-tool-and-venv-leakage.md`](references/uv-tool-and-venv-leakage.md) — `uvx` / `uv tool` / fresh `uv venv` envs also inherit the global PYTHONPATH leak (LinkedIn MCP `wcwidth TextSizing` ImportError). Fix: `env -u PYTHONPATH`. Also covers uv venv MSYS path mangling (`C:\c\Users\...`) and `uv tool install` as the pipx replacement on this machine.

@@ -1,159 +1,56 @@
-# Setting Up Hermes `external_dirs` on Windows
+# Adding external_dirs on Windows — Configuration Guide
 
-A step-by-step recipe that avoids the pitfalls (two config files, list-value serialization, yaml.dump corruption).
+Hermes has two config files on Windows. The **active** one lives at:
 
-## Step 1: Locate the Active Config
-
-```bash
-# Print the real config path
-hermes config path
-# Result: C:\Users\<user>\AppData\Local\hermes\config.yaml
+```
+C:\Users\<username>\AppData\Local\hermes\config.yaml
 ```
 
-This is the **only** file you should edit. The `~/.hermes/config.yaml` file (~1.4 KB) is a profile override stub and does not control `external_dirs`.
+The `~/.hermes/config.yaml` file is a **profile override** (~1.4 KB) — it does NOT control external_dirs.
 
-## Step 2: Read the Current Config
+## Methods for Adding a New external_dirs Entry
 
-Check if `skills.external_dirs` already exists:
+### Method A — hermes config set (recommended)
 
 ```bash
-python -c "
-with open('$HERMES_HOME/config.yaml') as f:
-    lines = f.readlines()
-for i, line in enumerate(lines):
-    if 'external_dirs' in line:
-        print(f'Line {i+1}: {line.rstrip()}')
-        # Show sibling lines
-        j = i + 1
-        while j < len(lines) and lines[j].startswith('  - '):
-            print(f'  {lines[j].rstrip()}')
-            j += 1
-"
+hermes config set skills.external_dirs '["C:/Users/YOUR_USERNAME/.agents/skills"]'
 ```
 
-## Step 3: Edit the List (Safe Method)
+Pass the full list as a JSON array string. `hermes config set` stores it as a JSON-encoded YAML string which Hermes parses correctly.
 
-Use string-based Python, NOT yaml.dump():
+**Merging with existing dirs:** Read the current config value first, then include the full combined list:
+
+```bash
+# Read current (returns a YAML list or JSON string)
+grep -A5 'external_dirs:' /c/Users/<user>/AppData/Local/hermes/config.yaml
+
+# Set with all paths
+hermes config set skills.external_dirs '["C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills","C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/agent-skills/skills","C:/Users/YOUR_USERNAME/.agents/skills"]'
+```
+
+### Method B — sed (Quickest)
+
+```bash
+sed -i "/some-existing-entry/a\\    - C:/path/to/new/skills" /c/Users/<user>/AppData/Local/hermes/config.yaml
+```
+
+Replace `some-existing-entry` with a unique substring from an existing `external_dirs` line (e.g., `claude-seo/skills`). The `a` command appends after the matching line.
+
+### Method C — Edit the file directly
+
+Open the active config in a text editor and add the new `- C:/path/to/skills` line under `skills.external_dirs:`.
+
+## Reloading
+
+Unlike local skills (`/reload-skills`), `external_dirs` is read **only at Hermes startup**. After editing the config, you must start a **new session** for external skills to appear.
+
+## ⚠️ NEVER Use yaml.dump() on the Full Config
 
 ```python
-import re
-
-with open('$HERMES_HOME/config.yaml', 'r') as f:
-    text = f.read()
-
-# Replace: external_dirs: []  or  external_dirs: <string>
-# With:    external_dirs:\n    - path1\n    - path2
-# Build a fresh external_dirs multi-line string
-# (replace paths below with your actual repos):
-new_value = (
-    'external_dirs:\n'
-    '    - C:/Path/To/Repos/external-skills/superpowers/skills\n'
-    '    - C:/Path/To/Repos/external-skills/agent-skills/skills\n'
-    '    - C:/Path/To/Repos/external-skills/garden-skills/skills\n'
-    '    - C:/Path/To/Repos/external-skills/claude-seo/skills'
-)
-text = re.sub(
-    r'external_dirs:\s*\[.*?\]',
-    new_value,
-    text,
-    flags=re.DOTALL
-)
-
-with open('$HERMES_HOME/config.yaml', 'w') as f:
-    f.write(text)
+# DESTRUCTIVE — loses anchors, flow styles, MCP servers
+cfg = yaml.safe_load(open('config.yaml'))
+cfg['skills']['external_dirs'] = [...]
+yaml.dump(cfg, open('config.yaml', 'w'))
 ```
 
-If the value was already a string (not a list), use:
-```python
-text = re.sub(
-    r'external_dirs:\s*.+$',
-    new_value.replace('\n', '\n'),  # multiline replacement
-    text
-)
-```
-
-## Step 4: Verify
-
-```bash
-python -c "
-with open('$HERMES_HOME/config.yaml') as f:
-    import yaml
-    cfg = yaml.safe_load(f)
-ext = cfg.get('skills', {}).get('external_dirs', [])
-if isinstance(ext, list) and len(ext) > 0:
-    for p in ext:
-        print(f'  {\"✓\" if os.path.isdir(p) else \"✗\"} {p}')
-else:
-    print(f'PROBLEM: external_dirs is {type(ext).__name__} = {ext}')
-"
-```
-
-## Step 5: New Session
-
-External_dirs is read at process startup. Start a new Hermes session:
-
-```bash
-hermes  # fresh session
-```
-
-`/reload-skills` does NOT refresh external_dirs — it only rescans local `~/.hermes/skills/`.
-
-## Recovery: Config Was Corrupted by yaml.dump()
-
-If you accidentally used `yaml.dump()` on the full config and lost MCP servers or other settings:
-
-1. **Don't panic** — the file is valid YAML, just missing entries.
-2. Reconstruct missing MCP server blocks using the known-good format. Each server entry looks like:
-   ```yaml
-   mcp_servers:
-     <name>:
-       command: <exec>
-       args: [<arg1>, <arg2>]
-       cwd: "C:\\path\\to\\workdir"
-       env:
-         KEY: "value"
-       connect_timeout: 30
-   ```
-3. Insert the blocks right after the `mcp_servers:` line using Python string insertion:
-   ```python
-   with open('config.yaml', 'r') as f:
-       text = f.read()
-   block = '''  graphify:
-       command: python
-       args: ["-m", "graphify.serve"]
-       ...
-   '''
-   text = text.replace('mcp_servers:', 'mcp_servers:\n' + block)
-   with open('config.yaml', 'w') as f:
-       f.write(text)
-   ```
-
-## Verification Script
-
-Save this as a quick health check and run after any config edit:
-
-```python
-import yaml, os
-
-with open('$HERMES_HOME/config.yaml') as f:
-    cfg = yaml.safe_load(f)
-
-print('=== MCP Servers ===')
-for name, srv in cfg.get('mcp_servers', {}).items():
-    cmd = srv.get('command', srv.get('url', '?'))
-    status = '✓' if 'command' in srv or 'url' in srv else '✗'
-    print(f'  {status} {name}: {cmd}')
-
-print('\n=== External Dirs ===')
-ext = cfg.get('skills', {}).get('external_dirs', [])
-if isinstance(ext, list):
-    for p in ext:
-        exists = os.path.isdir(p)
-        print(f'  {"✓" if exists else "✗"} {p}')
-else:
-    print(f'  ✗ NOT A LIST (is {type(ext).__name__}): {ext}')
-
-print(f'\n=== Key Sections ===')
-for key in ['model', 'terminal', 'display']:
-    if key in cfg:
-        print(f'  ✓ {key}')
+The Hermes config is complex (18+ KB, 676+ lines). `yaml.safe_load()` + `yaml.dump()` drops flow-style sequences, anchors, and nested structures — this **will lose MCP server configurations**.

@@ -1,7 +1,7 @@
 # Mr. Finance Guy — Character Sprite Index
 
-**Source folder:** `C:\Users\Attila\Downloads\Channel\Character_models_poses\`
-**BG-removed folder:** `C:\Users\Attila\Downloads\Channel\Character_models_poses\bg_removed\`
+**Source folder:** `C:\Users\YOUR_USERNAME\Downloads\Channel\Character_models_poses\`
+**BG-removed folder:** `C:\Users\YOUR_USERNAME\Downloads\Channel\Character_models_poses\bg_removed\`
 
 All sprites are PNG with transparent backgrounds via remove.bg. Use the `bg_removed/` versions for production.
 

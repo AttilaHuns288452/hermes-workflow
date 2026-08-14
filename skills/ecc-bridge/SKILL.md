@@ -21,17 +21,17 @@ triggers:
 
 ECC agents are `.md` skill files designed for Claude Code with `model: sonnet`/`model: opus` requirements.  
 This bridge **extracts their prompt body**, strips the paid-model requirement, and routes them through  
-the **free model chain** (opencode/deepseek-v4-flash-free for code agents, opencode/mimo-v2.5-free for vision agents → OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
+the **free model chain** (opencode-go/deepseek-v4-flash for code agents, opencode-go/mimo-v2.5 for vision agents → OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
 
-**57 of 64 agents** are compatible with free models (all haiku/sonnet agents).  
-**6 opus agents** (architect, chief-of-staff, gan-*, healthcare-reviewer, planner) may show quality degradation.
+**All 64 agents run on free models**: 61 via `opencode-go/deepseek-v4-flash` (all haiku/sonnet/opus text agents), 3 vision agents via `opencode-go/mimo-v2.5`.  
+The 7 opus agents (architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner, healthcare-reviewer, planner) also run on deepseek-v4-flash — complex architecture reasoning may be weaker than native opus, but they execute.
 
 ### Model Mapping
 
 | Agent Type | Free Model | Fallback |
 |-----------|-----------|----------|
-| Code/analysis agents (comment-analyzer, code-simplifier, refactor-cleaner, etc.) | `opencode/deepseek-v4-flash-free` | `opencode-go/deepseek-v4-flash` |
-| Vision/multimodal agents (image-prompt-engineer, visual-storyteller, ui-designer) | `opencode/mimo-v2.5-free` | `opencode-go/mimo-v2.5` |
+| Code/analysis agents (comment-analyzer, code-simplifier, refactor-cleaner, etc.) | `opencode-go/deepseek-v4-flash` | `opencode-go/deepseek-v4-flash` |
+| Vision/multimodal agents (image-prompt-engineer, visual-storyteller, ui-designer) | `opencode-go/mimo-v2.5` | `opencode-go/mimo-v2.5` |
 
 ## Triggers (when this skill is activated)
 
@@ -52,8 +52,10 @@ the **free model chain** (opencode/deepseek-v4-flash-free for code agents, openc
 ## Parallel Multi-Agent Quality Gate (⭐ recommended)
 
 **When:** After building a feature/project, before shipping. Dispatch
-3-4 ECC review agents via `delegate_task(tasks=...)`. All return in ~3 min.
+3-5 ECC review agents via `delegate_task(tasks=...)`. All return in ~3 min.
 Proven: caught 38 issues in CashFlow OS that primary builder missed.
+**Gate size (2026-08-05):** baseline 3, full 5 — see mapping below; scale by
+surface (schema → +database-reviewer, UI → +a11y-architect).
 
 ```ts
 delegate_task(tasks=[
@@ -73,7 +75,9 @@ delegate_task(tasks=[
 | Database | Schema review | `database-reviewer` |
 | Error handling | Silent failure hunt | `silent-failure-hunter` |
 | Code quality | DRYness, types, patterns | `code-reviewer` |
+| Security | AuthZ, injection, secrets, XSS | `security-reviewer` |
 | Build/TS | Build errors, warnings | `build-error-resolver` |
+| A11y (UI batches) | WCAG, labels, contrast, focus | `a11y-architect` |
 
 **Apply results:** fix root causes first (one fix often cascades to 10+ issues).
 
@@ -88,7 +92,7 @@ type-design-analyzer, database-reviewer), load the agent's prompt directly into 
 so the current free model executes the review:
 
 ```bash
-python C:\Users\Attila\AppData\Local\hermes\skills\ecc-bridge\scripts\ecc-runner.py <agent-name>
+python C:\Users\YOUR_USERNAME\AppData\Local\hermes\skills\ecc-bridge\scripts\ecc-runner.py <agent-name>
 ```
 
 Take the output and use it as the **system prompt** for this conversation. The agent body  
@@ -104,7 +108,7 @@ silent-failure-hunter), extract the prompt and pipe it to OpenCode with a free m
 ```bash
 # Extract prompt to a Windows-safe path (NOT /tmp — MSYS issue)
 python ecc-runner.py code-simplifier > ecc-prompt.md
-opencode run --model opencode/deepseek-v4-flash-free \
+opencode run --model opencode-go/deepseek-v4-flash \
   --file ecc-prompt.md \
   "Simplify the code in the current working directory"
 ```
@@ -125,29 +129,29 @@ freebuff run --model "DeepSeek V4 Flash" \
 
 | ECC Agent | Original Model | Recommended Free Model | Tier |
 |-----------|---------------|----------------------|------|
-| doc-updater | haiku | `opencode/deepseek-v4-flash-free` | strong ✅ |
-| comment-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| silent-failure-hunter | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| pr-test-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| type-design-analyzer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| code-simplifier | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| database-reviewer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| refactor-cleaner | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| performance-optimizer | sonnet | `opencode/deepseek-v4-flash-free` | good ✅ |
-| image-prompt-engineer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
-| visual-storyteller | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
-| ui-designer | sonnet | `opencode/mimo-v2.5-free` | good ✅ |
+| doc-updater | haiku | `opencode-go/deepseek-v4-flash` | strong ✅ |
+| comment-analyzer | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| silent-failure-hunter | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| pr-test-analyzer | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| type-design-analyzer | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| code-simplifier | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| database-reviewer | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| refactor-cleaner | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| performance-optimizer | sonnet | `opencode-go/deepseek-v4-flash` | good ✅ |
+| image-prompt-engineer | sonnet | `opencode-go/mimo-v2.5` | good ✅ |
+| visual-storyteller | sonnet | `opencode-go/mimo-v2.5` | good ✅ |
+| ui-designer | sonnet | `opencode-go/mimo-v2.5` | good ✅ |
 
 All 47 other sonnet agents and doc-updater (haiku) follow the same pattern.  
-Opus agents (6): architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner,  
-healthcare-reviewer, planner — use `opencode/nemotron-3-ultra-free` as fallback but  
-quality may drop on complex architectural reasoning.
+The 7 opus agents (architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner,  
+healthcare-reviewer, planner) also route to `opencode-go/deepseek-v4-flash` (2026-08-05) —  
+expected: good, with weaker complex-architecture reasoning than native opus.
 
 ## Free Model Fallback Chain
 
 When OpenCode's bundled free models fail:
 
-1. **OpenCode free** → `opencode/deepseek-v4-flash-free` (primary, most reliable)
+1. **OpenCode free** → `opencode-go/deepseek-v4-flash` (primary, most reliable)
 2. **Freebuff** → `freebuff run --model "DeepSeek V4 Flash"` (second, cloud-based)
 3. **FreeLLMAPI** → custom Hermes provider at `localhost:3001/v1` (110+ models, local)
 4. **OpenRouter :free** → only `openai/gpt-oss-120b:free` or `nex-agi/nex-n2-pro:free` (last free resort)
@@ -263,7 +267,7 @@ become the review checklist. Common findings from the inaugural self-audit:
 - **Agent doesn't know about the current project**: When loading the agent prompt into this conversation, the current context (files, project structure) provides the codebase awareness the agent needs. When delegating to OpenCode, workdir must be set to the project root.
 - **OpenCode stale DB**: If `opencode run` fails with "Unexpected server error" / SQLite "no such column: replacement_seq", the local DB schema is stale from a version upgrade. Fix: kill any opencode processes, delete `~/.local/share/opencode/opencode.db`, retry.
 - **Windows /tmp doesn't exist**: When writing temp prompt files, use a project-relative path or full `C:/Users/...` path. MSYS `/tmp` fails silently — `opencode run` with `--file /tmp/foo` reports "File not found".
-- **MSYS path doubling when running ecc-runner.py**: `python ~/AppData/Local/.../ecc-runner.py list` fails with `C:\c\Users\Attila\...` because MSYS resolves `~` to `/c/Users/Attila` then Python prepends a drive letter. Use native Windows path: `python "C:/Users/Attila/AppData/Local/hermes/skills/ecc-bridge/scripts/ecc-runner.py"`.
+- **MSYS path doubling when running ecc-runner.py**: `python ~/AppData/Local/.../ecc-runner.py list` fails with `C:\c\Users\Attila\...` because MSYS resolves `~` to `/c/Users/YOUR_USERNAME` then Python prepends a drive letter. Use native Windows path: `python "C:/Users/YOUR_USERNAME/AppData/Local/hermes/skills/ecc-bridge/scripts/ecc-runner.py"`.
 - **Multiple ECC agents in one OpenCode call**: Pass multiple `--file` flags to combine agent frameworks in a single pass. Tested: `opencode run 'read and improve X' --file architect-prompt.md --file reviewer-prompt.md`. OpenCode reads all attached files alongside the task.
 - **Undefined variable on unexpected model field**: If the `index_all_agents()` function (or equivalent) encounters a `model:` value that isn't `haiku`/`sonnet`/`opus`, the `tier` variable is never assigned — `NameError` at the next line. Always add an `else: tier = "unknown"` fallback.
 - **Duplicate keys in mapping dicts**: When maintaining `SAFE_AGENTS` (or agent-name-to-free-model mappings), a copy-pasted duplicate key silently overwrites the first entry. After every edit, grep for duplicates: `grep -c '"agent-name"' scripts/ecc-runner.py`.

@@ -8,7 +8,7 @@ description: "Use when the user asks about Hermes backup, restore, credential sy
 ## Overview
 
 Hermes runs from `C:\Users\<user>\AppData\Local\hermes`. It has a daily 2AM cron job
-that backups everything to Google Drive (rclone remote `sabiniano_gdrive`).
+that backups everything to Google Drive (rclone remote `YOUR_RCLONE_REMOTE`).
 
 Three scripts handle the full lifecycle:
 
@@ -102,13 +102,13 @@ The script's local-ZIP-then-upload approach can **timeout** because Python's `zi
 
 **Detection:** List remote backups and flag any < 1 KB as failed:
 ```bash
-rclone ls "sabiniano_gdrive:Hermes Backup" | awk '$1 < 1000 {print "FAILED: " $2 " (" $1 " bytes)"}'
+rclone ls "YOUR_RCLONE_REMOTE:Hermes Backup" | awk '$1 < 1000 {print "FAILED: " $2 " (" $1 " bytes)"}'
 ```
 
 **Workaround / faster alternative — use `rclone sync` directly:**
 ```bash
 # Instead of the script, sync directly to Google Drive (skips ZIP bottleneck)
-rclone sync /c/Users/Attila/AppData/Local/hermes "sabiniano_gdrive:Hermes Backup/$(date +%F)/" \
+rclone sync /c/Users/YOUR_USERNAME/AppData/Local/hermes "YOUR_RCLONE_REMOTE:Hermes Backup/$(date +%F)/" \
   --exclude "hermes-agent/**" \
   --exclude "lsp/**" \
   --exclude "**/__pycache__/**" \
@@ -121,9 +121,9 @@ rclone sync /c/Users/Attila/AppData/Local/hermes "sabiniano_gdrive:Hermes Backup
 
 971-byte empty ZIPs accumulate when the script times out mid-ZIP. Clean them up:
 ```bash
-rclone ls "sabiniano_gdrive:Hermes Backup" | \
+rclone ls "YOUR_RCLONE_REMOTE:Hermes Backup" | \
   awk '$1 < 1000 {print $2}' | \
-  while read f; do rclone deletefile "sabiniano_gdrive:Hermes Backup/$f"; done
+  while read f; do rclone deletefile "YOUR_RCLONE_REMOTE:Hermes Backup/$f"; done
 ```
 
 ---
@@ -166,7 +166,7 @@ python scripts/run-hermes-backup.py
 **Caveat:** The script routinely times out when the Hermes home exceeds ~160K files (state.db alone is 426+ MB). The ZIP-then-upload approach is the bottleneck. See "Potential Failure Modes" below for workarounds and faster alternatives.
 
 The script:
-1. Lists existing backups on Google Drive (`sabiniano_gdrive:Hermes Backup`)
+1. Lists existing backups on Google Drive (`YOUR_RCLONE_REMOTE:Hermes Backup`)
 2. Creates a ZIP directly from source (no staging copy)
 3. Uses `ZIP_STORED` (no compression) for maximum speed
 4. Uploads to Google Drive
@@ -182,7 +182,7 @@ python /path/to/run-hermes-backup.py --name "Custom_Name.zip"
 
 ```bash
 # 1. Install Hermes on the new machine
-# 2. Install rclone, configure sabiniano_gdrive remote
+# 2. Install rclone, configure YOUR_RCLONE_REMOTE remote
 # 3. Run restore:
 python /path/to/restore-hermes-backup.py --restore-latest
 

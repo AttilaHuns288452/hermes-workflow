@@ -102,11 +102,11 @@ interface AudioConfig {
 {
   "audio": {
     "narration": {
-      "src": "file:///C:/Users/Attila/OpenMontage/projects/my-video/assets/audio/narration.mp3",
+      "src": "file:///C:/Users/YOUR_USERNAME/OpenMontage/projects/my-video/assets/audio/narration.mp3",
       "volume": 1.0
     },
     "music": {
-      "src": "file:///C:/Users/Attila/OpenMontage/projects/my-video/assets/music/background.mp3",
+      "src": "file:///C:/Users/YOUR_USERNAME/OpenMontage/projects/my-video/assets/music/background.mp3",
       "volume": 0.1,
       "offsetSeconds": 0,
       "fadeInSeconds": 2,
@@ -231,7 +231,7 @@ Controls visual styling of the Explainer. If omitted, default dark theme is used
       "type": "generated",
       "in_seconds": 5.5,
       "out_seconds": 20,
-      "source": "file:///C:/Users/Attila/.../scene-2-juan.png",
+      "source": "file:///C:/Users/YOUR_USERNAME/.../scene-2-juan.png",
       "animation": "ken-burns",
       "overlays": [
         {"text": "JUAN — Failed Hustles",
