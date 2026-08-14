@@ -432,9 +432,13 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; background: #080b14; }
   border-radius: 1rem;
   overflow: hidden;
   cursor: pointer;
+  color: #e4eaf5;
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   background: rgba(12, 20, 40, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.category-bento .category-label {
+  color: #7aa9f7;
 }
 .category-bento::before {
   content: '';
