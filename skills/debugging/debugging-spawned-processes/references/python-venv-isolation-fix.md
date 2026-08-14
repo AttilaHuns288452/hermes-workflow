@@ -15,13 +15,13 @@ The error pointed to the **Hermes agent venv's** site-packages, not AutoGPT's ow
 The Electron app's process manager spawns PowerShell, which inherits the current shell's environment. The Hermes agent venv was activated in that shell, so `PYTHONPATH` contained:
 
 ```
-C:\Users\Attila\AppData\Local\hermes\hermes-agent\Lib\site-packages
+C:\Users\YOUR_USERNAME\AppData\Local\hermes\hermes-agent\Lib\site-packages
 ```
 
 AutoGPT's poetry venv has its own pydantic_core at:
 
 ```
-C:\Users\Attila\AppData\Local\pypoetry\Cache\virtualenvs\autogpt-classic-F0I4XBFc-py3.12\Lib\site-packages\pydantic_core\_pydantic_core.cp312-win_amd64.pyd
+C:\Users\YOUR_USERNAME\AppData\Local\pypoetry\Cache\virtualenvs\autogpt-classic-F0I4XBFc-py3.12\Lib\site-packages\pydantic_core\_pydantic_core.cp312-win_amd64.pyd
 ```
 
 But Python prepends the inherited `PYTHONPATH` to `sys.path`, so it found the Hermes venv's broken pydantic_core first.
@@ -30,7 +30,7 @@ But Python prepends the inherited `PYTHONPATH` to `sys.path`, so it found the He
 
 ```bash
 # Check sys.path in the child venv
-"/c/Users/Attila/AppData/Local/pypoetry/Cache/virtualenvs/autogpt-classic-F0I4XBFc-py3.12/Scripts/python.exe" -c "import sys; print('\n'.join(sys.path))"
+"/c/Users/YOUR_USERNAME/AppData/Local/pypoetry/Cache/virtualenvs/autogpt-classic-F0I4XBFc-py3.12/Scripts/python.exe" -c "import sys; print('\n'.join(sys.path))"
 
 # Output showed Hermes venv BEFORE AutoGPT venv in sys.path
 ```
@@ -40,7 +40,7 @@ But Python prepends the inherited `PYTHONPATH` to `sys.path`, so it found the He
 Added `$env:PYTHONPATH=''` to the AutoGPT launch script in `apps.registry.json`:
 
 ```powershell
-Set-Location 'C:\Users\Attila\Documents\Projects\AutoGPT\classic'
+Set-Location 'C:\Users\YOUR_USERNAME\Documents\Projects\AutoGPT\classic'
 $env:PYTHONUTF8='1'
 $env:PYTHONPATH=''
 poetry run python -m autogpt.app.cli serve

@@ -162,6 +162,29 @@ Also pass `pin_session_override=False` to `_apply_model_switch` so `session["mod
 
 See `references/model-switch-revert-june2026.md` for full debugging narrative.
 
+## Discord Platform (bot) — Setup & Connection Failures
+
+Full recipe (dev-portal steps, meeting-minutes config, **permissions-integer decode + re-invite trick**, **auto-join-voice/auto-minutes local-patch recipe + presence-auth self-block pitfall**, **silent record-then-minutes mode**, **leader-provided minutes-template file + measured-ETA calibration**, **Groq free-tier limits**, **multi-server routing gap**, Windows restart quirk): `references/discord-bot-setup.md`.
+
+**Config files:**
+- `DISCORD_BOT_TOKEN` + `DISCORD_ALLOWED_USERS` (comma-separated user IDs) go in `.env` — **append via terminal** (`echo "KEY=val" >> .env`); `.env` is writable by tools.
+- `config.yaml` is **write-protected** — `patch`/`write_file` refuse it with "Agent cannot modify security-sensitive configuration." Use `hermes config set stt.enabled true` (or any key) instead.
+- Without `DISCORD_ALLOWED_USERS`/`DISCORD_ALLOWED_ROLES` the bot denies every user (log: "No env user allowlists configured").
+
+**The #1 blocker — privileged intents.** A valid token still fails with:
+```
+discord.errors.PrivilegedIntentsRequired: Shard ID None is requesting privileged intents
+that have not been explicitly enabled in the developer portal...
+```
+Fix is on the user's side: Developer Portal → Bot → Privileged Gateway Intents → enable **Server Members Intent** + **Message Content Intent** → Save. The gateway's reconnection watcher auto-retries (~1 min), so **no gateway restart needed** after the user flips them.
+
+**Reading the log to prove token validity:** the line `[Discord] Registered /skill command with N skill(s) via autocomplete` appears *before* the failure — it means auth succeeded and the failure is intents/scope, not a bad token.
+
+**Verify after `hermes gateway start`:**
+```bash
+tail ~/AppData/Local/hermes/logs/gateway.log | grep -E "Connecting to discord|✓ .* connected|✗ discord failed"
+```
+
 ## Cron Job Config Pitfalls (gateway-adjacent)
 
 Cron jobs fail in two non-obvious ways; both fixed via `cronjob action=update`:

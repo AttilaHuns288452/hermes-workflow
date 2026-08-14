@@ -26,7 +26,7 @@ Added to `~/.config/opencode/opencode.jsonc`:
 {
   "plugins": {
     "paths": [
-      "C:/Users/Attila/Documents/Projects/oh-my-opencode-slim"
+      "C:/Users/YOUR_USERNAME/Documents/Projects/oh-my-opencode-slim"
     ]
   }
 }

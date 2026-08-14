@@ -4,7 +4,7 @@
 
 ```jsx
 <!-- ❌ BROWSER CAN'T READ THIS -->
-<img src="C:\Users\Attila\Downloads\photo.jpg" />
+<img src="C:\Users\YOUR_USERNAME\Downloads\photo.jpg" />
 
 <!-- ✅ COPY TO public/ FIRST, THEN: -->
 <img src="/photo.jpg" />

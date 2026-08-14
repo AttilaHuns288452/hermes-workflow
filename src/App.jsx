@@ -569,9 +569,9 @@ function PipelineSection() {
     { n: 'session_memory', c: '#4a8cf4', t: 'RETRIEVE', d: 'Prior context retrieval from past sessions' },
     { n: 'Core Identity Guard', c: '#e4686a', t: 'GUARD', d: '6 immutable rules · always active' },
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
-    { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: '35×–1,233× reduction via CodeGraph + Graphify' },
+    { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph 144,827 nodes · 326,322 edges · 8,421 files' },
     { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
-    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 665 skills · sub-second · 0 API calls' },
+    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 813 skills · sub-second · 0 API calls' },
     { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'DeepSeek V4 Flash · 5-layer fallback chain' },
     { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
   ]
@@ -844,7 +844,7 @@ function SkillsSection() {
 function ModelsSection() {
   const tiers = [
     { n: 'DeepSeek V4 Flash', badge: 'RECOMMENDED', price: 'free', desc: 'Main coding agent via OpenCode Zen API. Reliable, fast, no rate limits for typical use.', tags: ['opencode/deepseek-v4-flash-free', 'default'], color: '#3ddc84' },
-    { n: 'Freebuff (6 models)', badge: 'fallback', price: 'fallback', desc: 'Second layer — 6 free model endpoints for redundancy.', tags: ['freebuff/*', 'openrouter:free/*'], color: '#f0d060' },
+    { n: 'OpenCode Zen (free)', badge: 'fallback', price: 'fallback', desc: 'Free fallback layer — deepseek-v4-flash-free, mimo-v2.5-free, nemotron-3-ultra-free via OpenCode Zen.', tags: ['opencode-zen/*', 'free'], color: '#f0d060' },
     { n: 'OpenRouter:free (2 models)', badge: 'rate-limited', price: 'rate-limited', desc: 'OpenRouter free tier with daily rate limits.', tags: ['openrouter:free/*'], color: '#e4686a' },
     { n: 'Paid (last resort)', badge: 'premium', price: 'premium', desc: 'Paid models for rate-limited fallback — DeepSeek V4 Flash, MiMo 2.5, GLM 5.2.', tags: ['opencode-go/*'], color: '#7aa9f7' },
   ]
@@ -928,13 +928,13 @@ function GuardrailSection() {
 
       <Reveal>
         <div className="mt-8 card-core p-6 md:p-8">
-          <h3 className="text-lg font-bold mb-6 text-[#e4eaf5]">Token Saver — 35×–1,233× Reduction</h3>
+          <h3 className="text-lg font-bold mb-6 text-[#e4eaf5]">Token Saver — CodeGraph First</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {[
-              { v: '52,747', l: 'CodeGraph Nodes' },
-              { v: '125,822', l: 'CodeGraph Edges' },
-              { v: '3,425', l: 'Indexed Files' },
-              { v: '1,500', l: 'Probe Cost' },
+              { v: '144,827', l: 'CodeGraph Nodes' },
+              { v: '326,322', l: 'CodeGraph Edges' },
+              { v: '8,421', l: 'Indexed Files' },
+              { v: '12', l: 'MCP Servers' },
             ].map((s, i) => (
               <div key={i} className="text-center p-3 rounded-xl bg-black/30 border border-[#1e3058]">
                 <div className="text-gradient-green text-xl font-extrabold">{s.v}</div>

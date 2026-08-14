@@ -17,7 +17,7 @@ TF-IDF search over 665+ skills. Sub-second. Zero API calls.
 ## Query
 
 ```bash
-python "C:/Users/Attila/AppData/Local/hermes/lightrag_index/find.py" "<query>"
+python "C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/find.py" "<query>"
 ```
 
 Returns top 5 matches with scores + descriptions.
@@ -25,7 +25,7 @@ Returns top 5 matches with scores + descriptions.
 ## Rebuild
 
 ```bash
-python "C:/Users/Attila/AppData/Local/hermes/lightrag_index/build_index.py"
+python "C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/build_index.py"
 ```
 
 Scans all 19 external skill dirs + bundled skills. ~3 seconds. Output: `skill_index.json` (3MB).
@@ -40,4 +40,4 @@ Job `e3529912964e` — daily 4am rebuild. Silence = healthy.
 
 ## Path
 
-`C:\Users\Attila\AppData\Local\hermes\lightrag_index\`
+`C:\Users\YOUR_USERNAME\AppData\Local\hermes\lightrag_index\`

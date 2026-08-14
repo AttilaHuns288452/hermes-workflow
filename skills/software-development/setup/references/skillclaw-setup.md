@@ -35,7 +35,7 @@ proxy:
   served_model_name: skillclaw-model
 skills:
   enabled: true
-  dir: C:\Users\Attila\AppData\Local\hermes\skills
+  dir: C:\Users\YOUR_USERNAME\AppData\Local\hermes\skills
 prm:
   enabled: false
 sharing:

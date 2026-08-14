@@ -354,6 +354,64 @@ Each with 3-10 clickable option buttons and a `[data-preview]` element.
 - [ ] Code displays show full HTML source (not just class names)
 - [ ] Code displays update when variant buttons are clicked/hovered
 
+## React / JSX Live REPL (non-Tailwind playgrounds)
+
+Same single-file family, but the playground compiles **JSX in the browser** instead of toggling Tailwind classes. Used for React playgrounds, component explorers, hooks demos.
+
+**Working CDN stack (verified 2026-08):**
+```html
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+```
+
+⚠️ **Pitfall — babel-standalone is dead.** `babel-standalone@7.x` does NOT exist on npm (latest = 6.26.0; `@7.24.7` etc. all 404 on jsdelivr/unpkg). Modern standalone lives at the scoped **`@babel/standalone`** (7.29.x). Always probe CDNs first: `curl -sI https://cdn.jsdelivr.net/npm/<pkg>@<ver>/<file> | head -1` — a 404 here silently kills the REPL with `Babel is not defined`.
+
+**REPL compile pattern** — transform JSX, inject hooks, require an `App` component:
+
+```javascript
+const HOOKS = ['useState','useEffect','useRef','useMemo','useCallback','useReducer','useContext','useLayoutEffect'];
+function compile() {
+  try {
+    const out = Babel.transform(editor.value, { presets: ['react'] }).code;
+    const factory = new Function('React', 'createElement', ...HOOKS,
+      out + '\n;return typeof App !== "undefined" ? App : null;');
+    const App = factory(React, React.createElement, ...HOOKS.map(h => React[h]));
+    if (!App) throw new Error('Define a component named App');
+    if (root) { root.unmount(); root = null; }
+    root = ReactDOM.createRoot(preview);
+    root.render(React.createElement(App));
+  } catch (e) { /* show e.message in an error panel, unmount stale root first */ }
+}
+// debounce on input (~350ms); Ctrl+Enter forces re-run
+```
+
+- **Convention:** user code defines a component named `App` — document it in the starter template text.
+- Hooks injected as function-scope params so user code can call `useState(...)` bare (or `React.useState`).
+- **Pitfall — preset code strings:** store templates in JS template literals but keep them free of backticks and `${` (breaks the literal); `</textarea>` inside a template string also closes the editor element — avoid.
+- Unmount the previous root on error or React keeps appending into the dead container.
+- Preset sidebar + search + copy button + dark/light (localStorage) mirror the Tailwind playground UX — the user expects these.
+
+## Headless Verification (single-file HTML tools)
+
+`file://` pages with CDN scripts cannot be verified by reading the file — **render them with headless Edge** (already installed on Windows):
+
+```bash
+"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless --disable-gpu \
+  --dump-dom --virtual-time-budget=8000 "file:///C:/path/index.html" > /tmp/dom.html
+# then grep the DUMPED DOM for rendered markers — NOT the source file:
+#   id="statusText">Rendered   |   error panel content   |   preview text (strip tags)
+```
+
+- `--virtual-time-budget=8000` lets CDN scripts + debounce timers finish; without it React never mounts.
+- `--screenshot` needs an **absolute Windows path** (`C:\...\out.png`) — relative/`~` paths silently write nothing.
+- Grep gotcha: strings from the inline `<script>` source (starter code, status labels) appear in the dump even when rendering FAILED. Verify by matching **live DOM state** — status text and rendered preview markup — not the presence of code text.
+- CDN 404s surface as `X is not defined` in the error panel — curl-probe every CDN URL before debugging your own code.
+
+## User Playground Family
+
+Attila ships single-file playgrounds as: local file → **desktop shortcut** (`Desktop/Desktop/<Name> Playground.lnk` via PowerShell `WScript.Shell`, TargetPath = the html) → **GitHub repo + Pages** (`gh repo create --public --source . --push` + `gh api .../pages -X POST -f "source[branch]=main" -f "source[path]=/"`). See `references/user-playground-family.md` for the existing two (Tailwind, React) with paths/repos.
+
 ## Ponytail Rationale
 
 Instead of wiring a code viewer into N individual sections (N× repetitive HTML + N× handler edits), one MutationObserver + one dock handles all sections automatically. ~80 lines of JS replaces ~200+ lines of per-section boilerplate. The observer is cheap: attribute-only filter, only processes the currently visible section.

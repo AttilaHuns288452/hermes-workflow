@@ -88,13 +88,13 @@ grep -rn --include='*.py' --include='*.md' --include='*.yaml' --include='*.sh' \
 
 **Note on file types:** On a Windows-hosted Git Bash, `--include='*.ps1'` and `--include='*.bat'` are critical — PowerShell scripts commonly contain hardcoded remote names and user-specific paths that plain Python/MD scans miss.
 
-**Note on escaping:** When using `sed` to replace Windows paths (which contain backslashes), prefer the `patch` tool over `sed` to avoid escaping nightmares. The `sed` backslash escape chain for a path like `C:\Users\Attila\...` is error-prone:
+**Note on escaping:** When using `sed` to replace Windows paths (which contain backslashes), prefer the `patch` tool over `sed` to avoid escaping nightmares. The `sed` backslash escape chain for a path like `C:\Users\YOUR_USERNAME\...` is error-prone:
 ```bash
 # sed: pain (need quadruple escaping for backslashes and brackets)
 sed -i 's|C:\\Users\\Attila|$HOME|g' file.md   # may fail on bracket chars
 
 # patch: clean (use the tool directly, not sed via terminal)
-patch path="file.md" old_string="C:\Users\Attila\..." new_string="$HOME/..."
+patch path="file.md" old_string="C:\Users\YOUR_USERNAME\..." new_string="$HOME/..."
 ```
 
 ## The Scan → Fix → Re-Scan Loop
@@ -295,6 +295,14 @@ When the repo is a mirror of a Hermes Agent skill installation:
 
 4. **Config templates** — `config.yaml.template` must use placeholders like `YOUR_USERNAME`, `YOUR_VAULT_PATH`, not real values. Same for `.env.example`.
 
+5. **Full mirror sync (add missing + refresh changed skills)** — the check loop above only reports; to actually sync use the tested Python recipe in `references/skill-mirror-sync.md`. Key points:
+   - Map skills by **dir-containing-SKILL.md** (catches nested skills), compare with a **tree hash over all files**, not just SKILL.md.
+   - Copy differing skills **deepest-first**: rmtree-ing a parent skill dir first wipes its nested skill dirs (hit `FileExistsError` when nested copies ran after the parent).
+   - Use `dirs_exist_ok=True` + `ignore_patterns("__pycache__", "*.pyc")`.
+   - After sync, re-verify byte-identical; remaining diffs should be ONLY excluded `__pycache__` files.
+   - Sweep for junk that rides along: `.temp/`, `*.bak` dirs, `__pycache__/` — `git rm` + add to `.gitignore` (e.g. capafy `.temp/confirmed-selections.json` shipped once).
+   - Re-count `find skills -name SKILL.md | wc -l` and update README badge/hero/stats + SETUP step header (Pitfall 3).
+
 ### Dotfiles Repos
 
 - Check `~/.gitconfig`, `~/.bashrc`, `~/.zshrc` for any token values
@@ -381,7 +389,7 @@ This is especially dangerous with **`cp`-based syncs** where you copy entire ski
 ```bash
 # You spent 30 minutes sanitizing skills/productivity/mcp-integrations/SKILL.md
 # Then you do:
-cp -r /c/Users/Attila/AppData/Local/hermes/skills/* repo/skills/
+cp -r /c/Users/YOUR_USERNAME/AppData/Local/hermes/skills/* repo/skills/
 # ↑ This overwrites your sanitized SKILL.md with the original containing paths
 # You must re-sanitize after every such copy
 ```
@@ -415,6 +423,17 @@ grep -rn 'C:\\Users\\\\' . --include='*.json' | grep -v 'graphify-out/'
 ```
 
 The directory is already `.gitignore`-safe (build artifact), but grep scans against the checked-out repo will flag every AST node containing a username. Always exclude `graphify-out/` from path-based grep scans, or strip the directory with `git rm -r --cached graphify-out/` and re-scan.
+
+### Pitfall 4: MSYS `/tmp` ≠ patch-tool `/tmp` (Windows git-bash)
+
+Two different `/tmp` resolutions on Windows break bulk edits:
+
+- **git-bash `/tmp`** = `%TEMP%` (usually `C:\Users\<user>\AppData\Local\Temp`). Confirm with `cygpath -w /tmp`.
+- **`patch` tool** may resolve `/tmp/x` to `C:\tmp\x` (drive root) — a DIFFERENT directory.
+
+If a patch says it succeeded but `git status` in your clone shows no change, the tool wrote to the other `/tmp`. Always verify with `git status` / `grep` after patching files under `/tmp`, and prefer cloning under `$HOME` to sidestep the ambiguity.
+
+Also: `python -m venv /tmp/foo` on Windows git-bash **exits 0 but creates nothing** (MSYS path mangling). Create venvs with `$HOME`-relative or Windows paths.
 
 ### Pitfall 3: Post-Sync Static Count Drift
 

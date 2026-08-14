@@ -41,7 +41,7 @@ Example for `agentmemory`:
       "type": "local",
       "command": ["npx", "-y", "@agentmemory/agentmemory", "mcp"],
       "environment": {
-        "PATH": "C:\\Users\\Attila\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\Attila\\AppData\\Roaming\\npm"
+        "PATH": "C:\\Users\\YOUR_USERNAME\\.local\\bin;C:\\Program Files\\nodejs;C:\\Users\\YOUR_USERNAME\\AppData\\Roaming\\npm"
       }
     },
     "vscode": {
@@ -50,7 +50,7 @@ Example for `agentmemory`:
     },
     "codegraph": {
       "type": "local",
-      "command": ["codegraph", "serve", "--mcp", "-p", "C:\\Users\\Attila\\Documents\\Projects"]
+      "command": ["codegraph", "serve", "--mcp", "-p", "C:\\Users\\YOUR_USERNAME\\Documents\\Projects"]
     }
   }
 }

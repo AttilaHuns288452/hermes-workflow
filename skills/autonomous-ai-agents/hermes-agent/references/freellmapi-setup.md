@@ -217,7 +217,7 @@ curl -H "Authorization: Bearer *** \
 When running from different directories, use absolute paths for better-sqlite3:
 ```bash
 # From project root
-node -e "const db = new Database('C:/Users/Attila/Documents/Projects/freellmapi/server/data/freeapi.db'); ..."
+node -e "const db = new Database('C:/Users/YOUR_USERNAME/Documents/Projects/freellmapi/server/data/freeapi.db'); ..."
 ```
 
 ### Session Token vs Unified API Key
@@ -262,10 +262,10 @@ Provider error (Model Name): OpenRouter API error 401: Missing Authentication he
 # Check if key decrypts correctly
 node -e "
 const Database = require('better-sqlite3');
-const db = new Database('C:/Users/Attila/Documents/Projects/freellmapi/server/data/freeapi.db');
+const db = new Database('C:/Users/YOUR_USERNAME/Documents/Projects/freellmapi/server/data/freeapi.db');
 const keys = db.prepare(\"SELECT platform, encrypted_key, iv, auth_tag FROM api_keys WHERE platform = 'openrouter'\").all();
 const crypto = require('crypto');
-const ENCRYPTION_KEY = Buffer.from(require('fs').readFileSync('C:/Users/Attila/Documents/Projects/freellmapi/.env').toString().match(/ENCRYPTION_KEY=([a-f0-9]+)/)[1], 'hex');
+const ENCRYPTION_KEY = Buffer.from(require('fs').readFileSync('C:/Users/YOUR_USERNAME/Documents/Projects/freellmapi/.env').toString().match(/ENCRYPTION_KEY=([a-f0-9]+)/)[1], 'hex');
 const decipher = crypto.createDecipheriv('aes-256-gcm', ENCRYPTION_KEY, Buffer.from(keys[0].iv, 'hex'), {authTagLength: 16});
 decipher.setAuthTag(Buffer.from(keys[0].auth_tag, 'hex'));
 let dec = decipher.update(keys[0].encrypted_key, 'hex', 'utf8');

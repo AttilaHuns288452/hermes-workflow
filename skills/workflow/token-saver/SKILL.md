@@ -31,7 +31,7 @@ Extract `$PROJECT` from the file path. All projects live at `~/Documents/Project
 
 Use the built-in MCP tools — no terminal command needed, always available.
 
-**⚠️ IMPORTANT:** If CWD is not inside a project (e.g. `C:\Users\Attila`), you MUST pass `projectPath` or the MCP server can't find the index:
+**⚠️ IMPORTANT:** If CWD is not inside a project (e.g. `C:\Users\YOUR_USERNAME`), you MUST pass `projectPath` or the MCP server can't find the index:
 
 ```
 mcp_codegraph_codegraph_explore(query="function_name", projectPath="C:\\Users\\Attila\\Documents\\Projects\\$PROJECT")  # PRIMARY — single call returns defs + source

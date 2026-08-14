@@ -172,6 +172,6 @@ Proven: CashFlow OS v1 review caught 10 issues (missing audit trail, currency ha
 ## References
 
 - **Superpowers repo:** https://github.com/obra/superpowers — original source of this methodology
-- **Superpowers skills (external_dirs):** `C:/Users/Attila/Documents/Repos/external-skills/superpowers/skills/`
+- **Superpowers skills (external_dirs):** `C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills/`
 - **Release announcement:** https://blog.fsck.com/2025/10/09/superpowers/
 - **Superpowers evals:** https://github.com/prime-radiant-inc/superpowers-evals/

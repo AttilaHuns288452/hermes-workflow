@@ -35,7 +35,7 @@ auth at time of writing.
   (HS256, no `exp`, server rejects once ~1 day old).
 - OAuth tokens: `~/.zcode/v2/credentials.json` → `oauth:zai:access_token`,
   `zcodejwttoken` (also go stale).
-- **Refreshed ONLY by the ZCode Desktop app** (`C:\Users\Attila\AppData\Local\Programs\ZCode\ZCode.exe`)
+- **Refreshed ONLY by the ZCode Desktop app** (`C:\Users\YOUR_USERNAME\AppData\Local\Programs\ZCode\ZCode.exe`)
   — no refresh_token is stored, no CLI exists (`zcode` not on PATH), and ZCode's
   own logs redact tokens (`eyJhbG...OGQ0`), so there is no headless refresh path.
   Stale tokens all return `401 token expired or incorrect`.

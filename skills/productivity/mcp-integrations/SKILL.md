@@ -18,7 +18,7 @@ This skill covers adding MCP servers to Hermes Agent, with verified operational 
 - Node.js for npx servers, `uv`/`uvx` for Python-based servers
 
 ```bash
-/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/python -m pip install mcp
+/c/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python -m pip install mcp
 ```
 
 ## Core Patterns
@@ -35,7 +35,7 @@ mcp_servers:
     url: \"https://connect.composio.dev/mcp\"
 EOF
 tail -10 ~/.hermes/config.yaml   # verify
-/c/Users/Attila/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes mcp list
+/c/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes mcp list
 ```
 
 ### 2. Composio setup (composio.dev/hermes)
@@ -52,11 +52,13 @@ mcp_servers:
 
 Restart Hermes. The first Composio-backed request will trigger the OAuth flow. Tools are prefixed `mcp_composio_*`. Authorize each integration via the OAuth prompt or [dashboard.composio.dev](https://dashboard.composio.dev).
 
-**Known pitfall:** Adding `headers:` with `x-consumer-api-key` causes persistent 401 Unauthorized. Remove headers and use the built-in OAuth login instead.
-
 **Known pitfall:** Do NOT add `headers:` with `x-consumer-api-key` for the Composio `/mcp` endpoint. That produces persistent `401 Unauthorized` responses. Normal built-in OAuth login covers authentication here.
 
-**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `C:\Users\Attila\Documents\apikeys\composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
+**ak_ vs ck_ keys (verified 2026-08):** `ak_`-prefixed keys are developer Platform keys (dashboard → API Keys page) and are REJECTED by `connect.composio.dev/mcp` with `{"error":"Authorization required","reason":"Bearer token rejected: not a valid AuthKit JWT..."}` — expected behavior per [issue #3485](https://github.com/ComposioHQ/composio/issues/3485): *"ak_ keys are developer Platform keys... This endpoint only accepts the consumer key from the Composio For You (Connect) dashboard, so a 401 with an ak_ key is expected."* Only `ck_` consumer keys (Connect/"For You" dashboard → **Install** section, older name: AI Clients) work as a header, and the official Hermes route is NO header at all → OAuth.
+
+**Hermes built-in MCP OAuth client can fail on this server** (gateway log: `MCP server '<name>' failed initial OAuth authentication... 401 Unauthorized`). Fallback that works: manual PKCE OAuth via `scripts/composio_oauth.py` (dynamic client registration at `login.composio.dev`, localhost:8345 callback, saves token to `~/AppData/Local/hermes/composio_token.json`). Then call the endpoint directly with `Authorization: Bearer <access_token>` over JSON-RPC (initialize → tools/list → tools/call) — works even when the session's tool catalog can't see newly-added MCP tools. Access token ~1h; refresh token saved alongside. Full discovery endpoints + error strings: `references/composio-connect-mcp-oauth.md`.
+
+**Drive fallback:** when native Google Workspace OAuth is unavailable or blocked—especially on Windows—use Composio Google Drive instead of driver OAuth. Rule reference: add the `/mcp` endpoint without headers; rely on built-in OAuth prompt flow; execute the Drive-related tool that matches the task (`listFiles`, `uploadFile`, `createFolder`, and similar). Use the existing Composio API key at `C:\Users\YOUR_USERNAME\Documents\apikeys\composioApi.txt` if needed. Do NOT put this key in the Hermes MCP `headers:` block for the `/mcp` endpoint.
 
 ### 2. LLMQuant Data setup
 
@@ -199,12 +201,12 @@ This installs 32 skills under `~/.hermes/skills/firecrawl*` and the `firecrawl` 
 
 ```python
 import re
-cfg = open(r'C:/Users/Attila/AppData/Local/hermes/config.yaml', encoding='utf-8').read()
+cfg = open(r'C:/Users/YOUR_USERNAME/AppData/Local/hermes/config.yaml', encoding='utf-8').read()
 token = re.search(r'mcp\.firecrawl\.dev/(fc-[A-Za-z0-9_-]+)/v2/mcp', cfg).group(1)
-env = open(r'C:/Users/Attila/AppData/Local/hermes/.env', encoding='utf-8').read()
+env = open(r'C:/Users/YOUR_USERNAME/AppData/Local/hermes/.env', encoding='utf-8').read()
 new = re.sub(r'^#?\s*FIRECRAWL_API_KEY=.*$', 'FIRECRAWL_API_KEY=' + token, env, flags=re.M)
 if new == env: new = env + '\nFIRECRAWL_API_KEY=' + token + '\n'
-open(r'C:/Users/Attila/AppData/Local/hermes/.env', 'w', encoding='utf-8').write(new)
+open(r'C:/Users/YOUR_USERNAME/AppData/Local/hermes/.env', 'w', encoding='utf-8').write(new)
 ```
 Verify with a live MCP call (`firecrawl_search`) — a returned `creditsUsed` proves the key is valid. Rotate both together: MCP URL and `.env`.
 
@@ -242,13 +244,12 @@ When migrating a scripted workflow into Hermes:
 For cron, prefer testing by direct execution once before declaring success.
 
 ## Open Design Notes
-- Windows install path can contain spaces, so `command` should quote or escape it properly.
-- Hermes now supports the Open Design stdio MCP server on Windows:
-  `C:\\Users\\Attila\\AppData\\Local\\Programs\\Open Design release-stable-win\\Open Design.exe` with env:
-  `OD_DATA_DIR`, `OD_SIDECAR_NAMESPACE`, `ELECTRON_RUN_AS_NODE`.
-- **Daemon sidecar required.** The stdio MCP server (spawned by Hermes) provides the tool definitions, but the tools themselves connect to a local HTTP daemon on port 7456. If the daemon isn't running, all tool calls fail with `cannot reach the Open Design daemon at http://127.0.0.1:7456`. Start it manually: `ELECTRON_RUN_AS_NODE=1 ./"Open Design.exe" .../cli.js --port 7456 --no-open`.
-- This does not currently indicate rich generative/code-agent bridge support. Focused integration path is still reading design files via MCP; generative capabilities remain unverified.
-- `bloom`/`blind` options shown by some daemon logs are implementation-specific. Keep `initializationOptions` minimal unless documentation explicitly requires them.
+- Windows install path contains spaces — quote properly in `command`.
+- Config (current app layout, verified 2026-08): `Open Design.exe` + `resources/app/prebundled/daemon/daemon-cli.mjs mcp`, env `OD_DATA_DIR`, `OD_SIDECAR_NAMESPACE`/`OD_SIDECAR_IPC_PATH`, `ELECTRON_RUN_AS_NODE=1`. The old `@open-design/daemon/dist/cli.js` path is STALE — the app moved to `prebundled/daemon/`.
+- **Proxy → daemon architecture.** The stdio MCP process is a thin proxy to the app's internal daemon (`http://127.0.0.1:7456`, port override via `OD_PORT` env). `initialize` + `list_tools` succeed even with the daemon down (~20 tools listed), but every real tool call fails with `cannot reach the Open Design daemon at http://127.0.0.1:7456. Is it running? Start it with 'pnpm tools-dev'`. `hermes mcp test opendesign` times out at 40s for the same reason — it exercises a real call.
+- **Launching the GUI app does NOT start the daemon** — it's a dev-mode service; zero listening ports even with 9 Electron processes up. Verify with `netstat -ano | grep 7456` and `cmd //c "dir \\.\pipe" | findstr open-design`.
+- Env contract (grepped from bundled chunks): `OD_PORT`, `OD_BIND_HOST`, `OD_WEB_PORT`, `OD_SIDECAR_IPC_PATH`, `OD_SIDECAR_NAMESPACE`, `OD_DATA_DIR`, `OD_BIN`, `OD_TOOLS_DEV_PARENT_PID`.
+- Full diagnosis recipe + transcript: `references/opendesign-mcp.md`.
 
 ## VS Code MCP Server
 
@@ -277,7 +278,7 @@ mcp_servers:
   obsidian-kg:
     command: python
     args: ["-m", "obsidian_kg_mcp"]
-    cwd: C:\Users\Attila\.hermes\tools
+    cwd: C:\Users\YOUR_USERNAME\.hermes\tools
     connect_timeout: 30
 ```
 
@@ -304,10 +305,131 @@ Zoneless Python package imports — `import mcp`, `import pyvis`, `networkx` —
 
 `execute_code` has a low timeout ceiling on this Windows host — imports like `import mcp` or `import pyvis` can exceed it and raise `WinError 10106` before the sandbox clears. Use `terminal(command=\"python -c ...\")` for dependency checks. Reserve `execute_code` for short scripts that only import stdlib.
 
+## Figma MCP setup
+
+Two paths exist. Prefer desktop (local).
+
+### Remote (OAuth) — blocked for unapproved clients
+
+```yaml
+mcp_servers:
+  figma:
+    url: "https://mcp.figma.com/mcp"
+    auth: oauth
+```
+
+Figma only allows clients in their [MCP Catalog](https://www.figma.com/mcp-catalog/) (VS Code, Cursor, Claude Code, Codex). Hermes is not listed → OAuth registration returns `403 Forbidden`. Don't waste time on this path unless Hermes gets added to the catalog.
+
+### Desktop (local HTTP) — works now
+
+Requires Figma desktop app running with Dev Mode + MCP server enabled.
+
+1. Open Figma Desktop → Dev Mode (`Shift+D`)
+2. In the inspect panel under **MCP server**, click **Enable desktop MCP server**
+3. Server runs at `http://127.0.0.1:3845/mcp` — no auth needed
+
+```yaml
+mcp_servers:
+  figma:
+    url: http://127.0.0.1:3845/mcp
+    enabled: true
+```
+
+If switching from remote config, **remove** the `auth: oauth` line — `hermes config set` can't unset keys (see troubleshooting). Use `sed -i '/^    auth:/d' ~/AppData/Local/hermes/config.yaml` or edit manually. Restart gateway after.
+
+### Official npm server (figma-developer-mcp, stdio) — verified working 2026-08
+
+The reliable path on this machine. Read-only tools (`get_figma_data`, `download_figma_images`).
+
+```bash
+echo 'FIGMA_API_KEY=figd_...' >> ~/AppData/Local/hermes/.env     # user generates in Figma → Account settings → Security → Personal access tokens
+npx -y figma-developer-mcp --help                                 # pre-warm: first-run download exceeds the connect timeout
+# CRITICAL: --env BEFORE --args; --args must be LAST (argparse nargs* swallows trailing options)
+echo y | hermes mcp add figma-dev --command npx --connect-timeout 90 --env FIGMA_API_KEY=figd_... --args -y figma-developer-mcp --stdio
+hermes mcp test figma-dev    # "2 tools enabled" = connection succeeded at add time
+```
+
+Config lands as `mcp_servers.figma-dev: {command: npx, args: [-y, figma-developer-mcp, --stdio], env: {FIGMA_API_KEY: ...}}`.
+
+**Pitfall — `--args` last, always:** placing `--env` after `--args` mangles the saved config (whole command becomes ONE arg string + the options orphaned inside `args`). Fix via `hermes mcp remove` + re-add in the right order; `hermes mcp add` also prompts "Save config anyway? [y/N]" — pipe `echo y` or it saves nothing on EOF.
+
+**Pitfall — MCP stdio children do NOT inherit `~/.env`:** figma-developer-mcp without the key prints `Either FIGMA_API_KEY or FIGMA_OAUTH_TOKEN is required` and exits → `hermes mcp test` reports `Connection closed`. The key MUST be in the server's `env:` block (lands in config.yaml — documented mechanism, acceptable). General rule: any stdio server needing a secret that's only in `.env` fails the same way; test manually first with piped JSON-RPC `initialize` to see the real error.
+
+**PAT scope (corrects the note below):** `X-Figma-Token: figd_...` works for the **REST API** (`api.figma.com`) and for `figma-developer-mcp` via env. It does NOT work against the remote `mcp.figma.com/mcp` OAuth endpoint. Full REST QA chain (nodes?ids → images?ids → vision QA, text signatures, 429 pacing): `mobile-ui-figma-handoff` → `references/figma-import-qa.md`.
+
+### PAT (Personal Access Token) — NOT supported for the remote MCP endpoint
+
+Curl tests with `X-Figma-Token: figd_...` or `Authorization: Bearer figd_...` against `mcp.figma.com/mcp` return `Unauthorized`. PAT auth is not available for that OAuth endpoint as of 2026-08 — use the npm stdio server above instead.
+
+## Flowbite MCP
+
+Official Tailwind/Flowbite UI server (`npx -y flowbite-mcp`, MIT, themesberg/flowbite-mcp). Added to Hermes 2026-08-09; verified live.
+
+```yaml
+mcp_servers:
+  flowbite:
+    command: npx
+    args:
+      - -y
+      - flowbite-mcp
+    connect_timeout: 60
+    enabled: true
+```
+
+**Tool surface (2 tools, `mcp_flowbite_*`):**
+- `generate_theme` — required args `brandColor` (hex) + `instructions` (free-text aesthetic; e.g. "clean professional SaaS, soft rounded corners"); optional `fileName` (default `custom-theme.css`). Returns a complete Flowbite theme CSS: brand color expanded into 50–950 shades, plus radius/spacing/typography variables. Verified end-to-end via JSON-RPC call (periwinkle `#5e6ad2` → full palette).
+- `convert_figma_to_code` — arg `figmaNodeUrl`; **requires `FIGMA_ACCESS_TOKEN` env var** in the MCP `env:` block (not set on this machine — Figma-to-code will fail until added).
+
+**Pitfalls:**
+- `hermes mcp call` is NOT a valid subcommand (serve/add/remove/rm/list/ls/test/configure/config/login/reauth/picker/catalog/install only). Verify real tool calls via piped JSON-RPC (init → `tools/call`, see `references/mcp-server-testing.md`).
+- Docs examples omit `instructions`; the schema requires both `brandColor` and `instructions` (`MCP error -32602: Required at instructions` otherwise).
+- Server boot takes ~10–14s on first `hermes mcp test` (npx fetch).
+- Tool names in Hermes: `mcp_flowbite_generate_theme`, `mcp_flowbite_convert_figma_to_code`.
+
+## mcporter CLI (agent-reach's MCP runner — Exa, LinkedIn)
+
+`mcporter` (npm, `npm install -g mcporter`) is the MCP client used by agent-reach for
+zero-config channels. Registration + calls verified 2026-08:
+
+```bash
+# Exa semantic search (free, no key) — agent-reach's zero-config search channel
+mcporter config add exa https://mcp.exa.ai/mcp --scope home
+mcporter call exa.web_search_exa query="..." numResults=5
+
+# LinkedIn (mcp-server-linkedin, stdio)
+mcporter config add linkedin --command "C:/Users/YOUR_USERNAME/.linkedin-mcp/linkedin-mcp.cmd" --scope home
+mcporter call linkedin.get_person_profile linkedin_username="..." sections="experience"
+```
+
+**Pitfall — backslash mangling in `--command`:** mcporter strips backslashes when
+storing config (`C:\Users\...` becomes `C:Users...` → "not recognized as a command").
+Always use **forward slashes** in `--command`.
+
+**Pitfall — child inherits the global PYTHONPATH leak:** mcporter spawns stdio
+children with the parent env, so a `PYTHONPATH` pointing at the Hermes venv breaks
+isolated-env servers (real case: `mcp-server-linkedin` via `uvx` died with
+`ImportError: cannot import name 'TextSizing' from 'wcwidth'`). Point `--command` at a
+wrapper `.cmd` that strips it instead of relying on `--env`:
+
+```bat
+@echo off
+set PYTHONPATH=
+"C:\c\Users\YOUR_USERNAME\.linkedin-mcp-venv\Scripts\mcp-server-linkedin.exe" %*
+```
+
+Note: `--login` for mcp-server-linkedin is interactive (inquirer prompts + browser
+popup) — run with `env -u PYTHONPATH <exe> --login` in a background PTY, user completes
+the popup, profile lands in `~/.linkedin-mcp/profile`. Also: `mcporter call linkedin.list_tools`
+is a shortcut for `mcporter list linkedin` — use it to discover real tool names
+(`get_own_profile` does not exist; it's `get_person_profile`).
+
 ## Troubleshooting
 | Symptom | Fix |
 |---------|-----|
 | `MCP SDK not available` | `pip install mcp` in Hermes venv |
+| `hermes config set key value` shows `***` | Normal — values are redacted in CLI output but written correctly. Read the file to verify. |
+| `hermes config set` can't remove a key | No `unset` subcommand. Use `sed -i '/^    key:/d' ~/AppData/Local/hermes/config.yaml` or edit manually. `hermes config set key '""'` and `null` both write literal strings, not YAML nulls. |
+| Figma MCP `403 Forbidden` on OAuth registration | Hermes is not in Figma's approved client catalog. Switch to desktop MCP (`http://127.0.0.1:3845/mcp`). |
 | `No MCP servers configured` | Check `mcp_servers:` key in config.yaml |
 | Windows force-delete failure `Cannot find param 'rf'` | Use `Remove-Item -Recurse -Force <path>` |
 | Terminal command corruption on `schtasks` | Use a temporary batch wrapper in `~/.hermes/scripts/` and rerun an assertion |
@@ -319,7 +441,8 @@ Zoneless Python package imports — `import mcp`, `import pyvis`, `networkx` —
 | `npx` server package not found globally on Windows | Do not assume the server is globally installed just because `npx` is on PATH. Verify with `npm ls -g --depth=0 <pkg-name>` before writing a hardcoded `.cmd` path. When unsure, use the `npx -y <pkg-name>` pattern — it auto-installs the latest version regardless of global state. |
 | `write_file` succeeded but content is wrong | `lint: {status: \"ok\"}` only validates Python/YAML/JSON syntax; it does not validate that the written content matches your intent or that the target file was actually created. Always `read_file` the path after writing to confirm existence and content before treating the write as a real success. |
 | MCP server silent exit / not appearing | Test with `echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | <command>` — a valid MCP server responds with JSON-RPC. If nothing comes back, the command itself fails (missing package, wrong args, PATH issue). Also test `tools/list` by piping a second JSON line. See `references/mcp-server-testing.md`. || `@llmquant/data-mcp` returns `401 Unauthorized` | First verify the key in the LLMQuant dashboard; if the dashboard shows it valid, verify no `headers:` are set and that `LLMQUANT_API_KEY` is present in the MCP server `env:` block. |
-| Open Design MCP tools fail with `cannot reach the Open Design daemon at http://127.0.0.1:7456` | The stdio MCP server runs as an ELECTRON_RUN_AS_NODE child process (spawned by Hermes), but the OD daemon must also be listening on port 7456 for tools to work. Start it separately: `ELECTRON_RUN_AS_NODE=1 ./"Open Design.exe" resources/app/node_modules/@open-design/daemon/dist/cli.js --port 7456 --no-open` from the install dir. Verify with `netstat -ano | grep ':7456'`. |
+| Open Design MCP tools fail with `cannot reach the Open Design daemon at http://127.0.0.1:7456` | Proxy → daemon server: handshake/list_tools succeed with the daemon down; only real calls fail. Launching the GUI app does NOT start the daemon (dev-mode service, `pnpm tools-dev`). Check `netstat -ano | grep 7456` first. Full diagnosis: `references/opendesign-mcp.md`. |
+| Proxy-style MCP server passes `hermes mcp test` handshake but tool calls fail / test times out | Desktop-app bridges (Open Design, Figma desktop, etc.) proxy stdio → a local HTTP daemon. Protocol health ≠ backend health. Probe with a direct Python `mcp` client: `initialize`+`list_tools` (protocol) then `call_tool` (backend). Read the tool error text — it names the missing backend and its start command. Never conclude "MCP broken" from a tool-call error alone; the config may be fine and the app-side service down. |
 | VS Code MCP server returns `No VS Code projects found` / `Extension not installed` | The `vscode-mcp-server` npm package requires the **VS Code MCP Extension** installed inside VS Code (`code --install-extension <extension-id>`). npx alone is not enough — VS Code must be running with the extension active for the tools to resolve a workspace. |
 
 ## Security Notes
@@ -371,7 +494,7 @@ with zipfile.ZipFile(io.BytesIO(data)) as z:
     with open(os.path.join(dest_dir, 'iii.exe'), 'wb') as f:
         f.write(z.read('iii.exe'))
 PY
-'C:\Users\Attila\.local\bin\iii.exe' --version
+'C:\Users\YOUR_USERNAME\.local\bin\iii.exe' --version
 ```
 
 Restart the shell or export PATH if needed before launching `agentmemory`.
@@ -437,8 +560,9 @@ mcp_servers:
 
 ## References
 
-- `references/composio-hermes-setup.md` — known good config, 401 pitfalls, OAuth flow notes
+- `references/composio-connect-mcp-oauth.md` — Composio Connect MCP auth: discovery endpoints, 401 error strings, ak_/ck_ key facts, OAuth fallback flow, config.yaml repair recipe
 - `references/llmquant-data-mcp.md` — npm publish metadata, CLI smoke-test results, `401` reproduction, docs source link, current tool inventory
 - `references/agentmemory-install.md` — condensed external install guidance plus observed Windows behavior
 - `references/mcp-server-testing.md` — testing MCP servers via piped JSON-RPC (init + tools/list)
 - `references/mcp-sdk-migration.md` — migrating custom MCP servers from old `Server` API to FastMCP (SDK 0.x → 1.x)
+- `references/opendesign-mcp.md` — Open Design proxy→daemon architecture, env contract, direct-probe diagnosis recipe

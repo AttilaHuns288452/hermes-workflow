@@ -10,10 +10,14 @@ description: Create, audit, and fix Hermes cron jobs. Covers the script-field se
 The `script` param of `cronjob` is a **file path** (relative to `~/AppData/Local/hermes/scripts/`). Inline commands fail with:
 
 ```
-Script not found: C:\Users\Attila\AppData\Local\hermes\scripts\python3 -c "
+Script not found: C:\Users\YOUR_USERNAME\AppData\Local\hermes\scripts\python3 -c "
 ```
 
 Fix: write the code to a real file first, then reference it by name.
+
+**Windows pitfall — `.sh` cron scripts run via the WSL shim.** Hermes runs `.sh`/`.bash` script jobs through `bash`, and on Windows that resolves to `wsl.exe` (not git-bash). If no WSL distro is installed, the job fails instantly with `WSL_E_DEFAULT_DISTRO_NOT_FOUND` — and with `deliver: local` the error is invisible (only `last_status: error` in `cronjob list`, output file in `~/AppData/Local/hermes/cron/output/<job_id>/`). Fix: use a `.py` wrapper that `subprocess.run`s the real script with `cwd` set (non-`.sh` scripts run via Python directly). Symptom check: `grep -i "WSL_E\|wsl.exe" ~/AppData/Local/hermes/cron/output/<job_id>/*.md`.
+
+**`hermes cron edit --script` rejects absolute paths** (`Script path must be relative to ~/.hermes/scripts/`). When a job errors `Script not found: ...scripts/<name>` but the real script lives in a project (e.g. `~/Documents/Projects/signal-bot/paper_daily.sh`): copy it into `~/AppData/Local/hermes/scripts/` with the same filename — no job-config change needed. Copies are safe if the script is self-contained (cd's into its own project dir internally); verify with `bash -n` after copying.
 
 ```bash
 # scripts/weekly-scan.py
@@ -55,7 +59,15 @@ No inference call was made. To run on the new config, pin it explicitly:
 cronjob action=update job_id=<id> provider=<provider> model=<model>
 ```
 
-Fix: `cronjob action=update job_id=<id> model={model, provider}`. Jobs with `enabled_toolsets: [terminal]` or `no_agent: true` don't call inference and are immune. Audit signal: a job with `last_status: error` and this message in `cron/output/<job_id>/`.
+Fix: pin the job's model/provider via the **CLI** — the `cronjob` tool has NO model/provider params (`cronjob action=update job_id=<id> model=...` fails with "No updates provided"):
+```bash
+hermes cron edit <job_id> --model deepseek-v4-flash --provider opencode-go
+```
+The same shape can move a job to a different provider entirely (e.g. after a 402). Jobs with `enabled_toolsets: [terminal]` or `no_agent: true` don't call inference and are immune. Audit signal: a job with `last_status: error` and this message in `cron/output/<job_id>/`. Verify a fix with `hermes cron run <job_id>` and read the fresh file in `cron/output/<job_id>/`.
+
+## Provider balance failures (HTTP 402)
+
+An agent job pinned to a provider with no credit fails with `RuntimeError: HTTP 402: ... Insufficient Balance` — the job is fine, the provider isn't. Fix: repoint the job at a funded provider (`hermes cron edit <id> --model <model> --provider openrouter` — use the provider's model id format, e.g. `deepseek/deepseek-chat` for OpenRouter). Prefer providers already proven working for delegation (see AGENTS.md delegation section) over the default route.
 
 ## Gateway health jobs
 

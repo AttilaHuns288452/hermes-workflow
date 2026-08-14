@@ -1,8 +1,3 @@
-# Environment
-.env
-.env.*
-!.env.example
-
 # Logs
 logs
 *.log
@@ -31,9 +26,6 @@ dist
 graphify-out/
 index-tailwind.html
 
-# Python
+# Python bytecode caches (never commit)
 __pycache__/
 *.pyc
-
-# Temp state
-.temp/

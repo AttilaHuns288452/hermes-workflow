@@ -161,7 +161,7 @@ When the user asks "is this the latest/updated model", do NOT guess from memory 
 # Cache: ~/.cache/opencode/models.json (3.3 MB, refreshed on opencode use — check its mtime first)
 python -c "
 import json
-d = json.load(open('C:/Users/Attila/.cache/opencode/models.json', encoding='utf-8'))
+d = json.load(open('C:/Users/YOUR_USERNAME/.cache/opencode/models.json', encoding='utf-8'))
 for prov, pv in d.items():
     for mid, mv in pv.get('models', {}).items():
         if 'v4-flash' in mid.lower() or 'v4_flash' in mid.lower():

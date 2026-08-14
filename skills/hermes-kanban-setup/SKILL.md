@@ -68,6 +68,20 @@ hermes kanban list                  # board overview
 hermes kanban stats                 # per-status counts
 ```
 
+## Swarm batch lifecycle (kanban + delegate_task)
+
+Proven pattern for project batches (UI overhauls, fix rounds):
+
+1. **One task per workstream** — `hermes kanban create "<scope>" --body "<spec>" --assignee orchestrator --project <slug>`; scope = one agent's disjoint file set (never two agents on the same file in one batch).
+2. **Dispatch ≤3 agents** via `delegate_task` with `tasks: [...]`; each brief self-contained: exact file paths, design tokens, `Run 'npx tsc --noEmit' at end (NOT npm run build)`, "Report files changed + tsc result".
+3. **Complete AFTER verification, never on self-report.** Subagent "tsc clean" claims are not proof — run `npx tsc --noEmit` + `npm run build` yourself, then `hermes kanban complete <id>`.
+
+## Subagent timeout mid-edit recovery
+
+A subagent that times out (~600s) can leave **broken WIP** in its target file. Siblings that ran tsc concurrently then report those errors as "pre-existing in a file I never touched" — they're actually the dead agent's partial edits.
+
+- Verify: `git diff --stat <file>` + read the diff. Remaining type errors are usually **one repeated pattern** (e.g. `string | undefined` → `SetStateAction<string>`). Fix with `patch replace_all` (`setErr(r.error)` → `setErr(r.error ?? "")`), re-tsc. Fix directly instead of re-dispatching a fresh 600s agent for a handful of one-line errors.
+
 ## Auto-decompose model
 
 The decomposer uses `auxiliary.kanban_decomposer` in config.yaml (defaults to `auto` → main chat model). Set explicitly if auto fails:
@@ -84,7 +98,8 @@ hermes config set auxiliary.kanban_decomposer.provider opencode-go
 - **`hermes kanban dispatch`** is a one-shot pass — doesn't run the decomposer unless the gateway is on
 - **Decomposer PermissionDeniedError**: the auxiliary model's `auto` may resolve to a provider with auth issues. Set `auxiliary.kanban_decomposer` explicitly or use `hermes kanban specify`.
 - **Two config files**: active is `AppData/Local/hermes/config.yaml`, NOT `~/.hermes/config.yaml` (legacy)
-- **Skill discovery via LightRAG** — sub-second TF-IDF over 665 skills: `python C:/Users/Attila/AppData/Local/hermes/lightrag_index/find.py "<query>"`
+- **Skill discovery via LightRAG** — sub-second TF-IDF over 665 skills: `python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/find.py "<query>"`
+- **Stale "ready" tasks after shipped work:** tasks implemented outside the dispatcher (direct swarm, manual commits) stay `ready` forever. Before creating a new task, run `hermes kanban list` and close tasks whose work already shipped (verify via git log / deploy) with `hermes kanban complete <id>` — prevents duplicate planning on the next session.
 - **`/decide` routes kanban tasks** — triggers: "kanban", "task board", "decompose", "agent pipeline", "parallel workers", "swarm"
 
 ## Profile sync (all profiles get same skills/MCP)
@@ -102,7 +117,7 @@ hermes -p <name> config set provider <provider>
 ```bash
 # LightRAG daily rebuild — 4am
 hermes cronjob create --schedule "0 4 * * *" \
-  --prompt "Run: python C:/Users/Attila/AppData/Local/hermes/lightrag_index/build_index.py"
+  --prompt "Run: python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/build_index.py"
 
 # Gateway health check — every 30m
 hermes cronjob create --schedule "every 30m" \

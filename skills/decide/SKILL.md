@@ -25,7 +25,7 @@ triggers:
 
 **If SOUL.md doesn't mention /decide, /decide doesn't run.** The skill's own `triggers: [always]` cannot self-invoke. This is why previous versions documented "ACTIVE enforcement" that was "never actually followed" — there was no enforcement mechanism.
 
-**To update the pipeline enforcement:** edit `$HERMES_HOME/SOUL.md` (on Windows: `C:\Users\Attila\AppData\Local\hermes\SOUL.md`). The 8-step pipeline lives there: /decide load → session_search → guardrail → task_tier → enforced rules → skill selection → execute → self-audit.
+**To update the pipeline enforcement:** edit `$HERMES_HOME/SOUL.md` (on Windows: `C:\Users\YOUR_USERNAME\AppData\Local\hermes\SOUL.md`). The 8-step pipeline lives there: /decide load → session_search → guardrail → task_tier → enforced rules → skill selection → execute → self-audit.
 
 See `references/soul-md-enforcement.md` for the full SOUL.md pipeline template.
 
@@ -38,11 +38,13 @@ See `references/soul-md-enforcement.md` for the full SOUL.md pipeline template.
 | Role | Model | Use for |
 |------|-------|---------|
 | Orchestrator / Planning | **Hermes chat model** (currently `opencode-go/deepseek-v4-pro`) | **ROUTING + REASONING ONLY.** Never writes code, runs git, patches files, does build/deploy. |
-| **Main coding agent — implementation, editing, coding, execution** | `opencode/deepseek-v4-flash-free` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands** — delegate via `delegate_task`, `opencode run`, or oh-my-opencode-slim Pantheon swarm |
+| **Main coding agent — implementation, editing, coding, execution** | `opencode-go/deepseek-v4-flash` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands** — delegate via `delegate_task`, `opencode run`, or oh-my-opencode-slim Pantheon swarm |
 | **Multimodal** | `opencode/mimo-v2.5-free` | **ALL image/video/visual tasks** — screenshots, UI audits, design review |
 | **Difficult multimodal** | `opencode-go/mimo-v2.5-pro` | Complex, long-running multimodal reasoning tasks |
 
-**Delegation rule:** 1-2 patches → `delegate_task` to DeepSeek V4 Flash. 3+ independent tasks → `delegate_task(tasks=...)` or Pantheon swarm. Bounded coding → `opencode run --model opencode/deepseek-v4-flash-free`. **Check ECC/Agency agent roster first** — if task matches a specialty agent (reviewer, resolver, architect, security, ML, DevOps), route there before generic delegation. The orchestrator NEVER writes code, runs git, or does build/deploy.
+**Delegation rule:** 1-2 patches → `delegate_task` to DeepSeek V4 Flash. 3+ independent tasks → `delegate_task(tasks=...)` or Pantheon swarm. Bounded coding → `opencode run --model opencode-go/deepseek-v4-flash`. **Check ECC/Agency agent roster first** — if task matches a specialty agent (reviewer, resolver, architect, security, ML, DevOps), route there before generic delegation. The orchestrator NEVER writes code, runs git, or does build/deploy.
+
+**⚠️ NEVER use bare model IDs through the opencode CLI** (`deepseek-v4-flash`, `mimo-v2.5`, `glm-5.2`) — they resolve to the opencode-zen route (pay-as-you-go, historically 429-exhausted). Always qualify: `opencode-go/deepseek-v4-flash`, `opencode-go/deepseek-v4-pro`, `opencode-zen/mimo-v2.5-free`. Hermes config already pins everything to opencode-go; the trap is only in ad-hoc `opencode run` calls and OpenDesign generation.
 
 **Rate-limit fallback (auto, don't ask):** free → paid equivalent. Never use paid for mundane delegation unless rate-limited. **600s timeout** — break large batches into 4-6 items.
 
@@ -53,7 +55,7 @@ See `references/soul-md-enforcement.md` for the full SOUL.md pipeline template.
 | Vision → MiMo subagent | `subagent-delegation` | Never call `vision_analyze` from orchestrator. Delegate to MiMo, feed results to DeepSeek. |
 | QA depth: test everything | `subagent-delegation` | Click every button, test every state, every edge case. |
 | Cache-busting: no stale pages | `subagent-delegation` | Add `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">` to all static sites. |
-|| Skill lookup: TF-IDF | `lightrag-skill-finder` | Sub-second, 0 API. Query: `python C:/Users/Attila/AppData/Local/hermes/lightrag_index/find.py "<query>"`. Build: same dir, read all SKILL.md files → build_index.py. |
+|| Skill lookup: TF-IDF | `lightrag-skill-finder` | Sub-second, 0 API. Query: `python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/find.py "<query>"`. Build: same dir, read all SKILL.md files → build_index.py. |
 | Design: 21st.dev first | `21st.dev` MCP | Before building UI, run `get_inspiration` for design tokens. Before coding components, `get_component` for shadcn code. |
 | Code quality: ECC agents | `ecc-bridge` | Route to ECC code-reviewer for architecture/code reviews. Check agent roster before generic delegation. |
 | SOUL.md trimmed | — | 13.5KB → 9.6KB. Skills carry details, SOUL.md only pipeline + delegation pointer. |
@@ -98,7 +100,7 @@ These rules apply to EVERY session. They are not suggestions. If you catch yours
    - **Step B1** — `mcp_codegraph_codegraph_explore(query="<symbol_or_term>")` — primary probe. Single call returns definitions, structure, and source of relevant symbols across files. Usually enough on its own.
    - **Step B2** (if B1 insufficient) — `mcp_codegraph_codegraph_search(query="<term>")` for broader name search, or `mcp_codegraph_codegraph_callers/callees/impact` for relation analysis.
    
-   Covers ALL projects under `~/Documents/Projects/` (3,425 files, 52,747 nodes, 125,822 edges indexed globally). Returns source code + locations. **⚠️ CWD dependency:** if the session working directory is NOT inside a project (e.g. `C:\Users\Attila`), you MUST pass `projectPath` to every CodeGraph MCP call or you get "No CodeGraph project is loaded for this session." Example: `mcp_codegraph_codegraph_explore(query="symbol", projectPath="C:\\Users\\Attila\\Documents\\Projects\\$PROJECT")`. MCP tools are still preferred over terminal CLI.
+   Covers ALL projects under `~/Documents/Projects/` (8,421 files, 144,827 nodes, 326,322 edges indexed globally). Returns source code + locations. **⚠️ CWD dependency:** if the session working directory is NOT inside a project (e.g. `C:\Users\YOUR_USERNAME`), you MUST pass `projectPath` to every CodeGraph MCP call or you get "No CodeGraph project is loaded for this session." Example: `mcp_codegraph_codegraph_explore(query="symbol", projectPath="C:\\Users\\Attila\\Documents\\Projects\\$PROJECT")`. MCP tools are still preferred over terminal CLI.
 
    **Terminal fallback** (use only if MCP tools are unavailable or you need a full list):
    ```bash
@@ -179,6 +181,8 @@ Before delivering your final response, verify your startup compliance matches re
     → If I said ACTIVE but didn't probe, this is a violation. Fix it.
 [X] Did I route video to OpenMontage (not ad-hoc scripts)?
     → If I said ACTIVE but wrote FFmpeg, this is a violation. Fix it.
+[X] Did I DELEGATE coding to a subagent, or did the orchestrator write product code itself?
+    → Any write_file/patch/terminal on ~/Documents/Projects/ code by the orchestrator = violation. Fix it.
 [X] Is the task_tier classification still accurate?
 [X] Did I use the right tool for the task?
 [X] If code-related: did I use CodeGraph + Graphify before read_file?
@@ -241,6 +245,7 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | Setup / install / configure / bootstrap | `software-development/setup` |
 | Setup + skill audit / repo reconciliation | `software-development/repo-integration-reconciliation` |
 | API search / data source / scraper / MCP server | `productivity/api-mega-list` |
+| Internet research / read any URL / social platforms (Twitter/X, Reddit, YouTube, GitHub, Bilibili, XiaoHongShu, Facebook, Instagram, LinkedIn, V2EX, Xueqiu, RSS) / "research this topic" / "look this up" / web search beyond firecrawl | `agent-reach` (CLI capability layer — run `agent-reach doctor --json` first for multi-backend platforms; probe `active_backend`; use upstream tools directly: `yt-dlp`, `gh`, `curl r.jina.ai`, `mcporter call exa...`) |
 | Ecosystem dashboard / stats / project graph | `productivity/hermes-dashboard` |
 | Update / ecosystem integrate / onboard | `software-development/update` |
 | Graphify / Obsidian code-graph export | `software-development/graphify-integrate` |
@@ -250,6 +255,7 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 || "as a student" / "student mode" / "code this like a student" / "for a student" / "student-level" / "at my level" (combined with code/create/write/build/implement) | `student` |
 || The trigger phrase that fired is logged in the reasoning output for debugging.
 | Design / UI / visual (generic fallback ONLY) | `creative` |
+| Tailwind UI components / Flowbite / generate theme from brand color / Flowbite MCP / Figma-to-code via Flowbite | `flowbite` MCP → `mcp_flowbite_generate_theme` (brandColor + instructions), `mcp_flowbite_convert_figma_to_code` (needs FIGMA_ACCESS_TOKEN) + `tailwindcss` skill |
 | Specific brand/company UI kit — "make it look like Stripe / Linear / Airbnb / Vercel / Figma / Notion…" | ihlamury `design-skills` → `<brand>-ui-skills` (87 kits: `airbnb-ui-skills`, `stripe-ui-skills`, `linear-ui-skills`, `vercel-ui-skills`, `figma-ui-skills`, `framer-ui-skills`, `notion-ui-skills`, `github-ui-skills`, `slack-ui-skills`, `supabase-ui-skills`, `openai-ui-skills`, `anthropic-ui-skills`, `apple-ui-skills`, `shopify-ui-skills`, …). Match the brand name to its bare skill name; if exact kit unknown, fall back to `creative`. |
 | UI "slop" cleanup / deslop / fix spacing·hierarchy·typography·small layout | `baseline-ui` + `improve-ui` (from ibelick `ui-skills`) |
 | Name a motion/animation effect ("what's it called when a popover opens / iOS rubber-band scroll") | `animation-vocabulary` (from emilkowalski `skills`) |
@@ -263,22 +269,39 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | UI design craft — color/visual/aesthetic/dark mode | `designer-skills`: `color-system`, `aesthetic-usability`, `dark-mode-design`, `data-visualization`, `law-of-common-region` (under `ui-design/skills/`). |
 | Design critique / visual review | `designer-skills`: `design-critique` (under `design-ops/skills/`) + `visual-critique/skills/` leaves: `critique-color`, `critique-typography`, `critique-composition`, `critique-affordance`. |
 | Designer toolkit — design rationale / system adoption / ux-writing | `designer-skills`: `design-rationale`, `design-system-adoption`, `ux-writing`, `presentation-deck` (under `designer-toolkit/skills/`). |
-> **Design routing note:** 262 design skills are registered locally via `skills.external_dirs` (ihlamury `design-skills`, `awesome-design-skills`, `designer-skills`, ibelick `ui-skills`, emilkowalski `skills`). For ANY design/UI/visual request, prefer the SPECIFIC bare-named skill above over the generic `creative` fallback — `creative` is only for requests matching no specific design skill. Hermes resolves skills by **bare name** (e.g. `glassmorphism`, `baseline-ui`), not `repo/skill` paths. Route to `find-skills` if unsure which design skill fits.
+| **Design director / full design workflow — design, redesign, shape, critique, audit, polish, distill, harden, layout, typeset, clarify, adapt, optimize, animate any frontend** (landing, dashboard, app UI, component, form, onboarding) | **`impeccable`** (local pbakaus v4.0.4, design-director skill + 59-rule detector). Setup: run `node <skill-base-dir>/scripts/context.mjs` once per session (loads PRODUCT.md, DESIGN.md, surface brief); load the owning playbook from `reference/` (e.g. `new-work.md`, `critique.md`, `audit.md`); load `reference/craft-floor.md` immediately before editing UI. Seed project context when missing: `init` → PRODUCT.md, `document` → DESIGN.md. Detector: `npx impeccable detect` on UI files (59 deterministic rules incl. AI-slop patterns); `impeccable ignores` for per-project waivers. ⚠️ Name collides with the typeui style skill in `awesome-design-skills` — always load the local one: `C:\Users\YOUR_USERNAME\AppData\Local\hermes\skills\impeccable`. |
+| Brand/aesthetic from Open Design's imported systems — "make it look like BMW / Binance / Bugatti / Lamborghini / Nike / Tesla / Mission Control…" (66 kits) | `opendesign/od-<brand>` — bare name `od-bmw`, `od-binance`, `od-bugatti`, `od-lamborghini`, `od-nike`, `od-tesla`, `od-mission-control`, etc. (list via `skills_list` under category `opendesign`). Each is a full DESIGN.md spec (palette, typography, spacing, components, do/don't). |
+| AI slop in prose / writing / copy / scripts — remove AI-isms, filler phrases, formulaic structures, adverbs | `writing/stop-slop` (banned phrases + before/after references + 1–10 scoring) |
+> **Design routing note:** 262 design skills are registered locally via `skills.external_dirs` (ihlamury `design-skills`, `awesome-design-skills`, `designer-skills`, ibelick `ui-skills`, emilkowalski `skills`) plus 66 imported Open Design systems under category `opendesign/` (`od-*`) and the local `impeccable` design director. Routing order for ANY design/UI/visual request: ① `impeccable` for full design workflows (design/redesign/critique/audit/polish) — it generates/consumes PRODUCT.md + DESIGN.md per project; ② a SPECIFIC bare-named style/brand skill (`glassmorphism`, `stripe-ui-skills`, `od-bmw`) when the user names a brand/vibe; ③ `creative` generic fallback only. Hermes resolves skills by **bare name** (e.g. `glassmorphism`, `od-bmw`); use `find-skills` or `skills_list` if unsure which design skill fits.
 | ECC agent invocation | `ecc-bridge` |
 | Delegate coding / which model for what / subagent setup / "use deepseek for this" / "delegate to coding agent" | `subagent-delegation` |
 | Complex / multi-step task with 3+ independent subtasks | `subagent-delegation` — delegate independent subtasks to parallel subagents via `delegate_task(tasks=...)` |
-| OpenCode coding agent delegation (code write/modify) | `autonomous-ai-agents/opencode` — use `opencode run --model opencode/deepseek-v4-flash-free` |\n| oh-my-opencode-slim / Pantheon agent swarm / multi-agent coding / agent orchestration / agent council / multi-model consensus | `autonomous-ai-agents/oh-my-opencode-slim` — uses Pantheon agents (Orchestrator=chat model, Oracle/Explorer/Librarian/Designer/Fixer=deepseek-v4-flash, Observer=mimo-v2.5) |\n| SkillClaw / skill evolution / auto-evolve / self-evolving skills / background skill improvement / cross-session skill refinement | `skillclaw` — runs `skillclaw start --daemon` on port 30000, auto-evolves Hermes skills from session data |
-| Research / papers / monitoring | `research` |
-| Email | `email`, `gmail` |
+| OpenCode coding agent delegation (code write/modify) | `autonomous-ai-agents/opencode` — use `opencode run --model opencode-go/deepseek-v4-flash` |
+| oh-my-opencode-slim / Pantheon agent swarm / multi-agent coding / agent orchestration / agent council / multi-model consensus | `autonomous-ai-agents/oh-my-opencode-slim` — uses Pantheon agents (Orchestrator=chat model, Oracle/Explorer/Librarian/Designer/Fixer=deepseek-v4-flash, Observer=mimo-v2.5) |
+| SkillClaw / skill evolution / auto-evolve / self-evolving skills / background skill improvement / cross-session skill refinement | `skillclaw` — runs `skillclaw start --daemon` on port 30000, auto-evolves Hermes skills from session data |
+| Research / papers / monitoring | `research--arxiv`, `research--blogwatcher`, `research--grounded-citations` |
+| Email | `email--himalaya` (`himalaya`), `gmail` |
 | GitHub / PR / repo | `github` |
 | Find / discover a skill that matches a task | `find-skills` (from vercel-labs/skills) |
 | Skill lookup — which skill for X (sub-second TF-IDF, no API) | `lightrag-skill-finder` (local TF-IDF over 295 skills) |
 | Browse, search, or explore skills by category / browse skill catalog / find skill for X | `find-skills` |
 | Productivity / docs / PDFs | `productivity` |
+| Any Supabase task (schema, auth, RLS, migrations, edge functions, realtime) | `supabase` (always) + `software-development/fullstack-nextjs-supabase` for Next.js apps |
+| Deploy to Vercel / fix production deploy | `vercel-deployment`; Netlify → `netlify-deploy`; static site → `devops/static-site-github-pages-deploy` |
+| Browser automation / e2e / scrape via browser / screenshots of web pages | `agent-browser` (CLI) or `playwright` (script) or `browser-testing-with-devtools` (CDP) |
+| Take a desktop/system screenshot | `screenshot` |
+| Text-to-speech / voiceover audio (ElevenLabs mandatory for voiceovers) | `elevenlabs-tts` (Rachel voice; key in MoneyPrinterTurbo/.elevenlabs_key) |
+| YouTube video → transcript / summary / thread / blog | `media--youtube-content` (`youtube-content`) |
+| Extract text from PDFs/scans/images (OCR) | `productivity--ocr-and-documents` (`ocr-and-documents`) |
+| Image generation / editing (ComfyUI local, GPT-Image-2, assets) | `creative--comfyui`, `gpt-image-2`, `unsplash-asset-images`, `aura-asset-images` |
+| ML models / HF hub / llama.cpp local inference / W&B | `mlops--huggingface-hub`, `mlops/inference/llama-cpp`, `mlops/evaluation/weights-and-biases` |
+| Philips Hue / smart home | `smart-home--openhue` (`openhue`) |
+| Wix app extensions | `wix-app` |
+| Music/audio generation (Suno-style, spectrograms) | `media--heartmula`, `media--songsee`, `songwriting-and-ai-music` |
 | Export markdown to DOCX/PPTX/XLSX/PDF/HTML/CSV/JSON/XML/LaTeX/IPYNB / convert table to spreadsheet / extract code blocks from markdown / generate formatted report / markdown exporter | `productivity/markdown-exporter` |
 | Data / notebooks / analytics | `data-science` |
 | Media / audio / video | `media` |
-| Smart home | `smart-home` |
+| Smart home | `smart-home--openhue` (`openhue`) |
 | MLOps / models | `mlops` |
 | Notes / Obsidian / wikilinks / callouts / embeds / properties / vault operations / .base files / Bases / JSON Canvas / .canvas files / Obsidian CLI / plugin dev / theme dev / knowledge graph / KG viz | `note-taking` (bundle all three: `obsidian` for core syntax + operations, `obsidian-codebase-graph` for code graph mapping, `obsidian-knowledge-graph` for vault graph viz) |
 | Backup / restore / credential sync / Google Drive backup / rclone / migrate Hermes | `workflow/hermes-backup-workflow` |
@@ -291,7 +314,7 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | Web data / search / scrape / interact / parse / crawl / monitor / Firecrawl | `firecrawl` umbrella; route to leaf: `firecrawl-search`, `firecrawl-scrape`, `firecrawl-interact`, `firecrawl-parse`, `firecrawl-crawl`, `firecrawl-map`, `firecrawl-monitor`, `firecrawl-deep-research`, `firecrawl-workflows` |
 || Computer use / GUI agent / GUI automation / Simular Agent / Agent S / Agent S2 / Agent S3 / desktop automation | `autonomous-ai-agents/agent-s-gui` — runs `gui_agents` package or `agent_s` CLI |
 ||| Kanban / multi-agent coordination / task board / decompose work / agent pipeline / parallel workers / orchestrator routing / triage tasks / swarm | `hermes-kanban-setup` — Hermes built-in kanban (`hermes kanban`, SQLite dispatcher). Orchestrator profile has `kanban_*` tools. Create triage tasks → dispatcher auto-decomposes → workers execute. `hermes kanban list` to view. |
-||| **No trigger match** → fallback: run `python C:/Users/Attila/AppData/Local/hermes/lightrag_index/find.py "<user prompt>"` to surface top-5 relevant skills from 665 indexed. Load the top match, execute. |
+||| **No trigger match** → fallback: run `python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/find.py "<user prompt>"` to surface top-5 relevant skills from 665 indexed. Load the top match, execute. |
 
 ### Cross-Cutting Behavioral Guidelines (Load alongside any code task)
 | Trigger | Load With |
@@ -323,6 +346,37 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 
 For general finance/investing → activate `soul_finance` + relevant LLMQuant skill.
 For fintech-code → `soul` + `soul_finance` + relevant LLMQuant skill.
+
+---
+
+## MCP & Tool Routing (12 servers enabled — pick the server, then its tool)
+
+MCP tools are deferred: `tool_search` → `tool_describe` → `tool_call`. Never claim a tool is unavailable without searching first. The skill index below is the route table; the tool name IS the tool.
+
+| Need | MCP Server → Tools | Notes |
+|------|-------------------|-------|
+| **UI components / design inspiration / shadcn code** | `21st` → `search`, `get_inspiration`, `get_component`, `get_take`, `generate` | Design-first: use BEFORE building UI (decide rule). 35 tools |
+| **Tailwind components / Flowbite theme generation / Figma→code** | `flowbite` → `generate_theme` (brandColor + instructions), `convert_figma_to_code` (figmaNodeUrl) | `npx -y flowbite-mcp`; verified live 2026-08-09. Tools: `mcp_flowbite_generate_theme`, `mcp_flowbite_convert_figma_to_code`. Figma tool needs `FIGMA_ACCESS_TOKEN` env (not set) |
+| **Codebase symbol lookup (any `~/Documents/Projects/` code)** | `codegraph` → `codegraph_explore` (primary), `codegraph_search`, `codegraph_callers/callees/impact`, `codegraph_files`, `codegraph_status` | **Pass `projectPath`** when CWD is outside the project. 144,827 nodes / 326,322 edges / 8,421 files indexed |
+| **Codebase structure / graph queries** | `graphify` → `query_graph`, `get_node`, `get_neighbors`, `god_nodes`, `shortest_path` | Index per-project (21/24 projects); `graph_stats` to check |
+| **Web search / scrape / crawl / extract / monitor / deep research** | `firecrawl` → `firecrawl_search`, `firecrawl_scrape`, `firecrawl_extract`, `firecrawl_crawl`, `firecrawl_map`, `firecrawl_monitor_*`, `firecrawl_deep_research`, `firecrawl_agent`, `firecrawl_interact` | 27 tools; umbrella skill `firecrawl` routes to leaves |
+| **Financial / market data (crypto, equities, ETFs, macro, SEC filings, 13F, prediction markets, LLMQuant wiki/papers)** | `llmquant-data` → `equity_*`, `crypto_*`, `etf_*`, `macro_*`, `sec_filing_*`, `sec_13f_*`, `polymarket_*`, `wiki_*`, `paper_*`, `news_browse` | 26 tools; router skills `llmquant-*` per asset class |
+| **Obsidian vault graph / KG queries** | `obsidian-kg` → `obsidian_knowledge_graph` (+ list/read resources) | On-demand only (token-heavy) |
+| **Session memory recall / insight search** | `agentmemory` → `memory_recall`, `memory_smart_search`, `memory_sessions`, `memory_save` | Cross-session insights; use before re-asking user |
+| **VS Code integration** | `vscode` → `open_project`, `open_file`, `create_diff`, `execute_shell_command`, `check_extension_status` | Use when user is working in VS Code |
+| **Figma** | `figma` (Composio) → design file tools | Auth via Composio; 401 → re-auth |
+| **Figma dev-mode export (SVG/PNG assets, layout data)** | `figma-dev` → `download_figma_images`, `get_figma_data` | `npx -y figma-developer-mcp`; 2 tools |
+| **Open Design app (design generation, plugins)** | `opendesign` MCP | Daemon-gated: app must be running; else use `od-*` skills directly |
+
+**Core Hermes tool reflexes (no MCP needed):**
+- `skill_view`/`skills_list` — load skill BEFORE acting; `skills_list(category=...)` to browse (e.g. `opendesign`, `media`)
+- `tool_search`/`tool_describe`/`tool_call` — any deferred capability (21st, codegraph, firecrawl, graphify, llmquant-data, obsidian-kg, vscode, agentmemory, flowbite, video, project). Search catalog before declaring unavailable.
+- `vision_analyze` — images; user rule: hard vision via MiMo subagent (delegate), simple inline ok
+- `open_preview`/`focus_pane` — show the user HTML/localhost/files in the desktop app
+- `MEDIA:/path` in replies — deliver files natively (images inline, audio/video playable)
+- `delegate_task` — 1-2 patches → DeepSeek V4 Flash child; 3+ independent → parallel batch; children can't call clarify/memory/cron
+- `cronjob`, `todo`, `memory`, `session_search` — schedule, track, persist, recall
+- `process`/`close_terminal` — manage background runs; `terminal(background=true, notify_on_complete=true)` for long builds
 
 ---
 
@@ -359,10 +413,11 @@ When the user asks for setup/install/configure of a new repo or tool, proactivel
 | Freebuff / Codebuff | `free-ai-model-router` (combined model selection) |
 | FreeLLMAPI | `free-ai-model-router` (alternative model source) |
 | API-mega-list | `productivity/api-mega-list` + check MCP Server candidates |
+| Agent Reach / agent-reach | `agent-reach` skill + `mcporter` Exa config + verify with `agent-reach doctor` |
 | Buildable Plugin | `software-development/buildable-plugin` + design/plan/review skills |
 | AI Marketing Skills | `productivity/ai-marketing-skills` |
 | Firecrawl / web search / scrape / interact / parse / web data extraction | `firecrawl` umbrella + leaf skills (`firecrawl-search`, `firecrawl-scrape`, `firecrawl-interact`, `firecrawl-parse`, `firecrawl-crawl`, `firecrawl-map`, `firecrawl-monitor`, `firecrawl-research-index`, `firecrawl-deep-research`, `firecrawl-workflows`) |
-| Simular Agent SDK / Agent S / Agent S2 / Agent S3 / gui-agents / computer use agent / GUI automation | `autonomous-ai-agents/agent-s-gui` — `gui_agents` package at `/c/Users/Attila/Documents/Projects/agent-s`, `agent_s` CLI available in Hermes venv |
+| Simular Agent SDK / Agent S / Agent S2 / Agent S3 / gui-agents / computer use agent / GUI automation | `autonomous-ai-agents/agent-s-gui` — `gui_agents` package at `/c/Users/YOUR_USERNAME/Documents/Projects/agent-s`, `agent_s` CLI available in Hermes venv |
 
 ---
 
@@ -379,6 +434,7 @@ State once at the start of each session, then execute immediately:
 ```
 **Intent:** [what was detected]
 **Skills activated:** [list in execution order]
+**MCP/tools:** [which MCP servers + core tools the task needs]
 **Tier:** [from task_tier]
 ```
 

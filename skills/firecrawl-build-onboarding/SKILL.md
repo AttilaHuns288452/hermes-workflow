@@ -15,9 +15,9 @@ inputs:
     description: Optional base URL for self-hosted Firecrawl deployments.
     required: false
 references:
-  - references/auth-flow.md
-  - references/sdk-installation.md
-  - references/project-setup.md
+  - auth-flow.md
+  - sdk-installation.md
+  - project-setup.md
 ---
 
 # Firecrawl Build Onboarding

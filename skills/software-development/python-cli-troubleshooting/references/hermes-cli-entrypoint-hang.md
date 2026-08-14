@@ -89,5 +89,5 @@ The hang is in the CLI wrapper layer — between arg parsing and the first LLM c
 3. **Switch to OpenRouter** as primary provider (key is already valid)
 4. **As workaround**, use direct Python entry point:
    ```bash
-   alias hermes='cd /c/Users/Attila/AppData/Local/hermes/hermes-agent && python -c "from cli import main; main()"'
+   alias hermes='cd /c/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent && python -c "from cli import main; main()"'
    ```

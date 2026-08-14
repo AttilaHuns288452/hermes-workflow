@@ -20,10 +20,10 @@ broken or incompatible `_pydantic_core` module.
 
 ```
 sys.path (from poetry run python):
-  0: C:\Users\Attila\AppData\Local\hermes\hermes-agent          ← HERMES
-  1: C:\Users\Attila\AppData\Local\hermes\hermes-agent\venv\Lib\site-packages  ← HERMES
+  0: C:\Users\YOUR_USERNAME\AppData\Local\hermes\hermes-agent          ← HERMES
+  1: C:\Users\YOUR_USERNAME\AppData\Local\hermes\hermes-agent\venv\Lib\site-packages  ← HERMES
   ...
-  6: C:\Users\Attila\AppData\Local\pypoetry\Cache\virtualenvs\autogpt-classic-F0I4XBFc-py3.12
+  6: C:\Users\YOUR_USERNAME\AppData\Local\pypoetry\Cache\virtualenvs\autogpt-classic-F0I4XBFc-py3.12
   7: ...\Lib\site-packages                                        ← AUTOGPT (too late)
 ```
 
