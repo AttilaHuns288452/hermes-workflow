@@ -31,4 +31,4 @@ The `@dietrichgebert/ponytail` plugin crashed on every `opencode run` with `D.sp
 
 ## DB Location
 
-Windows: `C:\Users\Attila\.local\share\opencode\opencode.db`
+Windows: `C:\Users\YOUR_USERNAME\.local\share\opencode\opencode.db`

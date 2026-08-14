@@ -48,7 +48,7 @@ $screen = [System.Windows.Forms.Screen]::PrimaryScreen
 $bmp = New-Object System.Drawing.Bitmap($screen.Bounds.Width, $screen.Bounds.Height)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.CopyFromScreen(0, 0, 0, 0, $screen.Bounds.Size)
-$bmp.Save('C:\Users\Attila\Downloads\screenshot.png', [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Save('C:\Users\YOUR_USERNAME\Downloads\screenshot.png', [System.Drawing.Imaging.ImageFormat]::Png)
 $g.Dispose(); $bmp.Dispose()
 ```
 

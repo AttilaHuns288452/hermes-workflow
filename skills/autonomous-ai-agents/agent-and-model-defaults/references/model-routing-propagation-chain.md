@@ -8,7 +8,7 @@ creates a stale reference that silently contradicts the active config.
 | # | What | Path | Notes |
 |---|------|------|-------|
 | 1 | **Memory** | agentmemory `memory` store | The authoritative routing fact injected into every turn. Update with `memory(action='replace', ...)` |
-| 2 | **`~/AGENTS.md`** | `C:\Users\Attila\AGENTS.md` | OpenCode reads this. Keep in sync with memory. |
+| 2 | **`~/AGENTS.md`** | `C:\Users\YOUR_USERNAME\AGENTS.md` | OpenCode reads this. Keep in sync with memory. |
 | 3 | **`decide/SKILL.md`** | `skills/decide/SKILL.md` | Section `## 🤖 Model Roles & Delegation` — the quick-reference table + delegation rule paragraph. Also check the routing table entry for Pantheon swarm. |
 | 4 | **`agent-and-model-defaults/SKILL.md`** | `skills/autonomous-ai-agents/agent-and-model-defaults/SKILL.md` | The canonical "Full Model Role Split" table, delegation config warning, Pantheon swarm config JSON, and AGENTS.md template block. |
 | 5 | **`subagent-delegation/SKILL.md`** | `skills/subagent-delegation/SKILL.md` | Model Roles table, forbidden-actions section, rate-limit fallback section. |

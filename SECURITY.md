@@ -2,8 +2,10 @@
 
 ## 🔒 This Repo Has Been Security-Audited
 
-**Last audit:** 2026-06-13 (ongoing)
+**Last audit:** 2026-08-14 (ongoing)
 **Action taken:** Removed `graphify-out/` build artifacts (3.8MB) from git tracking — contained local filesystem paths in AST cache JSON files. Added `.gitignore` to prevent re-occurrence.
+
+**2026-08-14 re-audit:** Re-synced all skills from the live Hermes install (813 SKILL.md files), redacted a personal email address (→ `YOUR_EMAIL@gmail.com`) and rclone remote names (→ `YOUR_RCLONE_REMOTE`) found in skill docs/config, regenerated a tracked `.pyc` bytecode cache that embedded the local username in its source path, and added `__pycache__/` to `.gitignore`.
 
 This repository is a public mirror of a Hermes Agent skill ecosystem. The following security measures have been taken:
 

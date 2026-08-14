@@ -19,7 +19,7 @@ proxy:
   served_model_name: skillclaw-model
 skills:
   enabled: true
-  dir: C:\Users\Attila\AppData\Local\hermes\skills
+  dir: C:\Users\YOUR_USERNAME\AppData\Local\hermes\skills
   retrieval_mode: template
   top_k: 6
 prm:
@@ -42,7 +42,7 @@ skillclaw doctor hermes    → status: ok, 0 issues
 - integration_scope: hermes-only
 - configured_model: skillclaw-model (proxy_match: True)
 - configured_base_url: http://127.0.0.1:30000/v1 (proxy_match: True)
-- skills_dir: C:\Users\Attila\AppData\Local\hermes\skills (exists)
+- skills_dir: C:\Users\YOUR_USERNAME\AppData\Local\hermes\skills (exists)
 - issues: (none)
 
 ## Daemon Lifecycle

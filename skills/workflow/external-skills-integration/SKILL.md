@@ -1,6 +1,6 @@
 ---
 name: external-skills-integration
-description: "Four major skill repos integrated into Hermes via external_dirs: Superpowers (obra, 14 dev-methodology skills), Agent Skills (addyosmani, 24 production engineering skills), Garden Skills (ConardLi, 5 design/creative skills), Claude SEO (AgricIDaniel, 25 SEO skills). Use when asked about external skills, skill setup, or any of these repos."
+description: "Six major skill repos integrated into Hermes via external_dirs: Superpowers (obra, 14 dev-methodology skills), Agent Skills (addyosmani, 24 production engineering skills), Garden Skills (ConardLi, 5 design/creative skills), Claude SEO (AgricIDaniel, 25 SEO skills), Obsidian Skills (kepano, 5 Obsidian syntax skills), and Karpathy Skills (multica-ai, behavioral coding guidelines). Use when asked about external skills, skill setup, or any of these repos."
 version: 1.0.0
 metadata:
   hermes:
@@ -11,7 +11,7 @@ metadata:
 
 # External Skills Integration
 
-Four major agent-skill repositories are integrated into Hermes via the `skills.external_dirs` config option.
+Six major agent-skill repositories are integrated into Hermes via the `skills.external_dirs` config option.
 
 ## Location
 
@@ -21,7 +21,9 @@ All repos cloned (shallow) under:
 ├── superpowers/        # obra/superpowers — 234k ⭐
 ├── agent-skills/       # addyosmani/agent-skills — 64k ⭐
 ├── garden-skills/      # ConardLi/garden-skills — 8.4k ⭐
-└── claude-seo/         # AgricIDaniel/claude-seo — 9.3k ⭐
+├── claude-seo/         # AgricIDaniel/claude-seo — 9.3k ⭐
+├── obsidian-skills/    # kepano/obsidian-skills — Obsidian OFM, Bases, Canvas, CLI
+└── karpathy-skills/    # multica-ai/andrej-karpathy-skills — behavioral coding guidelines (Hermes-native at software-development/karpathy-guidelines)
 ```
 
 ## How Integration Works
@@ -38,10 +40,11 @@ There is also `~/.hermes/config.yaml` (1.4 KB), which is a **profile override** 
 ```yaml
 skills:
   external_dirs:
-    - C:/Path/To/Repos/external-skills/superpowers/skills
-    - C:/Path/To/Repos/external-skills/agent-skills/skills
-    - C:/Path/To/Repos/external-skills/garden-skills/skills
-    - C:/Path/To/Repos/external-skills/claude-seo/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/agent-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/garden-skills/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/claude-seo/skills
+    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/obsidian-skills/skills
 ```
 
 **Precedence:** Local `~/.hermes/skills/` wins over external on exact name collision.
@@ -71,6 +74,8 @@ A complete agentic software development methodology. 14 skills covering the full
 | `finishing-a-development-branch` | Merge/PR decision workflow |
 | `writing-skills` | Meta-skill for creating/maintaining skills |
 | `using-superpowers` | Onboarding/reference for the system |
+
+**Companion Hermes skill:** `software-development/superpowers-methodology` — a meta-skill that describes the full Superpowers pipeline (brainstorm→design→plan→TDD→review→finish) and maps each phase to the corresponding skill. Load this alongside the external_dir when the user wants the structured Superpowers workflow. Created in the same session that installed the external_dir.
 
 ### How to Update
 ```bash
@@ -187,7 +192,7 @@ All prefixed with `seo-` — no collisions with local skills.
 
 **Note:** Claude SEO was designed for Claude Code's plugin system. Its SKILL.md files are Hermes-compatible via `external_dirs`, but the sub-agent delegation patterns and Python scripts (in `scripts/`) assume Claude Code tooling. Some workflows may reference Claude Code-specific tools (`Read`, `Write`, `Edit`, `Bash`). Adapt as needed.
 
-### Automatic Update
+### How to Update
 ```bash
 cd ~/Documents/Repos/external-skills/claude-seo && git pull
 # Then: /reload-skills
@@ -195,7 +200,78 @@ cd ~/Documents/Repos/external-skills/claude-seo && git pull
 
 ---
 
-## Name Collisions (Handled by Hermes Precedence)
+## 5. kepano/obsidian-skills
+
+**URL:** https://github.com/kepano/obsidian-skills
+
+Obsidian plugin-style skills covering Obsidian Flavored Markdown (OFM), Bases, JSON Canvas, and CLI interaction. Designed for Claude Code, Codex, and OpenCode, but fully Hermes-compatible via external_dirs.
+
+### Skills (5)
+| Skill | What It Does |
+|-------|-------------|
+| `obsidian-markdown` | Obsidian-flavored markdown: wikilinks, embeds, callouts, properties, comments, aliases, tags |
+| `obsidian-bases` | `.base` files: filters, formulas, views (table/cards/list/map), summaries |
+| `json-canvas` | `.canvas` files: nodes (text/file/group), edges with sides & endpoints |
+| `obsidian-cli` | CLI interaction with running Obsidian: create, search, open, plugin reload, JS |
+| `defuddle` | Extract clean markdown from web pages via Defuddle CLI (redundant with Hermes `web_extract`) |
+
+**Companion Hermes skill:** `note-taking/obsidian` — updated to include full OFM syntax coverage (callouts, embeds, properties, aliases, comments, tags), Bases (.base) with YAML schema, JSON Canvas spec, and Obsidian CLI commands. Routes to `note-taking` bundle in `/decide`.
+
+### Repository Layout
+```
+obsidian-skills/
+├── .claude-plugin/
+├── LICENSE
+├── README.md
+└── skills/
+    ├── obsidian-markdown/
+    │   ├── SKILL.md
+    │   └── references/
+    │       ├── CALLOUTS.md
+    │       ├── EMBEDS.md
+    │       └── PROPERTIES.md
+    ├── obsidian-bases/
+    │   └── SKILL.md
+    ├── json-canvas/
+    │   └── SKILL.md
+    ├── obsidian-cli/
+    │   └── SKILL.md
+    └── defuddle/
+        └── SKILL.md
+```
+
+### How to Update
+```bash
+cd ~/Documents/Repos/external-skills/obsidian-skills && git pull
+# Then: /reload-skills
+```
+
+---
+
+## 6. multica-ai/andrej-karpathy-skills
+
+**URL:** https://github.com/multica-ai/andrej-karpathy-skills
+
+Behavioral coding guidelines from Andrej Karpathy — 4 principles that reduce common LLM coding mistakes.
+
+### Skills (1)
+| Skill | What It Does |
+|-------|-------------|
+| `karpathy-guidelines` | Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution — loaded as cross-cutting guardrails on any code task via `/decide` routing |
+
+**Hermes skill:** `software-development/karpathy-guidelines` — already shipped with Hermes, more comprehensive than the upstream CLIFF.md. Includes Framework-Specific Pitfalls (Next.js loading states, Python numpy typing, CSS gap, React hooks deps). Loaded automatically via `/decide` alongside any coding task.
+
+**Upstream CLIFF.md reference:** The repo contains `CLIFF.md` which defines the 4 principles. The Hermes skill expands on each with concrete code examples and framework-specific patterns.
+
+### How to Update
+```bash
+cd ~/Documents/Repos/external-skills/karpathy-skills && git pull
+# Then: /reload-skills
+```
+
+---
+
+## Name Collisions
 
 | Colliding Name | Local Skill Source | External Versions | Resolution |
 |---------------|-------------------|-------------------|------------|
@@ -211,16 +287,86 @@ Hermes automatically prioritizes local `~/.hermes/skills/` over external dirs on
 
 ```bash
 cd ~/Documents/Repos/external-skills
-for repo in superpowers agent-skills garden-skills claude-seo; do
+for repo in superpowers agent-skills garden-skills claude-seo obsidian-skills karpathy-skills; do
   echo "=== Updating $repo ==="
-  cd "$repo" && git pull && cd ..
+  (cd "$repo" && git pull)
 done
 echo "Done. Run /reload-skills in Hermes."
 ```
 
+## 7. npx skills CLI Ecosystem
+
+**URL:** Installable via `npx skills add <repo>` | **Home:** https://github.com/nicepkg/skills-cli
+
+The `npx skills` CLI installs skills to `~/.agents/skills/`. These are NOT in the git-cloned external repos — they come from the npm skills ecosystem (MengTo/Skills, anthropics/skills, mattpocock/skills, vercel-labs/agent-skills, etc.).
+
+### Installation Pattern
+
+```bash
+# Install all skills from a repo (interactive selection without --yes)
+npx skills add https://github.com/MengTo/Skills.git --yes
+
+# Install individual skills
+npx skills add https://github.com/anthropics/skills --skill frontend-design --yes
+npx skills add https://github.com/mattpocock/skills --skill improve-codebase-architecture --yes
+npx skills add https://github.com/mattpocock/skills --skill grill-me --yes
+npx skills add https://github.com/vercel-labs/skills --skill find-skills --yes
+npx skills add https://github.com/vercel-labs/agent-browser --skill agent-browser --yes
+npx skills add https://github.com/vercel-labs/agent-skills --skill web-design-guidelines --yes
+```
+
+The `--yes` flag skips the project-vs-global scope prompt. Without `--skill`, all skills in the repo are installed. Use `--global` only if a skill explicitly supports it (PromptScript skills reject `--global`).
+
+### Wiring into Hermes
+
+After installing via npx skills, add the path to Hermes config:
+
+```bash
+hermes config set skills.external_dirs '["C:/Users/YOUR_USERNAME/.agents/skills"]'
+```
+
+**Important:** `hermes config set` with a JSON array string DOES work for list values now — it stores the value as a JSON-encoded string that Hermes parses correctly. If merging with existing dirs, read the current config first and include the full list.
+
+The CLI reports "symlinked: Hermes Agent" on install, but Hermes won't see the skills until `external_dirs` is set. External_dirs are read at startup only — start a new session after adding.
+
+### After Install: Update /decide Routing
+
+When new skills add unique capabilities not covered by existing routing (like `find-skills` for skill discovery), add entries to the decide skill's Selection Rules table using `skill_manage(action='patch', name='decide')`.
+
+### Verifying the ZCode/Hermes Shared-Skill Sync (`.agents/skills`)
+
+`~/.agents/skills/` is the **shared one-directory bridge**: ZCode reads it as its flat skill dir, Hermes mounts it via external_dirs. When asked "are the skills configured correctly for ZCode", verify in one pass:
+
+```bash
+ls "C:/Users/YOUR_USERNAME/.agents/skills/" | wc -l                 # total entries
+ls "C:/Users/YOUR_USERNAME/.agents/skills/" | grep -c "\-\-"        # flattened category--subskill entries
+ls "C:/Users/YOUR_USERNAME/.agents/skills/" | grep -v "\-\-" | wc -l # standalone entries
+# Core pipeline must be present (ZCode reads FLAT only — sub-skills flattened as category--name):
+for s in decide core-identity-guard subagent-delegation workflow--task_tier workflow--token-saver; do
+  ls -d "C:/Users/YOUR_USERNAME/.agents/skills/$s" >/dev/null 2>&1 && echo "OK  $s" || echo "MISS $s"
+done
+grep -A 15 "^skills:" "C:/Users/YOUR_USERNAME/AppData/Local/hermes/config.yaml" | grep agents  # bidirectional wiring
+```
+
+**What correct looks like:**
+- `workflow/task_tier` + `workflow/token-saver` in Hermes appear as `workflow--task_tier` / `workflow--token-saver` in `.agents` — the `--` flattening is the expected convention, NOT a typo.
+- ZCode provider check: `~/.zcode/v2/config.json` → the enabled `builtin:*` provider must match what AGENTS.md claims (e.g. `builtin:zai-start-plan` enabled = GLM-5.2 lane).
+- Count drift is normal (AGENTS.md snapshots go stale); presence of core pipeline + flattening convention is the real signal.
+- **Known cosmetic collision:** `decide` exists in BOTH `AppData/Local/hermes/skills/` and `.agents/skills/` (same shared content) → `skill_view(name='decide')` errors "Ambiguous skill name". Harmless; load by category path when it bites. Dedupe one side if it ever matters.
+
+### Common Issues
+
+- **PromptScript skills fail with `--global`:** PromptScript (anthropics/skills format) requires project-scope installation. Omit `--global` for these.
+- **95 MengTo skills:** `MengTo/Skills` has 95 design/creative skills. Installing all with `--yes` works, but some PromptScript ones may fail — these are the WebGL/three.js ones that need project scope.
+- **Duplicates:** If a skill name collides with a local or external-dir skill, the local `~/.hermes/skills/` wins.
+
+---
+
 ## Configuration Workflow (Windows)
 
 Editing Hermes config to add `external_dirs` or manage MCP servers on Windows has several pitfalls. Follow this recipe.
+
+> **Reference file:** `references/external-dirs-setup-windows.md` — step-by-step guide for adding external_dirs with sed, Python, or manual editing.
 
 ### 1. Find the Right Config
 
@@ -267,20 +413,15 @@ For **env dict** values, set key by key:
 hermes config set mcp_servers.llmquant-data.env.LLMQUANT_API_KEY "your-key"
 ```
 
-### 4. Editing `external_dirs` (Python text manipulation only)
+### 4. Editing `external_dirs`
 
-`hermes config set skills.external_dirs [...]` **does not work for list values**. It stores the value as a YAML string, not a YAML list. To set external_dirs, use Python text manipulation:
+`hermes config set skills.external_dirs [...]` stores the value as a JSON-encoded YAML string, which Hermes parses correctly. Pass the full list as a JSON array:
 
-```python
-import re
-with open('$HERMES_HOME/config.yaml', 'r') as f:
-    text = f.read()
-old = r'(external_dirs:).*'
-new = r'\1\n    - C:/path/to/first/skills\n    - C:/path/to/second/skills'
-text = re.sub(old, new, text)
-with open('$HERMES_HOME/config.yaml', 'w') as f:
-    f.write(text)
+```bash
+hermes config set skills.external_dirs '["C:/Users/YOUR_USERNAME/path1","C:/Users/YOUR_USERNAME/path2"]'
 ```
+
+To merge with existing dirs, read the current config first with `grep` or `yq`, then include the full list. For complex config edits, use the approaches in `references/external-dirs-setup-windows.md` instead (sed or manual edit).
 
 ### 5. ⚠️ NEVER Use yaml.dump() on the Full Config
 

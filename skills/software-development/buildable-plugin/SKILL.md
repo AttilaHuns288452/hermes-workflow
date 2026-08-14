@@ -90,7 +90,7 @@ mcpServers:
     command: buildable-mcp
     args: []
     env:
-      BUILDABLE_WORKSPACE: "C:/Users/Attila/Documents/Projects"
+      BUILDABLE_WORKSPACE: "C:/Users/YOUR_USERNAME/Documents/Projects"
 ```
 
 ## Conflict Resolution

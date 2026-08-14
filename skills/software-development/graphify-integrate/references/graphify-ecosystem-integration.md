@@ -123,9 +123,9 @@ mcp_servers:
   graphify-<project>:
     command: "python"
     args: ["-m", "graphify.serve"]
-    cwd: "C:\\Users\\Attila\\Documents\\Projects\\<project>"
+    cwd: "C:\\Users\\YOUR_USERNAME\\Documents\\Projects\\<project>"
     env:
-      PATH: "C:\\Users\\Attila\\.local\\bin;%PATH%"
+      PATH: "C:\\Users\\YOUR_USERNAME\\.local\\bin;%PATH%"
     connect_timeout: 30
 ```
 

@@ -58,7 +58,7 @@ import soundfile as sf
 import os
 
 # Must be in MoneyPrinterV2 venv (it has kittentts installed)
-ROOT = r"C:\Users\Attila\Documents\Projects\MoneyPrinterV2"
+ROOT = r"C:\Users\YOUR_USERNAME\Documents\Projects\MoneyPrinterV2"
 os.chdir(ROOT)
 
 model = KittenModel("KittenML/kitten-tts-mini-0.8")

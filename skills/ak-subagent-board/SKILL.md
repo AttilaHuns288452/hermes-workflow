@@ -25,7 +25,7 @@ board is the work ledger; the chat is not.
   Windows-style path (MSYS mangles `$HOME`-expanded paths):
 
 ```bash
-export AK="C:/Users/Attila/AppData/Roaming/npm/node_modules/agent-kanban/dist/index.js"
+export AK="C:/Users/YOUR_USERNAME/AppData/Roaming/npm/node_modules/agent-kanban/dist/index.js"
 node "$AK" <command>            # e.g. node "$AK" get board u7j2gicp
 ```
 

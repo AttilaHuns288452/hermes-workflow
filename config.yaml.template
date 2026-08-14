@@ -3,29 +3,54 @@
 # =============================================================================
 # Copy to ~/.hermes/config.yaml (Windows: %APPDATA%/hermes/config.yaml).
 # Replace YOUR_USERNAME with your OS username. Add API keys where noted.
+# Structure mirrors the live install (12 MCP servers); all values are
+# placeholders — never commit real keys or paths.
 # =============================================================================
 #
 # REPLACE THESE:
-#   YOUR_USERNAME              → your Windows username (e.g. "Attila")
-#   OPENROUTER_API_KEY         → sk-or-... from openrouter.ai/keys
-#   TWENTYFIRST_API_KEY        → 21st_... from 21st.dev
-#   FIRECRAWL_API_KEY          → fc-... from firecrawl.dev
-#   LLMQUANT_API_KEY           → lqd_data_... from llmquant.com
-#   COMPOSIO_API_KEY           → ck_... from app.composio.dev
-#   FREELMAPI_API_KEY          → from FreeLLMAPI dashboard
+#   YOUR_USERNAME              → your Windows username (the C:\Users\<name> folder)
+#   LLMQUANT_API_KEY           → lqd_data_... from llmquant.com (llmquant-data MCP)
+#   FIGMA_API_KEY              → figd_... from figma.com/developers (figma-dev MCP)
+#   TWENTY_FIRST_API_KEY       → 21st_... from 21st.dev (21st MCP)
+#   FIRECRAWL_API_KEY          → fc-... from firecrawl.dev (firecrawl MCP)
+#   STDCMT_API_KEY             → sk_live_... from stdcmpt.com (paid fallback provider)
+#   ZAI_API_KEY                → from z.ai (paid fallback provider)
+#   COMPOSIO_API_KEY           → ck_... from app.composio.dev (figma via Composio)
+#   FREELMAPI_API_KEY          → from FreeLLMAPI dashboard (localhost proxy)
 
 model:
   default: deepseek-v4-flash
   provider: opencode-go
+  context_length: 524288
 
 providers:
-  openrouter:
-    key_env: OPENROUTER_API_KEY
   freellmapi:
     base_url: http://localhost:3001/v1
     default_model: auto
     discover_models: true
     key_env: FREELMAPI_API_KEY
+  local-ollama:
+    base_url: http://localhost:11434/v1
+    default_model: qwen3:4b
+    discover_models: true
+  ollama:
+    base_url: http://localhost:11434/v1
+    default_model: qwen2.5-coder:3b
+    discover_models: true
+  stdcmpt:
+    base_url: https://api.stdcmpt.com/v1
+    default_model: standardcompute
+    key_env: STDCMT_API_KEY
+    discover_models: false
+  zai:
+    base_url: https://zcode.z.ai/api/v1/zcode-plan/anthropic
+    default_model: glm-5.2
+    key_env: ZAI_API_KEY
+    discover_models: false
+
+fallback_providers:
+  - provider: opencode-zen
+    model: deepseek-v4-flash-free
 
 toolsets: [hermes-cli]
 
@@ -52,40 +77,74 @@ skills:
     - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/ux-strategy/skills
     - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/visual-critique/skills
 
-# --- MCP SERVERS ----------------------------------------------------------
+# --- MCP SERVERS (12) -----------------------------------------------------
 mcp_servers:
   21st:
     url: https://21st.dev/api/mcp
     headers:
-      x-api-key: TWENTYFIRST_API_KEY
+      x-api-key: YOUR_TWENTY_FIRST_API_KEY
+    connect_timeout: 60
   agentmemory:
     command: npx
     args: ["-y", "@agentmemory/agentmemory", "mcp"]
     connect_timeout: 60
+    env:
+      PATH: C:\Users\YOUR_USERNAME\.local\bin;C:\Program Files\nodejs;C:\Users\YOUR_USERNAME\AppData\Roaming\npm;%PATH%
   codegraph:
     command: codegraph
     args: [serve, --mcp]
     connect_timeout: 60
     timeout: 120
-  firecrawl:
-    url: https://mcp.firecrawl.dev/YOUR_USERNAME
-    headers:
-      x-api-key: FIRECRAWL_API_KEY
   graphify:
-    command: python
-    args: ["-m", "graphify.serve"]
+    # Hermes venv python + wrapper script, cwd = graphify project root
+    command: C:/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
+    args: [C:/Users/YOUR_USERNAME/Documents/Projects/graphify/graphify_mcp_wrapper.py]
     cwd: C:/Users/YOUR_USERNAME/Documents/Projects/graphify
     connect_timeout: 90
+    env:
+      PYTHONPATH: C:/Users/YOUR_USERNAME/Documents/Projects/graphify;%PYTHONPATH%
   llmquant-data:
     command: npx
     args: ["-y", "@llmquant/data-mcp"]
     connect_timeout: 60
+    env:
+      LLMQUANT_API_KEY: YOUR_LLMQUANT_API_KEY
   obsidian-kg:
-    command: python
-    args: ["-m", "obsidian_kg_mcp"]
+    command: C:/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
+    args: [C:/Users/YOUR_USERNAME/.hermes/tools/obsidian_kg_mcp.py]
     cwd: C:/Users/YOUR_USERNAME/.hermes/tools
+    connect_timeout: 60
   opendesign:
-    enabled: false
+    command: C:/Users/YOUR_USERNAME/AppData/Local/Programs/Open Design release-stable-win/Open Design.exe
+    env:
+      ELECTRON_RUN_AS_NODE: '1'
+      OD_DATA_DIR: C:/Users/YOUR_USERNAME/AppData/Roaming/Open Design/namespaces/release-stable-win/data
+      OD_SIDECAR_IPC_PATH: \\.\pipe\open-design-release-stable-win-daemon
+    args[0]: C:/Users/YOUR_USERNAME/AppData/Local/Programs/Open Design release-stable-win/resources/app/prebundled/daemon/daemon-cli.mjs
+    args[1]: mcp
+    connect_timeout: 60
+  vscode:
+    command: npx
+    args: ["-y", "vscode-mcp-server"]
+    connect_timeout: 60
+    env: {}
+  firecrawl:
+    url: https://mcp.firecrawl.dev/YOUR_FIRECRAWL_API_KEY/v2/mcp
+    connect_timeout: 60
+  figma:
+    # Figma via Composio gateway
+    url: https://connect.composio.dev/mcp
+    connect_timeout: 60
+  flowbite:
+    command: npx
+    args: ["-y", "flowbite-mcp"]
+    connect_timeout: 60
+  figma-dev:
+    command: npx
+    args: ["-y", "figma-developer-mcp", "--stdio"]
+    env:
+      FIGMA_API_KEY: YOUR_FIGMA_API_KEY
+    connect_timeout: 90
 
 # --- KANBAN ---------------------------------------------------------------
 kanban:
@@ -107,10 +166,11 @@ auxiliary:
 
 # --- DELEGATION -----------------------------------------------------------
 delegation:
-  model: deepseek-v4-flash-free
-  provider: opencode-zen
+  model: deepseek-v4-flash
+  provider: opencode-go
   inherit_mcp_toolsets: true
-  max_concurrent_children: 3
+  max_concurrent_children: 50
+  max_spawn_depth: 1
 
 # --- BACKUP ---------------------------------------------------------------
 backup:

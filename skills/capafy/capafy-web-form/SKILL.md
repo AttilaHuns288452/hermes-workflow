@@ -51,15 +51,15 @@ Before you start a new publish, assess your candidate skill against the three ti
 |---|---|
 | **Title** | `Agent Name` |
 | **Expertise** | *"First-person expertise paragraph"* |
-| **Logo** | Upload from `C:\Users\Attila\AppData\Local\hermes\[name]-logo.png` |
+| **Logo** | Upload from `C:\Users\YOUR_USERNAME\AppData\Local\hermes\[name]-logo.png` |
 | **Category** | `Primary Category` |
 | **Additional** | `Secondary Category` |
 | **Tags** | `tag1, tag2, tag3, tag4, tag5` |
-| **Email** | `attilasabiniano@gmail.com` |
+| **Email** | `YOUR_EMAIL@gmail.com` |
 
 ### Details / README
 
-Paste from `C:\Users\Attila\Documents\[agent-name]-readme.md`
+Paste from `C:\Users\YOUR_USERNAME\Documents\[agent-name]-readme.md`
 
 ### Pricing
 
@@ -108,7 +108,7 @@ Generate with `image_generate` during the publish workflow:
 
 **Save locally and give user the absolute path for upload:**
 ```
-C:\Users\Attila\AppData\Local\hermes\[agent-name]-logo.png
+C:\Users\YOUR_USERNAME\AppData\Local\hermes\[agent-name]-logo.png
 ```
 
 ### Category (Primary)
@@ -134,7 +134,7 @@ Lead with the most specific, then general:
 **Utility agents:** `maps, geocoding, pdf, ocr, utility`
 
 ### Support Email
-Use: `attilasabiniano@gmail.com` (user's primary)
+Use: `YOUR_EMAIL@gmail.com` (user's primary)
 
 ### Privacy Policy URL
 Optional — leave blank unless the user has one.

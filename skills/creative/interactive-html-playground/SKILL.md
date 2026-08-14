@@ -116,6 +116,75 @@ navigator.clipboard.writeText(code).then(() => {
 });
 ```
 
+## React / JSX Live Playgrounds
+
+Same playground pattern, but the demo code is **JSX compiled in the browser**. Full recipe with CDN URLs, the compile function, hook exposure, and deep-link routing: [`references/react-jsx-live-editor.md`](references/react-jsx-live-editor.md)
+
+Key points:
+- **Use `@babel/standalone`** (scoped npm package, latest 7.x) — the old `babel-standalone` package is DEAD (latest is 6.26.0; `@babel/standalone@7.24.7` style pins 404). `https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js` works; the global is still `Babel`.
+- **React 18 UMD** + `ReactDOM.createRoot` — no build step, works from `file://`.
+- **Expose hooks via `new Function`** — pass `useState, useEffect, …` as function arguments so example code can call them bare (`useState(0)` not `React.useState(0)`).
+- Convention: user code must define a component named `App`; auto-render it.
+- **Deep links** (`#/section-id`) + `hashchange` router make every lesson/component independently testable headlessly — build them in from the start.
+- Example code strings must avoid backticks and `${` (they live in template literals).
+
+### Tailwind inside the React REPL (teach React + Tailwind together)
+
+`<script src="https://cdn.tailwindcss.com">` works in a live JSX REPL — the CDN's MutationObserver generates utilities for dynamically-inserted preview DOM, no rebuild needed. Patterns:
+
+- Examples style with **utility classes in `className`** (`bg-slate-900`, `rounded-2xl`, `border-slate-700/60`) — teach React and Tailwind in one example.
+- **Conditional classes** via template-string concatenation: `className={'rounded-lg ' + (on ? 'bg-emerald-500' : 'bg-rose-500')}` — this doubles as the styling lesson itself.
+- Inline `style` **only for dynamic values** (HSL color, avatar size from props).
+- Delete your custom `.demo-*` CSS classes once examples convert — Tailwind preflight resets buttons anyway.
+- User's Tailwind playground (tailwind-playground repo) is the sibling tool; cross-link both from each other's headers.
+
+### Teaching-depth structure (when the user says "replicate its depth")
+
+Users who own a CSS playground expect the same **depth** in a React playground. Data model that scales (all in `js/*.js` arrays, `index.html` only has the shell):
+
+- `CATEGORIES[]` → `sections[]` (lessons): each lesson = `{id, icon, title, desc, points[] (key-point pills), code}`. `findLesson(id)` resolves id → lesson; `#/<id>` deep links.
+- `COMPONENTS[]`: `{id, icon, name, desc, code}` — "most-used" components (Switch, Progress, Dropdown, Tooltip, Pagination, Breadcrumb, Spinner, StatCard, EmptyState, Rating…) plus hooks-drill classics (Todo, Tabs, Accordion, Stopwatch).
+- A **"Understanding React" category** (how React calls components, render→commit→effect cycle, why hooks need stable call order) — the user explicitly wants the mental model explained, not just copyable code.
+- Hash router: `#/`, `#/component/<id>`, `#/repl` — makes every lesson headless-testable (see verification below).
+
+### UX patterns this user expects (tailwind-playground parity)
+
+When the user says "navigate like the tailwind css playground" or "hide the css", these are their established preferences for playground tools:
+
+**Sidebar navigation (the user's favorite)** — left sidebar, not header tabs:
+- Fixed-width sidebar (`250px`) with: logo head, search box, grouped link list (lesson categories + a Components group), footer with counts.
+- Links show icon + title; `.active` state tracks the current lesson/component (data-id matching).
+- Mobile (<900px): sidebar becomes a fixed drawer (`translateX(-100%)` → `.open`), hamburger in header toggles it, semi-transparent overlay closes it.
+- Main area = `#shell{flex:1;display:flex}` wrapping sidebar + content column; each nav action also closes the drawer.
+- Deep links still work — `route()` on load highlights the active sidebar item.
+
+**Focus mode / hide-the-CSS toggle** (user asked: "instead of the whole tailwind css line just say some css, but make sure it still acts the same") — default ON:
+- Keep the real code in a `realCode` variable; the editor shows a sanitized copy where every `className` value becomes `className="some css"`; the PREVIEW still compiles `realCode` (`compile(force)` param) so visuals never degrade.
+- Sanitize: `code.replace(/className="[^"]*"/g,'className="some css"').replace(/className=\{[^}]*\}/g,'className="some css"')` — the brace regex is safe because lesson data never nests braces inside `className={}`.
+- Editing while hidden auto-reveals (setHideCss(false)) so the user never fights the placeholder.
+- Copy button copies `realCode`, never the sanitized editor text.
+- Persist the toggle in localStorage; button label shows the action (`👁 css` = click to reveal).
+
+**Try-it tips for comprehensiveness** — a `TRY` map keyed by lesson/component id (`js/guide.js`) rendered as a green hint box above the editor (`renderTry(id)`). One actionable exercise per item ("Call setCount twice in one click…") makes the guide comprehensive without bloating lesson bodies.
+
+## Headless Verification (mandatory before shipping)
+
+Playgrounds are JS-driven — `curl` proves nothing. Verify with Edge/Chrome headless before pushing:
+
+```bash
+msedge --headless --disable-gpu --dump-dom --virtual-time-budget=8000 "file:///C:/path/index.html#/deep-link" 2>/dev/null | grep -c 'class="card"'
+msedge --headless --disable-gpu --screenshot=out.png --window-size=1440,900 --virtual-time-budget=8000 "file:///C:/path/index.html"
+```
+
+Pitfalls:
+- **`--virtual-time-budget` is required** — without it the dump races the CDN scripts and `Babel is not defined` appears.
+- **grep false positives**: `--dump-dom` output includes the page's own inline `<script>` source. Grepping for `Counter` or `Rendered` can match the script text, not the rendered DOM. Assert on **live state instead**: parse `id="statusText"` (`Rendered` vs `Error`) and `id="errorPanel"` content, plus the rendered `#preview` text.
+- A screenshot alone doesn't prove interaction works — pair it with the dump-dom state assertions.
+
+## Multi-file split for large playgrounds
+
+A playground that outgrows a single `write_file` (stream timeouts ~8K tokens per call) still deploys as "static": split into `index.html` + `js/data.js` loaded via `<script src>`. Works from `file://` and GH Pages unchanged. Write data files separately, then patch `index.html` to reference them.
+
 ## Deployment
 
 For static single-file HTML playgrounds:

@@ -13,7 +13,7 @@ across 49 categories) plus a website, docs, and Graphify knowledge-graph build o
 - **Secrets:** ✅ None found. All template files (`config.yaml.template`, `.env.example`)
   use proper placeholders (`YOUR_USERNAME`, `<your-key>`, etc.).
 - **Local paths:** ❌ Found in `graphify-out/` — AST cache JSON files and manifest
-  contained absolute local filesystem paths (e.g. `C:\Users\Attila\...`).
+  contained absolute local filesystem paths (e.g. `C:\Users\YOUR_USERNAME\...`).
   These are build artifacts, not user-facing content, but they were tracked in git.
 
 **Fix:** `git rm -r --cached graphify-out/` (162 files removed from tracking).

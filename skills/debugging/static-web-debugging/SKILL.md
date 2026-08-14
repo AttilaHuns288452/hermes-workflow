@@ -22,6 +22,19 @@ description: Debug deployed static web apps that fail to load, show stuck spinne
 | Blank white page | JS syntax error before first render, or CDN script failed to load | Check browser console, verify CDN URLs |
 | Page renders but no data | Tables exist but empty, or query returns nothing | Seed data, check fetch logic |
 
+## React/Vite dev-app variant: build passes, page still white
+
+A Vite/React app whose `npm run build` SUCCEEDS but the dev page is blank is a **runtime crash**, not a build error. Real-world causes, in order of frequency:
+
+- Component used in JSX but never imported — `<LandingPage />` with no `import LandingPage` → ReferenceError kills the whole tree
+- Undefined identifier in a prop: `setPage('modal')` with no `setPage` state
+- Stray bare expression pasted inside the JSX return — `(<X />)` floating between elements is invalid
+- Sibling component files that are empty (0-byte `.jsx`) or stubs (`return <div>name</div>`) — real code lives elsewhere
+
+**Recovery when the user keeps multiple copies** (`project`, `project - Copy`, `project - Copy (2)` on the Desktop): `diff -q` the components across copies — the working version usually exists in a sibling folder. Copy the working file over rather than rewriting, then fix the App.jsx wiring (imports + page state) to match.
+
+**Verify the running server really serves the fix:** `curl -s http://localhost:PORT/src/App.jsx | grep 'import LandingPage'` — Vite dev serves compiled `/src` modules, so the grep shows exactly the code the browser executes. A 200 from curl alone proves nothing if another dev server owns the port.
+
 ## Diagnosis: Raw HTML Inspection (Primary Tool)
 
 Curl the deployed HTML before touching any browser DevTools. The bug is often visible in the static source — no JS execution needed.

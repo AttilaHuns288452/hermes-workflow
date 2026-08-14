@@ -75,6 +75,22 @@ powershell -Command "Stop-Process -Id <pid> -Force"   # works where taskkill han
 ```
 This bites with orphaned `next dev` servers: Next.js sees the stale PID on port 3000 (`⚠ Port 3000 is in use by process <pid>`), refuses to start, and the orphan doesn't answer HTTP (`curl` → `000`). Kill via `Stop-Process`, confirm with `netstat -ano | grep ":3000 .*LISTENING"` returning nothing, then start fresh. Note Next falls back to port 3001 when 3000 looks occupied — always check which port the new server actually bound (`Ready in ... Local: http://localhost:<port>`).
 
+**Hermes background-session kills orphan the child (Windows).** `process(action="kill")` (or killing the bash session) terminates the bash WRAPPER, not the `node` child running the dev server — the orphan keeps the port and keeps serving. Symptoms: a "fresh" server logs `⚠ Port 3000 is in use by process <pid>, using available port 3001 instead` while tests/curl still hit 3000 (the orphan) — so all verification runs against the STALE server and behavior "doesn't change" across restarts. Fix: find the real listener and TREE-kill it:
+```bash
+netstat -ano | grep ":3000 .*LISTENING"     # get PID
+taskkill /PID <pid> /T /F                    # /T = tree; single slashes work in git-bash
+```
+Then confirm the new server actually bound the expected port before running any test against it (check the `Ready in ... Local:` line or `netstat` again). This one trap silently invalidated ~30 minutes of E2E runs.
+
+### 4b. Stale dev-server syndrome (Turbopack/Next.js)
+
+After many file edits on a long-running `next dev`, the SERVED client bundle can diverge from source. Symptoms look exactly like app bugs — they aren't:
+- DOM text garbled/truncated vs source: `</svg> ss</button>` where source says `Create business entity`
+- Components intermittently render older versions; pages stuck on "Loading..." while the dev log shows all actions resolving 200
+- Server-action signature changed mid-run (e.g. removed a param) → client calls fail/hang on a stale action registry
+
+**Before chasing a phantom UI bug:** dump the real DOM (`el.outerHTML`) and diff against source. Mismatched text = stale bundle. Check the dev log for `uncaughtException ... Error: aborted` / `ECONNRESET` noise (unhealthy server). Fix = full restart: tree-kill (`taskkill /PID <pid> /T /F`), confirm port free, restart. Also: a "fresh" server that logs `using available port 3001 instead` means you're STILL testing the orphan — verify the bound port in the Ready line.
+
 ### 5. Python Venv Path Leaking
 
 When a parent process (Electron, process manager, bash with activated venv) spawns a child that uses its own Python venv, the parent's `PYTHONPATH` and `sys.path` leak into the child. The child imports the parent's packages instead of its own.

@@ -1,6 +1,6 @@
 # CashFlow OS restyle recipe (proven)
 
-Project: `C:/Users/Attila/Documents/Projects/cashflow-os` — Next.js App Router, Tailwind v4, shadcn, Supabase via `@/lib/entity` (`getEntity()` → `{ supabase, entityId }`).
+Project: `C:/Users/YOUR_USERNAME/Documents/Projects/cashflow-os` — Next.js App Router, Tailwind v4, shadcn, Supabase via `@/lib/entity` (`getEntity()` → `{ supabase, entityId }`).
 
 ## Token utilities (landed in src/app/globals.css by foundation agent)
 - `:root` light = prototype look: `--bg #f8f9fb`, `--surface #fff`, `--fg #1a1d23`, `--border #e5e7eb`, `--accent #2563eb`, `--green #16a34a`, `--red #dc2626`, `--orange #ea580c`, `--purple #7c3aed`, `--radius 0.5rem` (8px; `rounded-xl` = 12px).

@@ -182,7 +182,7 @@ hermes chat -q "Test via FreeLLMAPI"
    ```bash
    python -c "
    import sqlite3
-   db = sqlite3.connect(r'C:\Users\Attila\Documents\Projects\freellmapi\server\data\freeapi.db')
+   db = sqlite3.connect(r'C:\Users\YOUR_USERNAME\Documents\Projects\freellmapi\server\data\freeapi.db')
    row = db.execute(\"SELECT value FROM settings WHERE key='unified_api_key'\").fetchone()
    if row: print('DB key:', row[0])
    db.close()
@@ -224,7 +224,7 @@ hermes chat -q "Test via FreeLLMAPI"
      Update the SQLite DB to match .env:
      ```python
      import sqlite3
-     db = sqlite3.connect(r'C:\Users\Attila\Documents\Projects\freellmapi\server\data\freeapi.db')
+     db = sqlite3.connect(r'C:\Users\YOUR_USERNAME\Documents\Projects\freellmapi\server\data\freeapi.db')
      db.execute("UPDATE settings SET value = ? WHERE key = 'unified_api_key'", ('freellmapi-<key-from-env>',))
      db.commit()
      db.close()
@@ -258,7 +258,7 @@ curl -s -H "Authorization: Bearer *** http://localhost:3001/api/settings/api-key
 # 3. Update Hermes .env with the new key (replace existing line, don't append another)
 # Use Python to safely do the find-and-replace:
 python -c "
-with open(r'C:\Users\Attila\AppData\Local\hermes\.env', 'r') as f:
+with open(r'C:\Users\YOUR_USERNAME\AppData\Local\hermes\.env', 'r') as f:
     content = f.read()
 lines = content.splitlines()
 new_key = 'freellmapi-022a52d486a05c12c5029bdd6173f41282c6b2fe03b72b37'
@@ -267,7 +267,7 @@ for i, line in enumerate(lines):
         old = line.split('=', 1)[1] if '=' in line else ''
         lines[i] = f'FREELMAPI_API_KEY=***        break
 content = '\n'.join(lines) + ('\n' if not content.endswith('\n') else '')
-with open(r'C:\Users\Attila\AppData\Local\hermes\.env', 'w') as f:
+with open(r'C:\Users\YOUR_USERNAME\AppData\Local\hermes\.env', 'w') as f:
     f.write(content)
 print('Updated .env')
 "
@@ -276,7 +276,7 @@ print('Updated .env')
 **Alternative: Sync the DB key to match .env** (if .env was intentionally set to a specific key):
 ```python
 import sqlite3
-db = sqlite3.connect(r'C:\Users\Attila\Documents\Projects\freellmapi\server\data\freeapi.db')
+db = sqlite3.connect(r'C:\Users\YOUR_USERNAME\Documents\Projects\freellmapi\server\data\freeapi.db')
 db.execute("UPDATE settings SET value = ? WHERE key = 'unified_api_key'",
            ('freellmapi-<key-from-env>',))
 db.commit()
@@ -349,7 +349,7 @@ Run `curl -H "Authorization: Bearer <key>" http://localhost:3001/v1/models | jq 
 
 ### Complete FreeLLMAPI Setup From Scratch
 
-**Project path**: `C:\Users\Attila\Documents\Projects\freellmapi`
+**Project path**: `C:\Users\YOUR_USERNAME\Documents\Projects\freellmapi`
 
 **Server status**: ✅ Running on port 3001 (Express) — compiled mode serves dashboard at `/`
 
@@ -453,7 +453,7 @@ Use the unified API key for `Authorization: Bearer ***` headers on `/v1/*` endpo
 When running from different directories, use absolute paths for better-sqlite3:
 ```bash
 # From project root
-node -e "const db = new Database('C:/Users/Attila/Documents/Projects/freellmapi/server/data/freeapi.db'); ..."
+node -e "const db = new Database('C:/Users/YOUR_USERNAME/Documents/Projects/freellmapi/server/data/freeapi.db'); ..."
 ```
 
 ### Verification Commands

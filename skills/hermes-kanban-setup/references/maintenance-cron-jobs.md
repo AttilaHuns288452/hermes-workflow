@@ -4,7 +4,7 @@ Four cron jobs keep the system healthy. All are `deliver: local` — silence mea
 
 ## 1. LightRAG Daily Rebuild (`e3529912964e`)
 - **Schedule**: daily at 4am
-- **Command**: `python C:/Users/Attila/AppData/Local/hermes/lightrag_index/build_index.py`
+- **Command**: `python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/build_index.py`
 - **What**: rebuilds TF-IDF index from all 19 external skill dirs
 - **Why**: skills added/updated need re-indexing. Sub-second, zero API cost.
 

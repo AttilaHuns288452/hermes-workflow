@@ -19,7 +19,7 @@ Users conflate 400 with rate limits because both show as "request failed" in the
 ```bash
 python -c "
 import json
-with open('C:/Users/Attila/.local/share/opencode/auth.json') as f:
+with open('C:/Users/YOUR_USERNAME/.local/share/opencode/auth.json') as f:
     d = json.load(f)
 k = d['opencode-go']['key']
 print(repr(k))
@@ -40,7 +40,7 @@ has_trailing_space: True
 ```bash
 python -c "
 import json
-path = 'C:/Users/Attila/.local/share/opencode/auth.json'
+path = 'C:/Users/YOUR_USERNAME/.local/share/opencode/auth.json'
 with open(path) as f:
     d = json.load(f)
 d['opencode-go']['key'] = d['opencode-go']['key'].strip()
@@ -52,7 +52,7 @@ print('fixed')
 
 ## Ponytail Plugin (Separate Issue)
 
-`@dietrichgebert/ponytail` installed globally at `C:\Users\Attila\AppData\Roaming\npm` fails to load with:
+`@dietrichgebert/ponytail` installed globally at `C:\Users\YOUR_USERNAME\AppData\Roaming\npm` fails to load with:
 
 ```
 ERROR service=plugin path=@dietrichgebert/ponytail error=path must be a string or a file descriptor

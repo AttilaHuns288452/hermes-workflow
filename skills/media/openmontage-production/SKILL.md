@@ -35,7 +35,7 @@ OpenMontage is installed at `~/OpenMontage/` and fully configured with **all 12 
 
 ## Environment
 
-- **Location:** `~/OpenMontage/` (`C:\Users\Attila\OpenMontage/`)
+- **Location:** `~/OpenMontage/` (`C:\Users\YOUR_USERNAME\OpenMontage/`)
 - **Python:** System Python 3.11.9 — OpenMontage uses its own venv-free discovery (imports tools directly)
 - **Working directory:** Always `cd ~/OpenMontage` before any OpenMontage commands
 - **.env:** Complete — all 12 API keys configured and verified. CHROME_PATH is set to Chrome's Windows install path for Remotion rendering

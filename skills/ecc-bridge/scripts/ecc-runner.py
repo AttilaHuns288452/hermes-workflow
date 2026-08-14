@@ -36,19 +36,19 @@ ECC_DIR = Path.home() / "Documents" / "Projects" / "ECC" / "agents"
 # Agents that are safer on free models (analysis-heavy, no dangerous writes)
 # Known-good set:
 SAFE_AGENTS = {
-    "comment-analyzer": {"skill_name": "ecc-comment-analyzer", "best_model": "opencode/deepseek-v4-flash-free"},
-    "silent-failure-hunter": {"skill_name": "ecc-silent-failure-hunter", "best_model": "opencode/deepseek-v4-flash-free"},
-    "pr-test-analyzer": {"skill_name": "ecc-pr-test-analyzer", "best_model": "opencode/deepseek-v4-flash-free"},
-    "type-design-analyzer": {"skill_name": "ecc-type-design-analyzer", "best_model": "opencode/deepseek-v4-flash-free"},
-    "code-simplifier": {"skill_name": "ecc-code-simplifier", "best_model": "opencode/deepseek-v4-flash-free"},
-    "doc-updater": {"skill_name": "ecc-doc-updater", "best_model": "opencode/deepseek-v4-flash-free"},
-    "database-reviewer": {"skill_name": "ecc-database-reviewer", "best_model": "opencode/deepseek-v4-flash-free"},
-    "refactor-cleaner": {"skill_name": "ecc-refactor-cleaner", "best_model": "opencode/deepseek-v4-flash-free"},
-    "performance-optimizer": {"skill_name": "ecc-performance-optimizer", "best_model": "opencode/deepseek-v4-flash-free"},
+    "comment-analyzer": {"skill_name": "ecc-comment-analyzer", "best_model": "opencode-go/deepseek-v4-flash"},
+    "silent-failure-hunter": {"skill_name": "ecc-silent-failure-hunter", "best_model": "opencode-go/deepseek-v4-flash"},
+    "pr-test-analyzer": {"skill_name": "ecc-pr-test-analyzer", "best_model": "opencode-go/deepseek-v4-flash"},
+    "type-design-analyzer": {"skill_name": "ecc-type-design-analyzer", "best_model": "opencode-go/deepseek-v4-flash"},
+    "code-simplifier": {"skill_name": "ecc-code-simplifier", "best_model": "opencode-go/deepseek-v4-flash"},
+    "doc-updater": {"skill_name": "ecc-doc-updater", "best_model": "opencode-go/deepseek-v4-flash"},
+    "database-reviewer": {"skill_name": "ecc-database-reviewer", "best_model": "opencode-go/deepseek-v4-flash"},
+    "refactor-cleaner": {"skill_name": "ecc-refactor-cleaner", "best_model": "opencode-go/deepseek-v4-flash"},
+    "performance-optimizer": {"skill_name": "ecc-performance-optimizer", "best_model": "opencode-go/deepseek-v4-flash"},
     # Vision agents — need multimodal
-    "image-prompt-engineer": {"skill_name": "ecc-image-prompt-engineer", "best_model": "opencode/mimo-v2.5-free"},
-    "visual-storyteller": {"skill_name": "ecc-visual-storyteller", "best_model": "opencode/mimo-v2.5-free"},
-    "ui-designer": {"skill_name": "ecc-ui-designer", "best_model": "opencode/mimo-v2.5-free"},
+    "image-prompt-engineer": {"skill_name": "ecc-image-prompt-engineer", "best_model": "opencode-go/mimo-v2.5"},
+    "visual-storyteller": {"skill_name": "ecc-visual-storyteller", "best_model": "opencode-go/mimo-v2.5"},
+    "ui-designer": {"skill_name": "ecc-ui-designer", "best_model": "opencode-go/mimo-v2.5"},
 }
 
 # All 64 ECC agents mapped to free-model compatibility tiers
@@ -76,7 +76,7 @@ def index_all_agents():
         elif model == "sonnet":
             tier = "good"       # mid-tier, most agents run fine on free
         elif model == "opus":
-            tier = "limited"    # complex agents, may degrade on free
+            tier = "good"       # routed to deepseek-v4-flash like all text agents (2026-08-05); complex architecture reasoning may be weaker than native opus
         else:
             tier = "unknown"    # unclassified model — assume limited as conservative fallback
         
@@ -252,7 +252,7 @@ if __name__ == "__main__":
     
     meta = extract_agent_frontmatter(cmd) or {}
     safe_info = SAFE_AGENTS.get(cmd, {})
-    tier = safe_info.get("best_model", "opencode/deepseek-v4-flash-free")
+    tier = safe_info.get("best_model", "opencode-go/deepseek-v4-flash")
     
     print(f"# ECC Agent: {meta.get('name', cmd)}")
     print(f"# Description: {meta.get('description', 'N/A')}")
