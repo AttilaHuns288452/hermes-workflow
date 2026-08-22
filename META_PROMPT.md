@@ -432,7 +432,7 @@ OpenRouter: free tier (openrouter.ai)
 Obsidian: latest (obsidian.md)
 This website: v4.1+ (static HTML, GitHub Pages)
 
-Model used for this session: deepseek-v4-flash-free (opencode-zen)
+Model used for this session: meta/muse-spark-1.2-contributor (opencode-go — config.yaml truth)
 
 ================================================================================
  FULL SETUP REPOSITORY

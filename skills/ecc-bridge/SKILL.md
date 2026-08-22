@@ -21,16 +21,17 @@ triggers:
 
 ECC agents are `.md` skill files designed for Claude Code with `model: sonnet`/`model: opus` requirements.  
 This bridge **extracts their prompt body**, strips the paid-model requirement, and routes them through  
-the **free model chain** (opencode-go/deepseek-v4-flash for code agents, opencode-go/mimo-v2.5 for vision agents → OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
+the **free model chain** (opencode-go/meta/muse-spark-1.2-contributor for code agents, opencode-go/mimo-v2.5 for vision agents → OpenCode bundled free → Freebuff → FreeLLMAPI → OpenRouter :free).
 
-**All 64 agents run on free models**: 61 via `opencode-go/deepseek-v4-flash` (all haiku/sonnet/opus text agents), 3 vision agents via `opencode-go/mimo-v2.5`.  
-The 7 opus agents (architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner, healthcare-reviewer, planner) also run on deepseek-v4-flash — complex architecture reasoning may be weaker than native opus, but they execute.
+**All 64 agents run on free models** via `config.yaml` `delegation.model` (currently `opencode-go/meta/muse-spark-1.2-contributor`) for text agents, and `config.yaml` `auxiliary.vision` (`opencode-go/mimo-v2.5`) for vision agents.  The7 opus agents (architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner, healthcare-reviewer, planner) also route through the same delegation config — complex architecture reasoning may be weaker than native opus, but they execute.
+
+### Live routing is pinned to `config.yaml` (`delegation.model = opencode-go/meta/muse-spark-1.2-contributor`, `auxiliary.vision = mimo-v2.5`). The table below is the historical mapping — trust config, not this table, for new work.
 
 ### Model Mapping
 
 | Agent Type | Free Model | Fallback |
 |-----------|-----------|----------|
-| Code/analysis agents (comment-analyzer, code-simplifier, refactor-cleaner, etc.) | `opencode-go/deepseek-v4-flash` | `opencode-go/deepseek-v4-flash` |
+| Code/analysis agents (comment-analyzer, code-simplifier, refactor-cleaner, etc.) | `opencode-go/meta/muse-spark-1.2-contributor` (config truth) | `opencode-go/meta/muse-spark-1.2-contributor` |
 | Vision/multimodal agents (image-prompt-engineer, visual-storyteller, ui-designer) | `opencode-go/mimo-v2.5` | `opencode-go/mimo-v2.5` |
 
 ## Triggers (when this skill is activated)
@@ -108,7 +109,7 @@ silent-failure-hunter), extract the prompt and pipe it to OpenCode with a free m
 ```bash
 # Extract prompt to a Windows-safe path (NOT /tmp — MSYS issue)
 python ecc-runner.py code-simplifier > ecc-prompt.md
-opencode run --model opencode-go/deepseek-v4-flash \
+opencode run --model opencode-go/meta/muse-spark-1.2-contributor \
   --file ecc-prompt.md \
   "Simplify the code in the current working directory"
 ```
@@ -144,14 +145,14 @@ freebuff run --model "DeepSeek V4 Flash" \
 
 All 47 other sonnet agents and doc-updater (haiku) follow the same pattern.  
 The 7 opus agents (architect, chief-of-staff, gan-evaluator, gan-generator, gan-planner,  
-healthcare-reviewer, planner) also route to `opencode-go/deepseek-v4-flash` (2026-08-05) —  
+healthcare-reviewer, planner) also route to `opencode-go/meta/muse-spark-1.2-contributor` (2026-08-05) —  
 expected: good, with weaker complex-architecture reasoning than native opus.
 
 ## Free Model Fallback Chain
 
 When OpenCode's bundled free models fail:
 
-1. **OpenCode free** → `opencode-go/deepseek-v4-flash` (primary, most reliable)
+1. **OpenCode free** → `opencode-go/meta/muse-spark-1.2-contributor` (primary, most reliable)
 2. **Freebuff** → `freebuff run --model "DeepSeek V4 Flash"` (second, cloud-based)
 3. **FreeLLMAPI** → custom Hermes provider at `localhost:3001/v1` (110+ models, local)
 4. **OpenRouter :free** → only `openai/gpt-oss-120b:free` or `nex-agi/nex-n2-pro:free` (last free resort)

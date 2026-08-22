@@ -87,8 +87,8 @@ A subagent that times out (~600s) can leave **broken WIP** in its target file. S
 The decomposer uses `auxiliary.kanban_decomposer` in config.yaml (defaults to `auto` → main chat model). Set explicitly if auto fails:
 
 ```bash
-hermes config set auxiliary.kanban_decomposer.model deepseek-v4-pro
-hermes config set auxiliary.kanban_decomposer.provider opencode-go
+hermes config set auxiliary.kanban_decomposer.model mimo-v2.5
+hermes config set auxiliary.kanban_decomposer.provider opencode-go  # source of truth: config.yaml auxiliary.kanban_decomposer
 ```
 
 ## Pitfalls
