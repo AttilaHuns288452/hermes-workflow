@@ -4,7 +4,7 @@
 
 ---
 
-> **★ Recommended Model: DeepSeek V4 Flash via OpenCode Zen API** — set it as your primary model for the best free-model experience. See Step 5 and Step 10.
+> **★ Recommended Model: Muse Spark 1.2 Contributor @ opencode-go — config.yaml is truth** — set it as your primary model for the best free-model experience. See Step 5 and Step 10.
 
 ---
 

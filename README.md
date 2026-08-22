@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/license-MIT-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
 [![Skills](https://img.shields.io/badge/Skills-813-4a8cf4?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Agents](https://img.shields.io/badge/ECC%20Agents-64-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#agents)
-[![Model](https://img.shields.io/badge/Model-DeepSeek%20V4%20Flash%20%2B%20v4--pro%20%2B%20MiMo%202.5&labelColor=0b0f1c&color=f0d060)](https://attilahuns288452.github.io/hermes-workflow/#models)
+[![Model](https://img.shields.io/badge/Model-Muse%20Spark%201.2%20%2B%20MiMo%202.5&labelColor=0b0f1c&color=f0d060)](https://attilahuns288452.github.io/hermes-workflow/#models)
 [![CodeGraph](https://img.shields.io/badge/CodeGraph-144K%20nodes%20%C2%B7%20326K%20edges-6bc5e8?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/#pipeline)
 [![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
@@ -49,7 +49,7 @@ find ./skills -name SKILL.md -exec dirname {} \; | while read dir; do hermes ski
 🧠 64      ECC specialized agents
 🔌 12      MCP servers
 ⚡ 144,827 CodeGraph nodes · 326,322 edges · 8,421 files indexed
-💸 $0      Free model chain — deepseek-v4-flash (opencode-go) → deepseek-v4-pro orchestrator → mimo-v2.5 vision
+💸 $0      Free model chain — Muse Spark @ opencode-go → Muse Spark orchestrator → mimo-v2.5 vision
 🔄 7       oh-my-opencode-slim agent specialists for parallel coding
 🔧 1       SkillClaw daemon — self-improving skills
 ```

@@ -37,14 +37,14 @@ See `references/soul-md-enforcement.md` for the full SOUL.md pipeline template.
 
 | Role | Model | Use for |
 |------|-------|---------|
-| Orchestrator / Planning | **Hermes chat model** (currently `opencode-go/deepseek-v4-pro`) | **ROUTING + REASONING ONLY.** Never writes code, runs git, patches files, does build/deploy. |
-| **Main coding agent — implementation, editing, coding, execution** | `opencode-go/deepseek-v4-flash` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands** — delegate via `delegate_task`, `opencode run`, or oh-my-opencode-slim Pantheon swarm |
+| Orchestrator / Planning | **Hermes chat model** (currently `opencode-go/meta/muse-spark-1.2-contributor`) | **ROUTING + REASONING ONLY.** Never writes code, runs git, patches files, does build/deploy. |
+| **Main coding agent — implementation, editing, coding, execution** | `opencode-go/meta/muse-spark-1.2-contributor` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands** — delegate via `delegate_task`, `opencode run`, or oh-my-opencode-slim Pantheon swarm |
 | **Multimodal** | `opencode/mimo-v2.5-free` | **ALL image/video/visual tasks** — screenshots, UI audits, design review |
 | **Difficult multimodal** | `opencode-go/mimo-v2.5-pro` | Complex, long-running multimodal reasoning tasks |
 
-**Delegation rule:** 1-2 patches → `delegate_task` to DeepSeek V4 Flash. 3+ independent tasks → `delegate_task(tasks=...)` or Pantheon swarm. Bounded coding → `opencode run --model opencode-go/deepseek-v4-flash`. **Check ECC/Agency agent roster first** — if task matches a specialty agent (reviewer, resolver, architect, security, ML, DevOps), route there before generic delegation. The orchestrator NEVER writes code, runs git, or does build/deploy.
+**Delegation rule:** 1-2 patches → `delegate_task` to Muse Spark 1.2 Contributor @ opencode-go. 3+ independent tasks → `delegate_task(tasks=...)` or Pantheon swarm. Bounded coding → `opencode run --model opencode-go/meta/muse-spark-1.2-contributor`. **Check ECC/Agency agent roster first** — if task matches a specialty agent (reviewer, resolver, architect, security, ML, DevOps), route there before generic delegation. The orchestrator NEVER writes code, runs git, or does build/deploy.
 
-**⚠️ NEVER use bare model IDs through the opencode CLI** (`deepseek-v4-flash`, `mimo-v2.5`, `glm-5.2`) — they resolve to the opencode-zen route (pay-as-you-go, historically 429-exhausted). Always qualify: `opencode-go/deepseek-v4-flash`, `opencode-go/deepseek-v4-pro`, `opencode-zen/mimo-v2.5-free`. Hermes config already pins everything to opencode-go; the trap is only in ad-hoc `opencode run` calls and OpenDesign generation.
+**⚠️ NEVER use bare model IDs through the opencode CLI** (`deepseek-v4-flash`, `mimo-v2.5`, `glm-5.2`) — they resolve to the opencode-zen route (pay-as-you-go, historically 429-exhausted). Always qualify: `opencode-go/deepseek-v4-flash`, `opencode-go/muse-spark-1.2-contributor`, `opencode-go/mimo-v2.5`. Hermes config already pins everything to opencode-go; the trap is only in ad-hoc `opencode run` calls and OpenDesign generation.
 
 **Rate-limit fallback (auto, don't ask):** free → paid equivalent. Never use paid for mundane delegation unless rate-limited. **600s timeout** — break large batches into 4-6 items.
 
@@ -52,7 +52,7 @@ See `references/soul-md-enforcement.md` for the full SOUL.md pipeline template.
 
 | Rule | Source skill | What |
 |------|-------------|------|
-| Vision → MiMo subagent | `subagent-delegation` | Never call `vision_analyze` from orchestrator. Delegate to MiMo, feed results to DeepSeek. |
+| Vision → MiMo subagent | `subagent-delegation` | Never call `vision_analyze` from orchestrator. Delegate to MiMo, feed results to Muse Spark (@ opencode-go). |
 | QA depth: test everything | `subagent-delegation` | Click every button, test every state, every edge case. |
 | Cache-busting: no stale pages | `subagent-delegation` | Add `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">` to all static sites. |
 || Skill lookup: TF-IDF | `lightrag-skill-finder` | Sub-second, 0 API. Query: `python C:/Users/YOUR_USERNAME/AppData/Local/hermes/lightrag_index/find.py "<query>"`. Build: same dir, read all SKILL.md files → build_index.py. |
@@ -276,8 +276,8 @@ The user explicitly prioritizes **token efficiency** over having everything auto
 | ECC agent invocation | `ecc-bridge` |
 | Delegate coding / which model for what / subagent setup / "use deepseek for this" / "delegate to coding agent" | `subagent-delegation` |
 | Complex / multi-step task with 3+ independent subtasks | `subagent-delegation` — delegate independent subtasks to parallel subagents via `delegate_task(tasks=...)` |
-| OpenCode coding agent delegation (code write/modify) | `autonomous-ai-agents/opencode` — use `opencode run --model opencode-go/deepseek-v4-flash` |
-| oh-my-opencode-slim / Pantheon agent swarm / multi-agent coding / agent orchestration / agent council / multi-model consensus | `autonomous-ai-agents/oh-my-opencode-slim` — uses Pantheon agents (Orchestrator=chat model, Oracle/Explorer/Librarian/Designer/Fixer=deepseek-v4-flash, Observer=mimo-v2.5) |
+| OpenCode coding agent delegation (code write/modify) | `autonomous-ai-agents/opencode` — use `opencode run --model opencode-go/meta/muse-spark-1.2-contributor` |
+| oh-my-opencode-slim / Pantheon agent swarm / multi-agent coding / agent orchestration / agent council / multi-model consensus | `autonomous-ai-agents/oh-my-opencode-slim` — uses Pantheon agents (Orchestrator=chat model, Oracle/Explorer/Librarian/Designer/Fixer=muse-spark-1.2-contributor, Observer=mimo-v2.5) |
 | SkillClaw / skill evolution / auto-evolve / self-evolving skills / background skill improvement / cross-session skill refinement | `skillclaw` — runs `skillclaw start --daemon` on port 30000, auto-evolves Hermes skills from session data |
 | Research / papers / monitoring | `research--arxiv`, `research--blogwatcher`, `research--grounded-citations` |
 | Email | `email--himalaya` (`himalaya`), `gmail` |
@@ -374,7 +374,7 @@ MCP tools are deferred: `tool_search` → `tool_describe` → `tool_call`. Never
 - `vision_analyze` — images; user rule: hard vision via MiMo subagent (delegate), simple inline ok
 - `open_preview`/`focus_pane` — show the user HTML/localhost/files in the desktop app
 - `MEDIA:/path` in replies — deliver files natively (images inline, audio/video playable)
-- `delegate_task` — 1-2 patches → DeepSeek V4 Flash child; 3+ independent → parallel batch; children can't call clarify/memory/cron
+- `delegate_task` — 1-2 patches → Muse Spark child; 3+ independent → parallel batch; children can't call clarify/memory/cron
 - `cronjob`, `todo`, `memory`, `session_search` — schedule, track, persist, recall
 - `process`/`close_terminal` — manage background runs; `terminal(background=true, notify_on_complete=true)` for long builds
 

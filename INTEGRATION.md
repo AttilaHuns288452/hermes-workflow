@@ -292,7 +292,7 @@ User says ambiguous reference → session_search(query)
 
 | Layer | Provider | Models | Reliability | Cost |
 |-------|----------|--------|-------------|------|
-| 1 | **OpenCode (Zen)** | deepseek-v4-flash-free, mimo-v2.5-free, nemotron-3-ultra-free, north-mini-code-free, big-pickle | ✅ Most reliable | Free |
+| 1 | **opencode-go** | meta/muse-spark-1.2-contributor, mimo-v2.5 (config.yaml truth), nemotron-3-ultra-free, north-mini-code-free, big-pickle | ✅ Most reliable | Free |
 | 2 | **Freebuff** | Kimi K2.6, MiniMax M3, MiMo 2.5 Pro, DeepSeek V4 Pro/Flash | ✅ Cloud-managed | Free (ads) |
 | 3 | **FreeLLMAPI** | 107 models from 16 providers (84 available) | ✅ Local proxy | Free |
 | 4 | **OpenRouter :free** | gpt-oss-120b:free, nex-n2-pro:free (2 working) | ⚠️ Unreliable | Free |
@@ -302,7 +302,7 @@ User says ambiguous reference → session_search(query)
 
 | Task Type | OpenCode (Layer 1) | Freebuff (Layer 2) | FreeLLMAPI (Layer 3) |
 |-----------|-------------------|-------------------|---------------------|
-| Coding / reasoning | deepseek-v4-flash-free | Kimi K2.6 | Qwen3.6-Plus |
+| Coding / reasoning | meta/muse-spark-1.2-contributor | Kimi K2.6 | Qwen3.6-Plus |
 | Fast / light | north-mini-code-free | — | — |
 | Creative / design | — | MiniMax M3 | Gemini via provider |
 | Analysis | big-pickle | DeepSeek V4 Pro | Claude-esque via proxy |
@@ -426,7 +426,7 @@ Some skills have built-in model preferences:
   ├─ feature-dev          → Claude Sonnet   → routed to Kimi K2.6 (Freebuff)
   ├─ frontend-design      → Gemini 3.1 Pro  → routed to MiniMax M3 (Freebuff)
   ├─ manim-video          → Claude          → routed to MiMo 2.5 Pro (Freebuff)
-  └─ setup                → DeepSeek V4     → routed to deepseek-v4-flash-free (OpenCode)
+  └─ setup                → DeepSeek V4     → routed to meta/muse-spark-1.2-contributor (OpenCode)
 
 Model router respects skill recommendations but routes through free chain:
   ├─ Only route to paid if all free alternatives fail quality checks
