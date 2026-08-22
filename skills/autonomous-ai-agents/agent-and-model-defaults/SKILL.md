@@ -1,9 +1,9 @@
 ---
 name: agent-and-model-defaults
-description: "Workflow defaults: Hermes chat model orchestrates, DeepSeek V4 Flash codes, MiMo 2.5 handles vision. OpenCode config + AGENTS.md setup."
+description: "Workflow defaults: Hermes chat model orchestrates, Muse Spark codes @ opencode-go, MiMo handles vision. OpenCode config + AGENTS.md setup."
 version: 1.2.0
 author: Hermes Agent
-tags: [workflow, defaults, opencode, ecc, model, vision, mimo, glm, deepseek]
+tags: [workflow, defaults, opencode, ecc, model, vision, mimo, glm, muse-spark, mimo-v2.5]
 ---
 
 # Agent & Model Defaults
@@ -18,61 +18,61 @@ tags: [workflow, defaults, opencode, ecc, model, vision, mimo, glm, deepseek]
 
 ## Model Default
 
-**Always** use `opencode/deepseek-v4-flash-free` (the OpenCode Zen bundled free model — no API key required):
+**Always** use `opencode/meta/muse-spark-1.2-contributor` (config.yaml `opencode-go` — provider is truth, not this file):
 
 ```
-opencode run '...' --model opencode/deepseek-v4-flash-free
+opencode run '...' --model opencode-go/meta/muse-spark-1.2-contributor
 ```
 
 ### Full Model Role Split (User Preference)
 
 | Role | Model | Provider | When |
 |------|-------|----------|------|
-| **Orchestrator / Planning / Architecture / Reasoning** | **Hermes chat model** (currently `opencode-go/deepseek-v4-pro`) | Varies by session | Understanding tasks, delegation decisions, architecture design, planning. NEVER for terminal/git/patch/coding. |
-| **Main coding agent — implementation, edits, coding, execution** | `deepseek-v4-flash-free` | `opencode` (Zen) | ALL coding+git+deploy+build+patches+merge conflicts |
-| **Multimodal (images, video, audio, PDFs, charts)** | `mimo-v2.5-free` | `opencode` (Zen) | Visual understanding, screenshots, UI audits, design review |
+| **Orchestrator / Planning / Architecture / Reasoning** | **Hermes chat model** (= `config.yaml` `model.default`) | opencode-go (source of truth) | Understanding tasks, delegation decisions, architecture design, planning. NEVER for terminal/git/patch/coding. |
+| **Main coding agent — implementation, edits, coding, execution** | `meta/muse-spark-1.2-contributor` | `opencode-go` (config truth `delegation.model`) | ALL coding+git+deploy+build+patches+merge conflicts |
+| **Multimodal (images, video, audio, PDFs, charts)** | `mimo-v2.5` | `opencode-go` (config truth `auxiliary.vision`) | Visual understanding, screenshots, UI audits, design review |
 | **Difficult multimodal reasoning** | `mimo-v2.5-pro` | `opencode-go` | Complex, long-running multimodal tasks |
 
 ### Delegation Config (Critical — Prevents Model Leakage)
 
-Hermes `delegate_task` subagents inherit the **parent session model** unless pinned in config.yaml. When the orchestrator is a reasoning model (e.g. `deepseek-v4-pro`), empty delegation config leaks it into every subagent task:
+Hermes `delegate_task` subagents inherit the **parent session model** unless pinned in config.yaml. When the orchestrator is a reasoning model (e.g. `muse-spark-1.2-contributor`), empty delegation config leaks it into every subagent task:
 
 ```yaml
 # ~/AppData/Local/hermes/config.yaml
 delegation:
-  model: deepseek-v4-flash-free    # must be set explicitly
-  provider: opencode-zen
+  model: muse-spark-1.2-contributor   # truth: config.yaml delegation.model
+  provider: opencode-go              # truth: config.yaml delegation.provider
 ```
 
-Empty `model`/`provider` = children inherit parent model. Set both to pin ALL subagents to DeepSeek regardless of parent session.
+Empty `model`/`provider` = children inherit parent model. Set both to pin ALL subagents to the coding agent (Muse Spark @ opencode-go) regardless of parent session.
 
 ### Pantheon Swarm Agent Models
 
-oh-my-opencode-slim needs per-agent overrides so Orchestrator follows the chat model while agents use DeepSeek/MiMo:
+oh-my-opencode-slim needs per-agent overrides so Orchestrator follows the chat model while agents use Muse Spark / MiMo:
 
 ```json
 {
   "agents": {
     "orchestrator": {
-      "model": "opencode-go/deepseek-v4-pro"
+      "model": "opencode-go/muse-spark-1.2-contributor"
     },
     "observer": {
-      "model": ["opencode/mimo-v2.5-free", "opencode/deepseek-v4-flash-free"]
+      "model": ["opencode-go/mimo-v2.5"]
     }
   }
 }
 ```
 
-Other agents (oracle, explorer, librarian, designer, fixer) inherit the global default — `opencode/deepseek-v4-flash-free`.
+Other agents (oracle, explorer, librarian, designer, fixer) inherit the global default — `opencode-go/meta/muse-spark-1.2-contributor` (config truth).
 
-Set DeepSeek V4 Flash as OpenCode's default in the VS Code extension config (`~/.vscode/extensions/tanishqkancharla.opencode-vscode-<version>/opencode.json`):
+Set Muse Spark as OpenCode's default in the VS Code extension config (`~/.vscode/extensions/tanishqkancharla.opencode-vscode-<version>/opencode.json`):
 
 ```json
 {
   "agent": {
     "main": {
-      "description": "Primary coding agent — DeepSeek V4 Flash",
-      "model": "opencode/deepseek-v4-flash-free"
+      "description": "Primary coding agent — Muse Spark 1.2 Contributor @ opencode-go",
+      "model": "opencode-go/meta/muse-spark-1.2-contributor"
     }
   }
 }
@@ -84,9 +84,9 @@ Create `~/AGENTS.md` so OpenCode knows the role split:
 ## Model Roles
 | Role | Model |
 |------|-------|
-| Orchestrator / planning / architecture | Hermes chat model (currently `opencode-go/deepseek-v4-pro`) |
-| Implementation / coding / execution | `opencode/deepseek-v4-flash-free` |
-| Multimodal (images, video, audio) | `opencode/mimo-v2.5-free` |
+| Orchestrator / planning / architecture | Hermes chat model (currently `opencode-go/muse-spark-1.2-contributor`) |
+| Implementation / coding / execution | `opencode-go/meta/muse-spark-1.2-contributor` |
+| Multimodal (images, video, audio) | `opencode-go/mimo-v2.5` |
 | Difficult multimodal | `opencode-go/mimo-v2.5-pro` |
 ```
 
@@ -99,8 +99,8 @@ Hermes config (`~\AppData\Local\hermes\config.yaml`) should have:
 ```yaml
 ai:
   vision:
-    model: mimo-v2.5-free
-    provider: opencode-zen
+    model: mimo-v2.5
+    provider: opencode-go
 ```
 
 ### Skill Access
@@ -112,7 +112,7 @@ OpenCode already has permission-granted access to all Hermes skills at `~\AppDat
 ### Simple coding task → OpenCode
 
 ```
-opencode run 'Implement X' --model opencode/deepseek-v4-flash-free
+opencode run 'Implement X' --model opencode-go/meta/muse-spark-1.2-contributor
 ```
 
 ### Code + specialist review → OpenCode + ECC agent
@@ -122,7 +122,7 @@ Extract ECC agent prompt and attach it to the OpenCode run:
 ```
 python scripts/ecc-runner.py <agent-name> "context" > agent-prompt.md
 opencode run 'Read the files and apply the attached framework' \
-  --model opencode/deepseek-v4-flash-free \
+  --model opencode-go/meta/muse-spark-1.2-contributor \
   --file agent-prompt.md
 ```
 
@@ -132,7 +132,7 @@ opencode run 'Read the files and apply the attached framework' \
 python scripts/ecc-runner.py code-architect "..." > arch.md
 python scripts/ecc-runner.py code-reviewer "..." > review.md
 opencode run 'Apply both architecture and review feedback' \
-  --model opencode/deepseek-v4-flash-free \
+  --model opencode-go/meta/muse-spark-1.2-contributor \
   --file arch.md --file review.md
 ```
 
@@ -183,5 +183,5 @@ for prov, pv in d.items():
 - **OpenCode stale DB blocks all runs.** If `opencode run` fails with "Unexpected server error" and the logs show `SQLiteError: no such column: replacement_seq`, the local SQLite schema is stale from a version upgrade. Fix: kill any opencode processes (`ps | grep opencode`), delete `~/.local/share/opencode/opencode.db`, retry. OpenCode recreates it fresh. Full recovery steps: `references/opencode-stale-db-recovery.md`.
 - **Windows `/tmp` doesn't exist.** When writing temp prompt files for `--file`, use a project-relative path (e.g. `ecc-prompt.md`) or a full `C:/Users/...` path. MSYS `/tmp` fails silently — `opencode run --file /tmp/foo` reports "File not found".
 - **Smoke-test before long runs.** If switching to a new or lesser-used model, always run `opencode run 'Respond with exactly: OK' --model <model>` first. Free-tier models can disappear or hit rate limits silently.
-- **Empty delegation config leaks parent model into subagents.** When `delegation.model` and `delegation.provider` are empty in Hermes config.yaml, `delegate_task` subagents inherit the parent session model. Pin both to `deepseek-v4-flash-free` / `opencode-zen` to prevent this.
+- **Empty delegation config leaks parent model into subagents.** When `delegation.model` and `delegation.provider` are empty in Hermes config.yaml, `delegate_task` subagents inherit the parent session model. Pin both to `muse-spark-1.2-contributor` / `opencode-go` to prevent this.
 - **Model routing changes must propagate to 6+ touchpoints.** See `references/model-routing-propagation-chain.md` for the full list of files/skills to update when model preferences change. Missing any creates a stale reference.

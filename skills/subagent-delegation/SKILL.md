@@ -18,9 +18,9 @@ triggers:
 
 | Role | Model | When |
 |------|-------|------|
-| **Orchestrator / Planning / Architecture** | **Hermes chat model** (currently `opencode-go/deepseek-v4-pro`) | Understanding tasks, delegation, architecture decisions. NEVER writes code, runs git, patches files, or does build/deploy. |
-| **Implementation / Edits / Coding / Execution** | `opencode/deepseek-v4-flash-free` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands.** Delegate via `opencode run` or `delegate_task`. |
-| **Multimodal / Vision QA / Screenshots** | `opencode/mimo-v2.5-free` | **ALL image/video/visual tasks.** Delegate via `delegate_task` → MiMo subagent reports findings; orchestrator feeds results to coding agent for fixes. |
+| **Orchestrator / Planning / Architecture** | **Hermes chat model** (= `config.yaml` `model.default`) | Understanding tasks, delegation, architecture decisions. NEVER writes code, runs git, patches files, or does build/deploy. |
+| **Implementation / Edits / Coding / Execution** | `opencode-go/meta/muse-spark-1.2-contributor` | **ALL coding, git, deploy, build, patches, merge conflicts, terminal commands.** Delegate via `opencode run` or `delegate_task`. |
+| **Multimodal / Vision QA / Screenshots** | `opencode-go/mimo-v2.5` | **ALL image/video/visual tasks.** Delegate via `delegate_task` → MiMo subagent reports findings; orchestrator feeds results to coding agent for fixes. |
 | **Difficult multimodal** | `opencode-go/mimo-v2.5-pro` | Complex, long-running multimodal reasoning tasks. |
 
 ## Vision Delegation Rule (ALWAYS)
@@ -135,7 +135,7 @@ See `references/parallel-bugfix-dispatch.md` for the full pattern: file-ownershi
 
 **OpenCode one-shot** (bounded coding task):
 ```
-terminal(command="opencode run 'Add retry logic to API calls' --model opencode/deepseek-v4-flash-free", workdir="~/project")
+terminal(command="opencode run 'Add retry logic to API calls' --model opencode-go/meta/muse-spark-1.2-contributor", workdir="~/project")
 ```
 
 ## Agent Roster — Check BEFORE Generic Delegation
@@ -179,17 +179,17 @@ terminal(command="opencode run 'Add retry logic to API calls' --model opencode/d
 ## Rate-Limit Fallback
 
 Free model hit 429? Auto-switch, don't ask:
-- `opencode/deepseek-v4-flash-free` → `opencode-go/deepseek-v4-flash`
+- `opencode/deepseek-v4-flash-free` → `opencode-go/meta/muse-spark-1.2-contributor` (config truth: delegation.model)
 - `opencode/mimo-v2.5-free` → `opencode-go/mimo-v2.5`
 
 ## Pitfalls
 
-- **Subagent model inherits parent unless pinned in config.** `delegate_task` subagents use the parent session's model, NOT the model you describe in the goal. Pin DeepSeek for all subagents:
+- **Subagent model inherits parent unless pinned in config.** `delegate_task` subagents use the parent session's model, NOT the model you describe in the goal. Pin the coding agent for all subagents (config truth):
   ```bash
-  hermes config set delegation.model deepseek-v4-flash-free
-  hermes config set delegation.provider opencode-zen
+  hermes config set delegation.model meta/muse-spark-1.2-contributor
+  hermes config set delegation.provider opencode-go
   ```
-  This pins every subagent to DeepSeek V4 Flash regardless of parent model. Verify with `grep -A5 '^delegation:' ~/AppData/Local/hermes/config.yaml`.
+  This pins every subagent to the coding agent regardless of parent model. Verify with `grep -A5 '^delegation:' ~/AppData/Local/hermes/config.yaml`.
 - **600s timeout** on delegated tasks. Break large batches into 4-6 items max.
 - **Never delegate mundane work to paid models** unless rate-limited.
 - **Always specify `--model`** when using `opencode run` — defaults can be wrong.
