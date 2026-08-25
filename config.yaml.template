@@ -18,6 +18,15 @@
 #   COMPOSIO_API_KEY           → ck_... from app.composio.dev (figma via Composio)
 #   FREELMAPI_API_KEY          → from FreeLLMAPI dashboard (localhost proxy)
 
+  clawlink:
+    url: https://claw-link.dev/api/mcp
+    headers:
+      x-clawlink-api-key: YOUR_CLAWLINK_API_KEY
+    timeout: 180
+  demosmith:
+    command: npx
+    args: ["-y", "demosmith-mcp"]
+
 model:
   default: deepseek-v4-flash
   provider: opencode-go
