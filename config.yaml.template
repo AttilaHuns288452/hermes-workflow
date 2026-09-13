@@ -3,11 +3,13 @@
 # =============================================================================
 # Copy to ~/.hermes/config.yaml (Windows: %APPDATA%/hermes/config.yaml).
 # Replace YOUR_USERNAME with your OS username. Add API keys where noted.
-# Structure mirrors the live install (12 MCP servers); all values are
+# Structure mirrors the live install (14 MCP servers); all values are
 # placeholders — never commit real keys or paths.
 # =============================================================================
 #
 # REPLACE THESE:
+#   XKIRO_API_KEY              → sk-xt-... from xkiro.com (daily-driver model)
+#   OMNIROUTE_API_KEY          → local OmniRoute gateway key (optional, localhost)
 #   YOUR_USERNAME              → your Windows username (the C:\Users\<name> folder)
 #   LLMQUANT_API_KEY           → lqd_data_... from llmquant.com (llmquant-data MCP)
 #   FIGMA_API_KEY              → figd_... from figma.com/developers (figma-dev MCP)
@@ -28,11 +30,22 @@
     args: ["-y", "demosmith-mcp"]
 
 model:
-  default: deepseek-v4-flash
-  provider: opencode-go
+  default: z-ai/glm-5.3-flash
+  provider: xkiro
+  key_env: XKIRO_API_KEY
   context_length: 524288
 
 providers:
+  xkiro:
+    base_url: https://api.xkiro.com/v1
+    default_model: z-ai/glm-5.3-flash
+    key_env: XKIRO_API_KEY
+    discover_models: true
+  omniroute:
+    base_url: http://localhost:20128/v1
+    default_model: Free Ladder - Spark Safety
+    key_env: OMNIROUTE_API_KEY
+    discover_models: false
   freellmapi:
     base_url: http://localhost:3001/v1
     default_model: auto
@@ -58,8 +71,10 @@ providers:
     discover_models: false
 
 fallback_providers:
-  - provider: opencode-zen
-    model: deepseek-v4-flash-free
+  - provider: omniroute
+    model: Free Ladder - Spark Safety
+  - provider: local-ollama
+    model: qwen3.5:4b
 
 toolsets: [hermes-cli]
 
@@ -117,7 +132,7 @@ mcp_servers:
     args: ["-y", "@llmquant/data-mcp"]
     connect_timeout: 60
     env:
-      LLMQUANT_API_KEY: YOUR_LLMQUANT_API_KEY
+      LLMQUANT_API_KEY: LLMQUANT_API_KEY
   obsidian-kg:
     command: C:/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
     args: [C:/Users/YOUR_USERNAME/.hermes/tools/obsidian_kg_mcp.py]
@@ -152,7 +167,7 @@ mcp_servers:
     command: npx
     args: ["-y", "figma-developer-mcp", "--stdio"]
     env:
-      FIGMA_API_KEY: YOUR_FIGMA_API_KEY
+      FIGMA_API_KEY: FIGMA_API_KEY
     connect_timeout: 90
 
 # --- KANBAN ---------------------------------------------------------------
@@ -167,16 +182,16 @@ kanban:
 # --- AUXILIARY MODELS -----------------------------------------------------
 auxiliary:
   vision:
-    provider: opencode-zen
-    model: mimo-v2.5-free
+    provider: xkiro
+    model: z-ai/glm-5.3-flash
   kanban_decomposer:
     provider: auto
     timeout: 180
 
 # --- DELEGATION -----------------------------------------------------------
 delegation:
-  model: deepseek-v4-flash
-  provider: opencode-go
+  model: z-ai/glm-5.3-flash
+  provider: xkiro
   inherit_mcp_toolsets: true
   max_concurrent_children: 50
   max_spawn_depth: 1

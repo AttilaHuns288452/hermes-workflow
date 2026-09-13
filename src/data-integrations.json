@@ -2,85 +2,143 @@
   {
     "n": "21st",
     "d": "UI component search, generation, and bookmarking via 21st.dev MCP.",
-    "t": ["UI", "Component Search", "Generation"],
+    "t": [
+      "UI",
+      "Component Search",
+      "Generation"
+    ],
     "c": "#6bc5e8"
   },
   {
     "n": "AgentMemory",
-    "d": "Persistent memory — save insights, recall past session observations, audit trails.",
-    "t": ["Memory", "Recall", "Sessions"],
+    "d": "Persistent memory \u2014 save insights, recall past session observations, audit trails.",
+    "t": [
+      "Memory",
+      "Recall",
+      "Sessions"
+    ],
     "c": "#9b7cf7"
   },
   {
     "n": "CodeGraph",
-    "d": "144,827 nodes · 326,322 edges · 8,421 files — symbol graph for codebase Q&A.",
-    "t": ["Code Graph", "144K Nodes", "Indexed Files"],
+    "d": "144,827 nodes \u00b7 326,322 edges \u00b7 8,421 files \u2014 symbol graph for codebase Q&A.",
+    "t": [
+      "Code Graph",
+      "144K Nodes",
+      "Indexed Files"
+    ],
     "c": "#3ddc84"
   },
   {
     "n": "Graphify",
-    "d": "Code knowledge graph — communities, PR impact, shortest paths, god nodes.",
-    "t": ["Knowledge Graph", "Communities", "PR Impact"],
+    "d": "Code knowledge graph \u2014 communities, PR impact, shortest paths, god nodes.",
+    "t": [
+      "Knowledge Graph",
+      "Communities",
+      "PR Impact"
+    ],
     "c": "#4a8cf4"
   },
   {
     "n": "LLMQuant Data",
-    "d": "Financial data MCP — SEC filings, 13F, macro, equities, options, prediction markets.",
-    "t": ["Finance", "SEC", "Macro", "Markets"],
+    "d": "Financial data MCP \u2014 SEC filings, 13F, macro, equities, options, prediction markets.",
+    "t": [
+      "Finance",
+      "SEC",
+      "Macro",
+      "Markets"
+    ],
     "c": "#e4686a"
   },
   {
     "n": "Obsidian KG",
     "d": "Scan an Obsidian vault and produce a structured knowledge graph.",
-    "t": ["Obsidian", "Knowledge Graph", "Vault"],
+    "t": [
+      "Obsidian",
+      "Knowledge Graph",
+      "Vault"
+    ],
     "c": "#f0d060"
   },
   {
     "n": "OpenDesign",
-    "d": "Design-system MCP daemon (Open Design desktop app) — 60+ design systems on demand.",
-    "t": ["Design Systems", "Daemon", "OD"],
+    "d": "Design-system MCP daemon (Open Design desktop app) \u2014 60+ design systems on demand.",
+    "t": [
+      "Design Systems",
+      "Daemon",
+      "OD"
+    ],
     "c": "#7aa9f7"
   },
   {
     "n": "VS Code",
-    "d": "vscode-mcp-server — open files, run shell commands, create diffs in the editor.",
-    "t": ["Editor", "Files", "Diffs"],
+    "d": "vscode-mcp-server \u2014 open files, run shell commands, create diffs in the editor.",
+    "t": [
+      "Editor",
+      "Files",
+      "Diffs"
+    ],
     "c": "#6bc5e8"
   },
   {
     "n": "Firecrawl",
     "d": "Web scraping, crawling, searching, and monitoring via Firecrawl MCP.",
-    "t": ["Web", "Scrape", "Crawl", "Search"],
+    "t": [
+      "Web",
+      "Scrape",
+      "Crawl",
+      "Search"
+    ],
     "c": "#e4686a"
   },
   {
     "n": "Figma (Composio)",
     "d": "Figma MCP via the Composio gateway (connect.composio.dev/mcp).",
-    "t": ["Figma", "Composio", "Design"],
+    "t": [
+      "Figma",
+      "Composio",
+      "Design"
+    ],
     "c": "#f0d060"
   },
   {
     "n": "Flowbite",
-    "d": "flowbite-mcp — Flowbite UI components, themes, and Figma-to-code.",
-    "t": ["UI", "Themes", "Figma-to-Code"],
+    "d": "flowbite-mcp \u2014 Flowbite UI components, themes, and Figma-to-code.",
+    "t": [
+      "UI",
+      "Themes",
+      "Figma-to-Code"
+    ],
     "c": "#3ddc84"
   },
   {
     "n": "Figma Dev",
-    "d": "figma-developer-mcp — read Figma file data, layouts, and assets.",
-    "t": ["Figma", "Dev Mode", "Assets"],
+    "d": "figma-developer-mcp \u2014 read Figma file data, layouts, and assets.",
+    "t": [
+      "Figma",
+      "Dev Mode",
+      "Assets"
+    ],
     "c": "#9b7cf7"
   },
   {
     "n": "oh-my-opencode-slim",
-    "d": "Pantheon multi-agent swarm — 7 specialists (Orchestrator, Oracle, Explorer, Librarian, Designer, Fixer, Council) coordinated by GLM 5.2",
-    "t": ["Agent Swarm", "Parallel Coding", "Auto-Delegation"],
+    "d": "Pantheon multi-agent swarm \u2014 7 specialists (Orchestrator, Oracle, Explorer, Librarian, Designer, Fixer, Council) coordinated by GLM 5.2",
+    "t": [
+      "Agent Swarm",
+      "Parallel Coding",
+      "Auto-Delegation"
+    ],
     "c": "#3ddc84"
   },
   {
     "n": "ECC Bridge",
-    "d": "64 specialized agents routed through free models (deepseek-v4-flash-free for code, mimo-v2.5-free for vision)",
-    "t": ["64 Agents", "Free Models", "Vision + Code"],
+    "d": "64 specialized agents routed through free models (GLM 5.3 Flash for code and vision)",
+    "t": [
+      "64 Agents",
+      "Free Models",
+      "Vision + Code"
+    ],
     "c": "#6bc5e8"
   }
 ]
