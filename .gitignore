@@ -33,3 +33,5 @@ index-tailwind.html
 # Python bytecode caches (never commit)
 __pycache__/
 *.pyc
+.codegraph/
+__pycache__/
