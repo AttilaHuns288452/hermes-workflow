@@ -704,7 +704,7 @@
     },
     {
       "n": "LightRAG Skill Finder",
-      "d": "TF-IDF semantic skill search over 665 skills, 0 API calls."
+      "d": "TF-IDF semantic skill search over 846 skills, 0 API calls."
     }
   ]
 }

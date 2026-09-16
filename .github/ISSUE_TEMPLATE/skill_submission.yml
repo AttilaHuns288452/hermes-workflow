@@ -1,0 +1,26 @@
+name: Skill submission
+description: Add or update a skill in the catalog
+labels: ["skill"]
+body:
+  - type: input
+    id: path
+    attributes:
+      label: Skill path
+      placeholder: skills/<category>/<skill-name>
+    validations:
+      required: true
+  - type: textarea
+    id: trigger
+    attributes:
+      label: When should Hermes route to this skill?
+      description: This becomes the routing key — write it as a trigger condition, not a title.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: "SKILL.md has unique name and trigger-style description"
+        - label: "No secrets, tokens, or machine-specific paths"
+        - label: "scripts/audit_skills.py passes locally"

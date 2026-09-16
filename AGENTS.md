@@ -4,7 +4,7 @@ Serious personal project (see projects_registry.json). Follow the global enginee
 
 ## Security Gate — CyberSecurity Skill Collection (2026-08-29)
 
-Before ANY auth, session, secret, upload, backup, or infrastructure change — and before shipping any user-facing or money-touching feature — run the relevant review from the **Claude-Code-CyberSecurity-Skill** collection (installed at `C:/Users/Attila/skills-external/claude-code-cybersecurity/skills/`). Load the matching `SKILL.md` by path:
+Before ANY auth, session, secret, upload, backup, or infrastructure change — and before shipping any user-facing or money-touching feature — run the relevant review from the **Claude-Code-CyberSecurity-Skill** collection (installed at `<your-path>/claude-code-cybersecurity/skills/`). Load the matching `SKILL.md` by path:
 
 - `09-web-security` — OWASP Top 10, auth/session, API security, headers (default gate for web work)
 - `10-cloud-security` — Vercel/Supabase/infra posture

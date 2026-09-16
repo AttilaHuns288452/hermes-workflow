@@ -1,0 +1,21 @@
+name: Bug report
+description: Something in the skill ecosystem is broken or wrong
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the exact command and output if applicable.
+    validations:
+      required: true
+  - type: input
+    id: skill
+    attributes:
+      label: Affected skill (if any)
+      placeholder: e.g. skills/workflow/token-saver
+  - type: input
+    id: version
+    attributes:
+      label: Hermes version
+      placeholder: output of `hermes --version`

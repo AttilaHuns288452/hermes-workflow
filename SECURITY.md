@@ -2,10 +2,12 @@
 
 ## 🔒 This Repo Has Been Security-Audited
 
-**Last audit:** 2026-08-14 (ongoing)
-**Action taken:** Removed `graphify-out/` build artifacts (3.8MB) from git tracking — contained local filesystem paths in AST cache JSON files. Added `.gitignore` to prevent re-occurrence.
+**Last audit:** 2026-09-16 (full modernization pass)
 
-**2026-08-14 re-audit:** Re-synced all skills from the live Hermes install (813 SKILL.md files), redacted a personal email address (→ `YOUR_EMAIL@gmail.com`) and rclone remote names (→ `YOUR_RCLONE_REMOTE`) found in skill docs/config, regenerated a tracked `.pyc` bytecode cache that embedded the local username in its source path, and added `__pycache__/` to `.gitignore`.
+- **History rewrite (2026-09-16):** git history contained two real Capafy (`am_sk_…`) access tokens in `skills/capafy-publisher/config.json` and `skills/capafy-user/api-docs/01_auth.md` from earlier skill-mirror syncs. All 5 token-bearing blobs were purged from every commit via `git-filter-repo` (patterns replaced with `***`), and the branch was force-pushed. **Tokens were exposed while public — rotate them at the provider.** Clone caches older than 2026-09-16 still contain the old history.
+- **Skill dedupe (2026-09-16):** removed 4 duplicate/misplaced `SKILL.md` files (an `agent-browser` copy inside `skills/vercel/`, a frontmatter-less `karpathy-guidelines` copy, and 2 identical claude-seo mirror copies). Zero duplicate skill names remain in the catalog.
+- **2026-08-14:** Removed `graphify-out/` build artifacts (3.8MB) from git tracking — contained local filesystem paths in AST cache JSON files. Added `.gitignore` to prevent re-occurrence.
+- **2026-08-14 re-audit:** Re-synced all skills from the live Hermes install, redacted a personal email address (→ `YOUR_EMAIL@gmail.com`) and rclone remote names (→ `YOUR_RCLONE_REMOTE`) found in skill docs/config, regenerated a tracked `.pyc` bytecode cache that embedded the local username in its source path, and added `__pycache__/` to `.gitignore`.
 
 This repository is a public mirror of a Hermes Agent skill ecosystem. The following security measures have been taken:
 
