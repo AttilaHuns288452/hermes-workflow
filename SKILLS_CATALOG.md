@@ -1,10 +1,10 @@
 # 🧠 Skill Catalog — Full Hermes Agent Ecosystem
 
-**813 skills · 19 categories · 1 integrated pipeline**
+**846 skills · 264 top-level directories · 1 integrated pipeline**
 
 Every skill below is installed and available in this Hermes Agent profile.
 This catalog covers the curated core skills (the older `.hermes_ecosystem.json`
-classification of 141); the full mirrored tree now holds **813** SKILL.md files
+classification of 141); the full mirrored tree now holds **846** SKILL.md files
 across all categories.
 
 > **Note on count:** The ecosystem JSON declares `"total_skills": 141`. The

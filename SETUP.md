@@ -4,7 +4,7 @@
 
 ---
 
-> **★ Recommended Model: Muse Spark 1.2 Contributor @ opencode-go — config.yaml is truth** — set it as your primary model for the best free-model experience. See Step 5 and Step 10.
+> **Model choice: `config.yaml` is truth** — set your daily driver in `model.default`. This pipeline was built on GLM 5.3 Flash via [xKiro](https://xkiro.com) (chat + delegation + vision in one model); any OpenAI-compatible provider works. See Step 10.
 
 ---
 
@@ -28,7 +28,7 @@ Verify: `hermes --version`
 ## Step 2: Clone This Repo
 
 ```bash
-git clone https://github.com/AttilaHuns288452/hermes-workflow.git
+git clone https://github.com/AttilaHuns288462/hermes-workflow.git
 cd hermes-workflow
 ```
 
@@ -142,16 +142,24 @@ curl -s -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/m
 
 ---
 
-## Step 7: Install the Skills (694 total)
+## Step 7: Load the Skills (846 total)
 
-```bash
-# Install all skills recursively from the repo
-find ./skills -name 'SKILL.md' -exec dirname {} \; | while read dir; do
-  hermes skills install -y "$dir"
-done
+Do **not** copy skills into `~/.hermes/skills/` — point Hermes at the repo via `external_dirs` so skills stay synced with `git pull`:
+
+```yaml
+# ~/.hermes/config.yaml
+skills:
+  external_dirs:
+    - /path/to/hermes-workflow/skills
 ```
 
-> The repo mirrors every skill from the Hermes Agent installation — all 694 SKILL.md files across the skill tree. Installing them loads the full pipeline: `/decide` routing brain, core identity guardrail, token saver probe chain, model router, ECC agent bridge, LLMQuant skills, creative/media/research workflows, and the mandatory Obsidian documentation bundle.
+Then reload and verify:
+
+```bash
+hermes -z "List five skills you can use from the hermes-workflow catalog"
+```
+
+> The 846 SKILL.md files span 264 top-level directories: the `/decide` routing brain, core identity guardrail, token-saver probe chain, LLMQuant finance skills, OpenDesign systems, creative/media/research workflows, and vendored upstream collections (claude-seo, superpowers, agent-skills).
 
 ---
 
@@ -174,13 +182,12 @@ hermes -z "Summarize this repo structure"
 
 ## Step 10: Verify the Model Chain
 
-| Layer | Provider | Models |
-|-------|----------|--------|
-| 1 | ★ OpenCode (Zen) | DeepSeek V4 Flash ★ (recommended) |
-| 2 | Freebuff API | Kimi K2.6, MiniMax M3, MiMo 2.5 |
-| 3 | **FreeLLMAPI** (:3001) | 107 models from 16 providers |
-| 4 | OpenRouter :free | 29+ free models |
-| 5 | Paid BYOK | Last resort |
+| Layer | Provider | Role |
+|-------|----------|------|
+| 1 | ★ GLM 5.3 Flash (xKiro) | Daily driver — chat, delegation, vision |
+| 2 | Free ladder (gateway) | Local fallbacks when free tiers rate-limit |
+| 3 | Local Ollama (:11434) | Offline layer |
+| 4 | Paid BYOK | Last resort |
 
 ```
 hermes -z "What model layer are you using?"
