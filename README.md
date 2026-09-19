@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-846-4a8cf4?style=flat&labelColor=0b0f1c)](#-skill-catalog)
 [![Routing](https://img.shields.io/badge/router-%2Fdecide-3ddc84?style=flat&labelColor=0b0f1c)](META_PROMPT.md)
-[![Site](https://img.shields.io/badge/docs-live-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288462.github.io/hermes-workflow/)
+[![Site](https://img.shields.io/badge/docs-live-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
 **What is this?** A production skill library for Hermes Agent: install it, point Hermes at it, and your agent gains 846 curated skills across 264 top-level directories — routed through a single decision layer (`/decide`) that probes cheap indexes before spending tokens.
@@ -34,7 +34,7 @@
 > **Prereq:** [Hermes Agent](https://hermes-agent.nousresearch.com) installed (`hermes --version` works).
 
 ```bash
-git clone https://github.com/AttilaHuns288462/hermes-workflow.git
+git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow
 
 # 1. Point Hermes at these skills — add the repo's skills/ dir to your external_dirs
@@ -90,7 +90,7 @@ User request
 
 ## 📦 Skill Catalog
 
-Browse all 846 skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288462.github.io/hermes-workflow/).
+Browse all 846 skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
 
 | Category | Count | Highlights |
 |----------|-------|------------|
@@ -224,7 +224,7 @@ hermes-workflow/
 
 This is a **public mirror** — all config is templated with placeholders (`YOUR_API_KEY`, `<your-path>`). Secrets, tokens, and personal paths are scrubbed on every sync; the full audit history and scanning policy live in [`SECURITY.md`](SECURITY.md). If you find a leaked credential: **rotate it immediately**, then open an issue.
 
-**Responsible disclosure:** open a [security advisory](https://github.com/AttilaHuns288462/hermes-workflow/security/advisories/new) rather than a public issue for anything sensitive.
+**Responsible disclosure:** open a [security advisory](https://github.com/AttilaHuns288452/hermes-workflow/security/advisories/new) rather than a public issue for anything sensitive.
 
 ## 🔗 Related
 

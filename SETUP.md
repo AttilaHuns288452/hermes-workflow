@@ -28,7 +28,7 @@ Verify: `hermes --version`
 ## Step 2: Clone This Repo
 
 ```bash
-git clone https://github.com/AttilaHuns288462/hermes-workflow.git
+git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow
 ```
 
