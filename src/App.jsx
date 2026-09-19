@@ -329,8 +329,8 @@ function Hero() {
             </div>
             <span className="text-[10px] text-[#8895b8]">+</span>
             <div className="relative">
-              <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288462/hermes-workflow.git</code>
-              <button onClick={() => copyCmd('git clone https://github.com/AttilaHuns288462/hermes-workflow.git', 'git')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#8895b8]">
+              <code className="text-[11px] font-mono text-[#6bc5e8] bg-black/40 px-3 py-1 pr-7 rounded-lg whitespace-nowrap">git clone https://github.com/AttilaHuns288452/hermes-workflow.git</code>
+              <button onClick={() => copyCmd('git clone https://github.com/AttilaHuns288452/hermes-workflow.git', 'git')} className="absolute top-1/2 -translate-y-1/2 right-1.5 text-[10px] opacity-50 hover:opacity-100 transition-opacity text-[#8895b8]">
                 {copied === 'git' ? <span className="text-[#3ddc84]">Copied!</span> : 'Copy'}
               </button>
             </div>
@@ -379,7 +379,7 @@ function Hero() {
 function InstallSection() {
   const steps = [
     { n: 'Install Hermes Agent', num: '01', desc: 'macOS, Linux, or Windows — pick your method:', code: ['# macOS / Linux\ncurl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', '# Windows PowerShell\nirm https://hermes-agent.nousresearch.com/install.ps1 | iex'], verify: 'hermes --version' },
-    { n: 'Clone & Install Repo Skills', num: '02', desc: `${ALL_SKILLS.length} local + 508 external = ${ALL_SKILLS.length + 508}+ bundled:`, code: ['git clone https://github.com/AttilaHuns288462/hermes-workflow.git\ncd hermes-workflow', 'find ./skills -name SKILL.md -exec dirname {} \\\\;\n  | while read dir; do hermes skills install -y "$dir"; done'] },
+    { n: 'Clone & Install Repo Skills', num: '02', desc: `${ALL_SKILLS.length} local + 508 external = ${ALL_SKILLS.length + 508}+ bundled:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'find ./skills -name SKILL.md -exec dirname {} \\\\;\n  | while read dir; do hermes skills install -y "$dir"; done'] },
     { n: 'Install Core Tools', num: '03', desc: 'Power the free model chain and code knowledge graph:', code: ['npm install -g opencode              # coding agent CLI\nuv tool install graphifyy            # AST code graph\nnpm install -g @colbymchenry/codegraph  # Live MCP index'] },
     { n: 'Pick your daily driver', num: '04', badge: '★', desc: 'Set your primary model — GLM 5.3 Flash via xKiro, or any OpenAI-compatible provider:', code: ['cp config.yaml.template ~/.hermes/config.yaml  # then edit model.default'], highlight: true, extra: 'Or run: <code class="text-[#3ddc84]">hermes -z "What does the decide skill do?"</code>' },
     { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Copy the config template and replace YOUR_USERNAME. This wires up the bundled skill externals, 9 MCP servers, Kanban, LightRAG, and delegation:', code: ['cp config.yaml.template ~/.hermes/config.yaml', '# Replace YOUR_USERNAME and API keys\\n# Then: hermes kanban init && hermes gateway start'], verify: 'hermes skills list | wc -l && hermes mcp list' },
@@ -1186,7 +1186,7 @@ function FooterCTA() {
               </code>
               <div className="flex items-center justify-center gap-2 my-3 text-[#8895b8] text-xs">then</div>
               <code className="block font-mono text-sm text-[#6bc5e8] bg-black/40 px-4 py-3 rounded-xl whitespace-nowrap overflow-x-auto">
-                git clone https://github.com/AttilaHuns288462/hermes-workflow.git
+                git clone https://github.com/AttilaHuns288452/hermes-workflow.git
               </code>
             </div>
             <div className="flex gap-3 flex-wrap justify-center mt-8">
@@ -1263,7 +1263,7 @@ export default function App() {
 
       <footer className="relative z-10 border-t border-white/[0.06] py-10 text-center">
         <p className="text-xs text-[#8895b8]">
-          Hermes Workflow by <a href="https://github.com/AttilaHuns288462" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">AttilaHuns288462</a> · Built for <a href="https://hermes-agent.nousresearch.com" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">Hermes Agent</a> by Nous Research
+          Hermes Workflow by <a href="https://github.com/AttilaHuns288452" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">AttilaHuns288452</a> · Built for <a href="https://hermes-agent.nousresearch.com" className="text-[#7aa9f7] hover:text-[#e4eaf5] transition-colors">Hermes Agent</a> by Nous Research
         </p>
       </footer>
     </>
