@@ -142,7 +142,7 @@ curl -s -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/m
 
 ---
 
-## Step 7: Load the Skills (846 total)
+## Step 7: Load the Skills (924 total)
 
 Do **not** copy skills into `~/.hermes/skills/` — point Hermes at the repo via `external_dirs` so skills stay synced with `git pull`:
 
@@ -159,7 +159,7 @@ Then reload and verify:
 hermes -z "List five skills you can use from the hermes-workflow catalog"
 ```
 
-> The 846 SKILL.md files span 264 top-level directories: the `/decide` routing brain, core identity guardrail, token-saver probe chain, LLMQuant finance skills, OpenDesign systems, creative/media/research workflows, and vendored upstream collections (claude-seo, superpowers, agent-skills).
+> The 924 SKILL.md files span 320 top-level directories: the `/decide` routing brain, core identity guardrail, token-saver probe chain, LLMQuant finance skills, OpenDesign systems, creative/media/research workflows, and vendored upstream collections (claude-seo, superpowers, agent-skills).
 
 ---
 
