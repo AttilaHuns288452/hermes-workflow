@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!-- Study app template. Tokens __TOPICS__, __QUIZ__, __REVIEWER__ are replaced WHOLESALE
+     by the build script (json.dumps output). Keep them as bare statements — never leave a
+     trailing literal like [] after a token, that produces `...][]` and blanks the whole app. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Tool</title>
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;--border:#30363d;--fg:#e6edf3;--fg2:#8b949e;--fg3:#6e7681;
+--accent:#58a6ff;--accent2:#79c0ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;--purple:#bc8cff;
+--sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:1rem;padding:.6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+header h1{font-size:1rem}.tabs{display:flex;gap:.25rem;margin-left:auto}
+.tab-btn{padding:.4rem .85rem;background:transparent;color:var(--fg2);border:1px solid transparent;border-radius:6px;cursor:pointer;font-size:.82rem}
+.tab-btn:hover{color:var(--fg);background:var(--bg3)}
+.tab-btn.active{color:var(--accent);border-color:var(--accent);background:rgba(88,166,255,.08)}
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:.5rem;flex-shrink:0}
+.sb-item{padding:.35rem .5rem;font-size:.78rem;color:var(--fg2);cursor:pointer;border-radius:4px;border-left:2px solid transparent}
+.sb-item:hover{color:var(--fg);background:var(--bg3)}
+.sb-item.active{color:var(--accent);background:rgba(88,166,255,.07);border-left-color:var(--accent)}
+.content{flex:1;overflow-y:auto;padding:1.2rem 1.5rem;max-width:920px;margin:0 auto;width:100%}
+.content h2{font-size:1.3rem;margin-bottom:.8rem}.content h3{font-size:.95rem;color:var(--accent2);margin:1.1rem 0 .5rem;text-transform:uppercase;letter-spacing:.05em}
+.def-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;margin-bottom:.6rem}
+.def-card .term{font-weight:600;color:var(--accent);margin-bottom:.25rem;font-size:.92rem}
+.def-card .body{font-size:.88rem;line-height:1.55}
+.enum-list{list-style:none;padding:0;counter-reset:enum}
+.enum-list li{padding:.25rem .5rem;margin-bottom:.15rem;background:var(--bg3);border-radius:4px;font-size:.85rem;display:flex;gap:.5rem}
+.enum-list li::before{content:counter(enum) ".";counter-increment:enum;color:var(--accent);font-weight:600;min-width:1.3rem;text-align:right}
+.q-topic-tag{font-size:.68rem;padding:.15rem .5rem;border-radius:10px;background:rgba(88,166,255,.12);color:var(--accent);margin-bottom:.5rem;display:inline-block;font-weight:600;text-transform:uppercase}
+.q-progress{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.q-progress .bar{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);transition:.3s;width:0%}
+.counter{font-size:.78rem;color:var(--fg2);white-space:nowrap}
+.q-text{font-size:1.05rem;line-height:1.55;margin-bottom:1.2rem;font-weight:500}
+.opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.opt{padding:.7rem 1rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:.88rem;display:flex;gap:.75rem}
+.opt:hover{border-color:var(--accent)}.opt.sel{border-color:var(--accent)}
+.opt.correct{border-color:var(--green);background:rgba(63,185,80,.1)}
+.opt.wrong{border-color:var(--red);background:rgba(248,81,73,.1)}
+.opt .key{min-width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:4px;font-size:.75rem;font-weight:600;color:var(--fg2)}
+.explain{padding:.7rem 1rem;background:rgba(210,153,34,.08);border-left:3px solid var(--yellow);border-radius:0 6px 6px 0;font-size:.83rem;margin:0 0 1rem;line-height:1.5}
+.correct-ans{font-weight:600;color:var(--green)}
+.q-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{padding:.5rem 1.1rem;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--fg);cursor:pointer;font-size:.82rem;font-weight:500}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn-success{background:var(--green);border-color:var(--green);color:var(--bg)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.enum-input-row{display:flex;gap:.4rem;margin-bottom:.3rem;align-items:center}
+.enum-input-row input{flex:1;padding:.4rem .6rem;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--fg);font-size:.82rem;outline:none}
+.enum-input-row input.match{border-color:var(--green);background:rgba(63,185,80,.08)}
+.enum-input-row input.nomatch{border-color:var(--red);background:rgba(248,81,73,.08)}
+.enum-input-row .num{min-width:1.4rem;color:var(--accent);font-weight:600;font-size:.78rem}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.2rem;text-align:center;margin-bottom:1rem}
+.result-score{font-size:2.5rem;font-weight:700;margin:.5rem 0}
+.pass{color:var(--green)}.partial{color:var(--yellow)}.fail{color:var(--red)}
+.mistake-list{list-style:none}.mistake-list li{padding:.5rem .75rem;background:var(--bg3);border-radius:5px;margin-bottom:.3rem;font-size:.83rem;border-left:3px solid var(--red)}
+.mistake-list .mq-a{font-size:.78rem;color:var(--green)}
+.hint-key{font-size:.72rem;color:var(--fg3);margin-top:1rem}
+.hint-key kbd{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.05rem .3rem;font-size:.7rem}
+</style>
+</head>
+<body>
+<header><h1>Study Tool</h1><div class="tabs">
+<button class="tab-btn active" data-tab="review">Reviewer</button>
+<button class="tab-btn" data-tab="viz">Visualizations</button>
+<button class="tab-btn" data-tab="quiz">Quiz</button></div></header>
+<div class="main"><nav class="sidebar" id="sidebar"></nav><main class="content" id="content"></main></div>
+
+<script>
+const TOPICS = __TOPICS__;
+const ITEMS = __QUIZ__;      // mc:{t:'mc',q,opts[4],ans,x,topic,id}  enum:{t:'enum',q,parts,o,x,topic,id}
+const REVIEWER = __REVIEWER__; // {topic:{defs:[{term,body}],enums:[{title,items:[...]}}}
+const LABELS = ['A','B','C','D'];
+
+const state = {view:'review', topic:TOPICS[0], session:[], qi:0, wrong:[], done:false, marked:{}, selected:null,
+               mastered: JSON.parse(localStorage.getItem('studytools_mastered')||'{}')};
+const contentEl = document.getElementById('content');
+const saveMastered = () => localStorage.setItem('studytools_mastered', JSON.stringify(state.mastered));
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+// ── Reviewer ──
+function renderReviewer(){
+  const d = REVIEWER[state.topic];
+  let h = `<h2>${state.topic}</h2>`;
+  if(!d){ h += '<p style="color:var(--fg2)">No content for this topic yet.</p>'; }
+  else {
+    if(d.defs){ h += '<h3>Definitions</h3>'; for(const x of d.defs) h += `<div class="def-card"><div class="term">${x.term}</div><div class="body">${x.body}</div></div>`; }
+    if(d.enums){ h += '<h3>Enumerations</h3>'; for(const e of d.enums){ h += `<div style="margin-bottom:1rem"><div style="font-weight:600;color:var(--accent2);font-size:.85rem;margin-bottom:.3rem">${e.title}</div><ul class="enum-list">`; for(const it of e.items) h += `<li>${it}</li>`; h += '</ul></div>'; } }
+  }
+  const n = ITEMS.filter(i=>i.topic===state.topic).length;
+  h += `<div style="margin-top:1.5rem;padding:1rem;background:var(--bg3);border:1px solid var(--border);border-radius:8px;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:200px"><div style="font-weight:600;font-size:.9rem">Sub-Quiz: ${state.topic}</div>
+    <div style="font-size:.78rem;color:var(--fg3)">${n} questions covering this topic</div></div>
+    <button class="btn btn-primary" id="btn-subquiz">Start Sub-Quiz</button>
+    <button class="btn" id="btn-masterquiz">Master Quiz (all ${ITEMS.length})</button></div>`;
+  contentEl.innerHTML = h;
+  document.getElementById('btn-subquiz').onclick = () => startQuiz(state.topic);
+  document.getElementById('btn-masterquiz').onclick = () => startQuiz();
+}
+
+// ── Quiz ──
+function startQuiz(topic){
+  state.session = shuffle(topic ? ITEMS.filter(i=>i.topic===topic) : ITEMS.slice());
+  state.qi = 0; state.wrong = []; state.done = false; state.marked = {}; state.selected = null;
+  state.view = 'quiz'; updateTabs(); renderQuiz();
+}
+
+function renderQuizIntro(){
+  contentEl.innerHTML = `<div style="max-width:560px;margin:2rem auto;text-align:center">
+    <div style="font-size:2.6rem">🎯</div><h2>Master Quiz</h2>
+    <p style="color:var(--fg2);font-size:.88rem;margin:.8rem 0 1.4rem">${ITEMS.length} questions. Wrong answers loop back until everything is correct.</p>
+    <button class="btn btn-primary" style="font-size:1rem;padding:.7rem 2rem" id="btn-start">Start</button></div>`;
+  document.getElementById('btn-start').onclick = () => startQuiz();
+}
+
+function renderQuiz(){
+  const item = state.session[state.qi];
+  if(!item || state.done){ renderResults(); return; }
+  const prog = (state.qi/state.session.length*100).toFixed(0);
+  let h = `<div class="q-progress"><span class="counter">Question ${state.qi+1} / ${state.session.length}</span><div class="bar"><div class="bar-fill" style="width:${prog}%"></div></div></div>`;
+  h += `<div class="q-topic-tag">${item.topic}</div><div class="q-text">${item.q}</div>`;
+  if(item.t==='mc'){
+    h += '<div class="opts">' + item.opts.map((o,i)=>`<div class="opt" data-i="${i}"><span class="key">${LABELS[i]}</span><span>${o}</span></div>`).join('') + '</div>';
+  } else {
+    h += '<div style="font-size:.82rem;color:var(--fg3);margin-bottom:.4rem">Fill in each blank:</div>';
+    item.parts.forEach((_,i)=>{ h += `<div class="enum-input-row">${item.o?`<span class="num">${i+1}.</span>`:''}<input type="text" placeholder="Answer ${i+1}" data-i="${i}" autocomplete="off"></div>`; });
+    h += '<div style="font-size:.78rem;color:var(--fg3);margin-top:.3rem">Synonyms accepted. Enter to submit.</div>';
+  }
+  h += '<div id="q-feedback"></div><div class="q-actions"><button class="btn" id="btn-prev">← Prev</button><button class="btn btn-success" id="btn-check">Submit Answer</button><button class="btn btn-primary" id="btn-next" disabled>Next →</button></div>';
+  h += '<div class="hint-key"><kbd>1</kbd>-<kbd>4</kbd> select · <kbd>Enter</kbd> submit · <kbd>←</kbd><kbd>→</kbd> navigate</div>';
+  contentEl.innerHTML = h;
+  if(item.t==='mc') document.querySelectorAll('.opt').forEach(el => el.onclick = () => selectMC(+el.dataset.i));
+  else {
+    const inputs = document.querySelectorAll('.enum-input-row input');
+    inputs[0] && inputs[0].focus();
+    inputs.forEach((inp,idx)=> inp.onkeydown = e => {
+      if(e.key==='Enter'){ e.preventDefault(); answerEnum(); }
+      if(e.key==='ArrowDown') inputs[idx+1] && inputs[idx+1].focus();
+      if(e.key==='ArrowUp') inputs[idx-1] && inputs[idx-1].focus();
+    });
+  }
+  document.getElementById('btn-check').onclick = () => item.t==='mc' ? answerMC(state.selected) : answerEnum();
+  document.getElementById('btn-next').onclick = () => { if(state.marked[state.qi]){ state.qi++; state.selected=null; renderQuiz(); } };
+  document.getElementById('btn-prev').onclick = () => { if(state.qi>0){ state.qi--; state.selected=null; renderQuiz(); } };
+}
+
+function selectMC(sel){
+  if(state.marked[state.qi]) return;
+  state.selected = sel;
+  document.querySelectorAll('.opt').forEach((o,i)=>o.classList.toggle('sel', i===sel));
+}
+
+function answerMC(sel){
+  const item = state.session[state.qi];
+  if(!item || state.marked[state.qi]) return;
+  if(sel==null){ document.getElementById('q-feedback').innerHTML = '<div class="explain">Pick an option first, then Submit.</div>'; return; }
+  const fb = document.getElementById('q-feedback');
+  document.querySelectorAll('.opt').forEach((o,i)=>{ o.classList.toggle('correct', i===item.ans); o.classList.toggle('wrong', i===sel && sel!==item.ans); });
+  if(sel===item.ans){ fb.innerHTML = '<div class="explain">✓ Correct.</div>'; state.marked[state.qi] = {correct:true}; }
+  else {
+    fb.innerHTML = `<div class="explain">✗ Wrong. Correct: <span class="correct-ans">${LABELS[item.ans]}. ${item.opts[item.ans]}</span><br>${item.x}</div>`;
+    state.marked[state.qi] = {correct:false, picked:sel};
+    if(!state.wrong.includes(item.id)) state.wrong.push(item.id);
+    state.mastered[item.id] = (state.mastered[item.id]||0) + 1;
+  }
+  document.getElementById('btn-next').disabled = false;
+  saveMastered();
+}
+
+function answerEnum(){
+  const item = state.session[state.qi];
+  if(!item || state.marked[state.qi]) return;
+  const fb = document.getElementById('q-feedback');
+  let all = true;
+  document.querySelectorAll('.enum-input-row input').forEach((inp,i)=>{
+    const val = inp.value.trim().toLowerCase();
+    const accepted = (item.parts[i]||[]).flat();   // flat(): data may arrive nested
+    const ok = accepted.some(a => val === String(a).toLowerCase() || (val && String(a).toLowerCase().includes(val)) || val.includes(String(a).toLowerCase()));
+    inp.classList.toggle('match', ok); inp.classList.toggle('nomatch', !ok);
+    if(!ok) all = false;
+  });
+  if(all){ fb.innerHTML = '<div class="explain">✓ All correct.</div>'; state.marked[state.qi] = {correct:true}; }
+  else {
+    const list = item.parts.map((p,i)=>`${item.o? (i+1)+'.':'—'} <b>${p.flat()[0]}</b>`).join(' · ');
+    fb.innerHTML = `<div class="explain">✗ Correct answers: ${list}<br>${item.x}</div>`;
+    state.marked[state.qi] = {correct:false};
+    if(!state.wrong.includes(item.id)) state.wrong.push(item.id);
+    state.mastered[item.id] = (state.mastered[item.id]||0) + 1;
+  }
+  document.getElementById('btn-next').disabled = false;
+  saveMastered();
+}
+
+function renderResults(){
+  const total = state.session.length;
+  let correct = 0; Object.values(state.marked).forEach(v=>{ if(v.correct) correct++; });
+  const pct = total ? Math.round(correct/total*100) : 0;
+  const cls = pct>=80?'pass':pct>=60?'partial':'fail';
+  let h = `<div class="result-card"><div style="color:var(--fg2);font-size:.85rem">Session Score</div><div class="result-score ${cls}">${correct} / ${total}</div><div style="color:var(--fg2)">${pct}%</div></div>`;
+  if(state.wrong.length){
+    h += `<div style="text-align:center;padding:.8rem;background:rgba(248,81,73,.08);border:1px solid var(--red);border-radius:8px;margin-bottom:1rem;font-size:.88rem"><b>${state.wrong.length}</b> wrong — redo them until 100%.</div><ul class="mistake-list">`;
+    for(const id of state.wrong){
+      const wi = ITEMS.find(i=>i.id===id);
+      const sessIdx = state.session.findIndex(s=>s.id===id);
+      const my = state.marked[sessIdx];
+      const myAns = wi.t==='mc' ? (my && my.picked!=null ? `Your answer: ${LABELS[my.picked]}. ${wi.opts[my.picked]}` : '(no answer)') : '(enumeration)';
+      const corr = wi.t==='mc' ? `${LABELS[wi.ans]}. ${wi.opts[wi.ans]}` : wi.parts.map(p=>p.flat()[0]).join(', ');
+      h += `<li><div>${wi.q}</div><div style="font-size:.78rem;color:var(--fg3)">${myAns}</div><div class="mq-a">✓ ${corr}</div></li>`;
+    }
+    h += `</ul><div style="margin-top:1rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" id="btn-redo">↻ Redo Mistakes (${state.wrong.length})</button><button class="btn" id="btn-full">New Full Session</button><button class="btn" id="btn-back">Back to Reviewer</button></div>`;
+  } else {
+    h += '<div style="text-align:center;font-size:1.5rem;margin-top:1rem">🎉 Perfect — every item mastered.</div><div style="margin-top:1rem;text-align:center"><button class="btn btn-primary" id="btn-full">New Session</button></div>';
+  }
+  contentEl.innerHTML = h;
+  document.getElementById('btn-redo') && (document.getElementById('btn-redo').onclick = redoMistakes);
+  document.getElementById('btn-full').onclick = () => startQuiz();
+  document.getElementById('btn-back') && (document.getElementById('btn-back').onclick = () => { state.view='review'; updateTabs(); renderReviewer(); });
+}
+
+function redoMistakes(){
+  let pool;
+  if(state.wrong.length) pool = shuffle(ITEMS.filter(i=>state.wrong.includes(i.id)));
+  else {
+    const worst = Object.entries(state.mastered).sort((a,b)=>b[1]-a[1]).slice(0,20).map(([k])=>+k);
+    pool = shuffle(worst.length ? ITEMS.filter(i=>worst.includes(i.id)) : ITEMS);
+  }
+  state.session = pool; state.qi = 0; state.wrong = []; state.done = false; state.marked = {}; state.selected = null;
+  renderQuiz();
+}
+
+// ── Viz stub: replace with SVG tree/graph builders for this course ──
+function renderViz(){ contentEl.innerHTML = '<h2>Visualizations</h2><p style="color:var(--fg2)">Add SVG trees/graphs for the hierarchical material here (e.g., SDLC chain, taxonomy tree, pipeline flow).</p>'; }
+
+// ── Nav ──
+function updateTabs(){ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===state.view)); }
+document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+  state.view = b.dataset.tab; updateTabs();
+  if(state.view==='review') renderReviewer();
+  else if(state.view==='viz') renderViz();
+  else renderQuizIntro();
+});
+const sidebar = document.getElementById('sidebar');
+function buildSidebar(){
+  sidebar.innerHTML = '';
+  TOPICS.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'sb-item' + (state.topic===t ? ' active':''); el.textContent = t;
+    el.onclick = () => { state.topic = t; state.view='review'; updateTabs(); buildSidebar(); renderReviewer(); };
+    el.oncontextmenu = e => { e.preventDefault(); startQuiz(t); };
+    sidebar.appendChild(el);
+  });
+}
+document.addEventListener('keydown', e => {
+  if(state.view!=='quiz' || state.done) return;
+  if(['1','2','3','4'].includes(e.key)){ const it = state.session[state.qi]; if(it && it.t==='mc' && !state.marked[state.qi]) selectMC(+e.key-1); }
+  if(e.key==='Enter'){ const b = document.getElementById('btn-check'); b && b.click(); }
+  if(e.key==='ArrowRight'){ const b = document.getElementById('btn-next'); b && !b.disabled && b.click(); }
+  if(e.key==='ArrowLeft'){ if(state.qi>0){ state.qi--; state.selected=null; renderQuiz(); } }
+});
+buildSidebar(); renderReviewer();
+</script>
+</body>
+</html>
