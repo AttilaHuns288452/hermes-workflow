@@ -450,7 +450,7 @@ function AIPipelineVisual() {
     'Decomposing request into sub-tasks',
     'Token Saver probe: CodeGraph + Graphify',
     'Loading domain skills: /decide, firecrawl, github',
-    'LightRAG fallback: 846 skills indexed, 0 API calls',
+    'LightRAG fallback: 924 skills indexed, 0 API calls',
     'Kanban: task auto-decomposed → worker assigned',
     'Routing to GLM 5.3 Flash',
     'Executing pipeline across 3 skills',
@@ -571,7 +571,7 @@ function PipelineSection() {
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
     { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph 144,827 nodes · 326,322 edges · 8,421 files' },
     { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
-    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 846 skills · sub-second · 0 API calls' },
+    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 924 skills · sub-second · 0 API calls' },
     { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'GLM 5.3 Flash · 4-layer fallback chain' },
     { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
   ]
@@ -616,10 +616,10 @@ function PipelineSection() {
 function FeaturesSection() {
   const features = [
     { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Built-in SQLite-backed task board with dispatcher, worker profiles, and auto-decomposition. `hermes kanban init`, `hermes kanban create`, or open `hermes dashboard` → Kanban tab.', code: 'hermes kanban create "Ship landing page" --assign worker-web' },
-    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 846 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
+    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 924 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
     { t: 'FACTORY', c: '#f0d060', n: 'Orchestrator Profile Factory', d: 'Auto-creates worker profiles from the golden template. Decision flow: check profiles → reuse or create → kanban_create.', code: 'hermes profile create <role> --clone-from learning' },
     { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: '4 local cron jobs: LightRAG daily rebuild, gateway health every 30m, profile config drift daily 6am, state backup daily 3am. Silence = healthy.', code: 'hermes cron list # all 4 green' },
-    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 846 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
+    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 924 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
     { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'Profiles inherit skills + MCP servers from the root config. New profiles share the same toolchain via --clone-from learning.', code: 'hermes profile create researcher --clone-from learning' },
   ]
 
