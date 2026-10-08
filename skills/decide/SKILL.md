@@ -27,8 +27,8 @@ USER REQUEST
 
 | Class | Signals | Primary skills (verify resolve before first use) |
 |---|---|---|
-| **code** | build/fix/refactor/debug/implement, PRs, tests | `code-review`, `security-review`, `simplify`, `test-driven-development`, `systematic-debugging` |
-| **design** | UI/UX/visual/brand/style, landing pages, components | `impeccable` (full design workflow), brand kit (`<brand>-ui-skills` or `od-<brand>`), bare style name (`glassmorphism`…) — `creative` is the generic fallback |
+| **code** | build/fix/refactor/debug/implement, PRs, tests, architecture, database/API work, auth/payments/security, production deploy, reliability, performance, incident debugging | `software-engineering` (universal production-grade method — load for ANY substantial or high-risk engineering work, composes with the project skill), then `code-review`, `security-review`, `simplify`, `test-driven-development`, `systematic-debugging` |
+| **design** | UI/UX/visual/brand/style, landing pages, components | OpenDesign (`open-design-ade`, web UI on localhost:7456 — probe; app must be running) is the standing first choice for design work, then `impeccable` (full design workflow), brand kit (`<brand>-ui-skills` or `od-<brand>`), bare style name (`glassmorphism`…) — `creative` is the generic fallback |
 | **research** | search/look up/compare/cite, current events, papers | builtin `web_search` (quick) → `firecrawl` leaves (`firecrawl-search/scrape/deep-research`) → `scrapling`/`blocked-page-recovery` (fallback) |
 | **ops/system** | system state, disk, installs, cron, services, backups | `devops` leaves (`docker-management`, `linux-system-backups`…), `workflow/hermes-backup-workflow`, `hermes-kanban-setup` |
 | **media** | images, video, audio, TTS, documents | `hyperframes`/`media/openmontage-production` (video — environment-gated), `sensenova-image-gen` (images), `media` leaves (audio), `productivity` leaves (docx/pdf/pptx) |
@@ -36,10 +36,19 @@ USER REQUEST
 | **hermes-internal** | config, skills, MCPs, gateway, profiles, cron | `hermes-agent` skill (always first), `subagent-delegation`, `workflow` leaves |
 
 **Routing discipline:**
-- Verify before `skill_view`: confirm the name resolves (`ls ~/.hermes/skills/<name>` or `skills_list`) — a failed skill_view costs a turn, an `ls` costs nothing.
-- Two skills overlap → activate both; the more specific governs. No skill matches → `python3 ~/.hermes/scripts/reference_find.py "<query>"` (TF-IDF over ~1,700 reference skills, sub-second) → closest class, flag the gap.
+- **Engineering work composes two layers:** `software-engineering` (generic production method: correctness, state, concurrency, security, reliability, ops) + the project-specific skill (schema, routes, business rules). Both load together; the universal skill never overrides project rules. Trivial edits (copy, styling, one-liners) skip the universal skill — its risk tiers govern how much rigor to apply.
+- Verify before `skill_view`: confirm the name resolves BY NAME in `skills_list` (or `~/.hermes/scripts/reference_find.py "<name>"`). Do NOT probe directories — skills nest up to two levels (`devops/docker-management`), so path checks (`ls ~/.hermes/skills/<name>`) false-MISSING skills that resolve fine by name. Same name on two SKILL.md files = collision: use the path-qualified form `<dir>/<name>/SKILL.md`.
+- Two skills overlap → activate both; the more specific governs. No skill matches → `python3 ~/.hermes/scripts/reference_find.py "<query>"` (TF-IDF over the reference library, sub-second) → closest class, flag the gap.
 - Ambiguous intent → assume, state in one line, proceed. Genuinely ambiguous AND consequential → one batched clarifying question.
 - Pre-load the second-step skill (feature work → code-review will follow).
+
+**Composition (multi-skill chains):** `decide` composes workflows, not single picks. Standard chains — pre-load each next step, verify at the end of every step, iterate per the Recovery ladder until it passes:
+- Research: `web_search` → `firecrawl` leaves → verify + cite → summarize
+- Code: inspect (CodeGraph) → `software-engineering` + project skill → implement → test → `code-review`
+- Repo change: inspect architecture → pick relevant skills → modify → test → review
+- Long-running: plan → execute → checkpoint (kanban card / CHECKPOINT.md) → verify → continue
+- External tool: select MCP → `hermes mcp list` probe → execute → inspect result → validate
+Derive the chain from the actual request; never force steps the task doesn't need.
 
 ## Availability Check (Rule 3 — universal)
 
