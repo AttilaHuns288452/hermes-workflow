@@ -69,10 +69,12 @@ print("CONSOLE ERRORS:", errors[:5] or "none")
 - Persistence flows (localStorage-overlay store): after each mutation RELOAD the page and assert the state survived, and assert the public page reflects the admin change (approved review visible on the detail page, deleted gadget gone from the catalog).
 - Set expectations from the live DOM before clicking: read the current count/badge/value first. Tests authored from remembered fixture values fail on correct code; when an assertion fails, dump the actual DOM state (badges, counts, attributes) before touching app code — several "failures" are test bugs, not app bugs.
 - Computed math: assert one known input/output pair (e.g. monthly cost = price / lifespan / 12).
+- Geometry-sensitive interactions: derive the expected affected set from the model, assert that only members of the selected region change, then apply the inverse operation and assert the full state is restored. For a 3×3 surface-only Rubik model that omits the hidden core, a face layer contains 9 cubies while a middle slice contains 8; do not reuse one expected count for every layer.
+- Pointer-driven controls: test mouse and touch as distinct input paths; on mobile, use a touch-capable Playwright context or CDP touch dispatch and assert the resulting pointer event reports `pointerType === 'touch'`, then verify the application state changed.
 - Mobile viewport: hamburger visible, nav opens, primary table usable.
 - Console + pageerror clean at the end — passing assertions with console errors still means broken.
 
-QA-script pitfall: opening a modal-bound input with page.fill fails on the hidden element — call the open function first, then fill.
+QA-script pitfalls: opening a modal-bound input with page.fill fails on the hidden element — call the open function first, then fill. A pointerdown/pointerup pair with no effective movement must not enqueue a turn or increment move history; gate commits on a nonzero gesture angle so taps and cancelled drags leave model state unchanged.
 
 ## DOM adjudication of vision-QA flags
 
@@ -85,7 +87,7 @@ pg.evaluate("() => ({s: document.documentElement.scrollWidth, c: document.docume
 pg.evaluate("sel => { const r = document.querySelector(sel).getBoundingClientRect(); return {l: Math.round(r.left), r: Math.round(r.right)} }")
 ```
 
-- "Clipped element" claims: scrollWidth == clientWidth plus complete corners in a zoomed crop ⇒ false positive; do not "fix" it.
+- "Clipped element" claims: page-level scrollWidth == clientWidth plus complete corners in a zoomed crop ⇒ false positive; do not "fix" it. Valid only at the level measured — content cut by an inner fixed-size frame (phone mockup, fixed-height card) clips while the page has no overflow; adjudicate those at the container (its scrollWidth vs clientWidth) or by vision-checking the rendered frame.
 - Sticky-bar overlap: `window.scrollTo({top: 999999, behavior: 'instant'})`, wait ~100 ms, then compare the last content row's bottom against the bar's top. Smooth-scroll mid-animation yields stale geometry and false overlaps.
 
 ## Visual evidence for the user

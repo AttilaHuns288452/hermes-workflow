@@ -14,7 +14,18 @@ category: education
 - Mistake loop: wrong answer → immediately show the correct answer + explanation → results screen lists every miss with the correct answer → "Redo Mistakes" re-runs only the misses, reshuffled → repeat until 100%. Persist lifetime miss counts in localStorage and resurface weakest items in later sessions.
 - No advancing until the current question is answered: MC click = select only, Submit = evaluate, Next stays disabled until evaluated.
 - Visualizations tab with SVG trees/graphs for hierarchical material (phase chains, matrices, taxonomies) — he asks to "visualize more fully".
+- Every tabbed HTML reviewer ships an **index tab** (first content tab, right under Overview) listing ALL topics on one screen as cards: live visual preview per topic, complexity badge, group filter chips with counts, a search box, and click-through into that topic's tab. Theory-only topics get a mono math glyph as their preview.
 - Plain English, dark theme, keyboard shortcuts (1-4 select, Enter submit, arrows navigate).
+
+## Extending an existing reviewer HTML ("improve this, add a tab")
+
+Before writing anything, extract the page's OWN machinery — the fastest correct build reuses it instead of importing parallel CSS/JS:
+
+1. **Map structure first** (one regex pass, not read_file of the whole file): tab ids (`pane-*` / `data-tab`), nav link format, shared helpers (`drawGraph`, `wireStepper`, `el`), which SVGs draw at init vs behind a button, and CSS hook classes. Complexity formulas live in `<span class="formula">…</span>` inside each pane — copy them from there verbatim so the index never contradicts the body.
+2. **Reuse the page's graph data, don't redraw.** Thumbnails that call the page's own `drawGraph()` with the module's exact nodes/edges/viewBox match the walkthroughs 1:1. Extract JS array literals to JSON by quoting unquoted keys (`re.sub(r'([{,]\s*)([A-Za-z_]\w*)\s*:', r'\1"\2":', …)`) AND stripping trailing commas (`re.sub(r',\s*([\]}])', r'\1', …)`) — json.loads fails on both.
+3. **Inject additively:** CSS before `</style>` (assert count==1), nav link after Overview, section before the next module comment, and the new `<script>` IIFE appended after the LAST existing `</script>` — never inside the original script block. Cards navigate by calling `.click()` on the existing nav link, so tab routing stays single-sourced.
+4. **Same verification gate as a fresh build** (step 6 above): node --check every script block, then a playwright smoke over file:// that opens the new tab, exercises search/filter/click-through, revisits an old tab, and asserts zero pageerrors. Add a pixel check (sample for the theme's accent colors in the screenshot) — a functionally-passing page can still render blank thumbnails.
+
 
 ## Pipeline
 

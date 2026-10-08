@@ -125,6 +125,40 @@ Don't use for:
 }
 ```
 
+### Fast path: clone an existing sheet applet instead of building from scratch
+
+`~/.local/share/cinnamon/applets/netref@attila` is a generic sheet-driven
+cheatsheet applet (search, copy-to-clipboard, usage-count ordering). A new
+cheatsheet/reference applet is a clone, not a rewrite:
+
+1. `cp -r netref@attila <new-uuid>@attila`, then rename the UUID everywhere
+   (dirname, `metadata.json` uuid, hardcoded uuid strings in `applet.js`).
+   `gjs --compile applet.js` validates the result (parses JS, no Cinnamon
+   running needed).
+2. Replace `refdocs/` with the new sheet: `refdocs/<Topic>/sheet.json`.
+3. Rewrite the persisted `cheatsheets` settings array to exactly the new sheet.
+
+## Applet dev pitfalls
+- Live reload: `imports.ui.extension.reloadExtension(uuid, imports.ui.extension.Type.APPLET)` via org.Cinnamon.Eval. There is NO `extensionManager` module (Eval silently returns ImportError) and the 2nd arg MUST be the Type object — a boolean makes `delete imports[type.folder][uuid]` fail silently and the stale module keeps re-running.
+- Base Applet API is snake_case: `set_applet_tooltip()`, `set_applet_icon_path()` (IconApplet). `setAppletTooltip`/`setApplet_icon` throw "not a function" at main() and the applet stays dead with stale-looking logs.
+- Failed applet state + gsettings toggle can leave duplicate enabled-applets entries (same instanceId, different position) — dedupe and verify with getDefinitions() count. Entries desync the other way too: after dedupe a panel actor can survive with NO definition (unclickable ghost icon next to the live one). Cleanup via Eval: iterate `Main.panelManager.panels` with `Object.keys(...)` — it is a SPARSE array and plain `for...of` throws "p is undefined" on holes — find box children with `_applet._uuid` matching yours, destroy any whose `_applet !==` the live definition's applet.
+- For panel applets build the menu as `new Applet.AppletPopupMenu(this, orientation)` + `menuManager.addMenu`. Raw `PopupMenu.PopupMenu(this.actor, 0.0, orientation)` looks equivalent but passes orientation as the arrow side, so the menu renders off-stage and clicks appear dead. Diagnose from xsession-errors: `st_widget_get_theme_node ... which is not in the stage` on your menu/item widget = wrong menu class or unparented actor; `g_closure_add_invalidate_notifier ... CLOSURE_MAX_N_INOTIFIERS` = leaked signal state from duplicate instances — remove the duplicates, then reload. Verify with a programmatic `on_applet_clicked(0)` and assert `menu.actor.get_stage() !== null`, not just `visible`.
+- Tool shells have no DISPLAY: export `DISPLAY=:0` before wmctrl/xdotool or windows report empty. xed is single-instance: pgrep argv shows the FIRST process's file, not newly opened tabs — verify via `wmctrl -l` window titles.
+- netref's `setAppletTooltip` etc are custom methods of ITS class, not Cinnamon API — don't carry them into a new applet's base-class code.
+
+## Pitfalls
+
+- **Copytree brings the old `refdocs/` sheets along** — the applet enumerates
+  every folder under `refdocs/` and renders each as a sheet, so the clone
+  silently shows the old applet's content. Delete copied sheet folders AND
+  rewrite the `cheatsheets` settings array (it gates rendering and keeps
+  stale entries).
+- **Item key = searchable name; `description` = displayed label.** Filters
+  match the key, so put the command/term in the key and the plain-English
+  gloss in `description`.
+- **Category buttons sort alphabetically** — prefix numbers ("01 · Modes",
+  "02 · Hostname") to keep numbered step order.
+
 ## Applet Core Architecture
 
 ### The Applet Class (PopupMenu pattern)
@@ -213,6 +247,12 @@ copyToClipboard: function(text) {
 }
 ```
 
+Dual-copy entries (e.g. Windows command on modifier-click, Linux on plain
+click) must ship with an ALWAYS-VISIBLE hint label in the panel
+("Click = copy Linux · Shift+click = copy Windows"). A modifier
+affordance with no visible hint gets reported as a missing feature — the
+notification toast is not discoverability.
+
 ## Searchable List Widget (for Reference/Cheatsheet Applets)
 
 When building a reference applet with search, use this pattern:
@@ -226,6 +266,7 @@ SearchableListWidget.prototype = {
     _init: function(copyCallback) {
         this._copyCallback = copyCallback;
         this._allItems = [];
+        this._rows = [];
         this._buildUI();
     },
 
@@ -243,7 +284,7 @@ SearchableListWidget.prototype = {
             can_focus: true,
             style: 'background-color: #1a1a1a; color: #e0e0e0; border: 1px solid #3c3c3c; border-radius: 4px; padding: 6px 10px; font-size: 12px; margin: 6px;'
         });
-        this.searchEntry.clutter_text.connect('text-changed', Lang.bind(this, this._onSearchChanged));
+        this.searchEntry.clutter_text.connect('text-changed', () => this._onSearchChanged());
 
         // Scrollable container
         this.scrollView = new St.ScrollView({
@@ -262,23 +303,22 @@ SearchableListWidget.prototype = {
         this.mainBox.add(this.scrollView);
     },
 
-    _onSearchChanged: function(entry) {
-        let searchText = entry.get_text().toLowerCase().trim();
+    _onSearchChanged: function() {
+        // Read from the entry itself. A connect() wrapper that drops the signal
+        // arg (`() => this._onSearchChanged()` with `function(entry)`) makes
+        // `entry` undefined and the filter throws on every keystroke.
+        let searchText = this.searchEntry.get_text().toLowerCase().trim();
         this._filterItems(searchText);
     },
 
     _filterItems: function(searchText) {
-        this.itemsBox.destroy_all_children();
-        for (let i = 0; i < this._allItems.length; i++) {
-            let item = this._allItems[i];
-            let matches = !searchText ||
+        for (let row of this._rows) {
+            let item = row.item;
+            row.actor.visible = !searchText ||
                 item.name.toLowerCase().includes(searchText) ||
                 item.description.toLowerCase().includes(searchText) ||
-                item.code.toLowerCase().includes(searchText);
-            if (matches) {
-                let menuItem = this._createMenuItem(item);
-                this.itemsBox.add(menuItem.actor);
-            }
+                item.code.toLowerCase().includes(searchText) ||
+                (item.windows || '').toLowerCase().includes(searchText);
         }
     },
 
@@ -296,16 +336,22 @@ SearchableListWidget.prototype = {
         container.add_actor(codeLabel);
 
         menuItem.addActor(container);
-        menuItem.code = item.code;
-        menuItem.connect('activate', Lang.bind(this, function() {
-            if (this._copyCallback) this._copyCallback(item.code);
-        }));
-        return menuItem;
+        // Click = primary copy; Shift+click = secondary (see Copy to Clipboard)
+        menuItem.connect('activate', (actor, event) => {
+            let shift = !!(event && (event.get_state() & Clutter.ModifierType.SHIFT_MASK));
+            if (this._copyCallback) this._copyCallback(item, shift);
+        });
+        return { actor: menuItem.actor, item: item };
     },
 
     addItems: function(items) {
         this._allItems = items;
-        this._filterItems('');
+        this._rows = [];
+        for (let item of items) {
+            let row = this._createMenuItem(item);
+            this._rows.push(row);
+            this.itemsBox.add(row.actor);
+        }
     },
 
     getActor: function() { return this.mainBox; }
@@ -324,11 +370,16 @@ activate: function(event) {
 }
 ```
 
-### Pitfit: Popup relayouts when items are hidden/shown
+### Pitfall: filtering by rebuild is O(n) per keystroke — visibility toggle instead
 
-Using `actor.show()/hide()` causes constant relayout and pushes the search bar.
+`destroy_all_children()` + re-create on every keystroke re-instantiates every
+matching row's actors (a 965-item list = thousands of St.Labels rebuilt per
+key) — this is the #1 cause of "search feels broken / scroll is slow".
 
-**Fix:** Use `destroy_all_children()` + re-add matching items instead.
+**Fix:** build every row ONCE in `addItems()`, keep a `this._rows` array, and
+filter by toggling `row.actor.visible`. Also lazy-build the list on first
+submenu `open-state-changed` instead of at applet load. If 1k+ rows still
+scroll badly after that, the upgrade path is list virtualization.
 
 ### Pitfall: Max-height without scrollbar
 
@@ -342,6 +393,21 @@ this.scrollView = new St.ScrollView({
     vscrollbar_policy: St.PolicyType.AUTOMATIC
 });
 ```
+
+### Category-first navigation and ordering (large sheets)
+
+When a sheet has hundreds of items, don't dump one flat list: show a
+category view FIRST (one `St.Button` per `sheet.json` section + an
+"All commands" button first), and on click scope one shared
+SearchableListWidget to that category — back button ("◀ Categories"),
+title showing `name (count)`, search and filters scoped to the category.
+Build rows only for the category being viewed.
+
+Order rows: persisted per-item usage count first (bump on copy, store in a
+`generic` settings key), then a static seed priority list of important
+commands (prefix-matched against name/code), then data order. The list
+self-learns the user's actual habits; extend the seed list instead of
+building a ranking store.
 
 ## Cheatsheet Applet Pattern (Cheaty-style)
 
@@ -358,7 +424,8 @@ OnClick → PopupMenu → SheetMenuItem (submenu) → SectionMenuItem → ItemMe
 ### Key Components
 
 1. **SheetMenuItem** — extends `PopupMenu.PopupSubMenuMenuItem`, loads `sheet.json`
-2. **DescriptionMenuItem** — extends `PopupMenu.PopupBaseMenuItem`, stores `code`
+2. **Row object** from the searchable widget — `{ actor, item }`; `activate` on
+   the MENU ITEM (not `item.actor`) triggers copy
 3. **copyToClipboard** — triggered on item `activate`, uses `St.Clipboard`
 
 ### Loading sheet.json
@@ -394,6 +461,20 @@ cp -r applet-folder ~/.local/share/cinnamon/applets/
 
 Then enable via **Right-click panel → Applets → Add**.
 
+### E2E verify a new applet on the panel (headless, no clicking)
+
+1. Add it to the panel programmatically: `gsettings set org.cinnamon
+   enabled-applets` with the JSON array round-tripped in Python
+   (`json.loads` → append `'panel:zone:position:<uuid>:<instance-id>'` →
+   `json.dumps`); never string-splice the array.
+2. Prove the FRESH module is live (not a cached old instance): Eval
+   `imports.ui.appletManager.getDefinitions().filter(d=>d.real_uuid==='<uuid>')[0].applet.settings.getValue('<key>')` — a real value means the new code loaded. Reading
+   old Python state back does NOT prove the JS ran.
+3. Behavioral round-trip for copy-to-clipboard applets: Eval-call the copy
+   handler (e.g. `d._onItemCopy({name:'selftest', code:'TOKEN'}, false)`),
+   then read the clipboard back — `St.Clipboard.get_default().get_text(St.ClipboardType.CLIPBOARD,(c,t)=>{global.__clip=t})` in one Eval, `global.__clip` in the
+   next (the getter is async). Exercises the full click→copy pipeline.
+
 ### Debugging
 
 - Cinnamon logs: `~/.xsession-errors`
@@ -409,7 +490,8 @@ Then enable via **Right-click panel → Applets → Add**.
 
 1. **`_addStyleClass` missing** — Cinnamon 6.6+ requires this method or applet won't load
 2. **Popup closes on search click** — Override `activate()` to prevent close
-3. **Popup relayout on filter** — Use `destroy_all_children()` + re-add, not `show()/hide()`
+3. **Filtering by rebuild is slow and feels broken** — build rows once,
+   filter by toggling `actor.visible` (see the Searchable List Widget pitfall)
 4. **No scrollbar** — Always set `vscrollbar_policy: St.PolicyType.AUTOMATIC` on ScrollView
 5. **Keybinding not cleaned up** — Always `removeHotKey` in `on_applet_removed_from_panel`
 6. **Settings not bound before use** — Build UI before binding settings (Pattern A)
@@ -1067,14 +1149,20 @@ failures — one instrumented restart beats repeated unverified fix rounds
    applies to any non-GObject key in St/Clutter constructors — an invisible
    desklet plus `Failed to evaluate 'main'` in the log means a constructor
    prop first, code logic second.
-10. **Cinnamon caches xlet JS modules by UUID** — editing `desklet.js` does
-    not refresh a loaded instance, and neither D-Bus reload path is
-    reliable: on some builds both `org.Cinnamon.ReloadXlet` and
-    `LookingGlass.ReloadExtension` throw `TypeError: type is undefined`
-    and can leave the desklet half-unloaded (invisible). After code edits,
-    verify via log (Debugging below); when in doubt, logout/login or
-    `cinnamon --replace` (user approval — screen flickers) rather than
-    piling on more edits. Full recipe:
+10. **Cinnamon caches xlet JS modules by UUID** — editing the JS does not
+    refresh a loaded instance. VERIFIED working reload (2026-09-26, Cinnamon
+    on Mint 22.3) via the Eval D-Bus API:
+    `gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon
+    --method org.Cinnamon.Eval "imports.ui.extension.reloadExtension('<uuid>',
+    imports.ui.extension.Type.APPLET)"` (Type.DESKLET for desklets) — this
+    purges the module cache and re-runs `main()`. Cheap fingerprint that the
+    NEW module is live: check an arity you changed, e.g.
+    `getDefinitions().filter(d=>d.real_uuid==='<uuid>')[0].applet.copyToClipboard.length`.
+    Toggling the `enabled-applets`/`enabled-desklets` gsettings entry is NOT a
+    reload (re-creates the instance from the CACHED module).
+    `org.Cinnamon.ReloadXlet` is unreliable (`TypeError: type is undefined`);
+    when reloadExtension misbehaves, logout/login or `cinnamon --replace`
+    (user approval — screen flickers). Full recipe:
     `references/desklet-reload-debugging.md`.
 11. **`color-mix()` is NOT supported in Clutter CSS** — Cinnamon uses a
     GTK3-era CSS parser that does not understand CSS Color Level 4 functions
@@ -1121,6 +1209,42 @@ failures — one instrumented restart beats repeated unverified fix rounds
     else fallback) applied in a single `_readColors()` that runs at the top
     of the settings callback, so every paint path only ever sees valid
     colors. Same normalization protects `set_style()` color rules.
+
+## Headless UI Testing via org.Cinnamon.Eval (VERIFIED 2026-09-26)
+
+The whole applet can be driven programmatically — no screenshots needed:
+
+```bash\EXPR='(function(){ try { /* JS here */ } catch(e) { return "ERR: "+e; } })()'
+gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
+  --method org.Cinnamon.Eval "$EXPR"
+```
+
+Gotchas (each cost a failed round today):
+
+- Eval scope has `Main`, `imports`, `global` — NOT `St`/`Clutter`/`GLib`.
+  Prefix `const St = imports.gi.St;` etc. inside the expression.
+- `PopupSubMenu`/`PopupMenuBase` open with `open(animate)` / `close(animate)`
+  — `openMenu()`/`closeMenu()` do not exist on modern Cinnamon.
+- `menuItem.emit('activate', event, keepMenu)` — the signal lives on the
+  MENU ITEM, not `menuItem.actor` (which is a CinnamonGenericContainer:
+  `No signal 'activate' on object 'CinnamonGenericContainer'`). Reach the
+  item from an actor via `actor._delegate`. Real handlers get
+  `(emitter, event, keepMenu)`; mouse activate passes the Clutter event, so
+  modifier checks work: `event.get_state() & Clutter.ModifierType.SHIFT_MASK`.
+  For tests, a duck-typed fake `{ get_state: () => Clutter.ModifierType.SHIFT_MASK }`
+  exercises the shift branch.
+- `St.Button`'s `clicked` signal REFUSES zero-arg emit
+  (`Signal 'clicked' on StButton requires 1 args got 0`) — drive buttons
+  with `btn.emit('clicked', btn)`. (`activate` on menu items takes 0–2.)
+- Clipboard round-trip is async: `St.Clipboard.get_default().get_text(CLIPBOARD, (c,t)=>{global._x=t})`
+  then read `global._x` in a LATER Eval call. Save/restore the user's
+  clipboard around copy tests.
+- Results survive only in `global.*` and Eval calls — print/return JSON per
+  call and aggregate in the host script.
+- This is also the E2E verification: assert row visibility counts per filter
+  mode, visible-row counts per search string, and clipboard content per
+  click/shift-click, then check `~/.xsession-errors` after the
+  `Reloading applet:` line for errors (ignore other applets' noise).
 
 ## Submission to Cinnamon Spices
 

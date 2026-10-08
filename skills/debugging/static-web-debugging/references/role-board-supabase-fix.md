@@ -31,7 +31,7 @@ Since the URL and key matched their own string exactly on both sides of `!==`, `
 |-------|-------|
 | Project URL | `https://[REDACTED].supabase.co` |
 | Project ID | `[REDACTED]` |
-| Key format | `sb_publishable_<base64>` (newer Supabase format) |
+| Key format | `sb_publishable_[REDACTED]<base64>` (newer Supabase format) |
 | Key value | `sb_publishable_[REDACTED]` |
 | Tables | `roles`, `members` (created via schema.sql) |
 | RLS | Public read/write on both tables |

@@ -8,14 +8,40 @@ platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
-    related_skills: [powerpoint]
+    related_skills: [pdf, docx, powerpoint]
 ---
 
 # PDF & Document Extraction
 
-For DOCX: use `python-docx` (parses actual document structure, far better than OCR).
-For PPTX: see the `powerpoint` skill (uses `python-pptx` with full slide/notes support).
-This skill covers **PDFs and scanned documents**.
+For DOCX: see the `docx` skill (create/edit) or use `python-docx` for structured reads.
+For PPTX: see the `powerpoint` skill (full create/read/edit support).
+For PDF manipulation (merge, split, forms, watermarks, creation): see the `pdf` skill.
+This skill covers **text extraction from PDFs and scanned documents**.
+
+## markitdown (Preferred for All File Types)
+
+**markitdown** converts files → markdown, which LLMs understand natively. Use it as the **first step** when reading any document for analysis:
+
+```bash
+markitdown file.pdf -o output.md      # PDF → markdown
+markitdown file.docx -o output.md     # Word → markdown
+markitdown file.xlsx -o output.md     # Excel → markdown
+markitdown file.pptx -o output.md     # PowerPoint → markdown
+markitdown file.html -o output.md     # HTML → markdown
+markitdown file.md -o output.md       # Already markdown (passthrough)
+markitdown file.csv -o output.md      # CSV → markdown table
+markitdown file.json -o output.md     # JSON → markdown
+markitdown file.xml -o output.md      # XML → markdown
+markitdown file.zip -o output.md      # ZIP (iterates contents)
+markitdown file.epub -o output.md     # EPUB → markdown
+markitdown "https://youtube.com/watch?v=..." -o output.md  # YouTube → transcript
+```
+
+**Why markdown?** LLMs are trained on vast amounts of markdown (GitHub, docs, wikis). They "speak" markdown natively — headings, lists, tables, code blocks all map directly to model understanding. Converting to markdown before analysis gives better results than raw text extraction.
+
+**Fallback**: Use pymupdf/marker-pdf (for PDFs) or python-docx/python-pptx/python-pptx (for Office files) only when markitdown fails or you need structured JSON output.
+
+> **Coming from a `read_file` EXTRACTION COVERAGE WARNING?** `read_file` auto-converts local PDFs but reads the text layer only; the warning footer lists the pages that yielded no text (scanned images). For a handful of pages, render + vision is fastest: `pdftoppm -jpeg -r 150 -f N -l N file.pdf /tmp/page` then `vision_analyze` each image. For bulk OCR of many pages, use marker-pdf below (Step 2).
 
 ## Step 1: Remote URL Available?
 
@@ -74,7 +100,7 @@ python scripts/extract_pymupdf.py document.pdf --pages 0-4   # Specific pages
 
 **Inline**:
 ```bash
-python3 -c "
+python -c "
 import pymupdf
 doc = pymupdf.open('document.pdf')
 for page in doc:

@@ -36,3 +36,6 @@ __pycache__/
 !.vscode/extensions.json
 yarn-debug.log*
 yarn-error.log*
+# Skill-sync junk (never commit)
+.temp/
+*.bak

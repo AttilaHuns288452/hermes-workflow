@@ -27,10 +27,10 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null; then
 else
   AUTH="git"
   if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
+    if _hermes_env="${HERMES_HOME:-$HOME/.hermes}/.env"; [ -f "$_hermes_env" ] && grep -q "^GITHUB_TOKEN=" "$_hermes_env"; then
+      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" "$_hermes_env" | head -1 | cut -d= -f2 | tr -d '\n\r')
     elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-      GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
+      GITHUB_TOKEN=$(uv run python "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/git-credential-token.py")
     fi
   fi
 fi
@@ -39,7 +39,7 @@ fi
 if [ "$AUTH" = "gh" ]; then
   GH_USER=$(gh api user --jq '.login')
 else
-  GH_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | python3 -c "import sys,json; print(json.load(sys.stdin)['login'])")
+  GH_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | python -c "import sys,json; print(json.load(sys.stdin)['login'])")
 fi
 ```
 
@@ -213,7 +213,7 @@ gh search repos "machine learning" --language python --sort stars
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/$OWNER/$REPO \
-  | python3 -c "
+  | python -c "
 import sys, json
 r = json.load(sys.stdin)
 print(f\"Name: {r['full_name']}\")
@@ -226,7 +226,7 @@ print(f\"Language: {r['language']}\")"
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   "https://api.github.com/user/repos?per_page=20&sort=updated" \
-  | python3 -c "
+  | python -c "
 import sys, json
 for r in json.load(sys.stdin):
     vis = 'private' if r['private'] else 'public'
@@ -235,7 +235,7 @@ for r in json.load(sys.stdin):
 # Search repos
 curl -s \
   "https://api.github.com/search/repositories?q=machine+learning+language:python&sort=stars&per_page=10" \
-  | python3 -c "
+  | python -c "
 import sys, json
 for r in json.load(sys.stdin)['items']:
     print(f\"  {r['full_name']:40}  ★{r['stargazers_count']:6}  {r['description'][:60] if r['description'] else ''}\")"
@@ -321,7 +321,7 @@ curl -s \
   https://api.github.com/repos/$OWNER/$REPO/actions/secrets/public-key
 
 # Encrypt and set (requires Python with PyNaCl)
-python3 -c "
+python -c "
 from base64 import b64encode
 from nacl import encoding, public
 import json, sys
@@ -349,7 +349,7 @@ curl -s -X PUT \
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/$OWNER/$REPO/actions/secrets \
-  | python3 -c "
+  | python -c "
 import sys, json
 for s in json.load(sys.stdin)['secrets']:
     print(f\"  {s['name']:30}  updated: {s['updated_at']}\")"
@@ -389,7 +389,7 @@ curl -s -X POST \
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/$OWNER/$REPO/releases \
-  | python3 -c "
+  | python -c "
 import sys, json
 for r in json.load(sys.stdin):
     tag = r.get('tag_name', 'no tag')
@@ -426,7 +426,7 @@ gh workflow run deploy.yml -f environment=staging
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/$OWNER/$REPO/actions/workflows \
-  | python3 -c "
+  | python -c "
 import sys, json
 for w in json.load(sys.stdin)['workflows']:
     print(f\"  {w['id']:10}  {w['name']:30}  {w['state']}\")"
@@ -435,7 +435,7 @@ for w in json.load(sys.stdin)['workflows']:
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   "https://api.github.com/repos/$OWNER/$REPO/actions/runs?per_page=10" \
-  | python3 -c "
+  | python -c "
 import sys, json
 for r in json.load(sys.stdin)['workflow_runs']:
     print(f\"  Run {r['id']}  {r['name']:30}  {r['conclusion'] or r['status']}\")"
@@ -494,7 +494,7 @@ curl -s -X POST \
 curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/gists \
-  | python3 -c "
+  | python -c "
 import sys, json
 for g in json.load(sys.stdin):
     files = ', '.join(g['files'].keys())
@@ -514,116 +514,3 @@ for g in json.load(sys.stdin):
 | List workflows | `gh workflow list` | `curl GET /repos/o/r/actions/workflows` |
 | Rerun CI | `gh run rerun ID` | `curl POST /repos/o/r/actions/runs/ID/rerun` |
 | Set secret | `gh secret set KEY` | `curl PUT /repos/o/r/actions/secrets/KEY` (+ encryption) |
-
-## 11. GitHub Pages — Publish a Static Website
-
-Publish a static site (single HTML file, or a full directory) to GitHub Pages. Includes **mandatory secrets sanitization** before any public push.
-
-### Phase 1: Pre-Flight — Secrets & Path Sanitization
-
-**MANDATORY.** Before pushing any file to a public repo, scan for credentials and local paths that would leak personal info.
-
-```bash
-# Scan for API keys, tokens, secrets
-grep -in -E "(api[_-]?key|token|secret|password|ghp_|gho_|ghu_|ghs_|ghr_|sk-[a-zA-Z0-9]|xox[baprs]-)" index.html
-
-# Scan for local Windows paths (leaks username)
-grep -in "C:\\\\Users\\\\" index.html
-
-# Scan for local Unix paths
-grep -in "/home/" index.html
-grep -in "/Users/" index.html
-
-# Scan for explicit usernames from the environment
-grep -in "$(whoami)" index.html
-```
-
-**If any match, sanitize before proceeding:**
-
-| What to Replace | With |
-|----------------|------|
-| `C:\Users\RealName\...` | Relative path or `~/` or plain filename |
-| `file:///C:/Users/RealName/...` | Descriptive text (removed -- only works on author's machine) |
-| Hardcoded API keys / tokens | `\<YOUR_API_KEY>` placeholder |
-| `navigator.clipboard.writeText('C:\\...')` | Replace with relative-path version or remove |
-
-**Common pitfalls:**
-- HTML/JS files often embed absolute local paths in iframe `src`, `window.open()`, `clipboard.writeText()`, and `<img>` tags
-- `file://` protocol URLs work on the author's machine but break for everyone else -- always remove
-- Environment variables in `.env` files or shell configs referenced in docs
-
-### Phase 2: Prepare the Repo Directory
-
-```bash
-TMPDIR=/tmp/<repo-name>
-mkdir -p "$TMPDIR"
-cp /path/to/site.html "$TMPDIR/index.html"
-touch "$TMPDIR/.nojekyll"
-```
-
-### Phase 3: Write a Narrative README
-
-The README should answer **why** the project exists, not just **what** it is. Structure:
-
-```
-# Project Name (one-line tagline)
-## Why I Built This -- origin story
-## The Problem -- 2-3 specific pain points with named headings + solution
-## Architecture / Why These Choices -- per-component decision rationale
-## References -- table linking every upstream project used
-```
-
-**User preference:** This user's repos should ALWAYS have a narrative README explaining the reasoning behind each component, plus a References table with links to every upstream project used. Do not skip this step.
-
-### Phase 4: Create Repo & Push
-
-**With gh (preferred):**
-
-```bash
-cd "$TMPDIR"
-git init
-git add .
-git commit -m "Initial commit: static site"
-gh repo create <repo-name> --public --source . --push --description "<desc>"
-```
-
-**With git + curl:**
-
-```bash
-cd "$TMPDIR"
-git init && git add . && git commit -m "Initial commit"
-curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/user/repos \
-  -d '{"name": "<repo-name>", "private": false}'
-git remote add origin https://github.com/$GH_USER/<repo-name>.git
-git push -u origin master
-```
-
-### Phase 5: Enable GitHub Pages
-
-```bash
-# gh -- source must be a JSON object, NOT a quoted string
-gh api repos/$OWNER/$REPO/pages -X POST --input - <<'JSON'
-{"source":{"branch":"master","path":"/"}}
-JSON
-
-SITE_URL=$(gh api repos/$OWNER/$REPO/pages --jq '.html_url')
-echo "Site: $SITE_URL"
-```
-
-### Phase 6: Verify
-
-```bash
-sleep 15
-curl -s -o /dev/null -w "HTTP %{http_code}" "$SITE_URL"
-curl -s "$SITE_URL" | grep -c "<title>"
-```
-
-### Pitfalls
-
-- **Pages API `source` format** -- must be a JSON object passed as `--input`, not a command-line string. `'{"source":{"branch":"master","path":"/"}}'` is correct; a stringified version fails with HTTP 422.
-- **.nojekyll is silent failure** -- without it, files starting with `_` are silently ignored by Jekyll (404s).
-- **Cache on initial deploy** -- Pages can return the GitHub 404 page for up to 60 seconds after enabling; retry with a longer wait.
-- **Branch name** -- default branch might be `main` or `master`; Pages config must match.
-- **`file://` links in HTML** -- will not resolve for anyone else; grep for `file://` and strip before push.
-- **README references** -- ALWAYS add a References section when publishing a project that depends on other tools/workflows; this user considers it mandatory.

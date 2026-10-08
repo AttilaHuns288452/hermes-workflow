@@ -1,0 +1,38 @@
+/* Motion vocabulary for surface/feedback transitions. Copy into a project with no
+   motion vocabulary and rename to its token family; extend the project's existing
+   family instead when one exists. transform/opacity only. */
+
+button, [role="button"] {
+  transition: transform 0.1s ease, background-color 0.15s, border-color 0.15s, color 0.15s;
+  touch-action: manipulation; /* kills the 300ms tap delay on mobile */
+}
+button:active, [role="button"]:active { transform: scale(0.97); }
+
+/* Entrance fills use `backwards`, never `both`: a persistent transform on a
+   page-level wrapper becomes the containing block for fixed overlays inside it. */
+
+.m-overlay      { animation: m-fade 0.15s ease backwards; }
+.m-overlay-out  { animation: m-fade 0.12s ease-in reverse both; }
+@keyframes m-fade { from { opacity: 0; } }
+
+/* bottom sheet: rise + fade in, reverse out */
+.m-sheet      { animation: m-sheet 0.22s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+.m-sheet-out  { animation: m-sheet 0.16s ease-in reverse both; }
+@keyframes m-sheet { from { opacity: 0; transform: translateY(28px); } }
+
+/* centered dialog: fade + subtle scale */
+.m-dialog     { animation: m-dialog 0.15s ease-out backwards; }
+.m-dialog-out { animation: m-dialog 0.12s ease-in reverse both; }
+@keyframes m-dialog { from { opacity: 0; transform: scale(0.97); } }
+
+/* success pop: keep the success state visible longer than any loading state */
+.m-pop { animation: m-pop 0.25s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+@keyframes m-pop { from { opacity: 0; transform: scale(0.85); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

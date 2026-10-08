@@ -85,7 +85,7 @@ export class TwitterClientBase {
         const headers = {
             accept: '*/*',
             'accept-language': 'en-US,en;q=0.9',
-            authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+            authorization: 'Bearer [REDACTED]',
             'x-csrf-token': this.ct0,
             'x-twitter-auth-type': 'OAuth2Session',
             'x-twitter-active-user': 'yes',
