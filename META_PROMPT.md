@@ -16,10 +16,17 @@ pipeline. The agent will see exactly what I see and operate with my
 full toolset.
 
 ================================================================================
- CORE PIPELINE (Execution Order — Never Skip)
+ CORE PIPELINE (Complexity-Gated Execution Order)
 ================================================================================
 
-Every request executes in this exact order:
+Classify the task tier first (Step 5), then run only the steps that tier requires.
+ORCHESTRATION MUST SCALE WITH TASK COMPLEXITY: a typo is not a miniature project.
+Priority: 1) user's explicit scope, 2) task tier, 3) actual implementation needs,
+4) project rules, 5) skills, 6) optional extra orchestration. Tier 1 (atomic:
+typo, color, CSS fix, rename, one command, simple question) runs ONLY the
+classification + the fix + a targeted check: no skill search, no research, no
+delegation, no preloading, no planning ceremony, no speculative platform
+concerns (Safari/Android/iOS/responsive/accessibility unless asked or observed).
 
 Step 1 — session_memory
    Pull prior context from past sessions. Never route blind.
@@ -35,13 +42,15 @@ Step 2 — Core Identity Guardrail
    - Safe fallback (stop and ask when unsure)
    Skill: core-identity-guard
 
-Step 3 — /decide Routing Brain
-   5-step reasoning protocol:
-   - Decompose the prompt (find hidden sub-tasks)
-   - Challenge the obvious interpretation (domain-specific reframing)
+Step 3 — /decide Routing Brain (Tier 2/3, ambiguous, or multi-capability only)
+   5-step reasoning protocol (tier-gated):
+   - Decompose the prompt into its REAL sub-tasks — never hypothetical ones
+   - Take the stated scope as intended; broaden only on concrete evidence that
+     the request cannot be completed as stated (or explicit user request)
    - Score routing confidence (High/Medium/Low)
-   - Second-order thinking (what will step 2 need?)
-   - Self-challenge (minimum viable skill set)
+   - Second-order thinking: pre-load the next step only when Tier 2+, highly
+     predictable, and directly required — never because a workflow MAY continue
+   - Minimum viable skill set: one skill if one solves it, zero if none needed
    Skill: decide
 
 Step 4 — Token Saver Probe Chain (Enforced)
@@ -201,7 +210,9 @@ Use case: Media creation, search, and analysis — GIFs, songs, videos, audio.
 Use case: ML model deployment, inference, experiment tracking, dataset handling.
 
 --- CATEGORY: note-taking (3 skills — BUNDLE RULE) ---
-Always loaded together. Never one in isolation.
+Loaded TOGETHER when a knowledge-capture is actually warranted (complex analysis,
+multi-session project work, or user request). Tier 1/2 tasks produce no notes
+unless the user asks. Never load one in isolation when the bundle IS warranted.
 
   obsidian              Read, search, create, edit vault notes
   obsidian-codebase-    Map codebase → wikilinked Obsidian notes
@@ -209,8 +220,7 @@ Always loaded together. Never one in isolation.
   obsidian-knowledge-   Vault scan → JSON → interactive galaxy HTML graph
     graph
 
-Use case: Every project, coding, or analysis task produces an Obsidian note.
-The bundle rule enforces documentation as a pipeline step.
+Use case: knowledge-capture is a pipeline step only for Tier 3 / multi-session work or when the user asks.
 
 --- CATEGORY: opencode-power-pack (11 skills) ---
 Advanced project development workflow skills.
@@ -412,8 +422,8 @@ Every project produces:
                    → Token Saver (before every file read)
                    → Domain Skills (selected by task type)
                    → Model Router (after skill selection)
-                   → Obsidian Docs (mandatory post-execution)
-                   → KG Refresh (after every vault change)
+                   → Obsidian Docs (Tier 3 / on-demand post-execution)
+                   → KG Refresh (on vault changes, when notes were written)
 
   /decide self-corrects: if it routes wrong, it patches its own rules.
   Every mistake improves future routing.

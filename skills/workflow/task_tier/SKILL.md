@@ -93,11 +93,11 @@ When in doubt: if the change would appear as a distinct new entity in a Mermaid 
 | User asks a setup question for an existing tool | TIER 2 | Multi-step setup, may need Token Saver. Skip Obsidian unless new dirs/files are structurally significant. |
 | User asks "what did we do about X" (session recall) | TIER 1 | Pure information retrieval, no changes. |
 | User asks to create an Obsidian note | TIER 2 | File creation but scoped; only Obsidian skill needed, no KG refresh unless the note is structurally new. |
-| Ambiguous — could be T1, T2, or T3 | Default to TIER 2 | Safer to run Token Saver and skip Obsidian than miss a structural gate. If in serious doubt, default to TIER 3 (full pipeline). |
+| Ambiguous — could be T1, T2, or T3 | Default to TIER 2 | Safer to run Token Saver and skip Obsidian than to over-orchestrate. Escalate to TIER 3 only on evidence of structural change (new layer, schema, auth, shared interface, rollbacks) or explicit user scope. |
 
 ## Mandatory Integration with /decide
 
-`/decide` MUST call `task_tier` as step 2 of its pipeline, immediately after `session_memory` and `core-identity-guard`, and BEFORE the decompose/reasoning/skill-selection steps.
+`task_tier` is the complexity gate that runs BEFORE routing: SOUL.md's pipeline Step 0 (and META_PROMPT's Step 5 classification) applies it first; `/decide` and the executor then respect its output as a hard budget on skills, composition, preloading, research, delegation, and verification depth.
 
 ### Where task_tier sits in the pipeline
 
@@ -144,7 +144,7 @@ If task_tier misclassifies a request:
 
 - **Don't over-classify quick questions as TIER 2.** A yes/no question or simple lookup is TIER 1. Token Saver isn't needed because there's no file read.
 - **Don't under-classify ecosystem changes as TIER 2.** Creating or modifying a skill, wiring an integration, or setting up a new tool that affects routing IS TIER 3.
-- **When in doubt, default up.** Ambiguous between 2 and 3? Go with 3. The full pipeline is better than missing an Obsidian update.
+- **When in doubt, classify to the tier the request matches — not upward.** Ambiguous between 2 and 3? Go with 2 and escalate only if evidence of structural change appears. The full pipeline is never "better" than staying scoped; Obsidian/KG updates are on-demand anyway.
 - **This skill runs BEFORE reasoning.** The classification is based on request surface characteristics (scope, files affected, structural change), not deep analysis. Deep analysis happens in the reasoning step after task_tier gates the pipeline.
 
 ## Tags

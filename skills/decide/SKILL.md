@@ -11,9 +11,12 @@ triggers:
 
 ## The Routing Chain
 
+**TIER GATE (hard):** orchestration must scale with task complexity (tier from SOUL Step 0 / `task_tier`). Complexity budget — Tier 1: <=1 skill, no composition, no preloading, no research, no delegation, verify only the specific change; Tier 2: few directly relevant skills, limited composition, targeted verification; Tier 3: full orchestration subject to relevance. The user's explicit scope outranks everything below; "only fix X" is authoritative.
+
 ```
 USER REQUEST
-  → INTENT (what is actually being asked — challenge the surface reading)
+  → TIER (hard gate: orchestration scales with task complexity; tier from task_tier / SOUL Step 0)
+  → INTENT (the user's stated request IS the intended scope — broaden only with concrete evidence it cannot be completed as stated)
   → CAPABILITY CLASS (one of seven, below)
   → SKILL SHORTLIST (primary → secondary → fallback; ≤3, verified names)
   → AVAILABILITY CHECK (probe before use)
@@ -38,11 +41,11 @@ USER REQUEST
 **Routing discipline:**
 - **Engineering work composes two layers:** `software-engineering` (generic production method: correctness, state, concurrency, security, reliability, ops) + the project-specific skill (schema, routes, business rules). Both load together; the universal skill never overrides project rules. Trivial edits (copy, styling, one-liners) skip the universal skill — its risk tiers govern how much rigor to apply.
 - Verify before `skill_view`: confirm the name resolves BY NAME in `skills_list` (or `~/.hermes/scripts/reference_find.py "<name>"`). Do NOT probe directories — skills nest up to two levels (`devops/docker-management`), so path checks (`ls ~/.hermes/skills/<name>`) false-MISSING skills that resolve fine by name. Same name on two SKILL.md files = collision: use the path-qualified form `<dir>/<name>/SKILL.md`.
-- Two skills overlap → activate both; the more specific governs. No skill matches → `python3 ~/.hermes/scripts/reference_find.py "<query>"` (TF-IDF over the reference library, sub-second) → closest class, flag the gap.
+- Two skills overlap → activate both ONLY if the task genuinely needs both; otherwise load the more specific one. No skill matches → `python3 ~/.hermes/scripts/reference_find.py "<query>"` (TF-IDF over the reference library, sub-second) → closest class, flag the gap.
 - Ambiguous intent → assume, state in one line, proceed. Genuinely ambiguous AND consequential → one batched clarifying question.
-- Pre-load the second-step skill (feature work → code-review will follow).
+- Pre-load a second-step skill ONLY for Tier 2+ when the next step is highly predictable and directly required (feature work → code-review will follow). Tier 1 never preloads.
 
-**Composition (multi-skill chains):** `decide` composes workflows, not single picks. Standard chains — pre-load each next step, verify at the end of every step, iterate per the Recovery ladder until it passes:
+**Composition (multi-skill chains):** `decide` composes workflows, not single picks. Composition is demand-driven and tier-gated: Tier 1 never composes (0-1 skills, no chain); Tier 2 composes only what the implementation actually requires; Tier 3 may chain full workflows. Derive the chain from the actual request; never force steps the task doesn't need. Pre-load the next step only when the chain is active (Tier 2+, highly predictable, directly required); verify each step at the depth its tier demands (Tier 1/2: the affected behavior only), iterate per the Recovery ladder when verification fails. Standard chains:
 - Research: `web_search` → `firecrawl` leaves → verify + cite → summarize
 - Code: inspect (CodeGraph) → `software-engineering` + project skill → implement → test → `code-review`
 - Repo change: inspect architecture → pick relevant skills → modify → test → review
