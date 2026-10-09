@@ -286,7 +286,7 @@ function Hero() {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] mb-8 animate-fade-up bg-[rgba(12,20,40,0.55)] border border-[rgba(255,255,255,0.06)] text-[#7aa9f7]">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse-slow shadow-[0_0_12px_rgba(61,220,132,0.5)]" />
-          {ALL_SKILLS.length}+ Skills · /decide v3 · Free Models · Pantheon Swarm · SkillClaw · Kanban · LightRAG
+          {ALL_SKILLS.length}+ Skills · /decide v3 · Model-agnostic · Kanban · LightRAG
         </div>
 
         <h1 className="text-[clamp(2.4rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance mb-6 animate-fade-up" style={{ animationDelay: '0.15s' }}>
@@ -297,10 +297,10 @@ function Hero() {
 
         <div className="max-w-[640px] mx-auto mb-5 flex flex-col gap-2 items-start text-left animate-fade-up" style={{ animationDelay: '0.3s' }}>
           {[
-            `One install — ${ALL_SKILLS.length + 508}+ skills, code to media to market analysis`,
-            'Free models only — no API key, no credit card, no vendor lock-in',
-            'Pantheon swarm auto-splits multi-step tasks across 7 specialists',
-            'Skills auto-evolve every session via SkillClaw',
+            `One install — ${ALL_SKILLS.length}+ skills, code to media to market analysis`,
+            'Provider-agnostic routing with local fallback options',
+            'Delegation and verification for substantial work',
+            'On-demand skills with provenance and rollback',
           ].map((b, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-[#a0aec8]">
               <span className="text-[#3ddc84] mt-0.5 shrink-0">✓</span>
@@ -379,9 +379,9 @@ function Hero() {
 function InstallSection() {
   const steps = [
     { n: 'Install Hermes Agent', num: '01', desc: 'macOS, Linux, or Windows — pick your method:', code: ['# macOS / Linux\ncurl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', '# Windows PowerShell\nirm https://hermes-agent.nousresearch.com/install.ps1 | iex'], verify: 'hermes --version' },
-    { n: 'Clone & Install Repo Skills', num: '02', desc: `${ALL_SKILLS.length} local + 508 external = ${ALL_SKILLS.length + 508}+ bundled:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'find ./skills -name SKILL.md -exec dirname {} \\\\;\n  | while read dir; do hermes skills install -y "$dir"; done'] },
+    { n: 'Connect the Workflow Skills', num: '02', desc: `${ALL_SKILLS.length} curated skills in this repository, with reference material discoverable on demand:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'hermes config set skills.external_dirs "[\"$PWD/skills\"]"\nhermes skills list'] },
     { n: 'Install Core Tools', num: '03', desc: 'Power the free model chain and code knowledge graph:', code: ['npm install -g opencode              # coding agent CLI\nuv tool install graphifyy            # AST code graph\nnpm install -g @colbymchenry/codegraph  # Live MCP index'] },
-    { n: 'Pick your daily driver', num: '04', badge: '★', desc: 'Set your primary model — GLM 5.3 Flash via xKiro, or any OpenAI-compatible provider:', code: ['cp config.yaml.template ~/.hermes/config.yaml  # then edit model.default'], highlight: true, extra: 'Or run: <code class="text-[#3ddc84]">hermes -z "What does the decide skill do?"</code>' },
+    { n: 'Pick your daily driver', num: '04', badge: '★', desc: 'Set your primary model — your configured provider, or any OpenAI-compatible provider:', code: ['cp config.yaml.template ~/.hermes/config.yaml  # then edit model.default'], highlight: true, extra: 'Or run: <code class="text-[#3ddc84]">hermes -z "What does the decide skill do?"</code>' },
     { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Copy the config template and replace YOUR_USERNAME. This wires up the bundled skill externals, 9 MCP servers, Kanban, LightRAG, and delegation:', code: ['cp config.yaml.template ~/.hermes/config.yaml', '# Replace YOUR_USERNAME and API keys\\n# Then: hermes kanban init && hermes gateway start'], verify: 'hermes skills list | wc -l && hermes mcp list' },
   ]
 
@@ -394,7 +394,7 @@ function InstallSection() {
             From zero to orchestration in 4 steps
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Install Hermes Agent, clone the workflow repo with {ALL_SKILLS.length + 508} bundled skills, and run your first pipeline — all for free.
+            Install Hermes Agent, clone the workflow repo with {ALL_SKILLS.length} bundled skills, and run your first pipeline — all for free.
           </p>
         </div>
       </Reveal>
@@ -450,9 +450,9 @@ function AIPipelineVisual() {
     'Decomposing request into sub-tasks',
     'Token Saver probe: CodeGraph + Graphify',
     'Loading domain skills: /decide, firecrawl, github',
-    'LightRAG fallback: 1357 skills indexed, 0 API calls',
+    'LightRAG fallback: 1365 skills indexed, 0 API calls',
     'Kanban: task auto-decomposed → worker assigned',
-    'Routing to GLM 5.3 Flash',
+    'Routing to configured model',
     'Executing pipeline across 3 skills',
     'Documenting to Obsidian + KG refresh',
     'Workflow complete. 3 skills in 342ms.',
@@ -569,10 +569,10 @@ function PipelineSection() {
     { n: 'session_memory', c: '#4a8cf4', t: 'RETRIEVE', d: 'Prior context retrieval from past sessions' },
     { n: 'Core Identity Guard', c: '#e4686a', t: 'GUARD', d: '6 immutable rules · always active' },
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
-    { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph 144,827 nodes · 326,322 edges · 8,421 files' },
+    { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph indexed code graph and project context' },
     { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
-    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 1357 skills · sub-second · 0 API calls' },
-    { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'GLM 5.3 Flash · 4-layer fallback chain' },
+    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 1365 skills · sub-second · 0 API calls' },
+    { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'configured model · 4-layer fallback chain' },
     { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
   ]
 
@@ -616,10 +616,10 @@ function PipelineSection() {
 function FeaturesSection() {
   const features = [
     { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Built-in SQLite-backed task board with dispatcher, worker profiles, and auto-decomposition. `hermes kanban init`, `hermes kanban create`, or open `hermes dashboard` → Kanban tab.', code: 'hermes kanban create "Ship landing page" --assign worker-web' },
-    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 1357 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
+    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 1365 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
     { t: 'FACTORY', c: '#f0d060', n: 'Orchestrator Profile Factory', d: 'Auto-creates worker profiles from the golden template. Decision flow: check profiles → reuse or create → kanban_create.', code: 'hermes profile create <role> --clone-from learning' },
     { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: '4 local cron jobs: LightRAG daily rebuild, gateway health every 30m, profile config drift daily 6am, state backup daily 3am. Silence = healthy.', code: 'hermes cron list # all 4 green' },
-    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 1357 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
+    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 1365 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
     { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'Profiles inherit skills + MCP servers from the root config. New profiles share the same toolchain via --clone-from learning.', code: 'hermes profile create researcher --clone-from learning' },
   ]
 
@@ -843,7 +843,7 @@ function SkillsSection() {
 
 function ModelsSection() {
   const tiers = [
-    { n: 'GLM 5.3 Flash', badge: 'DAILY DRIVER', price: 'primary', desc: 'Main model via the xKiro API — chat, subagent delegation, and vision in one model. Fast and budget-friendly.', tags: ['z-ai/glm-5.3-flash', 'default'], color: '#3ddc84' },
+    { n: 'configured model', badge: 'DAILY DRIVER', price: 'primary', desc: 'Main model via the xKiro API — chat, subagent delegation, and vision in one model. Fast and budget-friendly.', tags: ['z-ai/glm-5.3-flash', 'default'], color: '#3ddc84' },
     { n: 'OmniRoute Gateway', badge: 'fallback', price: 'free', desc: 'Local gateway on localhost:20128 — 24 models across 7 providers (Poolside, OpenRouter free, MiniMax) as a free fallback ladder.', tags: ['localhost:20128', 'free ladder'], color: '#f0d060' },
     { n: 'Local Ollama', badge: 'offline', price: '$0', desc: 'Fully local inference for offline work — qwen3.5:4b for code, phi4-mini for speed. Zero API cost, nothing leaves the machine.', tags: ['localhost:11434', 'local'], color: '#e4686a' },
     { n: 'Paid (last resort)', badge: 'premium', price: 'premium', desc: 'Paid escape hatch when free tiers are rate-limited — stdcmpt, z.ai GLM.', tags: ['stdcmpt/*', 'zai/*'], color: '#7aa9f7' },
@@ -858,7 +858,7 @@ function ModelsSection() {
             4-Layer Free Model Routing
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Every task is routed through a fallback chain — xKiro GLM 5.3 Flash first, then a local OmniRoute gateway ladder, then local Ollama, paid only as a last resort.
+            Every task is routed through a fallback chain — xKiro configured model first, then a local OmniRoute gateway ladder, then local Ollama, paid only as a last resort.
           </p>
         </div>
       </Reveal>
@@ -931,9 +931,9 @@ function GuardrailSection() {
           <h3 className="text-lg font-bold mb-6 text-[#e4eaf5]">Token Saver — CodeGraph First</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {[
-              { v: '144,827', l: 'CodeGraph Nodes' },
-              { v: '326,322', l: 'CodeGraph Edges' },
-              { v: '8,421', l: 'Indexed Files' },
+              { v: 'On-demand', l: 'CodeGraph context' },
+              { v: 'Local', l: 'LightRAG search' },
+              { v: '0', l: 'API calls for local search' },
               { v: '12', l: 'MCP Servers' },
             ].map((s, i) => (
               <div key={i} className="text-center p-3 rounded-xl bg-black/30 border border-[#1e3058]">
@@ -1177,7 +1177,7 @@ function FooterCTA() {
               Ready to build?
             </h2>
             <p className="text-[#a0aec8] max-w-[500px] mx-auto text-base leading-relaxed text-pretty mb-10">
-              One command. {ALL_SKILLS.length + 508}+ skills. Zero config. Your AI assistant gets a brain upgrade in under 60 seconds.
+              One command. {ALL_SKILLS.length}+ skills. Zero config. Your AI assistant gets a brain upgrade in under 60 seconds.
             </p>
             <div className="liquid-glass rounded-2xl border border-white/[0.08] p-6 max-w-[600px] mx-auto">
               <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8895b8] mb-3">Quick Install</div>

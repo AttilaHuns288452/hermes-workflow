@@ -21,7 +21,7 @@
   },
   {
     "n": "CodeGraph",
-    "d": "144,827 nodes \u00b7 326,322 edges \u00b7 8,421 files \u2014 symbol graph for codebase Q&A.",
+    "d": "On-demand symbol graph context for codebase Q&A.",
     "t": [
       "Code Graph",
       "144K Nodes",
