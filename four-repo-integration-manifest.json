@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-09",
+  "baseline": "/home/attila/.hermes/cache/scratch/hermes-four-repo-baseline-20261009-172219",
+  "recovery_archive": "/home/attila/.hermes/backups/four-repo-integration-prewrite-20261009.tar.gz",
+  "sources": [
+    {
+      "name": "ui-ux-pro-max-skill",
+      "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "mirror": "/home/attila/.hermes/upstream-sources/four-repo-integration/uux-study",
+      "commit": "50d8a7de0900119855614541f15a1a616691eb33",
+      "license": "MIT",
+      "disposition": "adopt-search-data-and-skill"
+    },
+    {
+      "name": "Vibe-Skills",
+      "repository": "https://github.com/foryourhealth111-pixel/Vibe-Skills",
+      "mirror": "/home/attila/.hermes/upstream-sources/four-repo-integration/Vibe-Skills",
+      "commit": "ddcaa2affca93c1efe026d008b6b93709e5fb7e2",
+      "license": "Apache-2.0",
+      "disposition": "adopt-six-specialists-merge-deslop-reject-runtime"
+    },
+    {
+      "name": "one-skill-to-rule-them-all",
+      "repository": "https://github.com/rebelytics/one-skill-to-rule-them-all",
+      "mirror": "/home/attila/.hermes/upstream-sources/four-repo-integration/osttra",
+      "commit": "da860265ae968bdc6bb13b96c2c75fcb61176b72",
+      "license": "CC-BY-4.0",
+      "disposition": "reject-observer-extend-methods"
+    },
+    {
+      "name": "agent-rules-books",
+      "repository": "https://github.com/ciembor/agent-rules-books",
+      "mirror": "/home/attila/.hermes/upstream-sources/four-repo-integration/agent-rules-books",
+      "commit": "893a88a6fce3a80c565bf39ac65021b43a8b2990",
+      "license": "MIT",
+      "disposition": "reference-only"
+    }
+  ],
+  "active_targets": [
+    "skills/design/ui-ux-pro-max",
+    "skills/data-science/statistical-analysis",
+    "skills/mlops/data-quality/ml-data-leakage-guard",
+    "skills/testing/property-based-testing",
+    "skills/mlops/evaluation/evaluating-code-models",
+    "skills/mlops/explainability/shap",
+    "skills/mlops/interpretability/transformer-lens-interpretability",
+    "skills/software-development/legacy-code-change-safety/SKILL.md",
+    "skills/data-science/statistical-analysis/NOTICE.md",
+    "skills/mlops/data-quality/ml-data-leakage-guard/NOTICE.md",
+    "skills/testing/property-based-testing/NOTICE.md",
+    "skills/mlops/evaluation/evaluating-code-models/NOTICE.md",
+    "skills/mlops/explainability/shap/NOTICE.md",
+    "skills/mlops/interpretability/transformer-lens-interpretability/NOTICE.md",
+    "skills/software-development/simplify/SKILL.md",
+    "skills/software-development/hermes-agent-skill-authoring/SKILL.md",
+    "skills/workflow/ecosystem-audit/SKILL.md",
+    "scripts/lightrag_build_index.py"
+  ],
+  "rejected_runtime_components": [
+    "Vibe-Skills VCO controller, installer, adapters, and runtime-core",
+    "Task Observer SKILL.md, hooks, observation log, and staging installer",
+    "Agent Rules Books npx skills installer and bulk active installation",
+    "UI/UX Pro Max npm/Claude installers"
+  ]
+}
