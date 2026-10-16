@@ -288,6 +288,8 @@ User says ambiguous reference → session_search(query)
 
 **Purpose:** Select the best available free model for every task. Always default to free. Fall back gracefully.
 
+> **Source of truth:** `config.yaml` (see `config.yaml.template`) is the single authority for model IDs and provider wiring. The tables below are dated snapshots for orientation only — never copy model IDs out of docs; read them from config. Escalation criteria live in [Workflow Operations → Model Selection & Escalation](#model-selection--escalation).
+
 **5-Layer Free-First Chain:**
 
 | Layer | Provider | Models | Reliability | Cost |
@@ -603,3 +605,79 @@ Correction:
 ```
 
 This means the pipeline gets smarter with every session. Mistakes are encoded into routing rules.
+
+---
+
+## Workflow Operations
+
+Operational rules for running the pipeline: delegation, model escalation, verification, failure handling, and maintenance. These describe verified behavior as of 2026-10-16; limits and model wiring are read from `config.yaml` at runtime.
+
+### Subagent Delegation & Concurrency
+
+**When to delegate** (only these):
+- **Parallel independent workstreams** — two or more sub-tasks with no data dependency and disjoint file ownership.
+- **Review separation** — the author of a change is not its verifier; a non-trivial change's review goes to a fresh child (or a separate session) that receives the diff, not the author's summary.
+- **Long mechanical batches** that would crowd the parent's context.
+
+**When NOT to delegate:**
+- Tier 1 (atomic) tasks never delegate. Tier 2 delegates only when one of the cases above actually applies.
+- **Spawning agents for show is an anti-pattern.** A task that fits in a few tool calls runs inline. Parallelism is earned by independence, not by task count.
+
+**Rules for children:**
+| Rule | Why |
+|------|-----|
+| **Disjoint file ownership** — each child gets a non-overlapping file/directory scope; two children never write the same file | Concurrent writes to one file lose work |
+| **Evidence required from children** — a child's "done" claim is not evidence. The parent reads back the claimed changes (diff, file content, command output) before accepting | Children over-report completion; read-back is the contract |
+| **Bounded concurrency** — `delegation.max_concurrent_children` and `delegation.max_spawn_depth` in `config.yaml` are the authority (depth is capped at 1: no grand-children) | Unbounded fan-out multiplies cost and races |
+| **Toolset inheritance** — children inherit MCP toolsets per `delegation.inherit_mcp_toolsets` in config | Child capability is a config decision, not a prompt guess |
+
+### Model Selection & Escalation
+
+**`config.yaml` is the single source of truth.** Model IDs, providers, fallback order (`fallback_providers`), and auxiliary model choices (`auxiliary.*`) all live there. Documentation references config *keys* and provider names only — never hardcoded model IDs. If a doc and config disagree, config wins.
+
+**Escalation criteria — escalate on evidence, never preemptively:**
+1. Start at the cheapest layer that has handled this task class before (tier-gate: Tier 1 → fast/cheap; Tier 3 → strong reasoning).
+2. Escalate only when there is concrete failure evidence: quality gate failed, provider error or rate limit after bounded retries, or the task is verified beyond the current layer's competence.
+3. Probe before committing to a layer — a known-bad model is skipped, not retried in place.
+4. Paid layers are the last resort and only after free layers fail quality checks.
+
+Guidance skills (`workflow/task_tier`, `workflow/model-recommender-workflow`, `workflow/free-ai-model-router`) inform the choice; config defines the menu. Never invent or hardcode a model ID that is not in config.
+
+### Independent Verification & Review
+
+**Per-output-type gates** — nothing is "done" unverified:
+
+| Output | Gate (real tool output, not claims) |
+|--------|-------------------------------------|
+| Code | Tests / build / lint actually run; results quoted |
+| Config / infra change | Read back the target after the write (service list, config file, API response) |
+| Research / docs | Citations point at retrievable sources; numbers trace to a tool output |
+| Visual / UI | Render check (screenshot or DOM read), not the code that produced it |
+
+**Review separation:** the person/agent that wrote a change does not sign it off. For non-trivial changes, delegate review to a fresh child or session and hand it the diff. Reviewer output is findings with evidence (file + line + why), not a verdict word.
+
+**Evidence discipline:** verification claims must quote real command output. Behavior fixes land with a minimal guard test (e.g. `tests/agent/test_num_ctx_local_only.py`, `tests/tools/test_tool_call_args_schema_string.py`, `tests/hermes_cli/test_inventory_featured_user_defined.py` in the hermes-agent tree) that fails if the behavior regresses.
+
+### Failure Handling — Retry, Timeout, Checkpoint, Rollback
+
+| Mechanism | Behavior (config keys in `config.yaml`) |
+|-----------|-----------------------------------------|
+| **Retry** | Bounded: Kanban dispatch retries up to `kanban.failure_limit` (default 2), then the task is escalated/requeued, not hammered. A failed model/provider is skipped after retry budget, never retried in place. |
+| **Timeout** | Per-integration: MCP `connect_timeout` / `timeout`, `auxiliary.kanban_decomposer.timeout`, `kanban.dispatch_interval_seconds`. A hung child is killed and reported, never waited on indefinitely. |
+| **Checkpoint** | Long-running work checkpoints state before risky steps (`~/.hermes/checkpoints`, session checkpoint tooling), so an interrupted run resumes instead of restarting. |
+| **Rollback** | Git is primary: branch + commits, never force-push. Config edits keep timestamped `.bak` copies. Backups: `run-hermes-backup.py` (daily Google Drive, rclone crypt remote, retention with `--drive-use-trash=false`), `daily_state_backup.sh` (keeps the newest 7 state-snapshots), restore via `scripts/restore-hermes-backup.py`. |
+| **Self-healing patches** | Local source patches are re-applied automatically: `~/.hermes/scripts/ensure_patches.py` parses health markers from `~/.hermes/scripts/local_patches.diff` and re-applies dropped hunks via `git apply --3way` (recurring cron); `ensure_agent_patches.py` covers the agent-level fixes (num_ctx local-only gate, `tool_call` arguments-as-JSON-string schema, prompt_builder tier paragraph). Guard tests above fail if a patch silently drops. |
+
+### Skill & Integration Maintenance
+
+**How a new skill becomes usable:**
+1. Land `SKILL.md` under `skills/<category>/<name>/` — or in a directory listed under `skills.external_dirs` in `config.yaml`.
+2. Frontmatter: unique `name:` + trigger-style `description:` ("Use when …" — routing reads the description).
+3. Run `python3 scripts/audit_skills.py` (frontmatter validity, unique names, secret scan) — exit 0 required before commit.
+4. Reload (restart the session / `hermes skills list`) and verify with a probe prompt that names the trigger.
+
+**Drift checks:** `~/.hermes/scripts/drift_check.py` runs daily at 06:00 (Hermes cron) and compares the global config's `skills.external_dirs` + `mcp_servers` against every profile. The `local` offline Ollama profile is **exempt from MCP comparison by design** — it intentionally runs without MCP servers; a drift report flagging it is noise, not a defect.
+
+**Name-collision pitfalls:** skill names must be unique across *all* loaded directories — `audit_skills.py` counts duplicates for exactly this reason. When importing an external collection, rename colliding skills; never resolve a collision by deleting the local one. Two skills sharing a name at the same path tier cannot be distinguished by tooling (`skill_view` cannot load either).
+
+**Integration maintenance:** run the repo's `scripts/audit_skills.py` before every skill-tree commit; catalog (`SKILLS_CATALOG.md`) and the docs site (`docs/`, built from `src/`) regenerate when skills or site content change. Keep machine-specific paths and credentials out of git — reference scripts by `~` path only.

@@ -210,7 +210,8 @@ hermes-workflow/
 ├── META_PROMPT.md       # the /decide routing brain, in full
 ├── SKILLS_CATALOG.md    # generated skill catalog
 ├── SETUP.md             # 10-step full pipeline setup
-├── INTEGRATION.md       # how the layers connect
+├── INTEGRATION.md       # how the layers connect + workflow operations
+├── CHANGELOG.md         # dated change history
 └── SECURITY.md          # audit history + secret-scrub policy
 ```
 
