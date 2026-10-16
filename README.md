@@ -251,3 +251,10 @@ This is a **public mirror** — all config is templated with placeholders (`YOUR
 Licensed under [CC BY-NC 4.0](LICENSE)
 
 </div>
+
+## Hermes team audit
+
+See `HERMES_TEAM_AUDIT_2026-10-11.md` for the verified team architecture, profile roles, Kanban smoke-test IDs, media capability audit, backups, and remaining gaps.
+
+- Local protocol: `/home/attila/.hermes/TEAM_PROTOCOL.md`
+- Reusable workflows: `/home/attila/.hermes/TEAM_WORKFLOWS.md`
