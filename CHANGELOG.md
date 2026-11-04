@@ -2,6 +2,20 @@
 
 Dated entries, newest first. Convention: `date — headline`, then bullets grouped by what changed and why.
 
+## 2026-11-04 — Multi-agent specialist team published
+
+The coordinated PM + 7-specialist organization, its shared governance, and the two skills that build and govern it are now first-class repo content.
+
+- **`team/` — new.** `CHARTER.md` (operating model, role table, handoff contract, idea→launch lifecycle), `SOUL.md` (PM / Team Lead contract), and 7 specialist role contracts under `team/profiles/<role>/SOUL.md` (designer, engineering, research, marketing, sales, documents, qa). Collaboration runs through direct profile delegation + Kanban; the Desktop group chat is optional and never a blocker.
+- **`skills/autonomous-ai-agents/hermes-multiagent-team/` — new.** How to build and verify the org: profile creation, role SOULs, the shared charter, structural + per-profile + behavioral test gates.
+- **`skills/autonomous-ai-agents/team-alignment-traceability/` — new.** The cross-functional owner / dependency / acceptance-criteria contract, plus the provenance and security gate for future external-skill intake.
+- **`skills/decide`:** tier-gated routing fixes (scope discipline, demand-driven skill composition).
+- **README:** new "Multi-Agent Team" section (role table + `team/` layout); skill count 1365 → 1367.
+- **SKILLS_CATALOG.md:** the two new skills listed under `autonomous-ai-agents`.
+- **Site:** both skills added to the workflow catalog, counts refreshed, `docs/` rebuilt.
+
+Rationale: the team org existed only in the live install. This publishes it as reusable, auditable repo content with the alignment contract that keeps cross-functional handoffs traceable.
+
 ## 2026-10-16 — Workflow docs aligned with verified behavior
 
 Gap audit of the documented workflow against live Hermes behavior (verified 2026-10-16). Small additive diffs only — no rewrites.

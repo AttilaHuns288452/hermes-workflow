@@ -241,7 +241,7 @@ data acquisition to portfolio management and strategy backtesting.
 
 ---
 
-## Category: autonomous-ai-agents (5 skills)
+## Category: autonomous-ai-agents (7 skills)
 
 Delegates specialized coding work to dedicated AI coding CLIs.
 
@@ -272,6 +272,19 @@ Delegates specialized coding work to dedicated AI coding CLIs.
 - **What:** Delegates coding to OpenCode CLI for features and PR review.
 - **Pipeline:** Step 5 — used in preference to paid coding agents when
   the task fits within free model capabilities. Routes through free chain.
+
+### hermes-multiagent-team
+- **What:** Build a coordinated PM + 7-specialist multi-agent organization
+  in Hermes: profiles, role contracts, a shared charter, and Kanban routing.
+- **Trigger:** "build a team", "multi-agent org", "specialist profiles",
+  coordinated cross-functional delivery.
+
+### team-alignment-traceability
+- **What:** Cross-functional owner / dependency / acceptance-criteria
+  contract that keeps the PM brief authoritative across every specialist
+  handoff.
+- **Trigger:** Cross-functional work, shared requirements, handoffs,
+  multi-role deliverables.
 
 ---
 
