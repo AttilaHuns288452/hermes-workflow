@@ -30,10 +30,10 @@ USER REQUEST
 
 | Class | Signals | Primary skills (verify resolve before first use) |
 |---|---|---|
-| **code** | build/fix/refactor/debug/implement, PRs, tests, architecture, database/API work, auth/payments/security, production deploy, reliability, performance, incident debugging | `software-engineering` (universal production-grade method — load for ANY substantial or high-risk engineering work, composes with the project skill), then `code-review`, `security-review`, `simplify`, `test-driven-development`, `systematic-debugging` |
+| **code** | build/fix/refactor/debug/implement, PRs, tests, architecture, database/API work, auth/payments/security, production deploy, reliability, performance, incident debugging | `software-engineering` (universal production-grade method — load for ANY substantial or high-risk engineering work, composes with the project skill), then `code-review`, `software-development/security-review`, `simplify`, `software-development/red-green-refactor`, `software-development/four-phase-debugging` |
 | **design** | UI/UX/visual/brand/style, landing pages, components | OpenDesign (`open-design-ade`, web UI on localhost:7456 — probe; app must be running) is the standing first choice for design work, then `impeccable` (full design workflow), brand kit (`<brand>-ui-skills` or `od-<brand>`), bare style name (`glassmorphism`…) — `creative` is the generic fallback |
 | **research** | search/look up/compare/cite, current events, papers | builtin `web_search` (quick) → `firecrawl` leaves (`firecrawl-search/scrape/deep-research`) → `scrapling`/`blocked-page-recovery` (fallback) |
-| **ops/system** | system state, disk, installs, cron, services, backups | `devops` leaves (`docker-management`, `linux-system-backups`…), `workflow/hermes-backup-workflow`, `hermes-kanban-setup` |
+| **ops/system** | system state, disk, installs, cron, services, backups | `devops` leaves (`docker-management`, `devops/backup-verification`…), `workflow/hermes-backup-workflow`, `hermes-kanban-setup` |
 | **media** | images, video, audio, TTS, documents | `hyperframes`/`media/openmontage-production` (video — environment-gated), `sensenova-image-gen` (images), `media` leaves (audio), `productivity` leaves (docx/pdf/pptx) |
 | **data** | analysis, market data, notebooks, finance | `data-science` leaves, `llmquant-*` (finance routes here + `llmquant-data` MCP), `note-taking` leaves |
 | **hermes-internal** | config, skills, MCPs, gateway, profiles, cron | `hermes-agent` skill (always first), `subagent-delegation`, `workflow` leaves |
@@ -69,6 +69,7 @@ Config (`config.yaml`: `delegation.model`) defines the delegate model — never 
 - **Children need decision-complete briefs:** goal, success criteria, interfaces, edge cases, test criteria — and sectioned-write instructions for large single files (children can time out writing one huge file).
 - **Read-only subagents** (exploration/planning) get read-only instructions verbatim; a planning subagent that edits has escaped its contract.
 - **Mandatory read-back on completion:** never relay a child's "done" as success. Verify actual output (files exist, tests/build pass, state changed), then report. For substantial Tier-3 work, `hermes verify <project>` records evidence.
+- **Negative claims get the same read-back:** a child's "X is unset / missing / not installed" is one probe of one layer. Confirm the other layers before acting on the absence — shell env vs `.env` vs `hermes auth list` for credentials, `command -v` vs absolute install paths for binaries. Most subagent "capability is missing" reports are layer mistakes, not facts.
 
 ## ECC Specialist Library
 
@@ -101,6 +102,8 @@ RETRY (once, if plausibly transient)
 → REPORT (honest blocker + what was tried)
 ```
 
+**No-progress gate:** Never repeat an identical tool call after it returns the same result. Change the arguments, change the tool, or proceed with the evidence already returned. A loop warning is a diagnosis signal, not a reason to retry; after one warning, switch strategy immediately. For session recovery, use a targeted `session_search(query=...)`, then `session_search(session_id=..., around_message_id=...)` to read the relevant window instead of browsing recent sessions repeatedly.
+
 Framework guardrails (tool-loop warnings, watchdogs, fallback providers) handle the mechanical layer — connect to them, never build parallel recovery infrastructure.
 
 ## Memory Policy
@@ -109,7 +112,7 @@ Durable user/context facts → `memory` tool (declarative, compact). Everything 
 
 ## Token Discipline (Rule 1)
 
-Reading code under `~/Documents/Projects/` → probe CodeGraph first (`mcp__codegraph__codegraph_explore` with `projectPath`, or CLI `codegraph query`). `read_file` is last resort for project code. Exception: `~/.hermes/` and `~/.config/` system/config files — no probe needed. Graphify MCP for structural graph questions.
+Reading code under `~/Documents/Projects/` → probe CodeGraph first (`mcp__codegraph__codegraph_explore` with `projectPath`, or CLI `codegraph query`). `read_file` is last resort for project code. Exception: `~/.hermes/` and `~/.config/` system/config files — no probe needed. Graphify MCP for structural graph questions. Discovery is indexed across the board: skills/references → `python3 ~/.hermes/scripts/lightrag_find.py "<query>"` or `reference_find.py`; past context → `session_search`. Prefer one targeted index query over broad grep/find sweeps — wandering search sessions cost more than the reads they avoid and make small tasks feel big.
 
 ## Self-Correction
 
