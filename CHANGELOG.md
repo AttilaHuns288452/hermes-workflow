@@ -2,6 +2,31 @@
 
 Dated entries, newest first. Convention: `date — headline`, then bullets grouped by what changed and why.
 
+## 2026-11-09 — Live-tree sync: skills refreshed, docs made honest
+
+The repo was five days behind the live install and still claimed 1,367 skills.
+This entry records what moved and, more importantly, what the numbers actually mean.
+
+- **Skills: 1,367 → 1,482** (715 top-level directories). 195 published skills were older
+  than their live copies and were refreshed; 115 skills that existed only in the live tree
+  were published (including `ux-psychology` and `opensandbox`).
+- **Held back, deliberately:** the `security-reverse` (46), `roblox` (43), `remotion` (12)
+  and `aris` (7) packs remain unpublished until their upstream LICENSE/NOTICE is carried
+  into this repo. They are third-party work; publishing them without attribution would be
+  the wrong kind of convenient.
+- **`SKILLS_CATALOG.md`:** the old sentence "Every skill below is installed and available
+  in this Hermes Agent profile" was false for roughly 900 entries. It now states the true
+  relationship: the catalog is the library; the maintainer's live profile injects a subset
+  (~585) and the rest is adoptable breadth.
+- **`README.md`, `SETUP.md`, site:** counts refreshed, duplicate-name claim corrected to
+  "no duplicates inside a category, vendored copies excepted".
+- **`team/SOUL.md`:** synced to the current operating contract (adds the "never stop with
+  work still doable" rule and the tier-gated routing paragraph).
+- **`docs/`:** rebuilt from `src/` after the copy changes.
+
+Rationale: peers use this repo as the reference for the workflow. A stale count is a small
+lie that compounds into wrong expectations; a public repo should say exactly what it holds.
+
 ## 2026-11-04 — Multi-agent specialist team published
 
 The coordinated PM + 7-specialist organization, its shared governance, and the two skills that build and govern it are now first-class repo content.

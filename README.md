@@ -2,15 +2,15 @@
 
 # 🧞 Hermes Workflow
 
-**A battle-tested skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1367 skills, one decision layer, cheap-first model routing.**
+**A battle-tested skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1482 skills, one decision layer, cheap-first model routing.**
 
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-1367-4a8cf4?style=flat&labelColor=0b0f1c)](#-skill-catalog)
+[![Skills](https://img.shields.io/badge/skills-1482-4a8cf4?style=flat&labelColor=0b0f1c)](#-skill-catalog)
 [![Routing](https://img.shields.io/badge/router-%2Fdecide-3ddc84?style=flat&labelColor=0b0f1c)](META_PROMPT.md)
 [![Site](https://img.shields.io/badge/docs-live-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
-**What is this?** A production skill library for Hermes Agent: install it, point Hermes at it, and your agent gains 1367 curated skills across 599 top-level directories — routed through a single decision layer (`/decide`) that probes cheap indexes before spending tokens.
+**What is this?** A production skill library for Hermes Agent: install it, point Hermes at it, and your agent gains 1482 curated skills across 715 top-level directories — routed through a single decision layer (`/decide`) that probes cheap indexes before spending tokens.
 
 **Why?** Skills without routing rot. This repo pairs every skill with the orchestration that decides *when* to use it — plus a token-saver probe chain that cuts read costs by 50×–1,233× in live use.
 
@@ -23,7 +23,7 @@
 | Layer | What it does |
 |-------|--------------|
 | **🧠 `/decide`** | The routing brain: intent → capability class → skill shortlist → availability probe → execution → verification → recovery. See [`META_PROMPT.md`](META_PROMPT.md). |
-| **📚 Skills** | 1367 `SKILL.md` files in 599 top-level directories: software development, design systems, finance (LLMQuant), media, research, DevOps, security. |
+| **📚 Skills** | 1482 `SKILL.md` files in 715 top-level directories: software development, design systems, finance (LLMQuant), media, research, DevOps, security. |
 | **⚡ Token Saver** | Probe-before-read chain (CodeGraph → Graphify → LightRAG) so the agent queries indexes instead of raw-reading files. |
 | **🛡️ Guardrail** | 6 immutable rules — file protection, secrets safety, injection immunity, system integrity, re-anchoring, safe fallback. |
 | **🤝 Delegation** | Subagent orchestration patterns with mandatory read-back verification. |
@@ -66,7 +66,7 @@ User request
               │                       │
       ┌───────▼───────┐      ┌────────▼────────┐
       │ Skills        │      │ MCPs / Tools    │
-      │ 1367 SKILL.md  │      │ 14 enabled      │
+      │ 1482 SKILL.md  │      │ 11 enabled      │
       │ indexed by    │      │ codegraph,      │
       │ LightRAG      │      │ firecrawl, ...  │
       └───────┬───────┘      └────────┬────────┘
@@ -124,7 +124,7 @@ All imported specialist skills were adapted for Hermes, corrected against upstre
 
 ## 📦 Skill Catalog
 
-Browse all 1367 skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
+Browse all 1482 skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
 
 | Category | Count | Highlights |
 |----------|-------|------------|
@@ -148,7 +148,7 @@ skills/
 │   ├── claude-seo/      # SEO suite
 │   └── superpowers/     # debugging, planning skills
 ├── autonomous-ai-agents/# hermes-agent skill + agent CLI ops
-└── ...                  # 599 top-level directories
+└── ...                  # 715 top-level directories
 ```
 
 Each skill is a directory with a `SKILL.md` (YAML frontmatter: `name`, `description`, triggers) plus optional `references/` and `scripts/`. Hermes loads skills by frontmatter description — write it like a trigger, not a title.
@@ -157,9 +157,9 @@ Each skill is a directory with a `SKILL.md` (YAML frontmatter: `name`, `descript
 
 ## 🔌 MCP / Tool Ecosystem
 
-Configured in `config.yaml.template` (12 server entries, placeholders only). Live profile runs **14 enabled** MCP servers:
+Configured in `config.yaml.template` (placeholders only). Live profile runs **11 enabled** MCP servers:
 
-`codegraph` · `graphify` · `firecrawl` · `supabase` · `vercel` · `vscode` · `figma-dev` · `flowbite` · `demosmith` · `pagecast` · `llmquant-data` · `21st` · `clawlink` · plus 4 disabled (stripe, figma, opendesign, agentmemory)
+`codegraph` · `firecrawl` · `llmquant-data` · `pagecast` · `supabase` · `vercel` · `blender` · `packet-tracer` · `rea` · `earshot` · `opensandbox` — plus 14 configured-but-disabled (21st, agentmemory, clawlink, demosmith, figma, figma-dev, flowbite, graphify, opendesign, stripe, twelve-data, vscode, artemis, roblox_studio). Disabled is not broken: each one is either credential-gated or duplicated by an enabled server.
 
 ```bash
 hermes mcp list          # see what's enabled on your install
@@ -224,7 +224,7 @@ Conventions:
 
 ```text
 hermes-workflow/
-├── skills/              # 1367 SKILL.md files, 599 top-level categories (the main event)
+├── skills/              # 1482 SKILL.md files, 715 top-level categories (the main event)
 ├── docs/                # built website (GitHub Pages — do not edit by hand)
 ├── src/                 # website source (React + Vite)
 ├── scripts/             # ecosystem utilities
@@ -242,7 +242,7 @@ hermes-workflow/
 
 - [x] `/decide` routing brain with probe-before-use enforcement
 - [x] Token Saver probe chain (live-benchmarked 50×–1,233× read reduction)
-- [x] 1367-skill catalog across 599 top-level directories, zero duplicate names
+- [x] 1,482-skill catalog across 715 top-level directories, no duplicate names inside a category (vendored upstream copies excepted)
 - [x] Live docs site (React + Vite → GitHub Pages)
 - [ ] Skill auto-sync script (live install ↔ repo, bidirectional)
 - [ ] Catalog regeneration in CI on skill-tree changes

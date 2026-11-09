@@ -382,7 +382,7 @@ function InstallSection() {
     { n: 'Connect the Workflow Skills', num: '02', desc: `${ALL_SKILLS.length} curated skills in this repository, with reference material discoverable on demand:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'hermes config set skills.external_dirs "[\"$PWD/skills\"]"\nhermes skills list'] },
     { n: 'Install Core Tools', num: '03', desc: 'Power the free model chain and code knowledge graph:', code: ['npm install -g opencode              # coding agent CLI\nuv tool install graphifyy            # AST code graph\nnpm install -g @colbymchenry/codegraph  # Live MCP index'] },
     { n: 'Pick your daily driver', num: '04', badge: '★', desc: 'Set your primary model — your configured provider, or any OpenAI-compatible provider:', code: ['cp config.yaml.template ~/.hermes/config.yaml  # then edit model.default'], highlight: true, extra: 'Or run: <code class="text-[#3ddc84]">hermes -z "What does the decide skill do?"</code>' },
-    { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Copy the config template and replace YOUR_USERNAME. This wires up the bundled skill externals, 9 MCP servers, Kanban, LightRAG, and delegation:', code: ['cp config.yaml.template ~/.hermes/config.yaml', '# Replace YOUR_USERNAME and API keys\\n# Then: hermes kanban init && hermes gateway start'], verify: 'hermes skills list | wc -l && hermes mcp list' },
+    { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Copy the config template and replace YOUR_USERNAME. This wires up the bundled skill externals, MCP servers, Kanban, LightRAG, and delegation:', code: ['cp config.yaml.template ~/.hermes/config.yaml', '# Replace YOUR_USERNAME and API keys\\n# Then: hermes kanban init && hermes gateway start'], verify: 'hermes skills list | wc -l && hermes mcp list' },
   ]
 
   return (
@@ -450,7 +450,7 @@ function AIPipelineVisual() {
     'Decomposing request into sub-tasks',
     'Token Saver probe: CodeGraph + Graphify',
     'Loading domain skills: /decide, firecrawl, github',
-    'LightRAG fallback: 1367 skills indexed, 0 API calls',
+    'LightRAG fallback: 1482 skills indexed, 0 API calls',
     'Kanban: task auto-decomposed → worker assigned',
     'Routing to configured model',
     'Executing pipeline across 3 skills',
@@ -571,7 +571,7 @@ function PipelineSection() {
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
     { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph indexed code graph and project context' },
     { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
-    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 1367 skills · sub-second · 0 API calls' },
+    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 1482 skills · sub-second · 0 API calls' },
     { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'configured model · 4-layer fallback chain' },
     { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
   ]
@@ -616,10 +616,10 @@ function PipelineSection() {
 function FeaturesSection() {
   const features = [
     { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Built-in SQLite-backed task board with dispatcher, worker profiles, and auto-decomposition. `hermes kanban init`, `hermes kanban create`, or open `hermes dashboard` → Kanban tab.', code: 'hermes kanban create "Ship landing page" --assign worker-web' },
-    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 1367 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
+    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 1482 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
     { t: 'FACTORY', c: '#f0d060', n: 'Orchestrator Profile Factory', d: 'Auto-creates worker profiles from the golden template. Decision flow: check profiles → reuse or create → kanban_create.', code: 'hermes profile create <role> --clone-from learning' },
     { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: '4 local cron jobs: LightRAG daily rebuild, gateway health every 30m, profile config drift daily 6am, state backup daily 3am. Silence = healthy.', code: 'hermes cron list # all 4 green' },
-    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 1367 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
+    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 1482 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
     { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'Profiles inherit skills + MCP servers from the root config. New profiles share the same toolchain via --clone-from learning.', code: 'hermes profile create researcher --clone-from learning' },
   ]
 
