@@ -87,6 +87,33 @@ Stop when:
 - Use Markdown tables for comparisons
 - Every section: 2-3 well-cited sentences
 
+## Quantitative claims and cost models
+
+When research feeds a cost, quota, or feasibility model (not just prose):
+
+- Source every quota/price claim to the provider's official pricing or limits
+  page; a search snippet is a lead, not evidence. Log each source in a sources
+  table with what it establishes (limit, price, term) so every modeled number
+  traces to a page.
+- Make the workload an explicit assumptions block (cadence, payload size, row
+  size, retention) BEFORE deriving any ceiling. Quota ceilings are capacity
+  arithmetic: usage per device per month × devices vs published limit, with a
+  stated safety threshold (e.g. 80%); name the first bottleneck and say it is
+  not the hard provider maximum.
+- Separate cash outlay from imputed economic cost (unpaid labor valued as
+  hours × rate). Never fold them into one number; a funding target is cash
+  plus contingency only.
+- Label modeled values as estimates with their assumption ("70 W at 30% duty
+  cycle, not measured"). Never present an assumed draw, cadence, or rate as
+  measured fact.
+- When a funding source or commitment is not evidenced in the supplied
+  material, write "requires confirmation" — do not assume school, sponsor, or
+  team contributions.
+- Put the arithmetic in a rerunnable calculation script with assertions that
+  emits machine-readable output (JSON); every figure quoted in the deliverable
+  must trace to that output, and re-running the script must reproduce the
+  deliverable's numbers exactly.
+
 ## What NOT to Do
 
 - Don't fabricate URLs or sources

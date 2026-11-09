@@ -7,6 +7,10 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 A discipline for hard bugs. Skip phases only when explicitly justified.
 
+## Match evidence-gathering to the ask
+
+The feedback loop is a means, not the deliverable. When the user says "fix this error" and the cause is already located (a named file/symbol, a clear code or log-level repro), execute the fix and verify it directly — do not substitute a screenshot / visual-investigation loop for the fix. Visual artifacts are for when the UI itself is the unknown (layout, render, state you cannot see in code or logs). Emitting diagnosis artifacts the user did not ask for while the fix is at hand reads as stalling. Err toward the smallest evidence that proves the fix landed.
+
 When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
 ## Redact
@@ -35,6 +39,10 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
 
 Build the right feedback loop, and the bug is 90% fixed.
+
+**Place reusable loops in the repo** as checked-in scripts (a `qa/` or test
+file). `/tmp` and scratch dirs get pruned between sessions, and rebuilding a
+lost harness costs more than committing it.
 
 ### Tighten the loop
 
@@ -85,6 +93,35 @@ Done when **every remaining element is load-bearing**: removing any one of them 
 
 Do not proceed until you have reproduced **and** minimised.
 
+## Interpreting evidence without fooling yourself
+
+A confident wrong cause is worse than a slow right one. These three rules protect
+the gap between "the log shows X" and "X is the cause".
+
+**Count the suspect signal across the working state before naming it the cause.**
+When one version or state is broken and another works, grep the same suspect line
+across *every surviving log of the working state* and count occurrences. A warning
+that also appears in the working build, at any count, is **noise, not the bug** —
+it is a pre-existing condition the working build tolerated. The cause is what is
+unique to the broken state, or what is *absent* there (an expected success marker
+that never fires, e.g. a window or connection that was created on every healthy
+run and zero times on the failing one). Name that differentiator, not the loudest
+line near the crash. Correlating the most prominent warning with the failure is
+the single easiest way to ship a confidently wrong root cause.
+
+**When two reports or audits contradict on a severity claim, the code settles it.**
+Neither the more alarming nor the more recent wins. Read the exact lines both
+sides cite and decide from the real control flow, then correct whichever artifact
+carries the wrong claim. Two documents in the repo that disagree on whether a
+condition is safe or fatal are themselves a defect: fix them in the same pass.
+
+**Verify audit findings against the live tree before editing.** A long-running
+audit reports against a snapshot. Check each cited line against the current file
+first, and re-run the gates to learn the real baseline before trusting any count
+the audit quotes — findings may already be fixed, and acting on stale ones wastes
+the pass or reintroduces old code. Which parts of a finding are already resolved
+determines what is actually left to do.
+
 ## Phase 3: Hypothesise
 
 Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
@@ -126,6 +163,73 @@ If a correct seam exists:
 3. Apply the fix.
 4. Watch it pass.
 5. Re-run the Phase 1 feedback loop against the original (un-minimised) scenario.
+
+## Failure signatures worth checking first
+
+Cheap checks that outrank hypothesis generation for common web-UI symptoms:
+
+- **Silent hang / page dies with no console error while opening a view:**
+  check for mutual recursion across layers — a content loader calling the
+  shell/chrome "open" function, which calls back into the content loader.
+  Grep the call sites of BOTH directions before reading whole files; the
+  cycle is invisible to fuzzy search when the two calls sit in different
+  modules, and the stack overflows or hangs without a useful trace.
+- **`X is not defined` in the console:** check the Network tab for a 404'd
+  `<script src>` first — a wrong path prefix surfaces much later as an
+  undefined global at first call, far from the real cause. Fix the path;
+  the symbol was never missing.
+- **A style "does not apply":** confirm the selector against the live DOM's
+  actual class list before editing the rule — a selector naming classes the
+  elements do not carry (wrapper class vs element class) silently matches
+  nothing, and fuzzy search on the stylesheet will not reveal it.
+- **A utility class IS in the built CSS but the computed style shows another
+  value:** unlayered legacy CSS beats `@layer` utilities at ANY specificity, so
+  an old stylesheet rule silently wins. Find the winner with a live rule walk
+  (for every rule in `document.styleSheets`, `el.matches(rule.selectorText)`
+  and print the rules that set the property), then fix at the owning layer:
+  drop the legacy class name from the utility-authored element or bring the
+  legacy rule into a layer — never add `!important` or arbitrary variants to
+  out-shout the cascade. A ragged control row (button height ≠ inputs' height)
+  is this signature in mild form: a legacy `button`/`.btn` fixed `height` beats
+  the `h-*` utility, so measure every control's rect before redesigning.
+- **`[object Object]` (or garbled text) where a rail/list should show text:** a
+  producer of the shared data structure broke the declared format and the
+  consumer coerces (`String(x)`). Grep every PRODUCER of that structure and fix
+  the ones that drifted; making the consumer type-aware hides the drift and
+  grows per-type branches.
+- **Columns swapped / content squeezed at desktop while mobile looks right:** measure each grid child's rect against the container's computed `gridTemplateColumns` at the broken breakpoint. Auto-placement is DOM order, so a one-sided `order-*` pair puts the unclassed child (order 0) ahead of any positive order. Fix = explicit order on BOTH children at both breakpoints (details in the `frontend-patterns` skill, Tailwind defect pitfalls reference).
+- **Horizontal overflow on a responsive page:** measure `scrollWidth` vs the
+  viewport at the target width and hide suspects one at a time. A `1fr` grid
+  track is `minmax(auto,1fr)` and floors at its content's min-content width,
+  and `overflow:auto` scrollers clamp their own size but not their
+  contribution to the track — `min-width:0` (or `overflow:hidden`) on the
+  the grid item is the fix.
+- **A degraded/fallback path fires with no error reason:** a deterministic guard
+  (scope gate, coverage gate, out-of-scope classifier) fired BEFORE the
+  subsystem you are debugging — provider and protocol failures always populate
+  a reason field, an empty one means the short-circuit came from upstream. Read
+  the guard's conditions before instrumenting the subsystem.
+- **A field exists in raw data but vanishes in validated/normalized output:**
+  validators that rebuild objects field-by-field (allowlist shapes) silently
+  strip additions. Grep the validator/rebuilder for the field before suspecting
+  the producer or the transport.
+- **The flow works in the app but the user's external tool rejects it (payment
+  app, bank app, mail client): check the environment mode before instrumenting
+  code.** Sandbox/test credentials and provider test modes (test key prefixes,
+  `provider_mode='test'`, staging endpoints) mint artifacts that real-world
+  tools legitimately refuse — an app-side success proves only that the sandbox
+  accepted it. Confirm which mode actually served the request from the
+  provider's own record of it (e.g. the created intent's `livemode` flag), and
+  switch the mode/keys before suspecting the code path.
+- **A linter or type-checker emits resolution errors for nearly every import
+  (`Unknown require`, `cannot find module`, `Key 'X' not found`) across the whole
+  tree:** check the project's own documented invocation of that tool before
+  blaming a stale generated artifact or a missing config. A dropped required flag
+  (`--sourcemap=`, `--project`, `--baseUrl`, `--definitions=`) looks exactly like
+  broken resolution and yields hundreds of bogus diagnostics at once. A real
+  resolution failure is usually narrow (one or two modules); an all-tree wall is
+  almost always the command, not the code. Read the documented command first —
+  it is often already in the repo's README or QA notes.
 
 ## Phase 6: Cleanup
 

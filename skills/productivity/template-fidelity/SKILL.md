@@ -120,6 +120,83 @@ symptoms reads as incomplete.
    widen the offending columns at the TARGET font size, and add `w:tblHeader`
    to header rows so tables that now span pages repeat their header.
 
+## Authoring a NEW deliverable to match a reference document's look (pandoc route)
+
+When the deliverable is authored as markdown (long analytical document, many computed
+tables) and the user hands a finished reference DOCX for the LOOK ("make it look like
+this"), the reference is a style contract only, never a content or figure source.
+
+1. Extract the reference identity BEFORE writing code: render 4-6 representative pages
+   (title, TOC, a table page, a heading page) AND dump its XML facts — heading
+   font/size/bold/color per level (styles.xml plus run-level overrides), body font and
+   alignment, title-page treatment (capitalization, what follows it), sectPr margins and
+   page size, table identity (grid presence/color, header fill, label-column bold,
+   number alignment), caption format ("Table N. Title" vs "Table N:"), footer format
+   ("Page X of Y" vs bare "Page N", size, alignment), reference-list styling (hanging
+   indents, URL runs). Vision gives the character (sans vs serif, compact vs airy); the
+   XML counts settle fonts, sizes, colors.
+2. Build a pandoc `--reference-doc` carrying that identity (styles including theme-font
+   overrides, heading colors/spacing, Normal alignment, sectPr, footer with PAGE /
+   NUMPAGES fields), generate the document from markdown with pandoc, then post-process
+   with python-docx for what pandoc cannot do: title page, static TOC, numbered captions.
+3. Post-processing order: content fixes -> ONE style/normalization pass -> pagination-
+   sensitive additions (title page + TOC placeholders) -> caption injection -> save.
+   Render to PDF, map real pagination, patch the TOC's page numbers, re-render, and
+   assert the page map is stable before any page-number check counts.
+4. Verify as the Verification section says: side-by-side rendered-page vision against
+   the reference's pages, XML ground truth whenever the render reading is doubtful.
+
+Command-level recipe: `references/pandoc-reference-docx-pipeline.md`.
+
+Pandoc-route pitfalls:
+
+- Pandoc writes TOC field codes that LibreOffice never populates, so the PDF renders an
+  empty TOC (and a leftover field can print a raw "TOC" heading). Build a static TOC
+  (entry paragraph + right-aligned tab + literal page number) from a two-pass pagination
+  map; TOC pages shadow body matches when locating headings, so search past them.
+- Heading styles inherit Normal's justify alignment: every wrapped line except the last
+  stretches word-by-word and reads as scattered single words. Set heading alignment
+  explicitly in the normalization pass.
+- A rendered font that contradicts the style definitions is run-level `w:rFonts` or a
+  theme override beating the style (pandoc emits both). Sweep run-level rFonts and settle
+  fonts by counting XML, never by the render.
+- Any preprocessing pass that changes line counts (blank-line insertion, list
+  restructuring) silently shifts the stored line indices of every later insertion.
+  Locate blocks to modify by content with a moving cursor in document order — never by
+  saved line numbers.
+- A regex trimming trailing whitespace (`\s*$`) also eats the newline and merges the
+  next line into the match, shifting every index after it. Anchor to `[ \t]*$`.
+- Pandoc only recognizes a `Table: caption` paragraph as a caption when it is blank-line
+  separated above and the pipe table follows within a few lines; a horizontal rule
+  (`---`) between them defeats recognition and the literal "Table: " text lands in the
+  body.
+- Normalize non-breaking hyphens, curly vs straight quotes, and NBSP to plain characters
+  before any exact-match assertion between expected strings and extracted text —
+  typographic variants look identical and fail equality.
+- A multi-pass markdown rewrite runs in dependency order: structural section
+  splices first (their anchors may contain the tokens a later pass strips),
+  reference renumbering before token removal, pure surface substitutions last.
+  A reversed pair silently no-ops on stale anchors. Body-content conventions
+  for deliverable prose (no traceability codes in body, tables over blocks)
+  live in the docx skill's "Deliverable reports".
+- When a rewrite script splits the document into regions and transforms one,
+  the transform must read AND write the region variable: renaming only the
+  assignment target (`x = re.sub(..., whole_doc)` → `y = re.sub(...,
+  whole_doc)`) leaves the regex argument pointing at the full document, and
+  the region join then silently duplicates that content (two References
+  sections ship). Post-condition before any conversion: every top-level
+  heading matches exactly once, and each appended section occurs once.
+- Patch generated pipeline scripts by position, not by a spanning regex:
+  slice from `rindex(anchor_before)` to `index(anchor_end)`. A non-greedy
+  regex from one `check(...)`/dict line to another swallows every similar
+  line between them (neighboring check and figure blocks live exactly
+  there), and one mismatched anchor eats real code silently.
+- Reference-list entries are one paragraph each: bare one-per-line entries
+  with their markers stripped collapse into a single markdown paragraph
+  (consecutive non-blank lines join). Keep blank lines or list markers
+  between entries, apply a hanging indent, and left-align the list —
+  justify stretches short entries into word rivers.
+
 ## Template purity (user correction, enforced)
 
 Never invent structural elements the blank template lacks (owner / "Assigned
@@ -166,6 +243,15 @@ shared ID range correctly.
 - Trace every task/claim line to its source corpus (standup logs, tasking
   posts): a keyword-overlap pass flags untraceable lines for manual review;
   trim invented detail rather than shipping it.
+- Every number in a generated table comes from the calculation model, which must be
+  extended to compute each presented series (sensitivity, reserve, scenario variants).
+  Hand-computed cells in prose tables drift from the model and are the first defect an
+  adversarial review finds; one correction then has to propagate by hand.
+- Before delivery run an independent second-path verification: fresh code that recomputes
+  the money math from raw inputs and reconciles the document's extracted table numbers
+  against the model output. Validate external/adversarial review findings the same way —
+  each against the model before fixing — since a reviewer's own recomputed figures can
+  carry arithmetic slips.
 - Prefer structure that cannot contradict sources (one overall date range in
   the header instead of per-section dates when real activity overlaps).
 - When the user supplies the real sequence/ordering of events, that OVERRIDES
@@ -210,6 +296,41 @@ signatures). Body paragraphs: bold line-start labels only.
 
 Choke-point snippet (borders, shading, margins, widths, numeric align):
 `references/docx-table-styling.md`.
+
+## Targeted section replacement in a finished document
+
+When the user says "rewrite only these sections / fill these placeholders, do
+not touch anything else" in a FINISHED document:
+
+1. **Back up the original to a sibling file first, and treat the backup as the
+   rebuild source.** Re-running an edit script over an already-edited file
+   double-applies or silently no-ops; regenerate deterministically by copying
+   the backup over the target, then running the edit script.
+2. **Script the edit as a repeatable generator**, not one-off surgery: every
+   figure in the new prose must come from the same calculation output the
+   verifier reads, so a rebuild cannot silently diverge from its numbers.
+3. **Replace content in place**, cloning the replaced paragraph's pPr onto each
+   new paragraph so the section keeps the document's styles, spacing, and list
+   structure; keep the document's run conventions (bold=None inherited, label
+   runs bold).
+4. **Do not restructure outside the target range**: no renumbering, no table
+   restyling, no footer changes.
+
+Verification deltas for targeted edits (on top of the standard checks):
+
+- **Untouched-range identity:** compare original vs output paragraph-text
+  lists restricted to everything outside the edited range and assert zero
+  paragraphs lost; assert the section headings appear in order.
+- **Figure anchors:** `pdftotext` the rendered PDF and count every new key
+  figure and heading. A value computed by the script but absent from the
+  extracted text means the edit did not land — fix before reporting.
+- **Rendered layout:** vision-check ONLY the pages containing the edited
+  sections (locate them via form-feed split of the extracted text) for
+  clipping, overlap, and table integrity.
+- **Inherited-vs-induced warnings:** run the same package validator on the
+  pre-edit backup; warnings identical in both are inherited false positives
+  (report them as such, do not chase them), warnings present only in the
+  output are regressions to fix.
 
 ## Verification
 

@@ -1,74 +1,56 @@
 ---
 name: github
-description: Triage and orient GitHub repository, pull request, and issue work through the connected GitHub app. Use when the user asks for general GitHub help, wants PR or issue summaries, or needs repository context before choosing a more specific GitHub workflow.
+description: "GitHub via gh CLI: PRs, issues, reviews, repos, auth."
+version: 2.0.0
+author: Ben Barclay (benbarclay), Hermes Agent
+license: MIT
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [github, gh, git, pull-requests, issues, code-review, repos, auth, ci]
+    category: software-development
+    related_skills: [codebase-inspection, requesting-code-review]
 ---
 
 # GitHub
 
-## Overview
+Work GitHub end to end with the `gh` CLI (REST fallback where noted): auth,
+issues, the PR lifecycle, issue-to-PR delivery, code review, and repo
+management. This skill consolidates six former skills; each workflow lives
+complete in its reference file — ALWAYS read the matching reference before
+starting that workflow, the body below only routes.
 
-Use this skill as the umbrella entrypoint for general GitHub work in this plugin. It should decide whether the task stays in repo and PR triage or should be handed off to a more specific review, CI, or publish workflow.
+## Routing
 
-This plugin is intentionally hybrid:
+| Task | Read first |
+|---|---|
+| Auth broken / new machine / token or SSH setup / gh login | `references/auth.md` |
+| Create, triage, label, assign, close issues | `references/issues.md` |
+| Branch, commit, open PR, watch CI, merge | `references/pr-workflow.md` |
+| Carry an ISSUE to a verified PR (full delivery loop) | `references/issue-to-pr.md` |
+| Review someone's PR: diffs, inline comments, verdict | `references/code-review.md` |
+| Clone/create/fork repos, remotes, releases | `references/repo-management.md` |
 
-- Prefer the GitHub app from this plugin for repository, issue, pull request, comment, label, reaction, and PR creation workflows.
-- Use local `git` and `gh` only when the connector does not cover the job well, especially for current-branch PR discovery, branch creation, commit and push, `gh auth status`, and GitHub Actions log inspection.
-- Keep connector state and local checkout context aligned. If the request is about the current branch, resolve the local repo and branch before acting.
+Supporting assets: `scripts/gh-env.sh` + `scripts/git-credential-token.py`
+(auth helpers), `templates/` (PR bodies, bug report, feature request),
+`references/ci-troubleshooting.md`, `references/conventional-commits.md`,
+`references/github-api-cheatsheet.md`, `references/review-output-template.md`.
 
-Once the intent is clear, route to the specialist skill immediately and do not keep broad GitHub triage in scope longer than needed.
+## Core discipline (applies to every workflow)
 
-## Connector-First Responsibilities
+- Preflight once per session: `gh auth status` — if it fails, go to
+  `references/auth.md` before anything else.
+- Prefer `gh` over raw REST; drop to `gh api` only for endpoints the
+  porcelain lacks (the cheatsheet lists them).
+- Never report CI green without checking `gh pr checks` yourself; never
+  claim merged without verifying `state,mergedAt`.
+- Read full context before writing: `gh issue view --comments` /
+  `gh pr view --comments` — decisions live in threads, not titles.
+- Sweep for duplicates before creating anything:
+  `gh pr list --search` / `gh issue list --search`.
 
-Handle these directly in this skill when the request does not need a narrower specialist workflow:
+## Verification
 
-- repository orientation once the repo, PR, issue, or local checkout is identified
-- recent PR or issue triage
-- PR metadata summaries
-- PR patch inspection
-- PR comments, labels, and reactions
-- issue lookup and summarization
-- PR creation after a branch is already pushed
-
-Prefer the GitHub app from this plugin for those flows because it provides structured PR, issue, and review-adjacent data without depending on a local checkout. If the repository is not already identifiable from the user request or local git context, ask for the repo instead of pretending there is a repo-search flow that may not exist.
-
-## Routing Rules
-
-1. Resolve the operating context first:
-   - If the user provides a repository, PR number, issue number, or URL, use that.
-   - If the request is about "this branch" or "the current PR", resolve local git context and use `gh` only as needed to discover the branch PR.
-   - If the repository is still ambiguous after local inspection, ask for the repo identifier.
-2. Classify the request before taking action:
-   - `repo or PR triage`: summarize PRs, issues, patches, comments, labels, reactions, or repository state
-   - `review follow-up`: unresolved review threads, requested changes, or inline review feedback
-   - `CI debugging`: failing checks, Actions logs, or CI root-cause analysis
-   - `publish changes`: create or switch branches, stage changes, commit, push, and open a draft PR
-3. Route to the specialist skill as soon as the category is clear:
-   - Review comments and requested changes: `../gh-address-comments/SKILL.md`
-   - Failing GitHub Actions checks: `../gh-fix-ci/SKILL.md`
-   - Commit, push, and open PR: `../yeet/SKILL.md`
-4. Keep the hybrid model consistent after routing:
-   - connector first for PR and issue data
-   - local `git` and `gh` only for the specific gaps the connector does not cover
-
-## Default Workflow
-
-1. Resolve repository and item scope.
-2. Gather structured PR or issue context through the GitHub app from this plugin.
-3. Decide whether the task stays in connector-backed triage or needs a specialist skill.
-4. Route immediately when the work becomes review follow-up, CI debugging, or publish workflow.
-5. End with a clear summary of what was inspected, what changed, and what remains.
-
-## Output Expectations
-
-- For triage requests, return a concise summary of the repository, PR, or issue state and the next likely action.
-- For mixed requests, tell the user which specialist path you are taking and why.
-- For connector-backed write actions, restate the exact PR, issue, label, or reaction target before applying the change.
-- Never imply that GitHub Actions logs are available through the connector alone. That remains a `gh` workflow.
-
-## Examples
-
-- "Use GitHub to summarize the open PRs in this repo and tell me what needs attention."
-- "Help with this PR."
-- "Review the latest comments on PR 482 and tell me what is actionable."
-- "Debug the failing checks on this branch."
-- "Commit these changes, push them, and open a draft PR."
+- The workflow's own reference file defines done for that task.
+- Cross-cutting: every claim about remote state (CI, merge, release,
+  issue state) is backed by a fresh `gh` read, never memory.

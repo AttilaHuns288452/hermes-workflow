@@ -74,7 +74,11 @@ and copy-pasted trigger names. Wire it into the change routine, not CI theater.
   EXISTS (e.g. "hand-rolled switch inside BrowserRouter", not "React Router <Routes>").
   A docs pass that makes the architecture SOUND cleaner than the code is a defect factory.
 - **Docs QA claims must match actual runs.** Copy counts from the real suite output in the
-  same session; never carry forward old numbers because a previous report said so.
+  same session; never carry forward old numbers because a previous report said so. Label
+  historical evidence explicitly (what it covered and when) and never let it read as current:
+  if only targeted suites ran now, the claim is "targeted verification", and a historical
+  full-matrix total must not be restated as the current release number. Grep for the old
+  total across README/docs/glossary before shipping the new claim.
 - **Generated output is verified, not trusted.** "Regenerated" is not "synchronized" — the
   stale-claim scan + browser pass is what earns the word.
 

@@ -53,3 +53,8 @@ Session management (rename/archive/prune) lives in `session-librarian`.
   counts, and re-verify the reported count against the deduped list.
 - **Secrets sit in historical prompts** (people paste keys into chat). Redaction is
   a gate, not a cleanup: scan the final artifact and refuse to ship on any hit.
+- **Raw `messages` counts lie without row filters.** Compaction leaves absorbed/
+  inactive rows in the table (why: compaction archives but does not delete). Any
+  telemetry count — tool invocations, skill loads — must filter `active=1` (add
+  `compacted=0` for safety) and time-filter via the epoch `timestamp` column (there
+  is no `created_at`). Unfiltered counts run 3-4× high and look plausible.

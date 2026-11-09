@@ -37,6 +37,27 @@ After all tasks complete and verified:
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Follow that skill to verify tests, present options, execute choice
 
+## Continuous execution for pasted briefs
+
+When the plan arrives as a pasted brief (a spec handed over for immediate work),
+this user wants it carried to completion in one pass — do not stop after each
+phase to report and wait for a go-ahead. Report once, at the end, covering what
+was done and what was verified.
+
+- **Handwritten line beats the brief.** When a message carries both a short
+  handwritten instruction and an attached spec, the handwritten line is the
+  immediate priority and the brief is still expected to be executed. Do both,
+  handwritten first.
+- **Unanswered questions get a sensible default, not a pause.** Choose the
+  reasonable option, proceed, and surface the choice in the final report. Reserve
+  stopping for genuine blockers (missing access, a destructive action, a decision
+  that changes what gets built and cannot be defaulted).
+- **The brief's own deliverable requirements are acceptance criteria.** If it asks
+  for a report with named sections, before/after evidence, or specific
+  verification, produce exactly that — not a summary of effort.
+- Later direct instructions override earlier pasted briefs. When they conflict,
+  follow the direct instruction and say so.
+
 ## When to Stop and Ask for Help
 
 **STOP executing immediately when:**

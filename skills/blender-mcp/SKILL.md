@@ -591,14 +591,27 @@ print(json.dumps(extract_materials(), indent=2))
 
 ## Animation Keyframe Extraction
 
+Blender 5.x slotted actions REMOVED `action.fcurves` — iterating it raises AttributeError. Walk channelbags instead (helper is version-safe back to 4.x):
+
 ```python
 import bpy, json
+
+def iter_fcurves(ad):
+    action = ad.action
+    if hasattr(action, 'fcurves'):  # Blender <= 4.x legacy
+        return list(action.fcurves)
+    out = []
+    for layer in action.layers:          # Blender 5.x slotted actions
+        for strip in layer.strips:
+            for bag in strip.channelbags:
+                out.extend(bag.fcurves)
+    return out
 
 def extract_animation(obj):
     if not obj.animation_data or not obj.animation_data.action:
         return None
     tracks = []
-    for fc in obj.animation_data.action.fcurves:
+    for fc in iter_fcurves(obj.animation_data):
         keyframes = []
         for kp in fc.keyframe_points:
             keyframes.append({
@@ -688,6 +701,8 @@ See [references/asset-integrations.md](references/asset-integrations.md) for usa
 - **High-key washout fix:** world strength ≤0.3, key 75-90W, plus `view_settings.look='AgX - Medium High Contrast'` and exposure −0.3. Plain AgX stays washed out on white products.
 - **Mist/water feedback sells function:** 2-3 alpha-0.18 white spheres above a mist vent read as vapor; translucent tanks need Base Color ~(0.50,0.72,0.90) + Alpha 0.65 — near-white frost reads as empty plastic.
 - **Label-dot QA without vision API:** sample pixels at projected anchor coords (PIL): white sum>700 at center + navy sum<300 within ±16px = dot rendered; surrounding pixel colors confirm the part under it. Vision API can 409-race on parallel image calls — serialize or fall back to pixel checks.
+- **Gold callout ink:** bright emissive gold washes to near-white under AgX (even 'AgX - Punchy') — highlight rolloff collapses hue (r−b drops ~120→~20), invisible on light walls. Use dark ink gold (~0.42,0.26,0.04) at low emission (~0.35) so it renders as printed gold with hue contrast. Disable DOF on any shot carrying floating callout labels (wide aperture blurs them off their focus plane). Emissive text near dark glossy walls smears into SSR reflection streaks — set those walls' roughness to 1.0.
+- **QA-loop re-renders:** re-render only the changed frame ranges (`blender -b scene.blend --python build.py -s N -e M -a`) instead of the full sequence — an iteration should cost minutes. Save the built scene before the long render so fixups render from it.
 
 ## Modeling-Session Lessons (2026-09 humidifier v2)
 
@@ -709,6 +724,43 @@ See [references/asset-integrations.md](references/asset-integrations.md) for usa
 - **Flat-lying PCBs are invisible from horizontal cameras.** Mount key boards VERTICALLY face-out against walls (like the reference) or accept they won't read; check from the actual viewing angle, not top-down theory.
 - **Ray probes + angled close-ups together.** Probes prove existence; only a render from the inspection angle proves visibility. A part can exist, ray-cast fine, and still be hidden behind its own wall from the camera side.
 - **Cutaway shots:** hiding the back cover is not enough when an extension prism or wall piece sits behind the opening — hide every shell piece on the view path or the cavity still reads closed.
+
+## Local Headless Render Pipeline (animation → MP4)
+
+Procedure for rendering an animated scene to a finished video on a local Linux GPU box (as opposed to the AgentPMT cloud renderer):
+
+1. **Force the discrete GPU on Optimus laptops:**
+   `__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia blender -b scene.blend --python render.py`
+   Without it Blender renders on Intel graphics at roughly 10x the per-frame cost (~26s vs ~2.5s per frame at 1080p Eevee 32 samples). Compute per-frame wall time from the first few frames' saved-file timestamps; if 1080p Eevee frames take >10s, kill and relaunch — the wrong GPU silently turns a 2-hour render into an overnight one.
+2. **Output a numbered PNG sequence (`f####.png`) and assemble with ffmpeg.** Setting `scene.render.image_settings.file_format='FFMPEG'` fails on Blender 5.2 headless (rejected as an image output format). PNG frames also make progress countable and let a killed render resume by re-rendering only missing frames.
+3. **Still-QA before committing to a long render:** render one still per shot at start/mid/end and framing-check each against a ~6% safe margin from the frame edge. A camera/keyframe bug found after 3,000 frames costs the whole render; found on ~30 stills it costs minutes. Fix framing at the camera/shot spec layer, then re-check the same stills. Add a deterministic projection assert alongside the eyeball check: project the model's world bbox corners through `bpy_extras.object_utils.world_to_camera_view` at each shot's start/mid/end frames and assert every UV lies inside [0.02, 0.98] — projection is exact, while vision scoring of the same still varies several points between calls. Treat vision output as a smoke test, not a measurement: its geometry claims (feature orientation, part presence, framing crops) contradict each other across calls and contradict the math — settle every geometry question with bbox extents, projected-UV asserts, and PIL ink probes. Downscaled crops additionally invent artifacts (LANCZOS ringing on large glyphs reads as glitch streaks, narrow strip crops read as clipping/overflow) — confirm every crop-read defect at full resolution with a targeted pixel probe before fixing it.
+4. **Burn captions after render** (`ffmpeg -vf subtitles=captions.ass`). Validate every ASS timestamp programmatically first — one malformed timestamp makes libass skip that event silently, and overlapping time ranges stack captions on screen at once. Use a filled box behind caption text over busy 3D footage; outline-only text disappears on textured surfaces. Keep caption rows clear of the safe margin.
+5. **`scene.world` can be None** on freshly built/imported scenes — create and assign one (`scene.world = bpy.data.worlds.new('World')`) before setting world color or node-tree strength.
+
+6. **Verify the assembled MP4 against the request before calling it done** (`ffprobe` resolution / fps / duration). A render can be technically flawless and still ship as 360p at one frame per second when the ask was a smooth 1080p showcase — check container specs AND motion smoothness (timeline fps, not one still per second of animation) against the brief, not just "no errors".
+
+Feedback-loop rule (when the user says "loop until it looks good"): the first technically clean render is NOT final. Run another vision pass over the new output, fix every confirmed issue (caption timing/overlap, labels colliding with geometry, framing crops, noisy/speckled surfaces, wrong resolution or fps), and repeat until the audit comes back clean — never stop on "good enough" after one pass.
+
+Long-render ops:
+- Run renders as a tracked background process and derive progress + per-frame time from the saved-frame log lines (N frames done vs total), not from elapsed time guesses.
+- Exit notifications from SUPERSEDED render scripts arrive late, often carrying old errors. Match the notification's command line and script path to the active pipeline before reacting — a stale failure log is not a current failure.
+- When the scene, camera rig, or spin animation changes, delete the whole frame sequence before re-rendering — resuming across a scene change silently mixes old-scene and new-scene frames into one video.
+
+## Camera Rig & Motion Verification (product films)
+
+- **Fit the camera by math, not by iteration:** to fill fraction `f` of the frame height with a subject of height `h`, place the camera at `d = (h/f) / (2·tan(vfov/2))` from the target center, where `vfov = 2·atan(10.125/lens)` for Blender's default 36mm sensor on 16:9 output (10.125mm = half the 20.25mm sensor height). Then assert with `world_to_camera_view` and re-fit once if outside the band — one measured re-fit beats a dozen screenshot iterations.
+- **Level horizons:** drive every product-film camera with a TRACK_TO constraint to an aim empty and keep the camera's own rotation at zero. Arbitrary camera rotations bake in roll, which viewers report as having to tilt their heads. Keyframe only the camera and target locations.
+- **Spin rigs:** parent each blade/mesh to the hub empty with `bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)` so its offset lives in the empty's local space, then animate only the empty's rotation. A child whose offset is not parent-local orbits the world origin instead of the hub — viewers see a part "flying in circles". Verify before any long render: `frame_set` several frames, update the evaluated depsgraph, and assert each spinning mesh's evaluated bbox center stays within ~0.1 m of the hub.
+- **Symmetric-spin aliasing:** a rotating part with N-fold symmetry sampled at frame intervals commensurate with its spin rate reads as perfectly static in contact sheets and video review. Never judge rotation from sampled frames — verify via rig evaluation at fixed frames plus a pixel diff between two frames whose angular offset is known.
+- **Enclosed internals cannot be framed:** a part sealed inside the shell is unreachable from every camera direction. Probe with ray casts from candidate directions first (hit-fraction per direction); if no direction reaches the part, the shot must be a cutaway/pose change or the narration must describe only what is actually visible. Iterating camera poses cannot show through a shell.
+- **Map viewer symptoms to the rig layer:** "tilting my head" = camera roll; "part flying in circles" = wrong spin parenting; "abstract blocks" = subject overflowing the crop. Fix at the owning layer (constraint, parenting, framing assert), re-verify with the projection/rig asserts above, and only then re-render.
+- **Before baking rig fixes into a .blend, check where the render entry point gets its animation.** If the render mode rebuilds camera/animation data from its own constants, patch those constants; if it evaluates the blend's stored animation, bake the fix into the blend and save it. Rendering with the wrong source silently overwrites or ignores the fix.
+
+## Client CAD / SketchUp Import (audit & repair)
+
+Client CAD models (SketchUp, assembly exports) arrive lossy: wrong up-axis/scale, generic material names, dropped transparency, flattened hierarchy, parked duplicate subassemblies floating off-scene. Run the full audit-and-repair ladder before any look-dev. First, treat the source file as ground truth: a `.skp` is itself a zip container (raw geometry JSON with instance transforms + original textures + preview thumbnails) — extract it and verify the conversion against that data, not just the GLB. **Axis and units first** — verify scale against real named components (an "80mm computer fan" mesh must measure ~80mm; unit settings lie), and settle the up-axis with bbox extents, because a Y-up import renders upright-looking through a `to_track_quat('-Z','Y')` camera and masks the error (rotate +90° X, re-base the device at the origin). Then: hide-and-report parked strays (ask before deleting), restore material names by matching mesh-name-encoded face colors to the source material table, restore transparency (alpha survives only in baseColorFactor[3]; alphaMode is never set), rebuild per-component collections from mesh-name prefixes, assign a PBR baseline by material category. Full procedure, verification asserts, and the conversion-report deliverable shape: [references/cad-import-repair.md](references/cad-import-repair.md).
+
+Accuracy gate (when the converted model must be a faithful 1:1 of the source): report mesh-count parity (every source mesh present), per-mesh position agreement against the source instance/vertex data, and real-part scale checks — numeric parity is the answer, never an eyeball render. Embedded preview thumbnails may be STALE (an earlier design iteration: different display orientation, missing parts); the file's geometry is authoritative — render the file and report the thumbnail discrepancy instead of conforming the model to a thumbnail. GLB import suffixes duplicated material names (`Material_79.001`), so texture re-linking by exact name silently hits nothing — match by name prefix.
 
 ## Known Errors & Workarounds
 

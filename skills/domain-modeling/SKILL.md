@@ -57,6 +57,10 @@ When domain relationships are being discussed, stress-test them with specific sc
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible. Which is right?"
 
+### One classification, one vocabulary
+
+When a data-entry surface offers classification options (categories, types, statuses) and a report/aggregation layer groups by the same concept, both must consume the same source taxonomy. A hand-maintained parallel list in the form silently files user entries into buckets the reports never show. Derive the options from the taxonomy the aggregation joins (or prove the mapping complete); treat two live vocabularies for one classification as a defect even when both look reasonable in isolation.
+
 ### Update CONTEXT.md inline
 
 When a term is resolved, update `CONTEXT.md` right there. Don't batch these up: capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).

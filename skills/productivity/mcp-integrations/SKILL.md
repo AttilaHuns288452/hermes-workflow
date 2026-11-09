@@ -11,6 +11,13 @@ platforms: [linux, macos, windows]
 ## Overview
 This skill covers adding MCP servers to Hermes Agent, with verified operational patterns for key servers including Composio, GitHub, Gmail, Google Drive, Supabase, VS Code, LLMQuant Data, and batch skill import from Codex caches.
 
+**Standing user preference — connected integrations first.** When the user names an
+integration they already set up (Vercel, Supabase, ClawLink-connected apps), drive that
+integration's MCP tools; if unauthenticated, re-auth it (`clawlink_connect_app`,
+`hermes mcp login <name>`) before anything else. Manual browser automation or hand-rolled
+API calls are the fallback for operations no MCP covers, never the default path while a
+connected MCP exists. The user's clearest statement of the rule: "use my MCPs".
+
 ## Prerequisites
 
 - Hermes Agent installed and working (`hermes mcp list` succeeds)
@@ -436,6 +443,7 @@ is a shortcut for `mcporter list linkedin` — use it to discover real tool name
 | MCP server not launching / silent exit | Set required env vars and run with command visibility; silent exit means investigate, not pass |
 | `HTTP transport not available` | `pip install --upgrade mcp` |
 | `Tools not appearing` | Check YAML indentation; tool prefix is `mcp_{server}_{tool}` |
+| Server registered or OAuth-completed mid-session, but its tools are not callable this session | The session's tool catalog is snapshotted at startup: a mid-session addition shows in `hermes mcp list` and may surface via `tool_search`/`tool_call`, but full materialization can wait for `/reload-mcp` or the next session. Prove the server live with `hermes mcp test` / raw JSON-RPC and drive its HTTP endpoint meanwhile; do not re-register in a loop. |
 | `hermes mcp call` fails | Validated Hermes subgroups: `serve`, `add`, `remove`, `rm`, `list`, `ls`, `test`, `configure`, `config`, `login`, `picker`, `catalog`, `install`. Use `hermes mcp test <name>` to verify. |
 | `import mcp` hangs or fails in `execute_code` / terminal | The `mcp` package import triggers transitive dependency load that can exceed approval timeouts. Run `python -c \"import mcp; print(mcp.__file__)\"` in a terminal with sufficient timeout, or `pip install --upgrade mcp` if missing. Do not use `execute_code` for this check — the sandbox env scrub on Windows may drop `SYSTEMROOT`, causing `WinError 10106` before the import completes. |
 | `npx` server package not found globally on Windows | Do not assume the server is globally installed just because `npx` is on PATH. Verify with `npm ls -g --depth=0 <pkg-name>` before writing a hardcoded `.cmd` path. When unsure, use the `npx -y <pkg-name>` pattern — it auto-installs the latest version regardless of global state. |
@@ -566,3 +574,7 @@ mcp_servers:
 - `references/mcp-server-testing.md` — testing MCP servers via piped JSON-RPC (init + tools/list)
 - `references/mcp-sdk-migration.md` — migrating custom MCP servers from old `Server` API to FastMCP (SDK 0.x → 1.x)
 - `references/opendesign-mcp.md` — Open Design proxy→daemon architecture, env contract, direct-probe diagnosis recipe
+
+## ClawLink (100+ SaaS connectors)
+
+ClawLink connects Gmail, Slack, Notion, GitHub, Stripe and similar apps through one OAuth plane, so the agent never handles per-app credentials. Check with `clawlink_whoami`, start a connection with `clawlink_connect_app`. Prefer it over ad-hoc curl or a bespoke MCP server when the target is a supported SaaS; keep MCP servers for APIs ClawLink does not cover.

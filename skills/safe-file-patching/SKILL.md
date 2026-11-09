@@ -160,6 +160,20 @@ Use these instead of patch for structured edits:
 | `terminal` (git apply) | Applying complete diffs |
 | `terminal` (Python script) | Multi-line string replacements where patch's fuzzy matching or escape handling fails |
 
+### Large New Files: Write in Sections
+
+A single tool call whose argument payload grows past ~8K tokens (a big `write_file` content body) can time out mid-stream and deliver NOTHING — the call fails wholesale, not partially, so one-shot full-file generation loses the entire write. The call also must not be retried verbatim; it will time out again.
+
+**Sectioned-write pattern:**
+```
+├── write_file the file HEAD (imports + first section, well under the limit)
+├── append each further section with a targeted patch (anchor on the tail line) or execute_code append
+├── keep each tool call's arguments under ~8K tokens
+└── same for delegated generation: instruct subagents to write big files in sections, never in one write
+```
+
+Aim for 2-4 sections per large file, not one call per paragraph — the point is staying under the transport limit, not micro-chunking.
+
 ### JS Template Literal Trap in HTML `<script>` Tags
 
 When patching JS inside an HTML `<script>` tag (not a standalone `.js` file), `\n` passes through **two** escaping layers: **patch-tool JSON → HTML file → JS template literal**. Each layer re-interprets `\n`:

@@ -79,6 +79,30 @@ beats a guard per screen). Money and security paths get a runnable check —
 keep the attack battery as a committed script (`verify_fixes.mjs`-style) and
 leave it green.
 
+### 5. Multi-auditor cycles ("fix, then repeat until clean" mandates)
+
+- Audit wave: parallel document-only auditors over the same surface with
+  disjoint lenses (visual design / UX + accessibility / responsive +
+  interaction). Each emits lane-numbered findings (`[V-NNN]`/`[A-NNN]`/
+  `[R-NNN]`) carrying severity, route + repro, measured evidence (rects,
+  contrast values, hit tests — not impressions), proposed fix, and how to
+  verify. Auditors change nothing.
+- Fix wave: one worker per finding-ID group with disjoint FILE ownership;
+  briefs name exact routes, strings, and behavior contracts. Verify claimed
+  edits with a diff before trusting a completion message. The orchestrator
+  owns shared runtime (dev server, DB): a server spawned inside a subagent
+  dies with its session, so start and health-check it centrally before
+  verification.
+- Suites are shared code: apply the same-change harness sweep from Pitfalls
+  to the whole wave (copy/contract changes kill locators and asserts), and
+  classify each failure — stale expectation = harness debt, spec-mandated
+  content the change dropped = product bug.
+- Next cycle: fresh auditors regression-verify the previous fixes BY ID
+  (VERIFIED/REGRESSED per finding) and re-cover areas that were excluded
+  while fixes were in flight. Stop only when a cycle finds no real defects;
+  per-cycle rubric scores (/10 with reasons) and counts come from harness
+  output, not from worker claims.
+
 ## Reference reconciliation (when design docs exist)
 
 Establish the source hierarchy before judging mismatches:
@@ -100,9 +124,12 @@ Never grade the app against superseded artifacts. Detail:
   reporting it.
 - Fixtures that collide with DB unique constraints (same slot/date/row) make
   reruns fail for harness reasons — use dynamic per-run values.
-- When a UI component is replaced (e.g. native date input → date grid), every
-  suite locator referencing the old component is now dead — sweep the harness
-  in the same change.
+- After a deliberate UI or behavior change, sweep the harness in the same
+  change (a replaced component kills every locator for it) and classify each
+  resulting failure before touching either side: a dead locator or stale
+  expectation is harness debt — update the assert to the NEW contract; content
+  or behavior the spec mandates but the refactor dropped is a product bug — fix
+  the code. Keep asserts on the spec's literal content lines through refactors.
 
 ## See also
 

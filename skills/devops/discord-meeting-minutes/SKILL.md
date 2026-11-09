@@ -82,21 +82,9 @@ if guild_id in getattr(adapter, "_auto_voice_guilds", set()):
         return
 ```
 
-### 6. Voice key-rotation fix (adapter.py, VoiceReceiver._on_packet)
+### 6. Voice key-rotation fix — OBSOLETE (do not apply)
 
-Discord re-issues the voice session (4014 "voice server update" close + silent reconnect) right after connect on some clusters; the receiver's `start()` snapshot of `conn.secret_key` then decrypts with a stale key and EVERY packet fails. Insert at the top of `_on_packet`, right after the `if not self._running or self._paused: return` guard:
-
-```python
-        conn = self._vc._connection
-        if conn.secret_key:
-            self._secret_key = bytes(conn.secret_key)
-        if conn.dave_session is not None:
-            self._dave_session = conn.dave_session
-        if conn.ssrc:
-            self._bot_ssrc = conn.ssrc
-```
-
-Full backup of all local patches: `~/.hermes/patches-discord-voice-key-rotation.patch` (git diff vs upstream; re-apply with `git apply` after an update).
+Upstream `VoiceReceiver` now re-resolves credentials at runtime (`_resolve_credentials`, invoked on every session description, DAVE epoch prepare, membership change, or decrypt-failure streak). The old patch is unnecessary; `~/.hermes/patches-discord-voice-key-rotation.patch` no longer applies to current upstream and would break the read-only `_secret_key` property. Verified 2026-10-08.
 
 ### 7. STT Model Setup
 
@@ -140,21 +128,26 @@ Pre-download: `python3 -c "from faster_whisper import WhisperModel; WhisperModel
 
 The bot can sit in the VC the whole meeting logging joins/leaves and still capture nothing. Diagnosis order:
 
-1. `grep -a "NaCl decrypt failed" ~/.hermes/logs/agent.log` — if present, packets arrive but decryption fails = stale secret key after the 4014 voice-session rotation (patch #6 fixes it). Correlate: `Disconnected from voice by force... potentially reconnecting.` shortly after `VoiceReceiver started`, then decrypt warnings from the first speech packets.
+1. `grep -a "NaCl decrypt failed" ~/.hermes/logs/agent.log` — if present, packets arrive but decryption fails. On current upstream the receiver re-resolves credentials on rotation, so a persistent decrypt failure means that refresh path is broken (see the step 6 note), not stale cache. Correlate: `Disconnected from voice by force... potentially reconnecting.` shortly after `VoiceReceiver started`, then decrypt warnings from the first speech packets.
 2. If the log has NO `NaCl decrypt failed` AND no `Voice input from user` lines, no RTP is arriving at all → check `VoiceReceiver started` appears after the last `Voice connection complete` (a second guild join can restart the receiver).
 3. If `Voice input from user` lines exist but no MoM post → the summary step failed (model fallback ladder in the adapter logs).
 
-Note: the4014 rotation itself is normal and handled by discord.py silently (no "connection attempt 2" line on the reconnect path) — only the receiver's cached session state breaks.
+Note: the4014 rotation itself is normal and handled by discord.py silently (no "connection attempt 2" line on the reconnect path). Current upstream refreshes receiver credentials on rotation, so treat decrypt failures as a refresh-path bug, not a cached-key bug.
+
+### Meeting ends but no minutes posted
+
+Transcripts were collected but nothing posted; log shows `[AutoVoice] No minutes channel configured for guild`. `voice_minutes_map` / `voice_minutes_channel` are missing from the `discord:` block (config migrations drop keys silently). Fix with `hermes config set discord.voice_minutes_map "<voice_channel_id>:<minutes_channel_id>,..."` and verify through the adapter's own loader (`read_raw_config` → split `id:id` pairs) — a value that parses wrong drops every meeting's output.
 
 ### hermes update Wipes Patches
 
-`hermes update` overwrites the local checkout. After every update, re-apply:
+`hermes update` overwrites the local checkout. After every update, run:
 
-1. Re-apply the three insertions to `adapter.py` and one to `gateway/run_voice.py`
-2. `hermes gateway restart`
-3. Verify with `grep AutoVoice ~/.hermes/logs/gateway.log`
+1. `python3 ~/.hermes/scripts/ensure_meeting_patches.py` — repairs patches 1-5 automatically (adapter.py + run_voice.py), verifies the end state, and restarts the gateway. It runs on cron too, but its exit-1 incidents are easy to miss.
+2. Verify with `grep AutoVoice ~/.hermes/logs/gateway.log`
 
-If the user says "re-apply meeting patches", follow the patching process above.
+If the script reports "end state incomplete", the upstream anchors drifted — update the anchors in `ensure_meeting_patches.py` from the patch text below, then re-run.
+
+**This skill's patch list is the spec; the repair script must install and check every patch documented here.** When adding a patch section to this skill, extend `ensure_meeting_patches.py`'s `check_patches()` and `reapply_patches()` in the same change — a documented-but-unmanaged patch dies silently on the next update.
 
 ## Full Patch Source
 

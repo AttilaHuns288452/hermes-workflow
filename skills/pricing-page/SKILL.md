@@ -210,3 +210,6 @@ Return:
 - Value metric?
 - Recommended plan (which one and why)?
 - Top 3 objections?
+
+## Psychology review (after building)
+Once the tiers and copy exist, load the `ux-psychology` skill and run it as a review layer: anchoring, loss aversion, default effect, commitment/consistency, applied to the real tier layout and CTA copy, plus the dark-pattern list (fake scarcity, confirmshaming, forced continuity).

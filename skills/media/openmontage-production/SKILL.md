@@ -6,9 +6,10 @@ description: >-
   make, create, produce, or render any video content — animated explainer,
   TikTok/Shorts, cinematic trailer, character animation, documentary montage,
   or any other video — route through OpenMontage's pipeline system first.
-  OpenMontage is fully installed at ~/OpenMontage with all 12 API keys
-  configured and 182/184 contract tests passing. DO NOT fall back to ad-hoc
-  FFmpeg scripts unless OpenMontage's tool registry shows blockers.
+  Probe installation, runtime, and credentials before routing; the OpenMontage
+  path is preferred only when it is actually available. When it is not, a
+  source-led Blender render plus scripted FFmpeg assembly is the sanctioned
+  fallback (see references/ffmpeg-assembly.md and references/blender-camera-qa.md).
 category: media
 triggers:
   - "make a video"
@@ -29,11 +30,13 @@ triggers:
 
 ## 🚨 Mandatory — This is the DEFAULT for video production
 
-OpenMontage is installed at `~/OpenMontage/` and fully configured with **all 12 API keys** (FAL, Google, ElevenLabs, OpenAI, xAI/Grok, Suno, HeyGen, Runway, Pexels, Pixabay, Unsplash, HuggingFace). All 182 contract tests pass.
+Probe the current installation, runtime, and credential availability before routing. Paths, tests, and provider coverage described below are historical examples, not live guarantees. Never print credential values.
 
-**When the user asks to make ANY video, you MUST route through OpenMontage first.** Do not write ad-hoc FFmpeg scripts, do not use `short-video-production` unless OpenMontage's tool registry shows blockers. The OpenMontage pipeline system produces significantly higher quality output with proper Remotion/HyperFrames composition, Ken Burns effects, ASS subtitles, and multi-provider model selection.
+For character-led video, probe OpenMontage first. For HTML-native compositions, probe HyperFrames. When the applicable pipeline is unavailable, a source-led Blender renderer plus carefully scripted FFmpeg assembly is a valid fallback. Do not rebuild the user's supplied 3D model to work around conversion issues. Judge motion and visual quality from the actual output, not the choice of compositor or file size.
 
 ## Environment
+
+Historical snapshot of one machine — probe before relying on any value below.
 
 - **Location:** `~/OpenMontage/` (`C:\Users\YOUR_USERNAME\OpenMontage/`)
 - **Python:** System Python 3.11.9 — OpenMontage uses its own venv-free discovery (imports tools directly)
@@ -313,6 +316,8 @@ result = VideoCompose().execute({
 
 | File | Content |
 |------|---------|
+| `references/ffmpeg-assembly.md` | FFmpeg fallback assembly: gapless frame sequence -> MP4, filter-graph `-map` label pitfall, per-shot narration placement, measured audio loudness targets, proven ducking + 2-pass loudnorm chain |
+| `references/blender-camera-qa.md` | Source-model product films: preview-first render loop, raycast/pixel camera QA (bbox checks pass on blank walls), enclosed-subject reframe-and-renarrate, Blender 5.2 keyframe API gotchas, vision-rating iteration |
 | `references/remotion-windows-asset-paths.md` | Windows file:/// URI blocking fix, public/ directory workaround, `from prop NaN` red herring detection |
 | `references/explainer-remotion-format.md` | Full schema for the `explainer-data` edit_decisions format: required fields, cut types, `generated_content` sub-types, asset manifest, transition names |
 | `references/remotion-props-format.md` | **Actual** Remotion props JSON schema that the Explainer component reads. Use this for direct `npx remotion render` calls (bypassing the `video_compose` tool). Documents the `Cut` interface, `in_seconds`/`out_seconds` (not `start_seconds`), `audio.narration.src` (not `narration_path`), scene types, animation values. |
@@ -352,7 +357,7 @@ Actual wall-clock time varies with frame complexity. Simple text-card scenes ren
   ```bash
   ELEVENLABS_API_KEY=$(cat path/to/.elevenlabs_key) python -c "from tools.audio.elevenlabs_tts import ElevenLabsTTS; ..."
   ```
-- **User preference — mandatory**: This user requires ElevenLabs for ALL voiceovers. Never default to OpenAI TTS, edge-tts, or any other provider. Always use ElevenLabs Rachel (UUID `21m00Tcm4TlvDq8ikWAM`).
+- **Voice selection:** Follow the current user request. Probe provider access before committing to it; an old provider/voice preference is not universal authorization or proof of availability. When the brief permits generated narration and the preferred service is absent, an available TTS service is acceptable. Generate shot-aligned segments and verify their actual durations, rather than squeezing a full script into the runtime.
 
 ### Pixabay Music
 - **No API key required** — works out of the box for free stock music downloads

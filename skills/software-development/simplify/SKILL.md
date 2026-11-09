@@ -9,6 +9,12 @@ You are improving the quality of the changed code, not hunting for bugs. Review
 it for reuse, simplification, efficiency, and altitude issues, then fix what you
 find. Do not look for correctness bugs — that is what `/code-review` is for.
 
+## AI-generated code cleanup boundary
+
+For a narrow cleanup request, inspect the changed diff for unnecessary comments, boilerplate, style drift, casts to `any`, and redundant defensive checks. Preserve input validation at trust boundaries, security controls, and error handling that prevents data loss. Do not remove a check merely because it looks verbose. Prefer the existing repository idiom and run the affected check after cleanup.
+
+This narrow boundary is adapted from `bundled/skills/deslop/SKILL.md` in [Vibe-Skills](https://github.com/foryourhealth111-pixel/Vibe-Skills), commit `ddcaa2affca93c1efe026d008b6b93709e5fb7e2` (Apache-2.0). It does not replace broad correctness review, security review, TDD, or final verification.
+
 ## Phase 0 — Gather the diff
 
 Run `git diff @{upstream}...HEAD` (or `git diff main...HEAD` / `git diff HEAD~1`

@@ -42,6 +42,16 @@ CDP; hand aesthetics to the user.
 `debugging-hermes-desktop`), or anything where the real question is "does this
 look right".
 
+## Packaged black-screen triage
+
+Use this sequence when the user reports a black or blank Hermes desktop window:
+
+1. Identify whether the app is packaged. Packaged builds have no CDP port and expose no renderer DOM; use `computer_use` with `capture`, `mode: vision` for the actual pixels. Capture the app by name or by a fresh PID/window pair, and refresh `list_windows` after relaunches because old targets become invalid.
+2. Separate renderer health from backend health. A listening backend, a live Electron parent, or a visible window frame is not proof that the renderer painted. Require visible content in the capture, not merely title-bar controls.
+3. Read the newest `desktop.log` and `desktop-chromium.log` entries, then check kernel logs when needed. Distinguish `did-fail-load`/missing assets, `render-process-gone`/renderer termination, `webContents became unresponsive`, GPU-process startup failures, and kernel invalid-opcode traps. Diagnose the failing process before changing GPU or sandbox flags.
+4. Validate the packaged bundle mechanically: confirm `resources/app.asar.unpacked/dist/index.html` exists and resolve every relative `src` and `href` declared by it against the same `dist` directory. This catches torn bundles without guessing from a black screenshot.
+5. After the smallest corrective change, fully restart the packaged app and perform visual QA twice: once after startup and once after a delay. The pass condition is stable rendered app content, not a surviving Electron process. If no tested change produces that evidence, leave the issue unresolved and preserve the evidence for the next debugging pass.
+
 ## The port
 
 Open on `127.0.0.1:9222` for any dev-server run. Closed in exactly two cases
@@ -63,6 +73,13 @@ Empty → no port. Do not guess another port silently.
 
 **Never relaunch the user's app to get a port.** That destroys their session and
 their state. Launch your own isolated instance instead (below).
+
+**Packaged builds have no DOM access at all.** For their visual state use a desktop
+capture tool (`computer_use` action `capture`): use `mode='vision'` and coordinate
+clicks scaled by the capture's stated factor — Electron exposes only the window
+frame to SOM/AX, so element-index clicking is unavailable. Read-only captures of
+the user's live window are fine; clicking around in it while they work is not
+(unless the task is precisely to change that UI on their behalf).
 
 ## Reading the DOM
 

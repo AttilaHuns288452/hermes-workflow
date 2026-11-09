@@ -51,6 +51,19 @@ Use consistent paths for different fact types:
 - **People** — relationships, what they're involved in together
 - **Preferences** — how they want YOU to behave (format, length, tone)
 
+## Consolidation (trimming a bloated memory file)
+
+Memory is injected into every turn and every subagent, so its size is a per-call cost, not a one-off one. Roughly 4 chars = 1 token, paid on every request.
+
+1. **Measure before touching.** Entry count (split on `\n§\n`), total chars, and the biggest entries with their sizes and first line. Decide from that table, not from impressions.
+2. **Archive first, always.** Copy to `memories/archive/MEMORY-<stamp>-pre-trim.md` plus a `.gz`, and a `.bak` beside the live file. Removed facts stay recoverable, which is what makes dropping narration safe.
+3. **Edit by index, not by regex.** Read the file once, split on the separator, then apply a drop-index set and a replace-index map in one script. Keep the `\n§\n` separator — the loader depends on it.
+4. **Drop completed-task narration:** finished project logs, shipped-deliverable details, one-off benchmark results, superseded status reports. **Keep** environment facts, paths and commands, standing preferences, recurring pitfalls, integration recipes, and the contracts of projects still active.
+5. **Compress what remains big.** A 2–3K-char narrative usually has ~500 chars of durable content (paths, invariants, the commands that work). Rewrite that entry rather than deleting it.
+6. **Assert, then report:** named key facts still present, new entry count, char delta and percent. State the archive path.
+
+Do not rewrite the whole file from scratch in one shot: a full rewrite loses facts silently, while an index-based drop/compress pass is reviewable and reversible. Prefer one batched memory-tool call (or one file write) over many small edits.
+
 ## Privacy Boundaries
 
 **Never store:**

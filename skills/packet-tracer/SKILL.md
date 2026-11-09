@@ -158,10 +158,20 @@ If a method is not here, do **not** assume it exists.
   `Would you like to enter the initial configuration dialog? [yes/no]:` — a `ping` sent
   there is eaten as the yes/no answer. Prime it first: answer `no`, then send an empty
   command to clear `Press RETURN to get started.`
-- `d.setDhcpFlag(bool)`, `d.setDefaultGateway(ip)`
+- `d.setDhcpFlag(bool)` / `d.getDhcpFlag()` · `d.setDefaultGateway(ip)`
+- `d.serializeToXml()` → **complete device config as XML**: NIC state (`IP/SUBNET/PORT_GATEWAY/
+  PORT_DHCP_ENABLE`) and host services (`DHCP_SERVERS` — every pool's `NETWORK/MASK/DEFAULT_ROUTER/
+  START_IP/END_IP/DNS_SERVER/MAX_USERS/LEASE_TIME`, plus `DHCP_RESERVATIONS`). The ONLY way to read
+  Server/PC service config (no `pt_*` tool exposes it). ~60 KB per device: regex-slice inside JS
+  (e.g. `xml.match(/<DHCP_SERVERS>[\s\S]*?<\/DHCP_SERVERS>/)`) and report the matches, never the
+  whole blob.
+- Link map (`var net = ipc.network();`): `net.getDeviceCount()/getDeviceAt(i)`,
+  `net.getLinkCount()/getLinkAt(k)` → `l.getPort1()/l.getPort2()` → `p.getOwnerDevice().getName()`
+  + `p.getName()` — exactly what `pt_query_topology` runs internally.
 
 **Port** — `var p = d.getPort("GigabitEthernet0/0");`
 - `p.getLink()` → link | null (null = free) · `p.setIpSubnetMask(ip, mask)` · `p.setDefaultGateway(ip)`
+  · `p.isDhcpClientOn()` → bool (is this host port a DHCP client?)
 - `p.setDnsServerIp(ip)` · `p.setAclInID(id)`/`p.setAclOutID(id)` (pass `""` to clear)
 
 **AclProcess** — `var ap = d.getProcess("AclProcess");`
@@ -260,7 +270,9 @@ it as extra CLI with `configureIosDevice(name, cli)`.
   switch↔switch → `cross`; router↔switch, switch↔host → `straight`).
 - **Exact ports**: 2911 `GigabitEthernet0/0..0/2` but 1941/2901 only `0/0..0/1`;
   ISR4321/4331 `GigabitEthernet0/0/0..`;
-  2960/3560 `FastEthernet0/1..0/24` + `GigabitEthernet0/1..0/2`; PC/Laptop/Server `FastEthernet0`;
+  2960/3560 `FastEthernet0/1..0/24` + `GigabitEthernet0/1..0/2`; PC/Laptop/Server `FastEthernet0`; **Router-PT generic built-ins** are `FastEthernet0/0`,
+  `FastEthernet1/0`, `FastEthernet4/0`, `FastEthernet5/0` + `Serial2/0`, `Serial3/0` — there is NO
+  `GigabitEthernet0/0`, typing it earns `%Invalid interface type and number`;
   HWIC-2T in `"0/x"` → `Serial0/x/0`,`Serial0/x/1`;
   **Cloud-PT has 8 ports**: `Serial0..3`, `Modem4`, `Modem5`, `Ethernet6`, `Coaxial7`.
   ⚠️ A cloud only *forwards* over its serial ports once frame relay is configured, and the MCP has no
@@ -348,7 +360,8 @@ blowing up and taking the process with it. Verified the hard way against PT 9.0.
 app closed with "Cisco Packet Tracer quit unexpectedly".
 
 Inspect native objects by calling **known getters** and stringifying the result, never by
-enumerating keys. If you don't know the shape, probe one accessor at a time.
+enumerating keys. If you don't know the shape, probe one accessor at a time. For a **device's** full config don't
+probe at all: `d.serializeToXml()` dumps it in one call (API table above).
 
 ### Drawing IS possible — `drawCircle` takes SEVEN arguments
 
@@ -406,6 +419,26 @@ with the default outline.
 - **The layout adapts to the busiest LAN.** Coordinates no longer go negative and LAN clusters no longer
   overlap, so you do not need to reposition devices by hand after `pt_full_build` — only if you want a
   specific arrangement.
+
+## Diagnosing a saved / hand-built lab (.pkt)
+
+The user's own file is often the subject ("why does X fail in my .pkt"). Modern PT (8/9) `.pkt`
+and `.pts` files are **obfuscated containers, not zip archives** — `unzip`/`strings` recover
+nothing, so there is no static analysis path. Open the file in PT (`packettracer path/to/lab.pkt`
+on the host; the bridge extension is registered in PT.conf) and read the **live** state:
+
+1. `pt_bridge_status` → CONNECTED; then `pt_query_topology` + `pt_health_check` (devices, links,
+   cabled-without-IP, duplicate IPs) and `pt_inspect_ports` per device.
+2. `pt_send_raw` for what no tool exposes: `d.serializeToXml()` for host/service config (DHCP
+   pools, NIC settings), the link map via `getLinkAt`, `p.isDhcpClientOn()` per host.
+3. Read the console **history** (`getCommandLine().getOutput()` after priming): the user's earlier
+   config attempts and their error lines (`%Invalid interface type and number`, `Invalid input
+   detected at '^' marker`) usually name the exact mistake and reveal the intended design
+   (e.g. an `ip helper-address` line tells you where the DHCP server was meant to live).
+4. Deliver the fix as **GUI click paths** — the user hand-builds labs in the PT GUI himself.
+   Numbered steps, full port names (`FastEthernet0/0`, never `Fa0/0`), the click path
+   (`Server0 → Desktop → IP Configuration`), what is already correct (so he doesn't churn working
+   config), and an expected-result check at the end. CLI abbreviations alone are wrong for him.
 
 ## Recipes
 

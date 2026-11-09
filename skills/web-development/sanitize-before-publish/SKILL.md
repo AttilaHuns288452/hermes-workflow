@@ -52,7 +52,7 @@ Regex patterns (case-insensitive):
 - `Name/PM.` or `pending Name` or `Name's call` or `with Name` or `Name:`
 - `TBD with Name` or `TBD.*Name`
 
-### 2. Proposal/Document Section References
+### 2. Source-Document References & Meta-Commentary
 
 Internal cross-references to proposal sections:
 
@@ -68,6 +68,14 @@ Regex patterns:
 - `proposal\s*§\d+` → remove the `§N` reference, keep the rest if it's real copy
 - `§\d+\s*\([^)]*\)` → remove parenthetical section descriptions
 - `proposal\s*` → clean up dangling "proposal" words after section removal
+
+### 2b. Source-Structure Meta-Commentary
+
+Lines that describe the SOURCE document's structure or coverage — "Chapters 2–5 carry the algorithm material; Chapter 1 is the introduction", "lifted from the report's appendix", "condensed from sections 3–7" — are commentary about the source, not product content. The user flags them as inaccurate and unneeded. Strip the whole line.
+
+### 2c. User-Normal Display Numbering
+
+When the source document numbers things its own way (chapters 2–5, sections 3–7), any list shown to users must read 1..N. Renumber at render time; keep the source numbering only in internal keys, data joins, and section refs (like `§5` above) — never in visible labels. Engine keys and cross-file refs stay authentic; only the display sequence normalizes.
 
 ### 3. Draft Markers
 

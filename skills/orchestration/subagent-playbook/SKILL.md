@@ -79,13 +79,60 @@ each candidate before it reaches the user:
 - **PLAUSIBLE by default.** Never refute for being "speculative" when the
   runtime state is realistic: races, null on rare-but-reachable paths
   (error handlers, cold caches), falsy-zero, retry storms, boundary values.
-- **REFUTED** only when constructible from the code: quote the line that's
+- **REFUTED** only when constructivable from the code: quote the line that's
   factually wrong, show the type/invariant that makes it impossible, cite the
   guard that already handles it, or classify as pure style with no effect.
 - Keep CONFIRMED + PLAUSIBLE. Drop only REFUTED.
+- **Audit the metric before the claim.** A count finding ("N dead controls",
+  "N broken links") inherits the precision of its measurement method — a
+  click→text-diff-within-700ms heuristic will count every slow write as dead.
+  When a child reports a suspiciously large N, read its detection method first;
+  if the method is false-positive-prone, re-measure on a small sample before
+  treating the count as a defect list.
 
 This one pattern is the difference between an agent that hallucinates
 "findings" and one that surfaces real ones.
+
+## 3b. Verify implementation claims per named file
+
+A worker's completion summary is a self-report — it can name files it never
+touched and "pass" because the build was already green before it started.
+Before accepting implementation work: diff against the pre-dispatch state
+(`git diff --stat`, then per-path diff) and require EVERY named file to show
+changes, then spot-check one claimed feature in the actual code. A green build
+and a confident summary are not evidence; the diff is. When a child's
+implementation diverges from the spec's wording (a different button label than
+specified), adjudicate spec-vs-code before touching any test.
+
+Run the build and suites YOURSELF against the tree before accepting any
+completion claim — "build passes" is the most commonly fabricated line in a
+child's summary; the same applies to "tests green".
+
+## 3c. Scope read-only agents to the stable surface
+
+When audits or reviews run while implementers are editing the same tree,
+findings read from in-flight files are stale the moment the edit lands. Give
+every read-only agent an explicit file scope that EXCLUDES the files live
+writers own (name them in the brief and have the report mark them "in
+flight"), or serialize the audit until the wave lands. Findings on half-edited
+files waste the fix cycle and read as product defects when they are edit-state
+artifacts.
+
+## 3d. Dead children leave partial edits — continue, don't restart
+
+A child killed mid-run (provider outage, timeout) leaves its half-applied edits
+in the tree, sometimes syntactically broken (missing brace, duplicate import).
+Before re-dispatching: diff the tree against the pre-dispatch state to see what
+survived, then brief the replacement to CONTINUE the partial work — name the
+edits already on disk and keep file ownership disjoint. Restarting blind spawns
+a second agent that collides with the first one's leftovers. Run a fast build
+before the suites: a transform error fails in seconds and names the broken
+edit, where the suite driver would die mid-run and discard every verdict.
+
+Repeated child deaths within the first minutes = provider flake, not bad
+briefs. Stop burning dispatches and go hands-on. Before re-dispatching a fan-out
+that died on a billing wall or outage, fail-fast probe the delegation model with
+one trivial task and pin the batch to a model with confirmed working billing.
 
 ## 4. Efficiency instruction for search agents
 
@@ -114,3 +161,38 @@ directly:
 - **Prefer doing over describing.** "Run the tests" — don't say "you could
   run the tests."
 - **Rebase, don't merge**, when continuing work someone else pushed to.
+
+## 6. Multi-cycle audit → fix-wave loop
+
+For "make the whole app meet a quality bar" missions: dispatch parallel
+read-only auditors with DISJOINT lenses (visual design, UX/accessibility,
+responsive/interaction), each returning ranked findings (P0/P1/P2) with concrete
+measurements and marking deliberate design choices "by design" so fixers don't
+churn them. Then one fix worker per disjoint file set, briefed with the exact
+measurements. Verify each wave yourself (build + full suites + an end-to-end
+probe of the riskiest change) and commit per wave; repeat with a fresh triad
+until it finds no real defects. Two triad→fix→verify cycles is strong evidence;
+score the rubric honestly and name what would confirm the remaining points
+instead of claiming a clean sweep.
+
+## 7. Live-system audit dispatch contract
+
+When auditors probe a deployed app + live database (not just the repo):
+
+- **Pin a structured findings schema in every brief** so batches compose:
+  `severity, confidence (confirmed/likely/potential), file:line, evidence
+  (probe output), root cause, minimal fix, touches_protected`. Free-text
+  findings cannot be deduped, ranked, or turned into a fix plan mechanically.
+- **Read-only probes against write-capable APIs still write.** A REST endpoint
+  mis-specified as a read will happily INSERT. Probes must use read verbs /
+  `select` only; if a probe must write to prove a hole, pin the created row id
+  and delete + count-verify in the same script. After ANY audit against live
+  data, sweep for probe residue (marker-named rows like `PROBE SHOULD NOT
+  PERSIST` / `Qa *probe*`) and restore the baseline count before reporting —
+  including residue left by earlier investigations in the same session.
+- **Ingest large batches programmatically.** Truncated subagent summaries are
+  saved whole to a file; extract the finding headers with one regex pass over
+  the structured schema instead of paging through 50k chars by hand.
+- **Claims carry `touches_protected` against the scope at dispatch time.** If
+  the scope was revised mid-run, re-interpret the flag against the NEW scope
+  before deciding what may be fixed.

@@ -142,6 +142,8 @@ If task_tier misclassifies a request:
 
 ## Pitfalls
 
+- **A user flagging overthinking on a small request means the request was over-tiered.** "Only fix the visual — why are you overthinking, not doing the actual job" is the failure signature. A narrow request (one visual fix, one string, one element) is TIER 1 literally: make the named change, verify that change, stop — no audit sweeps, no research, no delegation, no adjacent "improvements". The request's own words bound the scope.
+- **A mid-project simplification override is a scope REDUCTION, not a fresh spec to build.** "Ignore the previous X — just make it simple" means: delete the machinery X required and restore the prior simpler implementation when one exists (it was already user-shaped and tested). Restoration beats re-implementation, and the dead paths must go rather than coexist with the simple version.
 - **Don't over-classify quick questions as TIER 2.** A yes/no question or simple lookup is TIER 1. Token Saver isn't needed because there's no file read.
 - **Don't under-classify ecosystem changes as TIER 2.** Creating or modifying a skill, wiring an integration, or setting up a new tool that affects routing IS TIER 3.
 - **When in doubt, classify to the tier the request matches — not upward.** Ambiguous between 2 and 3? Go with 2 and escalate only if evidence of structural change appears. The full pipeline is never "better" than staying scoped; Obsidian/KG updates are on-demand anyway.

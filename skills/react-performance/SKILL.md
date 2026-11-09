@@ -552,6 +552,8 @@ When the project ships React Compiler, demote `rerender-*` manual memoization ru
 
 ## Lighthouse / Web Vitals Mapping
 
+Measurement protocol (build target, Chrome path, form factors) and the two highest-yield fixes — metric-matched fallback fonts for CLS and route-level splitting for unused JS — are in `references/web-vitals-measurement.md`. Read it before reporting any score.
+
 | Metric | Most relevant categories |
 |---|---|
 | **LCP** (Largest Contentful Paint) | Waterfalls, Bundle Size, Resource Hints |

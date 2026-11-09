@@ -29,6 +29,7 @@ Unless the user explicitly specifies a different stack, adhere to these structur
   * Contain page layouts using `max-w-[1400px] mx-auto` or `max-w-7xl`.
   * **Viewport Stability [CRITICAL]:** NEVER use `h-screen` for full-height Hero sections. ALWAYS use `min-h-[100dvh]` to prevent catastrophic layout jumping on mobile browsers (iOS Safari).
   * **Grid over Flex-Math:** NEVER use complex flexbox percentage math (`w-[calc(33%-1rem)]`). ALWAYS use CSS Grid (`grid grid-cols-1 md:grid-cols-3 gap-6`) for reliable structures.
+  * **Responsive mechanics:** See `references/responsive-layout-mechanics.md` for the grid-track and control-strip traps that silently inflate or shift mobile layouts (auto-rows-fr row inflation, inline-flex shrink-wrap, tab-switch chrome stability).
 * **Icons:** You MUST use exactly `@phosphor-icons/react` or `@radix-ui/react-icons` as the import paths (check installed version). Standardize `strokeWidth` globally (e.g., exclusively use `1.5` or `2.0`).
 
 

@@ -19,6 +19,13 @@ Any task with 3+ subtasks or non-trivial complexity.
 
 ## Workflow
 
+### Step 0: Reconcile with live state (resumed / compacted sessions)
+A compacted or handed-off backlog list routinely names work that already
+shipped. Before executing it, check live state (`git log --since`, the kanban
+board, the todo list) and drop what is done — the user's CURRENT message is
+the task list of record. Do not re-open, re-verify, or "finish" items the live
+state shows complete.
+
 ### Step 1: Decompose
 Break the task into subtasks.
 

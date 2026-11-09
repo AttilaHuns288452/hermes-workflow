@@ -53,6 +53,29 @@ USER REQUEST
 - External tool: select MCP → `hermes mcp list` probe → execute → inspect result → validate
 Derive the chain from the actual request; never force steps the task doesn't need.
 
+## MCP Routing (enabled servers only — probe `hermes mcp list` first)
+
+Installed ≠ utilized. Match the request to a server before falling back to shell/web:
+
+| Need | Server | Notes |
+|---|---|---|
+| Repo/code location, call graphs | `codegraph` | probe before broad grep in `~/Documents/Projects/` |
+| Postgres/Supabase data, migrations, edge functions | `supabase` | live SQL, deploy_edge_function |
+| Deploys, env vars, deployment status | `vercel` | prefer over manual dashboard work |
+| Web search/scrape/crawl/deep research | `firecrawl` | also the configured `web.search_backend` |
+| 3D modeling, renders, scene scripting | `blender` | headless renders: NVIDIA offload, never via MCP for long renders |
+| Cisco labs, IOS config, topology | `packet-tracer` | GUI names + CLI abbrevs |
+| Binary/APK/firmware reverse engineering | `rea` | open_binary first |
+| Audio analysis, SFX generation, mix critique | `earshot` | |
+| Browser-recorded UI flows, demo video | `demosmith`, `pagecast` | |
+| Roblox/Luau game dev | `roblox_studio` | Studio-under-Wine limits apply |
+| Figma → code | `figma-dev`, `flowbite` | |
+| Market/ETF/macro/SEC/prediction data | `llmquant-data` | 0-credit research only |
+| Dependency graph, PR impact | `graphify` |
+| Group chat rooms (create/list) | `hermes-group-chat-rooms` — RPC is auth-gated; go through the storage layer | |
+
+Disabled servers (`21st`, `agentmemory`, `clawlink`, `figma`, `opendesign`, `stripe`, `twelve-data`, `vscode`, `artemis`) are NOT routes — do not plan around them.
+
 ## Availability Check (Rule 3 — universal)
 
 A name in documentation is a hypothesis. Before relying on any dependency:
@@ -108,7 +131,7 @@ Framework guardrails (tool-loop warnings, watchdogs, fallback providers) handle 
 
 ## Memory Policy
 
-Durable user/context facts → `memory` tool (declarative, compact). Everything else → session state / kanban / session_search. Reference-material discovery → `python3 ~/.hermes/scripts/lightrag_find.py "<query>"`. Never treat in-RAM state as persistent.
+Durable user/context facts → `memory` tool (declarative, compact). Everything else → session state / kanban / session_search. Reference-material discovery → `python3 ~/.hermes/scripts/lightrag_find.py "<query>"` (BM25 name lookup) or `python3 ~/.hermes/scripts/lightrag_hermes.py ask "<question>"` (LightRAG knowledge graph, semantic/cross-skill). Never treat in-RAM state as persistent.
 
 ## Token Discipline (Rule 1)
 

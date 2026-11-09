@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Creative ideation, ambiguous new features \u2014 brainstorm a genuinely new idea before building. NOT for small features, bug fixes, or clear-scope changes."
 ---
 
 # Brainstorming Ideas Into Designs

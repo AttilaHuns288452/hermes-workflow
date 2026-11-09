@@ -186,6 +186,8 @@ Optional:
 - Mobile layout breaks readability
 - No clear next step
 - **Promotional CTAs in sub-sections** — cross-utility CTAs (shadows, animations, components) belong on the first-view landing page, not buried inside component template tabs.
+- **Dead-end CTAs behind a login** — when every path on the page ultimately requires sign-in, buttons promising actions ("Book a visit", "Patient portal") that only bounce to the sign-in card read as broken, not gated. Collapse to ONE honest CTA (e.g. "Sign in to book") pointing at the auth card; action-verb CTAs belong to post-login surfaces.
+- **Desktop-only hero** — an H1/hero band wrapped in `hidden md:block` (or a desktop-only style) leaves the mobile page headless while desktop looks complete. Mobile-first means the hero AND its CTA must render at ~390px; verify with a mobile screenshot before calling the page done.
 
 ---
 
@@ -207,3 +209,6 @@ Return:
 - Any proof (numbers/testimonials/logos)?
 - What’s the offer and risk reversal?
 - Where is traffic coming from?
+
+## Psychology review (after building)
+Once the page is written, load the `ux-psychology` skill and run it as a review layer: pull the 3-5 principles for a landing page (first impressions, anchoring, social proof, information scent), apply them to the actual markup and copy, and check the anti-pattern list.

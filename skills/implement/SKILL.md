@@ -14,3 +14,8 @@ Run typechecking regularly, single test files regularly, and the full test suite
 Once done, use /code-review to review the work.
 
 Commit your work to the current branch.
+
+Reading the request:
+
+- "Add field X to <entity>" means X is settable in the create form AND editable on EXISTING records through a per-row action, covering every creation flow (manual entries, payment/system-generated rows, historical rows). Create-form-only is a narrower request: confirm before narrowing.
+- New row actions go ALONGSIDE existing ones (Correct/Void and friends stay). When the user calls the addition simple, add the smallest surface that fully covers it and leave adjacent flows untouched.

@@ -65,7 +65,16 @@ changed feature → dependent features → related workflows → permission boun
 
 Deliverable code must read as human-authored: idiomatic framework-standard structure (the ecosystem's own router, standard `pages/`/`components/` folders), no machine residue (dead exports, unused imports, scaffold comments). `references/style.md` = the authorship checklist plus split/move refactor verification pitfalls (leftover export lines, stale relative imports, smoke-with-console-capture after restructure).
 
-Finding an issue is not the deliverable — fix it and re-run the affected suite before reporting.
+Finding an issue is not the deliverable — fix it and re-run the affected suite before reporting. Evidence-gathering has a ceiling: once the root cause is identifiable from code and logs, deliver the fix; repeated screenshots or visual/diagnostic passes just re-diagnose an already-reproduced defect. Visual QA is for CONFIRMING a fix landed, not for confirming the bug exists.
+
+## Completion (standing user requirement)
+
+Multi-wave build missions run to DONE before reporting complete: every requested wave
+implemented, QA suites green on the FINAL state, the result verified, and the work
+deployed where deployment is in scope. Interim wave summaries are checkpoints, not
+delivery. Checkpoint files carry state for recovery; they are not stopping points.
+When a wave finishes and waves remain, keep executing — the mission ends at
+done + QA + verified + deployed, not at the first green batch.
 
 ## Generalized Lessons (validated on real projects)
 
@@ -101,6 +110,8 @@ Finding an issue is not the deliverable — fix it and re-run the affected suite
 - Hardening/refactor passes run on a budget: classify findings P0 (security, data integrity, broken behavior, partial-state hazards) / P1 (maintainability that materially affects future changes) / P2 (cosmetic) — implement ALL P0, the P1s fixable without architectural risk, and P2 only when trivial and clearly beneficial. "10 meaningful fixes" beats 100 cosmetic changes; a smaller clean diff is a goal, not a shortfall. Deliver results by UPDATING the existing canonical release/audit document when one exists — a repo accumulating one REPORT file per pass is report noise, not documentation.
 
 - Porting UI from a mock/demo data layer into a real schema: let DB defaults (uuid) fill ids — mock code ships fake string ids that break real columns — and check every mock column name against the live schema before wiring (a reserved-word name like `order` or a not-yet-existing column 400s silently with no UI symptom); the mock's simplified state machine also hides where invariants are enforced, so re-establish each preserved invariant at the destination's enforcement layer (trigger/RPC), not the UI happy path.
+- Provenance honesty in UI copy (standing user requirement): seeded/demo/placeholder data is never labeled real or live — a dashboard showing sample numbers reads "Demo data" / "Sample analytics", not "Live overview" or "Internal analytics". Imported records that lack curated fields carry a source badge ("live listing from <vendor>") and neutral placeholders, never a fabricated favorable score dressed as curated. A wrong or absent real key must surface a labeled error state, not a fake 200 or invented filler rows. WHY: UI copy that overclaims provenance is indistinguishable from real telemetry to the reader, and fabricated metrics presented as real are a silent lie the moment they compare against the source.
+- Scoring/ranking engines fed PARTIAL data must EXCLUDE unknown inputs and RENORMALIZE the remaining weights over what is known — never default an unknown to 0 (which scores the item as if it measured bad) or impute a favorable value (which fabricates). Surface which inputs contributed (coverage) and render the rest as "Not available"; an imported item with two real fields scores on those two only and stays comparable to a fully-curated item because both are honest about coverage. WHY: a weighted sum over fixed weights silently punishes any item with missing fields, and the fix (renormalize) is identical in result when all inputs are present, so it changes nothing for curated data.
 - Provisioning a user through a shared client's `signUp` switches that client's active session, so follow-up role/profile writes run as the wrong principal and fail RLS — run each provisioning step on its own client instance.
 
 ## Query Coverage (phrasings this skill answers)

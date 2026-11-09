@@ -1,6 +1,6 @@
 ---
 name: 110-java-maven-best-practices
-description: Use when you need to review, improve, or troubleshoot a Maven pom.xml file — including dependency management with BOMs, plugin configuration, version centralization, multi-module project structure, build profiles, or any situation where you want to align your Maven setup with industry best practices. This should trigger for requests such as Review pom.xml to improve it; Apply Maven best practices to pom.xml; Improve Maven POM configuration; Review Maven dependency management and plugin configuration; Modernize Maven build conventions for a Java project. Part of Plinth Toolkit
+description: "Java Maven: review, improve, or troubleshoot pom.xml \u2014 BOMs, plugins, version centralization, multi-module builds, profiles, best practices."
 license: Apache-2.0
 metadata:
   author: Juan Antonio Breña Moral

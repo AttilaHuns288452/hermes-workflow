@@ -90,7 +90,7 @@ Components with async data fetches need three states: loading, empty, and error.
 grep -rn "loading\|Loading" src/features/*/components/ --include="*.tsx" | grep -v "error\|Error"
 ```
 
-A component with `loading` state but no `error` state will hang forever if the async fetch rejects.
+A component with `loading` state but no `error` state will hang forever if the async fetch rejects. Sharpen this check: the ERROR state must be distinct from the EMPTY state. A failed load that falls through to "No data yet" / "No messages yet" is a silent failure — gate the empty state behind a SUCCESSFUL empty load, and give load errors an inline message plus a retry that reuses the load function.
 
 ### Step 7: Verify build!
 
@@ -103,7 +103,7 @@ A build failure on top of silent failures means you're fixing in the dark.
 
 ## Silent Failure Patterns
 
-See `references/silent-failure-patterns.md` for a detailed pattern catalog with concrete code examples and grep queries per pattern.
+See `references/silent-failure-patterns.md` for a detailed pattern catalog with concrete code examples and grep queries per pattern. It also covers the state-truth family (Patterns 8-10): empty state masking load errors, input cleared before a mutation resolves, and background revalidation clobbering user-selected state.
 
 ## Severity Classification
 

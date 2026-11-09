@@ -1,0 +1,93 @@
+---
+name: llm-provider-wiring
+description: Use when pointing an app's LLM path at a provider or model.
+version: 0.1.0
+author: Hermes Agent
+license: MIT
+metadata:
+  hermes:
+    tags: [llm, providers, configuration]
+    related_skills: [ai-gateway-research, local-llm-runtimes]
+---
+
+# LLM Provider Wiring
+
+## When to Use
+
+The user hands over an API key or names a model to use; an app's LLM path must
+be pointed at a new provider or model; a model disappears or a wallet runs dry
+and the path must be re-pointed; a production deployment must mirror a working
+local LLM config.
+
+Wire an application's LLM composer/agent path to a chosen provider + model
+end-to-end: new keys, model swaps, env and deployment config. PROVE it through
+the app — a 200 chat probe is not verification; the product path must return
+the model-generated marker with expected grounding.
+
+## Procedure
+
+1. **Identify the credential's provider.** Key prefixes are hints only; confirm
+   by behavior: probe candidate OpenAI-compatible bases (`GET {base}/models`,
+   `POST {base}/chat/completions` with `max_tokens:1`) and read the error
+   vocabulary. A 200 on `/models` proves nothing — catalogs are usually public.
+2. **Probe billing per model** with 1-token chat probes on the exact ids you
+   intend to wire. Read the error body: `insufficient_quota`/402 = wallet empty
+   for that model class; 403 + plan wording = subscription required;
+   `FreeTierError`/gated wording = the free tier is restricted (often to the
+   vendor's own client); 404 = model id no longer exists. Probe success is
+   per-model: one model working proves nothing about another.
+3. **Select the model per the user's literal words.** If they name a tier
+   ("free"), use the literal free-tier id (e.g. `foo:free`); never substitute a
+   plan-covered paid model because it is "free at the margin". Ask only when the
+   literal reading has no working option, with prices verified from a source.
+4. **Wire the env.** Write key/base/model into the app's gitignored `.env`;
+   never print key values (probe scripts read them from the file). Before
+   relying on a `.env`, check where the app resolves it from: a cwd-relative
+   dotenv silently misses under process managers and MCP spawns that run in a
+   foreign directory — prefer a package-root-anchored path or pass the values
+   through the spawn's env block. Node's
+   `process.loadEnvFile()` does NOT override inherited shell variables — start
+   the server with them unset (`env -u LLM_API_KEY -u LLM_MODEL -u LLM_BASE_URL
+   node server.js`) or the app silently keeps the old model.
+5. **Restart the process before verifying** — config and env are read at process
+   start (often at require time).
+6. **Verify through the app.** Health endpoint shows the model id AND a real
+   request through the product path returns the model-generated marker
+   (`generated:'model'` or equivalent) with expected grounding; re-run the suite
+   that drives the real conversation flow.
+7. **Production = host env + redeploy.** Serverless hosts (Vercel) read env at
+   deployment: patch the project env via API, then trigger a NEW deployment
+   (empty-commit push is the reliable trigger), then verify live with
+   cache-busting. Vercel API auth from a browser session works as
+   `Cookie: authorization=<value>` — `Authorization: Bearer` is rejected.
+
+## Pitfalls
+
+- **Gated free tiers are deliberate entitlements.** A free model that answers
+  "can only be used from within <vendor app>" requires impersonating the
+  vendor's client to bypass — do not. Report the gate and the paid/verified
+  alternatives; the user decides.
+- **Never silently route traffic to a pay-per-token key** when the user asked for
+  free. Verify prices from a source before proposing a paid route.
+- **Provider state is flaky under load**: a model can probe 200 while concurrent
+  heavy use returns transient 402/429 for minutes. Retry once after a delay or
+  fall back to hands-on work — don't burn turns re-dispatching into the window.
+- **A fallback result with no failure reason** (`generated:'fallback'` and an
+  empty `fallbackReason`) means a deterministic guard fired BEFORE the LLM path
+  (scope/coverage gating), not a provider failure — read the guard first.
+- **Vendor self-checks probe the wrong host.** An app's built-in "verify API
+  key" step often ignores the configured base URL and tests the vendor's
+  default endpoint, so a valid gateway key reports as invalid (the error body
+  names the vendor's host, e.g. platform.openai.com). Root-fix the call site to
+  thread the configured base URL into the verifier; never conclude the key or
+  gateway is broken from that check alone.
+- **Catalog presence is not routability, and outages can be family-wide.** Pin
+  default AND fallback from 1-token chat probes, not from the app's shipped
+  defaults (those name the app author's vendor). One model working proves
+  nothing about its siblings; an entire family can 503/403 on one key while
+  other families answer.
+- **Masked tool output** renders secrets as `***`; patching files that contain
+  key or auth lines from the masked rendering corrupts them — re-derive those
+  lines from context.
+- Keep the model id in env when the app already reads config; a user model
+  correction is a config change, not a code change.

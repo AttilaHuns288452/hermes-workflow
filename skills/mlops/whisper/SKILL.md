@@ -25,6 +25,7 @@ OpenAI's multilingual speech recognition model.
 - Translation to English
 - Noisy audio transcription
 - Multilingual audio processing
+- Distilling a recorded defense/review/meeting into reusable notes with verbatim speaker quotes
 
 **Metrics**:
 - **72,900+ GitHub stars**
@@ -191,22 +192,69 @@ for audio_file in audio_files:
         f.write(result["text"])
 ```
 
-## Real-time transcription
+## Local GPU transcription (faster-whisper) — preferred for local files
+
+faster-whisper (CTranslate2) is ~4x faster than openai-whisper and runs large-v3-turbo on a 4 GB GPU with int8. Prefer it over openai-whisper for any local file on this machine.
+
+```bash
+# Isolated venv (system python may lack wheels)
+python3 -m venv fwvenv && fwvenv/bin/pip install -q faster-whisper numpy
+```
 
 ```python
-# For streaming audio, use faster-whisper
-# pip install faster-whisper
-
 from faster_whisper import WhisperModel
 
-model = WhisperModel("base", device="cuda", compute_type="float16")
+# int8 keeps large-v3-turbo inside 4 GB VRAM; falls back to cpu/int8 gracefully
+try:
+    model = WhisperModel("large-v3-turbo", device="cuda", compute_type="int8")
+except Exception:
+    model = WhisperModel("large-v3-turbo", device="cpu", compute_type="int8")
 
-# Transcribe with streaming
-segments, info = model.transcribe("audio.mp3", beam_size=5)
-
-for segment in segments:
-    print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
+segments, info = model.transcribe(audio, vad_filter=True, beam_size=5)
+# segments is a lazy generator; iterate once, write each line as it arrives
+for s in segments:
+    print(f"[{fmt(s.start)} - {fmt(s.end)}] {s.text}")
 ```
+
+Measured: ~61 min of audio in ~4.5 min on RTX 3050 4 GB (large-v3-turbo, cuda int8).
+
+### Pitfall: file-path decode breaks on newer PyAV
+
+faster-whisper decodes file paths through PyAV; when PyAV's `av.open()` signature drifts (e.g. a removed `metadata_errors` kwarg), `model.transcribe("file.m4a")` dies with `TypeError` before any audio is read. Don't chase av version pins (older wheels may not exist for the current Python) — bypass the broken decode: pre-decode with ffmpeg and pass raw samples instead. `transcribe()` accepts a float32 numpy array directly.
+
+```bash
+ffmpeg -y -i input.m4a -ar 16000 -ac 1 -c:a pcm_s16le audio16k.wav
+```
+
+```python
+import wave, numpy as np
+
+def load_wav16k(path):
+    with wave.open(path, "rb") as w:
+        assert w.getframerate() == 16000 and w.getnchannels() == 1
+        data = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
+    return data.astype(np.float32) / 32768.0
+
+segments, info = model.transcribe(load_wav16k("audio16k.wav"), vad_filter=True, beam_size=5)
+```
+
+### Pitfall: full-length encode blows RAM on long audio (chunk it, run in foreground)
+
+A single `transcribe()` pass materializes encoder states for the WHOLE spectrogram (~3 GB for 2h of audio) and gets OOM-killed in Hermes background terminal workers (they live in a ~4 GB memory cgroup, oom_score_adj 200, SIGKILL; `dmesg` shows `oom_memcg=hermes-worker-*.scope`). Don't run long transcriptions as one background job. Recipe (measured: 2h audio in 321s wall on RTX 3050 4GB, large-v3-turbo cuda int8, ~18x realtime):
+
+1. Free VRAM first if Ollama holds it: `ollama stop --all` (llama-server unloads on idle, auto-reloads on next request).
+2. Pre-decode to 16k wav once (also dodges the PyAV pitfall above), then slice ~15 min chunks with `wave` module reads (offset + nframes), transcribe 2-4 chunks per FOREGROUND terminal call (well under the per-call time ceiling; RAM per chunk stays ~1-2 GB).
+3. Global timestamp = chunk_offset + s.start; append header + lines to the output file per call so progress survives.
+
+Note: `background=true` + `process_manage(action='wait')` is unreliable on this harness (wait clamps to 180s and the process gets SIGKILLed at the clamp; `setsid/nohup` wrappers are rejected by the terminal tool) - foreground chunked calls are the reliable path.
+
+### Transcript deliverable format
+
+Write `[HH:MM:SS - HH:MM:SS] text` per segment with a short header (source, detected language + probability), saved next to the source in `~/Downloads`. `info.language` / `info.language_probability` are reported from the run — record them, don't re-derive. Code-switched audio (e.g. Taglish) detects as the dominant language with high confidence; keep the segments in the original language and offer translation/diarization/prose cleanup as follow-ups instead of doing them unasked.
+
+### Distilling transcripts into reusable notes
+
+When the ask is "notes that apply generally / what did the panelists actually say" rather than a raw transcript: strip project-specific facts, generalize to roles, organize by theme, and attach verbatim timestamped quotes under each lesson. Full recipe and pitfalls in `references/distill-and-quote.md`.
 
 ## GPU acceleration
 

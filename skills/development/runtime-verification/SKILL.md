@@ -92,6 +92,12 @@ Smallest path that makes the changed code execute:
 - Changed error handling? Trigger the error.
 - Changed a UI flow? Click the buttons — don't curl the API underneath the UI.
 
+**Drive the artifact you just built.** If the running surface still shows the pre-change behavior after a rebuild, first confirm the server is serving *that* build's output directory (a build writing one directory while the dev/QA server serves another shows the previous bundle) and that no CDN/proxy cache sits in front — before rebuilding again or reporting the fix as ineffective. A mismatched artifact makes a working fix read as a no-op. When probing for fresh content with a cache-busting param, append it as `&cb=` on URLs that already carry a query string: a second `?` corrupts the request and the probe false-fails.
+
+**A green build proves the toolchain ran, not that the page renders.** Undefined JSX identifiers — a component moved to another module with its import left behind — compile cleanly, pass every test, and white-screen the app at runtime. Before shipping UI work, load the BUILT output and smoke-render the key routes (nonempty root text, zero pageerrors), and keep a static guard in the suite: every capitalized JSX tag in a file must resolve to an import or local definition there. The guard turns a white-screen deploy into a failing test.
+
+**Never verify success through a pipeline.** `build | tail` exits with the PIPE's status, so a failed build prints one line of noise and reports green. Capture to a file and read the real code (`node build.js > log 2>&1; echo BUILD_EXIT=$?`). A masked exit code is how a broken commit reaches production.
+
 **Read your plan back before running.** If every step is build / typecheck /
 run tests, you've planned a CI rerun, not a verification. Find a step that
 reaches the surface or report BLOCKED.
@@ -115,6 +121,10 @@ Not a checklist — pick the ones the change points at. **A probe that finds
 nothing is still a step**: "🔍 passed `--from ''` → clean `error: --from
 requires a value`, exit 2." At least one 🔍 probe per verification; a report
 with none is a happy-path replay.
+
+**Only test through the input path the user has.** A test that sets the state directly — `player.teleport(x)`, `setState({...})`, `db.update(status=>'done')` — proves the target is *valid*, never that a user can *reach* it. Set-up-by-teleport misses holes you fall into, controls you cannot click, and steps you cannot complete; it is the single most common way a green suite hides a broken product. Drive the same sequence a user drives (walk, scroll, tab, type) and assert on the way through, not just at the destination. When a route has a width or a range, sample across all of it, not its centre line.
+
+**Mutation-check every new assertion.** After fixing a defect, restore the old behaviour and confirm the assertion FAILS, then put the fix back. An assertion that passes both ways is decoration, and a suite full of decoration reads as coverage while guaranteeing nothing. Cheapest honest evidence you can produce in a single command.
 
 ## 5. Capture
 

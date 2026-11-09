@@ -11,7 +11,8 @@ A remote MCP server can be enabled in `hermes mcp list` while its tools are
 absent from a session's deferred tool catalog (catalog snapshots vary by
 session). Do not declare the capability missing — drive the server directly:
 it is the same authorized connection, just spoken in raw JSON-RPC. Rebuild the
-helper from `scripts/mcp_call.py` (copy it to a work dir; temp dirs get wiped
+helper from `scripts/mcp_call.py` (copy it to a durable path such as
+`~/.local/share/mcp-call/mcp_call.py`; scratch/temp dirs get wiped
 between sessions and a lost helper costs a rebuild).
 
 ## Procedure
@@ -56,13 +57,51 @@ between sessions and a lost helper costs a rebuild).
   checks belong in one `DO` block; to make a DO block's verdict VISIBLE in the
   response, end with `raise exception '<VERDICT>'` (the message returns as the
   error content) or write a result row and SELECT it in a second call.
-- **Shell-quoting SQL through argv is fragile** (`$$`, quotes): write the query
-  to a file and pass file contents as the JSON argument.
+- **Shell-quoting SQL or file content through argv is fragile** (`$$`, quotes,
+  200-line sources): write the content to a file and build the JSON argument in
+  a small driver script that imports the helper module and reads the file from
+  disk (`sys.path.insert(0, '<helper dir>'); import mcp_call`), then calls
+  `rpc()` directly. This also routes around display redaction: tool output
+  mangles `Authorization: Bearer` / `apikey: X` / env-key names in file dumps,
+  so a payload assembled from DISPLAYED text is corrupted — always source
+  content from disk, never from what a tool printed.
 - **HTTP 400 right after a previous session's calls**: the old session id went
   stale — delete the saved id and re-handshake; 401/403 with a valid token is
   the UA problem above.
+- **The helper's `KNOWN_URLS` covers only some servers.** For any other
+  registered server (e.g. `vercel`), `python3 mcp_call.py vercel …` dies with
+  `KeyError: 'vercel'`. Set the endpoint explicitly from `hermes mcp list`:
+  `MCP_URL=https://mcp.vercel.com python3 mcp_call.py vercel --list`.
+- **The token store holds audience-bound OAuth tokens.** `hermes mcp login`
+  mints tokens with a resource indicator (e.g. `resource=https://mcp.supabase.com/mcp`):
+  they authenticate to THAT MCP server only and are rejected (401) by the
+  provider's management API or CLI even with matching scopes — those need a
+  separate PAT the box may not have. Check the token's issuer/audience before
+  spending turns on the manual route; when the credential class is wrong, fall
+  fallback to the user's dashboard GUI (the `supabase` skill's
+  live-database-access reference) instead of hunting for a working token.
+- **A pending or just-completed `hermes mcp login` rotates the stored refresh
+  token.** Reading the token file while a login flow is in flight — or
+  refreshing after one completed elsewhere — fails with "No such refresh token
+  found" and leaves BOTH tokens dead. Run exactly one auth flow at a time; a
+  clean re-login beats any manual refresh.
+- **After a successful `hermes mcp login`, try the normal tools FIRST.** The
+  gateway's connection recovers before the session tool catalog re-snapshots:
+  a direct `tool_call` by the exact `mcp__server__tool` name may resolve even
+  while `tool_search` lists nothing for that server (an empty search result is
+  a catalog snapshot, not capability absence). Only fall back to the manual
+  client when the direct call is truly unavailable — its tokens are fresh
+  right after login.
+- **An OAuth login stalled at the callback is waiting for a browser consent
+  click.** The callback listener stays alive for minutes; one assisted attempt
+  (raise the browser window, click Authorize) is fine. If desktop captures
+  show the wallpaper instead of the browser, check whether the SCREEN IS
+  LOCKED (idle screensaver) before diagnosing window focus — automation cannot
+  click through a lock screen, and that is the user's action to take.
 
 ## Reference
 
-`references/supabase-mcp.md` — Supabase tool names and its SQL tool semantics.
-Helper: `scripts/mcp_call.py` (generic: `python3 mcp_call.py <server> <tool> '<json args>'`).
+`references/supabase-mcp.md` — Supabase tool names, SQL tool semantics, and
+edge-function deploy + post-deploy verification.
+Helper: `scripts/mcp_call.py` (generic: `python3 mcp_call.py <server> <tool> '<json args>'`;
+passing `--list` as the tool arg prints the server's tool names).

@@ -200,6 +200,46 @@ You understand 1,2,3,6. Unclear on 4,5.
 ✅ "Understand 1,2,3,6. Need clarification on 4 and 5 before implementing."
 ```
 
+## Remediating a multi-finding QA / audit report
+
+A reviewer's report is a batch of claims, not a work order. Same reception
+rules, applied per finding:
+
+1. TRIAGE FRESHNESS FIRST: establish which revision the report reviewed and
+   compare to current HEAD. A cheap probe is the report's own self-reported gate/test count (e.g. "ALL 57 CHECKS PASSED"): compare it to the live gate count on the current tree — a mismatch means the report ran against an older tree and EVERY finding must be re-verified before use. Findings against an older commit get re-verified
+   before anything else — the fix may already have landed, and a report full
+   of stale items burns a night re-fixing solved problems. Classify every
+   finding: still applicable / already fixed / not applicable (with reason).
+2. VERIFY BEFORE FIXING: reproduce, or grep the cited file:line. Reports
+   carry misdiagnoses, approximate line numbers, and "defects" that are the
+   reviewer's own probe artifact (a locator that matched the wrong element).
+   Your reproduction is the evidence; the report is a lead.
+3. GROUP BY OWNING FILE/COMPONENT, then implement: crash/correctness/security
+   first (a crash "masks" every finding behind it), then data integrity, then
+   copy/polish. For a large batch, fan out subagents with disjoint file
+   ownership (see `subagent-delegation`) but fix the top-severity item
+   yourself first — it must not wait in a queue.
+4. VERIFY at three layers: unit tests, the reviewer's OWN reproduction steps,
+   and the release/acceptance journey the report names. If it proposes an
+   acceptance path, run exactly that path.
+5. REPORT PER FINDING: fixed (with evidence), already done, not applicable
+   (why), or outstanding (what it needs). End with an honest unverified list
+   (SQL not executed, environments not covered). A status table beats a
+   narrative — the reviewer will re-run their report against your answer.
+
+Pitfalls:
+- A finding "masked by" another becomes testable the moment the mask is
+  fixed — re-check masked findings after their blocker lands instead of
+  filing them as outstanding.
+- Your probe failing on the reviewer's repro steps is usually YOUR selector,
+  not their claim: dump the actual controls/accessible names before disputing
+  a finding.
+- Never fix only the named symptom: grep each cited root cause across sibling
+  call sites — the same bug class typically lives in 2-4 places the report
+  did not visit (three sign-out entry points, four wishlist surfaces).
+- Reports mix severities and confidence labels; an item marked "not
+  live-tested" is a lead with lower evidence, not a fact to fix blindly.
+
 ## GitHub Thread Replies
 
 When replying to inline review comments on GitHub, reply in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.

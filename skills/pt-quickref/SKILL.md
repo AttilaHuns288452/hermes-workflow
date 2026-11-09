@@ -46,8 +46,13 @@ L2 switch (2960) additionally needs an IP:
 | banner shows but login closes | VTY not `login local` / wrong `transport input` | `line vty 0 4` → `login local`, `transport input ssh` |
 | "Translating..." hang ~70s | stray input triggers DNS lookup | Ctrl+Shift+6, then `no ip domain-lookup` |
 | commands turn into junk (line 3, login prompt) | console context reset / initial-config dialog | answer `no` to dialog; re-`enable`; send one command at a time |
-| DHCP client gets 169.254.x | pool wrong / server not in LAN | `ip dhcp pool LAN1`, `network`, `default-router` |
+| DHCP client gets 169.254.x (APIPA = nobody answered) | DHCP service off, server has no IP, no pool matches the client's LAN, or `ip helper-address` targets an IP no device owns | server gets a static IP in its LAN + service ON + one pool per client LAN (`network` + `default-router`); helper-address on the client-side router interface must equal the server's IP |
+| client leases the router's own `.1` and fights it | pool start address includes `.1`, or Default-Gateway / Start-IP fields swapped when filling the GUI form | start the pool at `.10`; `default-router` = the router interface, never a host |
+| PC stuck on 169.254 after the fix | PT caches APIPA and never retries | toggle the PC: IP Configuration → Static, then DHCP again |
+| relayed PCs get the wrong LAN's addresses | PT served the default pool instead of the giaddr's | select the right pool → Set As Default, renew the clients |
 | SW1 SSH from PC fails after router works | L2 switch has no routable IP | SVI + `ip default-gateway` |
+
+Server-PT DHCP config (service on/off, pools) has no `pt_*` tool: dump it with `d.serializeToXml()` and read the `DHCP_SERVERS` block (full recipe in the `packet-tracer` skill).
 
 ## Console discipline (mandatory for pt_send_raw)
 1. ONE command per call. 2. Settle ~300ms. 3. Read prompt/echo in a SEPARATE call. 4. Never rely on `setTimeout` batching. 5. Read the echo/output and adapt — never resend an identical call in a loop.
@@ -58,5 +63,6 @@ States: `R1>` needs `enable` → `R1#` needs `configure terminal` → `R1(config
 - users: console `show users` after a real SSH login (`* <n> vty 0 admin`)
 - `pt_health_check` green + `write memory` on each device
 
-## Bridge handshake (startup lag)
-If `pt_bridge_status` reports "no está conectado": PT's extension retries the bridge every ~30-60 s. Just wait and call `pt_bridge_status` again — do NOT rebuild/restart anything. "CONNECTED por HTTP" = linked. First tool call in a fresh session may fail for this reason only.
+## Bridge handshake (startup lag vs. mailbox mismatch)
+If `pt_bridge_status` reports "no está conectado": call it again first — the HTTP bridge starts lazily on the first tool call of a session and the extension retries every ~30-60 s. Do NOT rebuild/restart anything. "CONNECTED por HTTP" = linked.
+If PT is open and waiting does not clear it, the two ends are on different file mailboxes: the extension heartbeats `alive.txt` under `~/AppData/Local/packet-tracer-mcp/bridge` while the Python MCP reads `~/.local/state/packet-tracer-mcp/bridge`. Fresh heartbeat in one dir, nothing in the other = link them once: `ln -s ~/AppData/Local/packet-tracer-mcp/bridge ~/.local/state/packet-tracer-mcp/bridge`, then `pt_bridge_status` → "CONNECTED por file-bridge".

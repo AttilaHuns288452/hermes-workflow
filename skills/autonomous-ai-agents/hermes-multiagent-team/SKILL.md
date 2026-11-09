@@ -40,11 +40,36 @@ Run creates sequentially with a generous timeout (300s+); a create can trigger t
 dependency completion flow and one giant batch hits the tool time ceiling mid-way. Verify with
 `hermes profile list` after.
 
+### 2b. Give the profile its own credentials
+A profile resolves API keys ONLY from `~/.hermes/profiles/<role>/.env`. A key in the root `.env` is invisible
+to it — the turn dies with `No usable credentials found for provider '<p>'`. Copy the provider key into
+every new profile's `.env` and `chmod 600` it, then prove with a real turn (`hermes -p <role> chat -q "..."`).
+Never print the value while checking; report `set=True len=N` per variable.
+
 ### 3. Write a role SOUL.md per specialist
 Each `~/.hermes/profiles/<role>/SOUL.md` is a contract: role identity, `## Owns`, `## Rules`,
 `## Handoff output`, `## Stay in lane`. Reference the shared charter rather than duplicating it. The
 handoff contract is fixed: objective, output, evidence/verification performed, acceptance-criteria
 status, open risks, next action/owner.
+
+Every role SOUL must also carry a credential clause — `Never expose credentials, keys, or tokens in
+output, logs, or artifacts.` A specialist without it is the one that will paste a key into a report.
+
+**Audit a SOUL before trusting it.** A SOUL is a set of claims about the environment, and long-lived
+ones accumulate false ones. Check, don't skim:
+
+```bash
+# every backticked skill name must resolve under the profile's own skill tree
+grep -ohE '`[a-z0-9][a-z0-9/_-]{3,}`' SOUL.md | tr -d '`' | sort -u
+# every referenced path must exist
+for p in $(grep -ohE '(~/[A-Za-z0-9_./-]+)' SOUL.md | sort -u); do test -e ~/"${p#~/}" || echo "MISS $p"; done
+# every claim of an installed tool must be probed
+command -v <tool> || echo "absent but SOUL says installed"
+```
+
+A SOUL that names a skill which does not exist, or claims a binary is installed when it is absent, is worse
+than no SOUL: the agent follows an instruction that cannot succeed and then improvises. Fix the sentence
+that is wrong — do not append a correction below it.
 
 ### 4. Shared charter
 One `~/.hermes/team/CHARTER.md` holds the role table, operating rules (findings not agreement; label
@@ -112,6 +137,14 @@ propose. Deliverables land in `~/Downloads` and the project root with a README p
 verification actually runs (syntax check + headless browser QA asserting real behaviors).
 
 ## Pitfalls
+- **A SOUL's factual claims are unverified assertions, including your own.** Re-audit role SOULs whenever
+the environment moves: a skill renamed, a bundle split into siblings, a binary uninstalled. The failure is
+silent — the agent reads the stale sentence, fails to load the skill, and produces a plausible answer
+anyway. Structural checks (does the referenced skill/path/binary exist) are cheap; run them as part of any
+team audit rather than trusting the file's authority.
+- **Role names in an external org chart are not your profile names.** Before assigning a role from a pasted
+brief, read the actual `SOUL.md` role line. A brief may assign "independent QA" to a profile that is
+a content-writing persona while a real `qa` profile already sits idle.
 - `-z`/`--oneshot` is a TOP-LEVEL flag: use `hermes -p <role> -z "..."`. `hermes chat -z "..."` fails
   with "unrecognized arguments" because `-z` is not a chat subcommand flag.
 - `hermes profile create --clone` deliberately does NOT copy messaging channels: two profiles holding

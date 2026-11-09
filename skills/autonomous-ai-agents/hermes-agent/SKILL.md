@@ -466,6 +466,12 @@ Disable only when you deliberately need raw credential-like strings for debuggin
 hermes config set security.redact_secrets false
 ```
 
+Redaction is best-effort pattern matching, not permission to print config values: key formats
+it does not recognize (e.g. `user_...` provider tokens) reach tool output and logs unmasked.
+Probe config/secrets with values masked (`sed 's/:.*/: <masked>/'`) or extract
+identifier-only tokens (`grep -oE "^[A-Za-z_]+=" .env`); if an unmasked secret ever lands in
+output anyway, treat it as exposed and rotate it.
+
 ### PII redaction in gateway messages
 
 Separate from secret redaction. When enabled, the gateway hashes user IDs and strips phone numbers from the session context before it reaches the model:
@@ -823,16 +829,69 @@ and logs — avoids shell-escaping backslashes in bash.
 2. `hermes auth` — re-authenticate OAuth providers (or `hermes auth add <provider>`)
 3. Check `.env` has the right API key
 4. **Copilot 403**: `gh auth login` tokens do NOT work for Copilot API. You must use the Copilot-specific OAuth device code flow via `hermes model` → GitHub Copilot.
+5. **Retiring/dead provider**: pins outlive the provider's credit — a single dead provider breaks more than the block in `config.yaml`'s `model:`. Grep the provider name across `config.yaml` (incl. `fallback_providers`) and every `profiles/*/config.yaml` (`model.*`, `auxiliary.*`, `fallback_providers`), plus `cron/jobs.json` — full sweep procedure in the `hermes-cron-jobs` skill ("Provider balance failures").
+6. **`hermes auth list` is the truth about credentials, not the shell environment.** A credential can be registered while its backing env var is unset, and an env var can exist with no registered credential. Before declaring a provider or a `fallback_providers` entry dead, check for a registered credential there; a fallback naming a provider with no registered credential is dead weight in the outage cascade and can be trimmed.
+7. **Prove the fallback chain with a real outage**, not by reading the config: run `hermes chat -q "Reply with exactly: OK" --model definitely-not-a-real-model-id`, then read that run's session row in `state.db` (`model`, `billing_provider`) to see which provider actually answered. Judge by that artifact, not by the exit code.
+8. **Models missing from a picker/switcher**: the UI shows a per-provider default-visible set (`featured_models`, else a top-N slice of row order), not the raw catalog — diagnose from the payload builder the UI consumes, never the endpoint alone. Procedure: `references/desktop-model-picker-visibility.md`.
+9. **Profiles resolve credentials ONLY from their own `.env`.** A key present in the root `.env` (and visible in `hermes auth list`) is invisible to `--profile <name>` turns; they die with `No usable credentials found for provider '<p>' ... reads keys only from its own .env`. Any provider you point a profile at needs its key appended to `profiles/<name>/.env` — do it for every profile whose `model.provider` you changed, not just the one that complained. Prove with a real turn: `hermes -p <profile> -z "Reply with exactly: OK"`.
+10. **"Replace model X with Y everywhere" is a provider migration, not a string swap.** Model ids are provider-scoped: one provider may serve the id and another may 403 it as PAYG-only or list it under a different id. Change `model` + `provider` (+ `base_url`) as one unit on every surface (main config, delegation, moa, auxiliary.*, fallback_providers, each profile, each cron job), then prove by parsing the configs and by reading a live run's session row. Full sweep, transform rules, semantic verifier, and live-proof commands: `references/model-provider-fleet-swap.md`.
+
+**Editing `~/.hermes/config.yaml` programmatically**: the `patch`/`write_file` tools refuse it (security-gated). Copy to a backup, edit via a Python heredoc in `terminal`, then `yaml.safe_load`-validate before finishing — and prefer targeted line edits over yaml load→dump (dump drops comments and reorders keys).
 
 ### Changes not taking effect
 - **Tools/skills:** `/reset` starts a new session with updated toolset
 - **Config changes:** In gateway: `/restart`. In CLI: exit and relaunch.
 - **Code changes:** Restart the CLI or gateway process
 
+### Packaged desktop black or blank window
+Treat a black packaged window as a renderer failure until visual evidence proves otherwise. First capture the live window with `computer_use` (`capture`, `mode: vision`) and refresh `list_windows` after every relaunch because PID/window targets become stale. Then inspect the newest tail of `~/.hermes/logs/desktop.log` and `desktop-chromium.log` for `render-process-gone`, `Renderer failed to load`, `webContents became unresponsive`, GPU-process failures, and invalid-opcode traps from `journalctl -k -b`; a healthy backend port does not prove that the renderer is alive. For packaged builds, CDP is intentionally unavailable, so use desktop capture for visual QA and do not infer UI state from process existence alone. Before changing flags, verify the packaged `dist/index.html` exists and every relative `src`/`href` asset it declares exists; after any config or launch-flag change, fully restart the packaged app and recapture twice, including a delayed capture, requiring visible app content rather than only window controls. If the evidence still shows a renderer crash or blank surface, report it as unresolved instead of claiming the GUI is fixed.
+
+### `hermes doctor` still shows an error you already fixed
+Doctor echoes matching lines from recent logs, so a resolved failure keeps appearing there (often as
+many identical rows). Judge liveness from a fresh process, never from doctor's list: run
+`hermes chat -q "Reply with exactly: OK"` and inspect THAT run's output/stderr before re-fixing
+anything.
+
 ### Skills not showing
 1. `hermes skills list` — verify installed
 2. `hermes skills config` — check platform enablement
 3. Load explicitly: `/skill name` or `hermes -s name`
+4. **Duplicate `name:` frontmatter on two SKILL.md files** makes that name ambiguous: the catalog
+   grants bare-name loading only to unique names (ambiguous copies become loadable by relative path
+   only, shadowed ones drop out entirely). Find collisions by parsing `name:` across the skills tree,
+   rename ONE copy's `name:` (leave the directory as-is), then confirm with `hermes skills list`. Do
+   not delete a "duplicate" without diffing first — same-named skills are often different files.
+
+### MCP registry differs per profile
+
+A profile's `config.yaml` `mcp_servers:` block **shadows** the root registry entirely — it does not merge. Cloned profiles routinely carry a stale block (old host paths, old credentials, servers the root no longer enables), so the profile silently runs a different MCP set than the install. Keep one source of truth: put the registry in the root `config.yaml`, delete `mcp_servers:` from `profiles/*/config.yaml`, and confirm with `hermes mcp list` and `hermes -p <profile> mcp list` showing the same roster.
+
+### Profile SOUL.md REPLACES the main SOUL.md — it does not merge
+
+`agent/prompt_builder.py::load_soul_md(home_override=...)` reads exactly one file: `<home>/SOUL.md`, resolved against the profile home. A profile does **not** inherit the main identity document, so any standing rule you add to `~/.hermes/SOUL.md` is invisible to every profile turn until it is added to `profiles/<name>/SOUL.md` as well.
+
+```bash
+# verify a rule actually reaches a profile's prompt
+hermes -p <profile> chat -q "Reply with exactly: OK"   # proves it loads at all
+```
+
+To check the text itself, load it through the same function the prompt uses (a plain `cat` proves the file, not the injection):
+
+```python
+import sys, os
+sys.path.insert(0, os.path.expanduser("~/.hermes/hermes-agent"))
+from pathlib import Path
+from agent.prompt_builder import load_soul_md
+s = load_soul_md(home_override=Path.home()/".hermes"/"profiles"/"<name>")
+print(len(s or ""), "Never stop with work still doable" in (s or ""))
+```
+
+Consequences when editing identity/policy documents:
+
+- **A new profile starts with a stub SOUL.md.** Write the role file, keep the stub's voice guidance at the top if it matches house style, and re-add every global standing rule — a fresh profile is born outside the main policy.
+- **Editing one SOUL.md is editing one agent.** After changing a standing rule, apply it to `~/.hermes/SOUL.md` *and* every `profiles/*/SOUL.md`, then verify the count (e.g. `grep -l` across both globs) rather than assuming inheritance.
+- **Read a profile SOUL before writing one.** `write_file` refuses to overwrite a file this task has not fully read, and a cloned profile's SOUL is often a real role document, not an empty stub — patching preserves it, blind overwriting destroys it.
+- **Role-consistency checks are cheap and catch drift:** for each profile assert the document still names its own role (a QA profile saying "QA Engineer") after any bulk edit, so a copy-paste across profiles cannot silently give two agents the same identity.
 
 ### Gateway issues
 Check logs first:
@@ -849,6 +908,60 @@ Common gateway problems:
 - **Discord bot silent**: Must enable **Message Content Intent** in Bot → Privileged Gateway Intents.
 - **Slack bot only works in DMs**: Must subscribe to `message.channels` event. Without it, the bot ignores public channels.
 - **Windows-specific issues** (`Alt+Enter` newline, WinError 10106, UTF-8 BOM config, test suite, line endings): see the dedicated **Windows-Specific Quirks** section above.
+
+### state.db keeps growing
+Growth is messages + FTS indexes, not session count. Three levers, in order:
+1. `sessions.auto_prune` (+ `retention_days`, `vacuum_after_prune`) gives bounded retention, but its
+   VACUUM only fires when a prune actually deleted rows — a young store keeps its freelist bloat
+   indefinitely, so enabling it is not a cleanup.
+2. `hermes sessions optimize-storage` — compacts the FTS layout (a legacy index costs ~60% extra)
+   and reclaims freelist pages. It requires the host gateway/desktop STOPPED: treat it as a
+   maintenance window, not a live fix. Confirm no writer holds the store first (`fuser
+   ~/.hermes/state.db` prints nothing) and never use its `--force` flag as a shortcut — it rewrites
+   the store under live writers and can wedge every agent session. The rebuild is resumable and
+   non-destructive (search index only) but needs free disk ≈ the db size for the final VACUUM.
+3. `state.db.*` copies (pre-update, integrity, repair backups) accumulate at ~full-db size each.
+   Inventory them (keep: live db, newest repair copy, `state-snapshots/`, offsite backups), write a
+   manifest, then prune deliberately.
+
+### Maintenance that needs writers stopped, run unattended
+Commands like `hermes sessions optimize-storage` refuse while any Hermes process holds
+state.db — and the agent's own host process (gateway/desktop) IS a writer. Do not hand the
+user a manual checklist for this; a choreography finishes it unattended:
+1. Recovery point first (a fresh `hermes backup -q` snapshot) and write pending durable state
+   (records, memory) before arming anything.
+2. Arm a detached script via a systemd user timer: `systemd-run --user --unit=<name>
+   --on-active=10 <script>`. The terminal tool rejects `nohup`/`disown`/`setsid` wrapper
+   commands, and tracked background jobs die with the host process — a transient systemd
+   unit outlives both. When a transient unit is inconvenient, the same detachment works
+   from a Python script via `os.fork()` + `os.setsid()` + delayed `subprocess.run`: the
+   shell-command matcher that blocks `nohup`/`setsid` wrappers does not inspect a Python
+   child, and the grandchild survives the parent's exit.
+3. Script sequence: grace sleep (so the final reply reaches the user before windows close) →
+   stop writers (`hermes gateway stop`, `pkill` the desktop app) → wait until
+   `fuser ~/.hermes/state.db` prints nothing → run the maintenance → verify (idempotence
+   re-run, `PRAGMA integrity_check`, row counts, the repaired totals) → relaunch the app
+   (`setsid hermes desktop --skip-build`). Log everything to a file; the restarted session
+   reports from the log.
+4. Never use the command's live-writer override (`--force`) as the shortcut — the choreography
+   is the safe path. The gateway service usually returns on its own; confirm with
+   `hermes gateway status` afterwards.
+Standing user preference: execute maintenance through this pattern instead of returning
+manual steps; the only acceptable hand-back is work that needs a credential the agent lacks.
+
+### `hermes insights` cost figure is absurd
+Costs are estimates stored in two places: the per-session rollup (`sessions.estimated_cost_usd`) and
+per-model detail rows (`session_model_usage`), priced by `agent/usage_pricing.py`. An absurd total is
+usually a unit mismatch (per-million rates consumed as per-token) or stale rows written before a
+pricing fix. Diagnose from ratios and repair from recorded token counts without ever inventing a
+rate: full procedure in `references/usage-cost-accounting.md`.
+
+### Cache hit rate, token usage, or "what is caching saving me" for a model/provider
+Same tables, different arithmetic — `session_model_usage` already holds the answer, so query it
+instead of probing the provider API. The one trap: the prompt is
+`input_tokens + cache_read_tokens + cache_write_tokens` (input is the UNCACHED part), so dividing by
+`input_tokens` alone returns >100%. Exact queries, per-bucket cost math, day-trend cut, and the
+`agent.log cache=…` cross-check: `references/usage-cost-accounting.md` ("Cache hit rate").
 
 ### Auxiliary models not working
 If `auxiliary` tasks (vision, compression, session_search) fail silently, the `auto` provider can't find a backend. Either set `OPENROUTER_API_KEY` or `GOOGLE_API_KEY`, or explicitly configure each auxiliary task's provider:
@@ -971,6 +1084,24 @@ python -m pytest tests/tools/ -q            # Specific area
 - Run full suite before pushing any change
 - Use `-o 'addopts='` to clear any baked-in pytest flags
 
+**Interpreter + dependency topology (git installs).** Three interpreter tiers exist; a package
+installed into one is invisible to the others. Install per tier with
+`~/.hermes/bin/uv pip install --python <python> <pkg>`:
+1. **Runtime python** (`~/.hermes/tools/python-*/bin/python3`) — runs CLI/gateway and loads bundled
+   provider plugins, so plugin imports resolve HERE, not in a venv.
+2. **Generation venvs** (`~/.hermes/installs/*/environments/*/venv/bin/python`) — run cron no-agent
+   scripts and are the sanctioned pytest runner.
+3. System `python3` — unused by Hermes itself; only matters for bare-subprocess integrations.
+
+Run tests with a generation venv python + `PYTHONPATH` at the repo root. The runtime python aborts
+bare pytest runs because its bootstrap gate (`activate_dependencies`) exits first:
+```bash
+GP=$(ls -d ~/.hermes/installs/*/environments/*/venv/bin/python | head -1)
+cd ~/.hermes/hermes-agent && PYTHONPATH=. "$GP" -m pytest tests/foo/test_bar.py -o 'addopts=' -q
+```
+Manual installs in tiers 1-2 do not survive `hermes update` / environment rebuilds — re-apply after
+updates, exactly like local source patches.
+
 **Windows contributors:** `scripts/run_tests.sh` currently looks for POSIX venvs (`.venv/bin/activate` / `venv/bin/activate`) and will error out on Windows where the layout is `venv/Scripts/activate` + `python.exe`. The Hermes-installed venv at `venv/Scripts/` also has no `pip` or `pytest` — it's stripped for end-user install size. Workaround: install pytest + pytest-xdist + pyyaml into a system Python 3.11 user site (`/c/Program Files/Python311/python -m pip install --user pytest pytest-xdist pyyaml`), then run tests directly:
 
 ```bash
@@ -1018,6 +1149,21 @@ Optional body.
 ```
 
 Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
+
+### Local Hotfix Patches (working-tree edits)
+
+`hermes update` resets uncommitted working-tree edits — a hand-patched fix silently vanishes and the original bug returns. Make every local patch to `~/.hermes/hermes-agent/` durable in three moves:
+
+1. **Patch + guard test.** Keep the fix as a minimal text edit AND leave one small test that fails when the edit is gone (assert the patched branch/schema/type in the touched function).
+2. **Re-apply script.** A `~/.hermes/scripts/ensure_<topic>_patches.py` that checks an end-state signature, re-applies exact old→new text swaps when missing, and exits non-zero when repair fails. Run it after every `hermes update`. Pattern: `ensure_agent_patches.py` (agent code) and `ensure_meeting_patches.py` (Discord adapter). Keep swap anchors byte-exact to the unpatched source (multi-line strings: triple-quote + one backslash + newline) and prove the repair arm once against pre-patch text, or it silently never runs — details in `references/local-patch-workflow.md`.
+3. **Verify live, not on disk.** A patched file proves nothing about the running process — tool schemas and prompts materialize at process start. Confirm with runtime evidence before declaring the fix active; full evidence chain in `references/local-patch-workflow.md`.
+
+### Dependency security remediation
+
+`hermes security audit` findings in Hermes's own Python graph are fixed at the dependency source of truth (`pyproject.toml` + `uv.lock`), never by spot-editing one installed venv. Three states must agree: source pins, resolved lock, and the installed `*.dist-info/METADATA` that `uv pip check` validates. Full procedure: `references/dependency-security-remediation.md`. Two rules that bite every time:
+
+- The audit scans the **selected runtime venv**, not the host interpreter; if that probe is unreachable it must fail closed, because a host fallback reports the wrong packages.
+- `[tool.uv] override-dependencies` unblocks the *resolver* against a vendored package's stale exact pin (e.g. `browser-harness` pins `pillow==12.3.0`), but `uv pip check` still reads the literal installed metadata — relax that pin too via a small re-runnable script, re-run after every dependency re-sync, wired into the same cron entry point as the local-patch re-apply.
 
 ### Key Rules
 

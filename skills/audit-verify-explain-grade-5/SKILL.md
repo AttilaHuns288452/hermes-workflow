@@ -52,6 +52,8 @@ For performance work, avoid overclaiming. Say "this removes repeated work" only 
 
 ### 3. Explain Simply
 
+For integration, audit, or improvement work, explain the behavioral delta as `Before → After`: what the system did before, what it does now, and when the new capability actually activates. Separate measured changes from expected benefits and state what remains untested.
+
 Use grade-5 language without talking down to the user:
 
 - Use short sentences.

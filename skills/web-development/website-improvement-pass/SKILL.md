@@ -11,7 +11,9 @@ Class: the user says "improve" / "polish" / "redesign" an existing site or landi
 
 - Significant visible upgrades: fix real bugs found, improve hierarchy and storytelling, add polish — never only spacing tweaks.
 - Verify everything (serve locally, DOM checks, screenshots) and commit+push without asking twice; report what real execution returned.
-- When asked to "use all design skills": state coverage explicitly — which were loaded, which applied, which skipped and why (pinned identity overrides style kits; the brief wins).
+- Treat repository claims, counters, benchmark figures, provider/model names, and setup commands as a claims register: derive them from the current source, label illustrative values, and remove stale marketing rather than carrying it forward.
+- When updating a docs site, update the source page, metadata/title, generated output, and README/setup references together; grep the tree for stale counts and claims before committing.
+- When asked to "use all design skills": state coverage explicitly — which were loaded, which applied, which skipped and why (pinned identity overrides style kits; the brief wins). Reply in plain English; keep status lines to one while background work runs.
 - Reply in plain English; keep status lines to one while background work runs.
 
 ## Procedure

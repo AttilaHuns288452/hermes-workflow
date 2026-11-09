@@ -1,6 +1,6 @@
 ---
 name: css-3d-scenes
-description: Use when building interactive 3D scenes in pure CSS 3D.
+description: Use when building pure-CSS 3D scenes - twisty puzzles, dice, product viewers.
 category: creative
 version: 1.0.0
 ---
@@ -29,10 +29,11 @@ Single-file interactive 3D objects (twisty puzzles, dice, card flips, product vi
 4. **Vision models over-report tiny artifacts and reuse identical vague wording across fixes.** Never chase pixels on a vision verdict alone. Measure: scan the screenshot for leak colors in a discriminating frame state (a solved cube shows only 3 hues, so any 4th dominant-hue pixel is a leak) and compare counts before/after the fix.
 
 5. **Commit-then-autoplay reads as "instant rotation, no motion"** even with a smooth tween: the drag itself produces no visual change (the gesture only decides the turn), and ease-out front-loads the motion (a 220ms ease-out cubic moves ~2/3 of the rotation in its first 60ms). Scrub the layer with the drag and animate only the remaining snap; gate both release branches — past the snap threshold the state changes, below it the state is identical after the unwind.
+6. **Every gesture-derived move token goes through the same validated parser as buttons and keyboard.** A sticker's `data-normal` is an axis label (`xPos`, `yNeg`), not a move letter (`R`, `U'`); feeding its first character into the move parser throws on the first real drag while buttons and self-tests stay green. Bind grabbed-normal -> move in one explicit table and assert the parser accepts every token the gesture path can produce.
 
 ## Headless verification (mandatory)
 
-Playwright (Chromium headless; see environment notes for the module path). Expose a small self-test API on the page (matrix invariants, move bookkeeping) and run it both in-page on load and from the harness.
+Playwright (Chromium headless; see environment notes for the module path). Expose a small self-test API on the page (matrix invariants, move bookkeeping) and run it both in-page on load and from the harness. State invariants alone are not a behavior check: they stay green while a gesture handler throws on its first real drag, so the self-test must also push a gesture-derived token through the move parser and assert it resolves.
 
 - **Real pointer drags, never synthetic events**: hit-test the target sticker with `elementFromPoint` and assert the hit element IS the sticker (anything else means it is occluded), then mouse down/move/up. Assert a sticker drag changes exactly one layer (9 of 26 boxes for a 3x3), and an orbit drag changes the scene matrix without incrementing the move count.
 - **Motion is measured, not eyeballed** — screenshots cannot prove motion. When the complaint is "instant"/"no motion", sample distinct per-frame transform strings during the drag (rAF loop, `Set` of signatures) plus the span while the tween runs; gate on >2 distinct paints during the drag and a nonzero animating span. Triage before rewriting interaction code: `prefers-reduced-motion` first (zeroing turn durations converts drag motion into state jumps — only zero auto-played animations), then a stray CSS `transition` on the animated element. Playwright `mouse.move` steps can land inside one frame and collapse to one paint — wait ~35ms between steps or the motion sampler undercounts.
@@ -42,4 +43,4 @@ Playwright (Chromium headless; see environment notes for the module path). Expos
 
 ## Deliverable
 
-One self-contained HTML file, zero dependencies. Deliver per the user's convention: copy to the repo/project root AND `~/Downloads`, with a README pointer saying what it is and how to open it.
+One self-contained HTML file, zero dependencies. Deliver per the user's convention: copy to the repo/project root AND `~/Downloads`, with a README pointer saying what it is and how to open it. When the user asks to "open the preview", launch the file in their real browser (`xdg-open <path>`) so they orbit and drag it themselves — a screenshot cannot judge an interactive 3D scene.

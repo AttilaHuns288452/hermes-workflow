@@ -7,7 +7,7 @@ description: Use when building a short product montage or sizzle reel.
 
 Class: a short, content-driven product showcase cut from REAL recorded interaction footage of the live app (capture-composition renders are the fallback material) — varied compositions, the product's own UI motion as the animation, captions only where the screen alone underspecifies the value, BGM + sfx. Runtime is whatever the product story needs (25-60s typical). The montage must answer, from the footage itself with no narration: WHAT the system is, WHO uses it, WHAT each role can do, WHY it is useful.
 
-NOT this class (route elsewhere): narrated demo film with VO and chapters → `product-demo-film`; 9:16 TikTok short → `media/short-video-production`; animated explainer → `media/faceless-explainer` / `hyperframes`; slideshow of static screenshots (the montage must contain real interactions).
+NOT this class (route elsewhere): narrated demo film with VO and chapters → `product-demo-film`; 9:16 TikTok short → `media/short-video-production`; animated explainer → `media/faceless-explainer` / `hyperframes`; slideshow of static screenshots (uniform full-screen stills, no composition). A brief that mandates authentic captures of a deployed app ("no recreated UI") is NOT a slideshow — it runs the composition path (Step 2) on real screenshots under the authenticity clause of contract #13.
 
 ## Creative contract (standing user specs — every instance)
 
@@ -23,7 +23,7 @@ NOT this class (route elsewhere): narrated demo film with VO and chapters → `p
 10. **Sound shape.** Whooshes swell INTO section cuts (peak 0.1-0.5s before each cut), one impact hit on the biggest transition, close on the brand. BGM energy is stepped per act (hook → acts → finale → close).
 11. **Hierarchy on any trade-off:** quality > runtime; clarity > showing everything; strong interactions > static shots; montage > tutorial; product showcase > school presentation.
 12. **Delivery:** final mp4 copied to BOTH the project root and `~/Downloads` (plus a `_preserved/` copy when the project keeps one), version in the filename, README pointer saying what it is and how to open it. Verify identical checksums across copies.
-13. **Footage first.** Real interaction recording (Procedure 1) is the primary material; real UI motion and visible state changes ARE the animation. Camera moves, punch-ins, and callout boxes belong to the fallback composition path only.
+13. **Footage first.** Real interaction recording (Procedure 1) is the primary material; real UI motion and visible state changes ARE the animation. Camera moves, punch-ins, and callout boxes belong to the fallback composition path only. **Authenticity clause:** when the brief demands authentic captures of a deployed product (client/panel evidence, "no recreated UI"), the composition path on real screenshots is the sanctioned material — never redraw or mock up UI in HTML to fill a gap. Verify provenance before building: captures must show the deployed app's actual UI (check the source app/URL and each file's real pixel dimensions with `file`), and spot-check content against the current build.
 14. **A weak scene is CUT, never patched over with a transition.** Decorating weak content hides the problem and reads as the retired formula.
 
 ## Procedure

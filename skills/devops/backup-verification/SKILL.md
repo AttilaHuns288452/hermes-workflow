@@ -53,3 +53,7 @@ the live data.
   means the wrong file or a truncated download.
 - Assert remote count == intended retention N after the run; sort-order bugs in
   retention code delete the wrong backups silently.
+- Verify remote artifacts under the paths the backup script itself defines
+  (REMOTE/DRIVE_FOLDER constants), not names inferred from memory — plain and
+  crypt remotes often use different folder layouts. An empty listing from a guessed
+  path is a wrong-path probe, not evidence of missing backups.

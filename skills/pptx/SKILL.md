@@ -1,6 +1,6 @@
 ---
 name: pptx
-description: "Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill."
+description: "Create, read, edit, template, or review .pptx/.potx slide decks \u2014 any PowerPoint file as input, output, or both."
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
@@ -48,6 +48,9 @@ Paths are relative to this skill's directory. Everything else is plain Python, `
 - **After `writeFile()`, run `python scripts/office/validate.py deck.pptx`.** It reports the two chart faults above and the slide-XML defects PowerPoint refuses, and names the fix for each. Fix them in your generator, not by hand-editing the packed XML.
 - **Never reorder the children of `<p:presentation>`.** pptxgenjs writes `<p:notesMasterIdLst>` right after `<p:sldIdLst>` and points both masters at one theme part. PowerPoint reads that happily — move the element and the same deck becomes unopenable.
 - **Icons:** render `react-icons` to SVG (`ReactDOMServer.renderToStaticMarkup`), rasterize with `sharp` at ≥256px, and insert via `addImage({ data: "image/png;base64," + buf.toString("base64") })` — the `image/png;base64,` prefix is required (`react-icons`, `react`, `react-dom`, and `sharp` are preinstalled — `npm install react-icons react react-dom sharp` only if a require fails).
+
+- **Tables auto-grow past their declared box.** pptxgenjs sizes a table to its content — `h` is a starting hint and `fit: "shrink"` is an autofit flag LibreOffice ignores — so paragraph-length cells run the table off the slide. Prevent overflow at the content level, not the geometry level: cap each cell to a short phrase, cap rows (~4 including the header), and put the full text in speaker notes or the companion document.
+- **Slides generated from long source text need a digest step first.** Map `Label. value` rows to `Label — first clause`; drop label-only stubs (a bare `Walkthrough.` bullet reads as a placeholder); cut long text at a word boundary + `…` — a mid-word cut like `decisi…` reads as a broken render. Generate the deck and any on-screen preview from the same slide plan so they agree.
 
 ## Editing existing decks and templates
 
@@ -218,6 +221,8 @@ Convert the slides to images (see [Converting to Images](#converting-to-images))
 - Text boxes too narrow causing excessive wrapping
 - Leftover placeholder content
 
+**Verify glyph-level content (math, kets, superscripts, non-Latin) at ≥ 200 DPI.** Low-resolution renders misread glyph shapes — a correct `|0⟩` reads as `k0>` at 80 DPI — and "fixing" the generator to match a misread corrupts output that was already right. Render the suspect region at high DPI and transcribe it literally before touching the generator.
+
 ## Converting to Images
 
 Convert presentations to individual slide images for visual inspection:
@@ -232,6 +237,8 @@ ls -1 "$PWD"/slide-*.jpg
 **Pass the absolute paths printed above directly to the view tool.** The `rm` clears stale images from prior runs. `pdftoppm` zero-pads based on page count: `slide-1.jpg` for decks under 10 pages, `slide-01.jpg` for 10-99, `slide-001.jpg` for 100+.
 
 **After fixes, rerun all four commands above** — the PDF must be regenerated from the edited `.pptx` before `pdftoppm` can reflect your changes.
+
+**When converting several Office files in one run, give each its own `--outdir`.** Same-basename inputs (`a.docx` + `a.pptx`) both emit `a.pdf`, and the second conversion silently overwrites the first — you then QA the wrong deck's render believing it is yours.
 
 ## Dependencies
 

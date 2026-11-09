@@ -25,6 +25,12 @@ cleanup - one page quietly reaching a real service breaks the promise.
   friendlier ones - callers write handling against the real contract (e.g.
   PostgREST `.single()` with 0 rows must return PGRST116; a made-up message
   misses the caller's not-found branch and stale deep links dead-end).
+- The mock is a living twin of the production app, not a one-time port: when a
+  feature lands in production, mirror it in the mock in the same pass with the
+  SAME data shape (field names AND null/required semantics) but mock-only
+  writes, and extend the data-shape checker (one command asserting table/field
+  parity) to cover the new fields. Shape parity is what lets the mock stand in
+  as the visual contract for the real app.
 - Flows stay demonstrable end-to-end: a form whose real counterpart provisions
   accounts becomes simulated signup + a local roster insert, with one plain
   comment noting where the real integration will plug in.
@@ -73,6 +79,7 @@ cleanup - one page quietly reaching a real service breaks the promise.
 - A vision report is a claim, not ground truth — small text gets misread. When exact wording matters (captions, labels, counters), capture the elements' `textContent` alongside the screenshot and check the report against it.
 - Playwright role/name locators match substrings: `{ name: 'Next' }` also matches "Next month" and silently clicks the wrong element, which then looks like an app bug. Use `exact: true` or scope the locator to a container.
 - A frozen displayed value was probably seeded in more than one row: grep the seed for the FIELD NAME across every record and fix all carriers, not just the row the user named. Half-fixing leaves the identical fabricated value visible on another screen.
+- A screen merging two sources that can describe the same real-world event (system-generated rows plus manually entered rows) double-lists it. Key the merge on the shared foreign key and exclude one side's linked rows; dedupe by text/date matching silently breaks on the next formatting change.
 - Mock DB state lives per page load, so cross-role E2E (log in as A, mutate, log in as B) resets the in-memory DB at every reload and cannot demonstrate mutation effects. Verify state-changing logic in ONE page load by driving the modules directly against the dev server: `page.evaluate(async () => { const api = await import('/src/lib/api.js'); /* call, mutate, re-read */ })` — dynamic imports share the app's module registry, so calls hit the same DB instance the UI renders from. Capture before → act → after numbers as proof. When the proof must go through the UI itself (button states, slot captions, disabled controls), stay in one page load and move between screens SPA-style: `history.pushState({}, '', path)` plus a synthetic `popstate` dispatch. `page.goto` between steps reloads and resets the mock; `page.goBack()` re-enters earlier screens carrying sticky draft state (selected date, service, wizard step) that silently changes the flow under test.
 - Never render "Loading" from an empty fetch - a mock left with placeholder
   credentials can hang a page forever; seed demo data and render it

@@ -1,14 +1,16 @@
 ---
 name: hermes-backup-workflow
-description: "Use when the user asks about Hermes backup, restore, credential sync, Google Drive backup, rclone, migrating Hermes to a new machine, or plug-and-play recovery of the Hermes environment."
+description: "Hermes backup, restore, credential sync, Google Drive/rclone, migrate to a new machine, plug-and-play recovery."
 ---
 
 # Hermes Backup & Restore Workflow
 
 ## Overview
 
-Hermes runs from `C:\Users\<user>\AppData\Local\hermes`. It has a daily 2AM cron job
-that backups everything to Google Drive (rclone remote `YOUR_RCLONE_REMOTE`).
+The Windows paths and `YOUR_RCLONE_REMOTE` placeholders below describe the LEGACY machine. The
+live install is Linux: home `~/.hermes`, script `~/.hermes/scripts/run-hermes-backup.py`, rclone
+remote `sabiniano_gdrive_crypt:` — the "Linux reality check" section holds the facts that govern
+the current setup. A daily 2AM cron job backs everything up to Google Drive.
 
 Three scripts handle the full lifecycle:
 
@@ -87,6 +89,34 @@ and visible on Drive, but rclone keeps retrying verification until the Python ti
 **Fix:** `--ignore-checksum --size-only` skips the hung verification phase entirely.
 Upload drops to 28.8s @ 17.8 MiB/s for a 505 MB file. The script now uses these flags
 (patched 2026-07-16).
+
+## Linux reality check (2026-10-08, Linux Mint / rclone crypt)
+
+The Windows paths above describe the legacy machine. On Linux: home = `~/.hermes`,
+script = `~/.hermes/scripts/run-hermes-backup.py`, remote = `sabiniano_gdrive_crypt:`
+(files named `Hermes_Backup_<date>.zip.enc`), retention KEEP=1 (effective 2: prunes BEFORE
+upload, so KEEP=2 actually held 3 and blew the 15 GiB quota).
+
+**Drive trash trap (root cause of `storageQuotaExceeded` loops):** `rclone deletefile`
+on Google Drive moves the file to TRASH and trashed files still count against quota.
+Retention "deletes" therefore never freed space. Fixes:
+- always pass `--drive-use-trash=false` on retention deletes (patched in the script)
+- selectively purge trashed backups: list with `rclone lsf "<remote>:Hermes Backup" --drive-trashed-only --format p`,
+  then `rclone deletefile --drive-trashed-only --drive-use-trash=false "<remote>:Hermes Backup/<name>"`
+- `rclone cleanup <remote>:` purges ALL trash (only when evidence shows it is backup churn)
+
+**Verify the invariant** (`created -> uploaded offsite -> remotely verified -> restorable`),
+not exit 0: `rclone lsjson <crypt-remote>: --files-only` for size, download through the
+crypt remote (transparent decrypt) then `unzip -t` + md5 + check `state.db`, `config.yaml`,
+`backup-manifest.json`, `profiles/*/state.db` members exist.
+
+**Local snapshot retention gap:** `hermes backup -q` quick snapshots land in
+`~/.hermes/state-snapshots/` at roughly full-db size each and NOTHING prunes them — `-k` and
+`updates.backup_keep` cover only full zips, and the pre-update snapshot keeps exactly 1. A daily
+snapshot job must prune its own keep-newest-N (7 = one week of rollback points) or the directory
+grows ~1.4 GB/day. Pre-update `*.incomplete.zip` salvage archives in `backups/` are kept by
+design but are redundant with state-snapshots plus the remote backup, so prune them once a good
+remote copy is confirmed.
 
 ## Potential Failure Modes
 
