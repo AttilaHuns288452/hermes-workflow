@@ -57,6 +57,28 @@ bot that logged signals for weeks while executing nothing.
 5. **Prove execution with an artifact, not a log line.** Place a real venue
    order, see the position, close it, confirm flat, reconcile the fee drift.
    "Scheduled and logging" proves a process ran, not that it can trade.
+6. **A judgment layer must be provably able to REJECT.** A veto / CEO / review
+   layer whose provider fails closed-to-approve is worse than no layer: it
+   manufactures confidence. Two silent failure modes, both live for a long time
+   before anyone noticed: (a) the configured fallback model is not installed, so
+   every call 404s; (b) the code then auto-approves by design "because
+   commentary cannot veto in degraded mode". Check the provider's actual model
+   list against the configured name, then drive the layer with an input that
+   SHOULD be refused and assert the verdict flips. A check that only ever
+   returns one answer is not a check — report it as broken, not as passing.
+
+   **Prefer a decision model over a chat model for this slot.** A model that
+   takes a typed question and returns a probability (Jev: `noul` / `choice` /
+   `score`) gives a threshold you can set and a verdict you can later score
+   against outcomes; a chat model returns prose you have to parse and cannot
+   validate. Measured: the chat path approved 14 of 15 reviews across five
+   models, while the decision model returned 0.75 on valid setups and 0.02-0.03
+   on invalid ones. Before declaring such a model absent, check its documented
+   transport — these often live on a dedicated endpoint and never appear in a
+   chat-completions model list, so probing the wrong surface reports a false
+   negative. Integrate it only where the input is something the code has not
+   already compressed into a number; see `references/adaptive-loop.md` for the
+   measured scorecard of which slots it wins and which it loses.
 
 ## Optimizing a bot without changing its signals
 
@@ -72,6 +94,88 @@ the one you think matters. Measure CPU before and after and report wall clock
 too: capping BLAS/OpenMP threads can halve CPU while doubling runtime, which is
 the wrong tradeoff for a daily job.
 
+## Looking for signal in NEW data (before more model work)
+
+When the existing feature set tests at chance, the next move is different data —
+not more tuning. Run these gates in order; each has killed a candidate that
+looked promising.
+
+1. **Triage backtestability first.** Probe for a history endpoint and inspect the
+   response shape before writing any experiment code. Snapshot-only sources cannot
+   be evaluated retrospectively — the only honest experiment is forward collection.
+2. **Measure the metric's own noise before scheduling a collector.** Take repeated
+   back-to-back snapshots; if the value swings across its range in seconds, widen
+   the measurement window (more book levels), not the sampling rate.
+3. **Replication gate.** The feature must point the same way on independent
+   symbols and time windows. 1 of N above threshold at N tests is the
+   false-positive rate, not a discovery.
+4. **Lift gate.** Wire it into the real multivariate walk-forward and re-measure.
+   A univariate survivor that moves model AUC by ~0 has no lift. Univariate AUC
+   and model AUC are different measurements — never quote the first as evidence
+   about the second.
+5. **Cost gate.** Convert AUC to expected bps and compare against MEASURED
+   round-trip cost. AUC 0.55 on a ~3% daily move implies roughly 10-30bps; if
+   measured cost is 36-39bps the edge does not pay for itself however real it is.
+
+Prefer **reduction** over addition. A lean subset can beat the full feature set —
+a 2-feature calendar model scored 0.539-0.555 across three assets while the
+20-feature model scored 0.4901 on the same pipeline. Score feature groups in
+isolation first, then combine only groups that cleared chance alone.
+
+A self-improving search needs three parts, and a fixed menu is none of them:
+**a ledger** (every hypothesis + result, deduped by hash so nothing is retested),
+**a generator** (composes feature groups x horizons, expanding rather than a
+fixed list), and **history actually being read** (the generator skips tested
+hypotheses). Re-testing the same menu weekly and storing the results is a
+selection loop; calling it learning is how "self-improving" gets faked. Verify
+the claim by grepping for readers of the results file and for any mutation/
+sampling code.
+
+See `references/validation-pitfalls.md` §9-13 for the measured numbers.
+
+## Making it actually learn (evidence → behaviour)
+
+A search that records results is NOT a learning system. The only test that
+matters: does the trading path behave differently because of what was learned?
+Three ways this silently fails — check all three before claiming a bot learns.
+
+1. **Nothing consumes the output.** Grep the decision path for the learned
+   artifact. If `paper_trader`/`executor` never reads the ledger, champions or
+   state file, the system is writing a diary. Make the trader load the learned
+   parameters before every decision, and make a stale/missing file fall back to
+   prior behaviour rather than crash the daily job.
+2. **A gate no candidate can pass is a learning rate of zero.** AND-ing several
+   promotion gates is statistically defensible and operationally fatal: if the
+   best arm sits at 23 trades against a 30-trade floor, no arm is ever eligible
+   and the bot can run for years unchanged. Count how many candidates have EVER
+   passed; zero means the gate is the bug, not the candidates. Replace the
+   binary cliff with continuous allocation (see `references/adaptive-loop.md`).
+3. **Zero edge must not mean zero trades.** Size 0 → no fills → no new evidence
+   → posterior never moves → permanently size 0. A learning system that can
+   switch itself off cannot learn. Keep a small exploration fraction (order 5%
+   of normal size) purely to generate evidence; when a real edge appears the
+   computed multiplier overtakes the floor automatically.
+
+Blend evidence by **precision, not by sample count**. Two live trades that lost
+16% and 8.7% dragged a count-weighted posterior from +19.91 bps to −118 bps and
+would have shut the bot off permanently; inverse-variance weighting gave the
+same two trades 1.9% weight and a −3.62 bps posterior. Weight follows
+`n / variance²`, so thin evidence barely moves a large prior and the estimate
+migrates to reality as trades accumulate — that migration IS "gets smarter the
+longer it runs", and it must be a property of the math, not a hope.
+
+State costs the way the venue charges them: **fees and slippage per side, the
+bid-ask spread crossed ONCE per round trip** (`2*fee + spread + 2*slippage`).
+Writing `2*(fee+spread+slippage)` double-counts the spread and reported 76 bps
+against a measured 36-39 bps — a bar so high nothing could ever clear it.
+Cross-check any cost constant against one real filled round trip before sizing
+logic depends on it.
+
+Run `.venv/bin/python tools/selfcheck.py`-style assertions in the daily job: the
+learned artifact is fresh, the trader reads it, the exploration floor is active,
+cost is inside the measured band, and the judgment layer can still reject. Every
+check should map to a defect that once ran silently.
+
 ## Project state
 `~/Documents/Projects/signal-bot/` — all modules built and verified. Paper:
 BTC/ETH/SOL-USD, 2 USDT/trade, $200 paper. `~/Documents/Projects/scalper-bot/`
@@ -80,6 +184,7 @@ holds the exchange-bound bot (`production_bot.py` is the only file that calls
 `references/results-log.md`.
 
 ## References
-- `references/validation-pitfalls.md` — metric/target bugs that cost real debugging time, including the overlapping-window artifact and the overfit measurement battery
+- `references/adaptive-loop.md` — continuous allocation vs promotion cliffs, precision-weighted evidence blending, and the measured scorecard for a decision-model (Jev) judgment layer: which slots it wins, which it loses, and how to probe for it
+- `references/validation-pitfalls.md` — metric/target bugs that cost real debugging time: the overlapping-window artifact, the overfit measurement battery, and §9-13 on data-source triage, collector-noise measurement, the replication and lift gates, feature dilution, and search-space hygiene
 - `references/fincept-llmquant-data.md` — Fincept/LLMQuant MCP access + credit tiers
 - `references/results-log.md` — backtest matrix by config, cross-tests, significance status

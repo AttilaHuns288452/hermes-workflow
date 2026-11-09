@@ -1,0 +1,501 @@
+{
+ "updates": [
+  {
+   "name": "opensandbox",
+   "path": "skills/opensandbox/SKILL.md"
+  },
+  {
+   "name": "verification-before-completion",
+   "path": "skills/verification-before-completion/SKILL.md"
+  },
+  {
+   "name": "hermes-cli-automation",
+   "path": "skills/hermes-cli-automation/SKILL.md"
+  },
+  {
+   "name": "subagent-delegation",
+   "path": "skills/subagent-delegation/SKILL.md"
+  },
+  {
+   "name": "hermes-agent-skill-authoring",
+   "path": "skills/software-development/hermes-agent-skill-authoring/SKILL.md"
+  },
+  {
+   "name": "sdlc-review",
+   "path": "skills/devops/sdlc-review/SKILL.md"
+  },
+  {
+   "name": "ecosystem-audit",
+   "path": "skills/workflow/ecosystem-audit/SKILL.md"
+  },
+  {
+   "name": "external-skill-import",
+   "path": "skills/workflow/external-skill-import/SKILL.md"
+  },
+  {
+   "name": "hermes-cron-jobs",
+   "path": "skills/workflow/hermes-cron-jobs/SKILL.md"
+  },
+  {
+   "name": "roblox-game-development",
+   "path": "skills/roblox-game-development/SKILL.md"
+  },
+  {
+   "name": "structured-memory",
+   "path": "skills/productivity/structured-memory/SKILL.md"
+  },
+  {
+   "name": "ml-trading-bots",
+   "path": "skills/trading/ml-trading-bots/SKILL.md"
+  }
+ ],
+ "adds": [
+  {
+   "name": "virtual-desktop",
+   "path": "skills/virtual-desktop"
+  },
+  {
+   "name": "skill-library-publication",
+   "path": "skills/skill-library-publication"
+  }
+ ],
+ "held": [
+  {
+   "name": "reverse-skill-router",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "auto-review-loop",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "integrity-forensics",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "experiment-audit",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "citation-audit",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "kill-argument",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "novelty-check",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "paper-claim-audit",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-npc-ai",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-teleport-matchmaking",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-data-stores",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-game-developer",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-luau-core",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-text-chat",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-gui",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-publish-checklist",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-localization",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-luau-types",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-animation-vfx",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-performance",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-server-data",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-dev-skill",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-ui",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-networking",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-architecture",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-open-cloud",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-building",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-audio",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-characters-animation",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-game-design",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-tooling",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-world-building",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-luau",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-input",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-analytics",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-collaboration-mode",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-physics",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-cloud",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-lighting",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-analytics-liveops",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-monetization",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-studio-mcp",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-code-review",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-luau-patterns",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-testing",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-data",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-camera",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-growth-design",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-game-systems",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "roblox-player-psychology",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "thick-client",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "database-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "mobile-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "radio-sdr",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "llm-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "hardware-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "go-rust-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "apk-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "pwn-chain",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "docs-generator",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "email-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "patch-diff-exploit",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "api-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "ctf-sandbox",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "js-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "binary-ninja-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "ghidra-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "case-review",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "browser-extension-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "ida-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "browser-automation",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "diagram-generator",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "cloud-k8s",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "reverse-engineering",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "digital-forensics",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "threat-intelligence",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "radare2",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "windows-ad",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "pentest-tools",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "reverse-engineer-anything",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "binary-diff",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "identity-federation",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "ot-ics",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "firmware-pentest",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "edr-bypass-re",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "protocol-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "threat-hunting",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "malware-analysis",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "code-audit",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "wifi-wireless",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "attack-chain",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "dotnet-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "macos-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "supply-chain-security",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "src-hunter",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "dsl-vm-reverse",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-render",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-maps",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-docs",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-interactivity",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-markup",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-best-practices",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-saas",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-studio",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-multimedia",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-captions",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-create",
+   "reason": "third-party pack, license review"
+  },
+  {
+   "name": "remotion-upgrade",
+   "reason": "third-party pack, license review"
+  }
+ ],
+ "findings": []
+}

@@ -2,6 +2,26 @@
 
 Dated entries, newest first. Convention: `date — headline`, then bullets grouped by what changed and why.
 
+## 2026-11-09 — Documentation scope fixed, drift detection added
+
+An external review claimed the docs still describe a 139-skill architecture. It was right,
+and the fix is not to delete that table: it is to say what it covers.
+
+- **`META_PROMPT.md`:** scope note at the top: the routing table covers the **curated core**
+  (139 skills, 19 categories), while the repo carries **1,484** `SKILL.md` files and the live
+  profile injects ~587. A missing route is not a missing skill.
+- **`INTEGRATION.md`:** every bare "139 skills" claim qualified as the curated core of 1,484.
+- **`scripts/repo_drift.py` — new.** Compares the repo tree against `~/.hermes/skills` by
+  frontmatter name and checks the counts advertised in README / SKILLS_CATALOG / INTEGRATION
+  against the actual file count. Exit 1 on stale copies or a wrong advertised number; pending
+  unpublished work is reported but does not fail. The weekly ecosystem audit now runs it.
+- **Counts:** 1,482 → 1,484 after publishing `virtual-desktop` and `skill-library-publication`;
+  12 locally-edited skills refreshed.
+- **Site:** rebuilt.
+
+Still open and named honestly: catalog regeneration is not automatic, and the 108 held
+third-party pack skills remain unpublished pending LICENSE/NOTICE.
+
 ## 2026-11-09 — Live-tree sync: skills refreshed, docs made honest
 
 The repo was five days behind the live install and still claimed 1,367 skills.

@@ -240,6 +240,21 @@ has more than one (e.g. a static export for one host and a framework build for
 another). A stale "the change is missing" report wastes a whole debugging round
 on code that was correct.
 
+## A failing check is itself a claim
+
+A check script encodes an expectation from the day it was written. When it fails, confirm the
+expectation is still the contract before changing the data it measures. A ledger audit that
+demanded "zero realized PnL" began failing the moment the first real close landed; the correct
+fix was the checker, not the ledger. Read the check's assumption, compare it to the documented
+claim (README, spec, ticket), and only then decide which side is stale. A checker that cannot
+express the current expected state is the defect, and silencing it by editing the data destroys
+the only evidence you had.
+
+```
+✅ check fails -> read its assumption vs the documented contract -> fix the stale check or the stale data, then re-run
+❌ check fails -> change the measured data until the old expectation passes
+```
+
 ## When To Apply
 
 **ALWAYS before:**

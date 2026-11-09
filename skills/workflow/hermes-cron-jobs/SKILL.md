@@ -113,6 +113,54 @@ Most common cause: `deliver: origin`, where `origin` captured a chat id from a s
 
 Distinguish the two failure classes before debugging the script itself: `delivery_failed` = script fine, target wrong; `error` = read `cron/output/<job_id>/` for the script's own stderr.
 
+## A monitoring job on `deliver: local` is a report nobody reads
+
+`local` is the right fix for a broken chat target, but it has a consequence that
+matters for any job whose purpose is to inform a human: the output lands in
+`cron/output/<job_id>/` and reaches no one. A daily health report on `local` will
+run for months without a single person seeing it.
+
+Decide per job rather than defaulting:
+
+- **telemetry / artifact job** (output is something read on demand) → `local` is correct
+- **report meant to reach the user** → needs a real delivery target. If delivery is
+  unreliable, say so explicitly when you create the job instead of leaving silent
+  `local`, and tell the user where the output file lives.
+
+## Verify a scheduled script under cron's actual environment
+
+A script that works in your shell can fail every hour under cron, which runs with
+no profile, a minimal `PATH`, and none of your exported variables. Prove it before
+trusting the schedule:
+
+```bash
+cd /tmp && env -i HOME=/home/<user> PATH=/usr/bin:/bin \
+  /abs/path/to/.venv/bin/python /abs/path/to/script.py
+```
+
+Run it from a directory that is NOT the project — that proves nothing depends on
+cwd. This catches missing env vars, relative-path assumptions, imports that only
+resolve from the project root, and venv/shebang problems. Exit 0 from the clean
+env is the bar for scheduling it.
+
+## Freshness watchdog for anything that accumulates
+
+Any collector, ledger, or scheduled writer needs a freshness check surfaced in a
+report a human actually sees — otherwise a silent cron death costs however long
+you intended to wait. Pattern: read the artifact, compare its newest timestamp to
+now, and print either `collecting, N rows over M days, last Xh ago` or
+`NOT COLLECTING — <reason>`. Threshold on AGE (e.g. >3h for an hourly job reported
+daily), never on existence: the file always exists once it has been written once.
+
+Monitor the AGE, not the file. A stale file passes every existence check.
+
+**Never filter job names by a substring you assumed.** `"trade"` does not match
+`"trading"`, so a status filter built from `("signal","paper","trade","portfolio")`
+silently reported "0 enabled jobs" while two were running — a false all-clear from
+the very script meant to catch problems. Match the family broadly (`trad` plus the
+specific product names) or match on `script`/`id` instead of `name`, and
+sanity-check the count against `hermes cron list`.
+
 ## Long-running jobs (minutes, not seconds)
 
 A job that takes longer than the agent interrupt window must not be an **agent**

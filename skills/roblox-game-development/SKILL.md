@@ -12,6 +12,13 @@ metadata:
 
 # Roblox game development (Luau / Rojo)
 
+## Never take the user's screen
+
+Before launching Studio or sending it input, run `studio-guard`. Exit 0 = safe; exit 1 = the person
+is playing, a fullscreen window owns the screen, or DND is on. On exit 1, stop: do not launch, do
+not click, do not type. Use `studio-guard --wait 900` for background work that can yield, and
+`--dnd on` if the user wants to block all Studio automation manually.
+
 ## When to Use
 
 Any Roblox experience work: creating a game from a design brief, adding gameplay systems, refactoring Luau code, verifying a build, setting up Studio tooling on Linux, or wiring the Studio MCP. If the deliverable is a .rbxlx/.rbxl place or a Rojo source tree, this skill governs.
@@ -26,6 +33,23 @@ Build the game as a Rojo source project with a real verification chain. Studio t
 - **`src/shared/Config.luau` is the numeric authority.** All tuning (economy rates, upgrade curves, zone tables, reward caps) lives in one typed Config module; docs reference it and never fork values into prose.
 - Deliverables go in the repo root AND `~/Downloads/<Project>/` (place file, README, QA report), per the owner's standing convention.
 - **"Polish" and "complete the game" mean PLAYER-FACING completeness, not more systems or more tests.** When this owner says the result is "still not enough", the answer is a visible change in the running game — sound that plays, models that read as models, a world with density and atmosphere — not another green suite, another refactor, or a restyled panel. A fixed bug is invisible to them until it renders. Rank remaining work by what a player SEES and HEARS in the first five minutes, and treat unimplemented audio or primitive-only art as a blocking gap rather than a polish note.
+
+## Polish missions (contract-driven loops)
+
+When the owner hands a polish contract ("zero P1s open", "loop until the game is finished",
+"everything you are allowed to do"), run it as a ledgered loop instead of ad-hoc fixes: capture and score
+every screen FIRST, rank the defects in a machine-readable file, fix one per pass at the owning layer, and
+prove each one with a before/after pair from the same camera station plus the numeric gate. The artifacts
+(`LOOP.md`, `DEFECTS.json`, `ART_DIRECTION.md`, `FINAL_REPORT.md`, `STATUS.md`), the pass order, the commit
+discipline and the stop conditions are in `references/polish-loop.md`.
+
+Two always-on rules for that work:
+
+- **A shared defect is fixed once, in the shared layer.** Ten panels with 28px close buttons is one pass in
+  the module that already walks every panel (grow to 44 around the centre, set the text floor, remap the
+  legacy colour), not ten file edits that drift apart by the next session.
+- **An accepted defect needs a written reason.** "Open" and "accepted" are different states; silence about a
+  known defect reads as an oversight, while `accepted: <why>` reads as a decision.
 
 ## Procedure
 
@@ -78,6 +102,7 @@ Build the game as a Rojo source project with a real verification chain. Studio t
 - **Two upgrades that multiply the same thing at the same rate are one upgrade.** `TouchSpeed` and `TouchStrength` both gave +5%/level to passive income while one cost more: the dearer one is strictly dominated and nobody would ever buy it. Every upgrade must move a DISTINCT axis (passive income vs activity payouts vs journal rewards vs debuff rate), and its `effectDesc` must describe what the code actually does — a description claiming "rare grass luck" for a payout multiplier is a lie the UI tells the player.
 - **A stat or currency that accumulates forever and does nothing is an unimplemented feature.** Pet friendship rose on every feed with no consumer; EP was awarded on every prestige, shown in the HUD, and had no sink at all — a veteran's entire prestige currency was a trophy. Before shipping, grep every persisted counter AND every earned currency for a reader/spender; give each a threshold payout or a sink the player chooses between, or delete it. A level computed from XP and displayed but never gating anything is the same defect.
 - **`PartType.Cylinder` runs along its X axis, not its height.** A cylinder sized `(0.25, 5, 5)` intending a flat disc (hat brim, pot lid, lamp shade, plate) renders as a vertical plate FACING the camera, because the flat faces point along ±X. Multiply by `CFrame.Angles(0, 0, math.rad(90))` to stand it up. Vision reviewers read the resulting plate as a halo, a glow or a bug rather than a misoriented part, so the symptom never names the cause — if a circular element "floats behind" something, check the roll before restyling it.
+- **A rotated slab's authored sign is a guess until you compute both end heights.** `CFrame.Angles(math.rad(-20), 0, 0)` on a long part raises its +Z end (Rx maps local +z to +y), so a ramp meant to descend toward the park descends toward the summit instead: the hill reads as a green trapezoid from every angle and the downhill push vector drives the player INTO the surface. Before trusting a slope, compute the surface height at both ends (`cf * Vector3.new(0, thickness/2, ±length/2)`) and compare them to the two things it must meet (the summit platform, the runout); derive the angle from the height difference (`atan(dy/dz)`), and change every consumer of the slope direction (slide vector, activity gate) in the same edit. Same rule for any authored tilt where the visible defect is "it looks like a wedge".
 - **A meter whose number means "absence of the bad thing" must render as health, not as the raw stat.** Deprivation/hunger/heat that defaults to `0` on a new save drives a literal progress bar to zero width, which reads as an unloaded or broken UI element on the very first frame while the underlying value is perfectly healthy. Invert it (`health = 100 - value`) so a new player sees a FULL bar that drains, keep the colour thresholds on the raw value, and comment why; no amount of restyling fixes a bar that is correctly empty for a good reason.
 - **`Config` is pure data — no Roblox value types in it.** It is required by the pure-logic test with no Roblox API present, so a single `Color3.fromRGB(...)` in a config table breaks that whole gate with `attempt to index nil with 'fromRGB'`. Store colours as plain RGB number tables and convert in the service that consumes them (`Color3.fromRGB(v[1], v[2], v[3])`).
 - **An alt-account ring is the cheapest social-multiplier exploit.** Account age is the only signal a server gets (no IP, no device id), so weight young accounts at a fraction (e.g. under 7 days = 0.5) when COUNTING participants toward a tier — never zero, or genuine new friends are punished too. Assert five day-one accounts score below five established ones while a real group still beats solo.
@@ -150,6 +175,8 @@ Two rules that keep such a gate honest: `UIText` measurements must over-estimate
 list-layout children must be excluded from overlap checks because their `Position` is `(0,0)` until Roblox
 lays them out — a naive check reports a hundred "overlaps" on a clean layout. Prove the gate BITES by
 injecting a clipped label and a 12px button into the dumped JSON, confirming failure, then restoring.
+
+- **Pixel-probe a claimed visual state before acting on it.** A vision model will confidently report "no dim layer", "the rail is missing", or a "purple banner" that does not exist, and each false report costs a styling pass on working code. Sample the same screen region with and without the feature and compare channel means (a 50% scrim cut a 163-brightness floor to 90, which is the proof it renders); read the source when the claim is about behaviour. Vision is for text, layout gist and hierarchy, not for deciding whether a mechanism runs.
 
 The rendered PNGs are a GEOMETRY view, not a content view: rows a client script generates at runtime (list
 layout children, scrolling-frame contents, anything built after the dump) do not exist in the JSON, so every

@@ -165,6 +165,7 @@ Do not edit the implementation while acting as reviewer. Request changes and let
 - **Skipping prior rounds:** Re-review must confirm both the requested corrections and preservation of previously passing behavior.
 - **Using blockers for ordinary rework:** Correctable defects belong in `kanban_request_changes`; reserve `kanban_block` for genuine external blockers or human decisions.
 - **Completing without evidence:** Every approval summary must name the checks or artifacts actually inspected.
+- **Re-running a timed-out or blocked card from scratch:** a card that died on an iteration/agent timeout often contains work that already landed — the implementer finished the edits and never reached the completion transition. Inspect the tree and run the project's own tests before assigning the work again; if the deliverable is there and verified, complete the card with that evidence instead of paying for a duplicate implementation. The diagnostic line (`Iteration budget exhausted`, `consecutive_failures=2`) describes how the run ended, not what it produced.
 
 ## Verification
 

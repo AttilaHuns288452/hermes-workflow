@@ -74,6 +74,12 @@ SDK: `~/.local/share/opensandbox/.venv/bin/python` then `from opensandbox import
 5. Ops: `systemctl --user restart opensandbox`, `journalctl --user -u opensandbox -n 50`. Port range for sandbox publishing is 40000-60000 (`[docker] port_range_*`).
 6. Sandboxes run as root inside their container on the host kernel. `drop_capabilities`, `no_new_privileges`, `pids_limit` are already set, but this is isolation for generated code, not a hostile multi-tenant boundary — for that use the Kubernetes/Firecracker path.
 7. Egress control default is `mode = "dns"` with sidecar image `opensandbox/egress:v1.1.7`; leave network unconstrained unless a task needs per-sandbox policies (the sidecar adds a third host port per sandbox).
+8. **Bind mounts are denied by default and the config comment lies.** `[storage] allowed_host_paths = []` reads like "empty means all allowed"; the server enforces the opposite (`HOST_PATH_NOT_ALLOWED, Allowed prefixes: []`). List real prefixes, restart the service, then mount with a volumes file:
+   ```json
+   [{"name":"work","host":{"path":"/abs/project"},"mountPath":"/work","readOnly":true}]
+   ```
+   `osb sandbox create --image node:20 --volumes-file v.json`. The MCP `sandbox_create` schema has no volumes field, so use the CLI or SDK for mounted trees.
+9. Clean-room test recipe: mount the project read-only, run `npm ci && npm test` (or `uv run pytest`) in the sandbox, then `osb sandbox kill`. Dependencies reinstall every time unless the tree carries its own `node_modules`/venv or you snapshot the sandbox.
 
 ## Verify
 

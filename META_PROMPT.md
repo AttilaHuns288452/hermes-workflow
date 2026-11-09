@@ -1,5 +1,12 @@
 # Meta Prompt — My Hermes Agent Setup
 
+> **Scope.** This document is the routing for the **curated core**: 139 skills in 19
+> categories, the ones the decision table actually names. The repository now carries
+> **1,484 SKILL.md files**; `SKILLS_CATALOG.md` indexes the full library and the live
+> profile injects roughly 587 of them. A route missing here is not a missing skill:
+> search the catalog or `lightrag_find.py` before concluding it does not exist.
+
+
 Copy and paste this entire block into a new Hermes Agent session to see
 my complete skill ecosystem, model chain, guardrail, and workflow pipeline.
 

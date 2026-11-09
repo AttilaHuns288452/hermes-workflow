@@ -172,6 +172,15 @@ A skill that is only needed *after* another skill is already loaded cannot win t
 
 Do not reach for `skills.auto_load` to fix underuse: it pins the full body into every session prompt, including sessions where the skill is irrelevant, and the fixed cost is paid on every API call and in every subagent. A one-line pointer plus a tight description beats a permanent token tax.
 
+### Catalog health (user-local install)
+
+Two failures make a skill present-but-invisible, and neither looks like a file-count problem:
+
+- **Unparseable frontmatter.** A bulk import that joins YAML keys onto one line (`description: ..." when_to_use: "..." last_reviewed: ...`) raises a scanner error: the file exists, `find | wc -l` counts it, and the skill never enters the index. Repair by rebuilding `name`/`description` as valid YAML (drop or fold the extra keys into the body), then re-parse every touched file rather than trusting the count.
+- **Plugin-registered skills.** `ctx.register_skill(name, path, description="")` accepts an optional description; a plugin that omits it leaves a bare `plugin:skill` row with no trigger even though its SKILL.md has one. In this install `hermes_cli/plugins_content.py` hydrates description + frontmatter from the SKILL.md when a plugin supplies none (kept as a local patch in `ensure_agent_patches.py`). Verify with `python3 ~/.hermes/scripts/check_plugin_skill_descriptions.py` (exit 0 = every plugin skill has a description).
+
+Run `python3 ~/.hermes/scripts/skills_health.py` after any import or bulk edit: it fails on unparseable frontmatter, empty descriptions, duplicate names inside one root, and plugin skills without a description; advisories list descriptions that clip on a stopword. The cron watchdog runs the same check on a schedule, so a broken import surfaces within hours even if you forget.
+
 (Principles 7-8 adapted from shanraisshan/claude-code-best-practice, MIT.)
 
 ## Coherent skill improvement

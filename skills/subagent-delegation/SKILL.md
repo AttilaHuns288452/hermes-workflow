@@ -85,6 +85,8 @@ After an unexpected termination, reconstruct state from artifacts before believi
 
 Corollary: an iteration-budget kill on a broad task is a signal to narrow the card, not to re-dispatch it unchanged. The retry burns the same budget on the same scope.
 
+Before re-dispatching a BLOCKED card, check whether the work already landed: an iteration-budget kill usually means the worker finished the edits and stopped before the completion call. Grep for the expected fix, run that repo's suite, then close the card with the evidence (`hermes kanban complete <id> --result "..."`) instead of reopening it. Reopen only what the tree proves is missing, and re-scope it smaller than the run that died.
+
 ## Re-dispatch after mid-task failure
 
 When the user overrides scope mid-flight (an "ignore the previous X, just do Y" message), steer every live child immediately (`action=steer`) with the new contract and an instruction to delete the superseded machinery — un-steered children keep finishing the old spec and their output arrives as work you must undo.

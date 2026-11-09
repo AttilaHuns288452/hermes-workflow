@@ -41,6 +41,14 @@ Every `hermes ... add/install/create` subcommand can end in an interactive confi
 
 Notes: `resources/list` may legitimately return empty even when the project advertises resources — `tools/list` count is the metric that matters. Some servers log to stderr on every JSON-RPC request; that is normal, parse stdout line-wise.
 
+## Plugin operations (a different surface from MCP)
+
+- Inventory: `hermes plugins list --json` (machine-readable) or `--plain`; the Rich table wraps and is unreadable. `--user` narrows to installed packs.
+- Enable/disable DOES exist here: `hermes plugins disable <name>` / `enable <name>`. The gateway hot-reloads the registry and tells you what changed now versus "next session" — tools and the system prompt only take effect in a NEW session, so verify from one.
+- Settings bindings live in config: `plugins.entries.<name>.settings.<key>`. A load error naming a missing binding (a profile secret scope, an owned state home) is usually fixed by that one line, not by disabling the plugin. Set it, reload, then prove the plugin with a real tool call from a fresh session.
+- Plugin-registered skills can lack a description: `ctx.register_skill(name, path)` takes it optionally, and an omitted one leaves a bare `plugin:skill` row with no trigger, so routing never fires. Check by rendering `build_skills_system_prompt()`; the root fix is hydrating from the SKILL.md in `hermes_cli/plugins_content.py` (local patch #5), verified by `~/.hermes/scripts/check_plugin_skill_descriptions.py`.
+- Before calling a plugin dead, read `requires_env` in its `plugin.yaml` against the profile `.env`. A key-less plugin is blocked, not broken: either store the key (`~/.hermes/.env`, 600, validated against the provider's own API first) or disable the plugin so the layer stays honest.
+
 ## Verification (runnable check)
 
 `scripts/probe_mcp_stdio.py` — pipes `initialize`/`tools/list`/`resources/list` into any stdio MCP command and prints counts + sample tool names. Use it before registration (step 2) and any time a registered server misbehaves; exit 1 means the launch command itself is wrong (missing package, bad args, PATH) — fix that before touching config.

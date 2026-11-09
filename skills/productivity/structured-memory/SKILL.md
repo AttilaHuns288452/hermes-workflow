@@ -61,6 +61,9 @@ Memory is injected into every turn and every subagent, so its size is a per-call
 4. **Drop completed-task narration:** finished project logs, shipped-deliverable details, one-off benchmark results, superseded status reports. **Keep** environment facts, paths and commands, standing preferences, recurring pitfalls, integration recipes, and the contracts of projects still active.
 5. **Compress what remains big.** A 2–3K-char narrative usually has ~500 chars of durable content (paths, invariants, the commands that work). Rewrite that entry rather than deleting it.
 6. **Assert, then report:** named key facts still present, new entry count, char delta and percent. State the archive path.
+7. **Report the cost, not just the chars.** Print memory chars and the fixed prompt in tokens per turn (memory + skill catalog + SOUL + USER, ~4 chars/token). A 20K-char cut is roughly 5K tokens off every call and every subagent; that number is the point of the exercise.
+8. **Check skills before keeping a fact.** If the same procedure or pitfall already lives in a skill, or only mattered for one finished task, drop it from memory: memory holds facts that apply to every session, skills hold how to do the work. Duplicated guidance is the most common bloat after project logs.
+9. **One pass is rarely enough.** A conservative first pass typically leaves another 20-25% available in oversized entries; re-measure and run a second pass rather than declaring the file trimmed.
 
 Do not rewrite the whole file from scratch in one shot: a full rewrite loses facts silently, while an index-based drop/compress pass is reviewable and reversible. Prefer one batched memory-tool call (or one file write) over many small edits.
 
