@@ -665,7 +665,7 @@ Guidance skills (`workflow/task_tier`, `workflow/model-recommender-workflow`, `w
 | **Retry** | Bounded: Kanban dispatch retries up to `kanban.failure_limit` (default 2), then the task is escalated/requeued, not hammered. A failed model/provider is skipped after retry budget, never retried in place. |
 | **Timeout** | Per-integration: MCP `connect_timeout` / `timeout`, `auxiliary.kanban_decomposer.timeout`, `kanban.dispatch_interval_seconds`. A hung child is killed and reported, never waited on indefinitely. |
 | **Checkpoint** | Long-running work checkpoints state before risky steps (`~/.hermes/checkpoints`, session checkpoint tooling), so an interrupted run resumes instead of restarting. |
-| **Rollback** | Git is primary: branch + commits, never force-push. Config edits keep timestamped `.bak` copies. Backups: `run-hermes-backup.py` (daily Google Drive, rclone crypt remote, retention with `--drive-use-trash=false`), `daily_state_backup.sh` (keeps the newest 7 state-snapshots), restore via `scripts/restore-hermes-backup.py`. |
+| **Rollback** | Git is primary: branch + commits, never force-push. Config edits keep timestamped `.bak` copies. Backups: `run-hermes-backup.py` (daily Google Drive, rclone crypt remote, retention with `--drive-use-trash=false`), `daily_state_backup.sh` (keeps the newest state snapshots), restore via the documented `hermes import` workflow or `scripts/restore-hermes-backup.py`. |
 | **Self-healing patches** | Local source patches are re-applied automatically: `~/.hermes/scripts/ensure_patches.py` parses health markers from `~/.hermes/scripts/local_patches.diff` and re-applies dropped hunks via `git apply --3way` (recurring cron); `ensure_agent_patches.py` covers the agent-level fixes (num_ctx local-only gate, `tool_call` arguments-as-JSON-string schema, prompt_builder tier paragraph). Guard tests above fail if a patch silently drops. |
 
 ### Skill & Integration Maintenance
@@ -676,7 +676,7 @@ Guidance skills (`workflow/task_tier`, `workflow/model-recommender-workflow`, `w
 3. Run `python3 scripts/audit_skills.py` (frontmatter validity, unique names, secret scan) — exit 0 required before commit.
 4. Reload (restart the session / `hermes skills list`) and verify with a probe prompt that names the trigger.
 
-**Drift checks:** `~/.hermes/scripts/drift_check.py` runs daily at 06:00 (Hermes cron) and compares the global config's `skills.external_dirs` + `mcp_servers` against every profile. The `local` offline Ollama profile is **exempt from MCP comparison by design** — it intentionally runs without MCP servers; a drift report flagging it is noise, not a defect.
+**Drift checks:** `~/.hermes/scripts/drift_check.py` runs daily at 06:00 (Hermes cron) and compares skill-directory contracts across profiles. Profiles intentionally isolate MCP scopes; an absent profile `mcp_servers` block is normal. The offline `local` profile also intentionally runs without network MCPs.
 
 **Name-collision pitfalls:** skill names must be unique across *all* loaded directories — `audit_skills.py` counts duplicates for exactly this reason. When importing an external collection, rename colliding skills; never resolve a collision by deleting the local one. Two skills sharing a name at the same path tier cannot be distinguished by tooling (`skill_view` cannot load either).
 
