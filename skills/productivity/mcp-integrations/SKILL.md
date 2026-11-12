@@ -239,6 +239,89 @@ hermes mcp reload    # or restart Hermes
 
 Tool names normalize non-identifier characters: `mcp_{server}_{tool}`.
 
+## Third-party tool that ships its own MCP server
+
+A growing number of desktop/CLI tools ship an MCP server plus a `setup` command that registers
+themselves with agent apps. Use that path instead of hand-writing config — but verify the artefact
+and the defaults first, or you get a "successful" install that does nothing.
+
+1. **Confirm the project is what it claims** before downloading anything:
+   `gh api repos/<owner>/<repo> --jq '{stars:.stargazers_count,created:.created_at,pushed:.pushed_at,license:.license.spdx_id}'`,
+   then `gh api repos/<owner>/<repo>/releases --jq '.[] | {tag:.tag_name,assets:[.assets[]?.name]}'`.
+   A huge star count on a days-old repo is a reason to read the asset list, not to skip it.
+2. **Verify authenticity.** Download the tarball, `SHA256SUMS.txt` and `SHA256SUMS.txt.asc`; import
+the project's release key (`gpg --import release-signing-key.asc`) and require
+`gpg --verify SHA256SUMS.txt.asc SHA256SUMS.txt` → *Good signature*, then
+`sha256sum -c <(grep -E "  <asset>$" SHA256SUMS.txt)`. A bare download is not an install you can defend.
+   When the sums file lists assets you did not fetch, `sha256sum -c` over the whole file fails on the
+   missing lines — check the one line you care about.
+3. **Prefer prebuilt binaries over building.** Check the release matrix (`linux-x86_64.tar.gz`,
+AppImage, `.deb`, flatpak) before assuming a toolchain; a Rust/Go project usually needs no cargo/go
+on the host.
+4. **Let the vendor wire it, with `--dry-run` first.** `craft-anything-cli setup --client hermes --dry-run`
+prints the exact config block and file list it would write; run it, read the plan, then apply. A
+vendor that lists `hermes` as a client writes both halves — `mcp_servers.<name>` in `config.yaml`
+(with its own `.backup`) and a skill under `~/.hermes/skills/`. Verify after: `yaml.safe_load` the
+config, `hermes mcp list | grep <name>`, then `skills_health.py` (a new skill dir whose name differs
+from its frontmatter name is the collision class that makes `skill_view` refuse it).
+5. **Expose everything.** Servers that ship hundreds of tools usually serve a small essentials set by
+   default (`args: [mcp]`) plus an `--all-tools` flag. **This user wants the full set** —
+   "assume i always want the full functionality of the skills and other stuff i put here" — so add
+   `--all-tools` and report the real count from `hermes mcp test <name>` (*Tools discovered: N*).
+   Deferred MCP tools are token-capped in the prompt, so a 300-tool server is not a 300-tool per-turn
+   cost, and "keep the default, it's catalog bloat" does not apply here. Set it with
+   `hermes config set mcp_servers.<name>.args '["mcp","--all-tools"]'` (the config file itself
+   refuses agent writes). Once an entry carries `--all-tools`, never re-run the vendor's
+   `setup --yes` — it rewrites the plain command and silently downgrades the entry.
+6. **Hunt for inert defaults before declaring success.** The two failure shapes that install cleanly
+and do nothing: a **restricted/refusal mode** on by default, and a **missing engine** the tool only
+reports in its own diagnostics. Probe the tool's own doctor/capabilities command, not just the MCP
+handshake — e.g. `triage` returning `feature_missing` with `reason: clean_room` means the analysis
+mode is refusing work, and `engine:chromium found:false` means every web tool is unavailable. Both
+were one command each to fix (`settings_set deep_mode true`; symlink a Chromium onto PATH).
+7. **Functional-test with real output.** An import, a `hermes mcp test` connect, or a `--version`
+is setup evidence, not capability evidence. Run the tool on a real input and read what came back
+(a binary triage that names the architecture/entry point, a page open that returns a title and
+request counts). Only then report it as working.
+8. **Install the optional engines through the vendor's own installer, and stop at root.** Tools that
+ship an `engines-install`/`setup`-style extra command usually verify published SHA-256 hashes and
+place the engine where the tool expects it — use it instead of a manual download. For the rest,
+`uv tool install <pkg>` (or pipx) puts a CLI on PATH with **no sudo**; anything that only exists as
+an apt/dnf package is a root action and therefore a human one — say so with the exact command
+(`sudo apt install …`) rather than running an interactive sudo prompt. Report coverage as a count
+from the tool's own capabilities command (`N of M tools available`) so "full functionality" is a
+number, not a claim.
+9. **Detected is not used — attribute engine usage from the output, not the capability list.** A tool
+can report `engine:<x> found:true` in its diagnostics and still route every operation to its built-in
+implementation. Read the `environment.engine` (or equivalent) field inside each real result: three
+decompiles that all say `engine: builtin` while the capability list claims the engine is installed
+means the engine is present but unwired — report that plainly instead of telling the user their
+ecosystem got the capability. Before claiming an engine is active, grep the tool's own command
+inventory for its name; if only the install/list settings commands mention it, no operation uses it.
+10. **Close what you opened during the functional test.** Tools that open a *persistent* browser
+session (`web-site-open`, CDP attach, "every later tool inspects this page") leave a headless Chromium
+running when the launcher exits; it reparents to systemd and keeps rendering. Launched with
+`--enable-unsafe-swiftshader` there is no GPU, so software rasterization burns ~8 of 12 threads
+indefinitely and the symptom arrives later as "why is my CPU pegged". Call the tool's `web-site-close`
+(or equivalent) in the same run, and when a web probe was left behind check
+`pgrep -f 'ms-playwright.*headless=new'` before blaming anything else. Kill the identified process
+tree, never a broad browser pattern — the user's own QA runs use the same binary.
+11. **A key written to the env file is not a key the running process holds.** Vendor `connect`/
+`setup` commands write credentials to the Hermes env file, but the gateway read its environment at
+start, so the provider fails on every call and silently falls back (`backend_error: … API key not
+found`, `rescued_from: <new provider>`). Prove visibility with
+`tr '\0' '\n' < /proc/<gateway-pid>/environ | grep -c KEY` — zero means invisible regardless of what
+the status command says. `hermes <provider> status` reads config plus the env file, not the live
+process, so a green status is not evidence; report "configured, live after restart" and name the
+restart as the user's step instead of claiming the integration works.
+12. **Treat a vendor `connect`/`setup` run as a config mutation, not an addition.** These commands
+repoint existing settings as well as adding their own — a connect step switched `web.search_backend`
+and `web.extract_backend` to the new provider without announcing it. Snapshot the config keys before
+running it and diff after; a half-applied switch is the worst state because every call pays a failed
+attempt before the fallback answers. Verify with one real call and read the result's
+`backend_error`/`rescued_from` fields, then report the change to the user even when they only asked
+for the integration.
+
 ## Automation Preservation Pattern
 
 When migrating a scripted workflow into Hermes:
@@ -299,10 +382,19 @@ For apps with a CLI but no published MCP server, write a thin Python wrapper und
 
 ## Writing config.yaml when tool-layer protections are tight
 
-- `write_file` edits to `~/.hermes/config.yaml` may be blocked by security-sensitive configuration guards.
-- Preferred supported paths are `hermes config edit` and `hermes config set`.
-- When both supported CLI paths are unavailable or non-interactive, use a terminal-driven Python file edit instead of `write_file`; the terminal path can bypass tool-layer blocks in more environments.
-- Always read back the file after the change to confirm the intended content was inserted.
+- `write_file`/`patch` on `~/.hermes/config.yaml` are blocked on purpose: *"Refusing to write to Hermes
+  config file … Agent cannot modify security-sensitive configuration."* That is the guard working, not
+  an obstacle to route around.
+- The sanctioned paths are `hermes config set <dotted.key> '<json>'`, `hermes config unset <key>`,
+  `hermes config edit`, and `hermes mcp add` — all of which the refusal message itself names.
+  `hermes config set` takes JSON, so arrays and booleans work:
+  `hermes config set mcp_servers.foo.args '["mcp","--all-tools"]'`.
+- Do **not** hand-edit the file through a shell or a Python one-liner to get past the refusal. If a key
+  genuinely cannot be expressed with `hermes config set`, say so and let the user make the change.
+- After any `set`, re-read the block and `yaml.safe_load` the file — `set` rewrites formatting, so diff
+  the key you touched rather than the whole file.
+- Other YAML (profile configs, a tool's own settings file) is not protected; there a targeted line edit
+  beats a load→dump round-trip, which drops comments and reorders keys.
 
 ## execute_code limitations on Windows
 

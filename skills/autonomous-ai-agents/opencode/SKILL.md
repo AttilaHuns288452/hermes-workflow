@@ -129,6 +129,7 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 | Flag | Use |
 |------|-----|
 | `run 'prompt'` | One-shot execution and exit |
+| `--standalone` | Private server for this run instead of the shared background service |
 | `--continue` / `-c` | Continue the last OpenCode session |
 | `--session <id>` / `-s` | Continue a specific session |
 | `--agent <name>` | Choose OpenCode agent (build or plan) |
@@ -235,6 +236,8 @@ Expect `✓ <server-name> connected`. If you see `No MCP servers configured`, th
 
 ## Pitfalls
 
+- **`opencode run` resolves its workspace from `$PWD`, not the process cwd.** A launcher script that sets `cwd=<run dir>` while `PWD` still points at the caller's directory gets an empty run dir and a cheerful `DONE` — the files landed in the launcher's directory. When driving OpenCode from Python/subprocess automation, pass `env={'PWD': run_dir}` alongside `cwd=run_dir`, and add `--standalone` so a shared background server does not carry session state across runs. Verify with `os.listdir(run_dir)` before scoring or reporting the run.
+- **Custom OpenAI-compatible providers go in `provider.<name>` with `npm: "@ai-sdk/openai-compatible"`**, `options.baseURL`, `options.apiKey: "{env:VAR}"`, and a `models` map keyed by the provider's exact model id. `opencode run --model <provider>/<model-id>` then addresses it; the model id may itself contain a slash (`commandcode/deepseek/deepseek-v4.1-flash`).
 - **Always specify `--model` for coding tasks.** When no `--model` flag is given, OpenCode may default to an unsuitable model (e.g., `google/gemini-3-pro-image-preview` — an image-only model that cannot write code). Always route explicitly: `--model openrouter/deepseek/deepseek-v4-flash:free`.
 - **Smoke-test the model first.** Before running a multi-step coding task with a free-tier model, verify it serves requests: `opencode run 'Respond with OK' --model openrouter/<model>`. If it returns a server error, that model is unavailable — pick another.
 - Interactive `opencode` (TUI) sessions require `pty=true`. The `opencode run` command does NOT need pty.

@@ -864,7 +864,7 @@ anything.
 
 ### MCP registry differs per profile
 
-A profile's `config.yaml` `mcp_servers:` block **shadows** the root registry entirely — it does not merge. Cloned profiles routinely carry a stale block (old host paths, old credentials, servers the root no longer enables), so the profile silently runs a different MCP set than the install. Keep one source of truth: put the registry in the root `config.yaml`, delete `mcp_servers:` from `profiles/*/config.yaml`, and confirm with `hermes mcp list` and `hermes -p <profile> mcp list` showing the same roster.
+Profiles intentionally isolate their MCP security scopes. A profile's `config.yaml` `mcp_servers:` block shadows the root registry rather than merging; an absent block means that profile has no MCP servers. Enable only the servers that profile is meant to access, and keep profile-specific credentials in that profile's `.env`. Do not copy the full root registry into every profile merely to make tool lists match.
 
 ### Profile SOUL.md REPLACES the main SOUL.md — it does not merge
 

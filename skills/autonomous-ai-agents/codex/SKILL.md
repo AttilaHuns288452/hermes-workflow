@@ -119,6 +119,26 @@ terminal(command="codex exec 'Review PR #87. git diff origin/main...origin/pr/87
 terminal(command="gh pr comment 86 --body '<review>'", workdir="~/project")
 ```
 
+## Custom / third-party models
+
+Codex can drive any OpenAI-compatible endpoint through `model_providers`:
+
+```
+codex exec --skip-git-repo-check \
+  -c model="<provider>/<model-id>" \
+  -c model_provider="<name>" \
+  -c 'model_providers.<name>.name="<Label>"' \
+  -c 'model_providers.<name>.base_url="https://host/provider/v1"' \
+  -c 'model_providers.<name>.env_key="PROVIDER_API_KEY"' \
+  -c 'model_providers.<name>.wire_api="responses"' \
+  -s workspace-write --dangerously-bypass-approvals-and-sandbox "<prompt>"
+```
+
+- **`wire_api = "chat"` was removed** (0.160+). The config load aborts with `wire_api = "chat" is no longer supported` and tells you to use `responses`. Only point it at a host that actually serves `/v1/responses`; a provider that only offers `/v1/chat/completions` cannot be driven by current Codex.
+- `env_key` names the environment variable holding the key — export it in the parent process, do not paste the key into the config file.
+- Same settings can live in `~/.codex/config.toml` for repeated use; `-c` overrides are per-invocation and win.
+- Token usage for a run is in `~/.codex/sessions/<Y>/<M>/<D>/rollout-*.jsonl` under `payload.total_token_usage` (`input_tokens` includes `cached_input_tokens`); the `exec` stdout only prints a human "tokens used" line.
+
 ## Rules
 
 1. **Always use `pty=true`** — Codex is an interactive terminal app and hangs without a PTY

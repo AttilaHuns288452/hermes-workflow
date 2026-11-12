@@ -81,12 +81,10 @@ test -f ~/Documents/Projects/$PROJECT/graphify-out/graph.json \
 cd ~/Documents/Projects/$PROJECT && \
   graphify query "<question>" --budget 2000 --graph graphify-out/graph.json
 ```
-- **21/24 projects indexed** — all except: Hermes Skills (exported skills tree, not a code project), hermes-dashboard (single HTML), unit-converter (no code files)
-- **ECC index is 34MB across 5,821 files** — queries in ~300 tokens
-- **Cost: ~300 tokens** vs reading source tree (~370K tokens)
-- **Savings: up to 1,233× per query**
+- **Project coverage is live, not a fixed list.** Check each project with `[ -d ~/Documents/Projects/$PROJECT/.codegraph ]` and use `codegraph status`; initialize a code-bearing project with `codegraph init` when needed.
+- Graphify coverage and size are also live. If `graphify-out/graph.json` exists, query it; otherwise skip Graphify.
 
-**Full project list:** ai-marketing-skills, AI-Youtube-Shorts-Generator, anime-waifu-quiz, API-mega-list, atm-crypto-bank, atm-machine, buildable-plugin-skills, countdown-timer, ECC, ecosystem-test, free-ai-tools, freebuff-test, freelance-rate-calculator, freellmapi, free-llm-api, graphify, hermes-workflow, hw-new, MoneyPrinterTurbo, MoneyPrinterV2, task-manager-cli
+**Do not hardcode a project list.** Discover indexed projects from the filesystem and verify the target project directly.
 
 ### Step D — Targeted Read (Last Resort)
 ```python
@@ -98,10 +96,7 @@ Only after probes A-C failed to provide enough context. Read only the specific s
 
 ## Coverage Summary (per-project indexes, measured)
 
-There is no longer a single global index. As of the last rebuild: **44 of 74 project
-directories indexed**, 12,942 files, 248,632 nodes, 864 MB of `.codegraph/`.
-Only projects with real code (≥15 source files) are indexed; docs/asset dirs are
-skipped on purpose.
+There is no longer a single global index. Each project has its own `.codegraph/`; coverage, file counts, nodes, and disk usage change over time. Query live status for the target project instead of relying on a stored count. Bulk initialization may skip documentation- or asset-only directories.
 
 ```bash
 # What is indexed / what is missing
