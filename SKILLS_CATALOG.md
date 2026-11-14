@@ -1,21 +1,12 @@
-# 🧠 Skill Catalog — Full Hermes Agent Ecosystem
+# 🧠 Skill Catalog — Hermes Workflow Repository
 
-**1,484 skills · 715 top-level directories · 1 integrated pipeline**
+**1,484 repository skills · profile-aware routing**
 
-Every skill below lives in this repository. The maintainer's live profile injects a
-subset of them (about 585, the ones that pay for themselves in every prompt); the
-rest is library breadth you can adopt selectively with `~/.hermes/skills` symlinks
-or `skills.external_dirs`. Nothing here is a placeholder: each entry is a real
-`SKILL.md`.
+Every skill below lives in this repository. The active Hermes profile may expose only a configured subset through its skill directories, so this catalog is an inventory, not a guarantee that every skill is loaded or available.
 
-This catalog covers the curated core skills (the older `.hermes_ecosystem.json`
-classification of 141); the full tree now holds **1,484** SKILL.md files
-across all categories.
+The full tree currently holds **1,484** `SKILL.md` files across all categories. Category totals and active-profile counts can differ when profiles select subsets or when collections contain overlapping names.
 
-> **Note on count:** The ecosystem JSON declares `"total_skills": 141`. The
-> category arrays sum to 138 listed entries — one entry (`codex.bak`) may be
-> a backup/alias variant counted separately. All 141 referenced slots are
-> described below.
+> **Count rule:** the repository count is the number of `SKILL.md` files in the current skill tree. Verify the live profile with `hermes skills list`.
 
 ---
 
@@ -42,12 +33,10 @@ domain-specific systems. Many are in the `root` category.
   Cannot be overridden. Re-anchors every 10 exchanges.
 
 ### decide
-- **What:** Master orchestrator — 5-step reasoning protocol for every request.
-  Decomposes prompts, scores routing confidence, resolves skill conflicts,
-  enforces execution order. Routes to all downstream skills. Static routing
-  table (~40 entries) with LightRAG TF-IDF fallback covering all 665 skills —
-  no skill is orphaned.
-- **Pipeline:** Step 3 (after session_memory → guardrail). Feeds all steps.
+- **What:** Master orchestrator for request classification, skill shortlisting,
+  availability probing, execution order, verification, and recovery.
+  The active profile and live tool registry determine which routes are usable.
+- **Pipeline:** Profile-aware routing after context and guardrail checks. Feeds the selected workflow.
 - **File:** `skills/decide/SKILL.md`
 
 ### do
@@ -59,11 +48,9 @@ domain-specific systems. Many are in the `root` category.
   features against real-world patterns before release.
 
 ### ecc-bridge
-- **What:** Wires 57 of 64 ECC (Everything Claude Code) agents through the
-  free model chain by stripping sonnet/opus model requirements from agent
-  frontmatter.
-- **Pipeline:** Step 5 (domain skills) — bridges to ECC agents when /decide
-  selects an ECC-capable task.
+- **What:** Connects specialist agent roles through a configured bridge while
+  keeping model selection in the active Hermes profile.
+- **Pipeline:** Selected only when the bridge and required profiles are available.
 - **Repository:** `skills/ecc-bridge`
 
 ### github
@@ -274,9 +261,8 @@ Delegates specialized coding work to dedicated AI coding CLIs.
   https://hermes-agent.nousresearch.com/docs.
 
 ### opencode
-- **What:** Delegates coding to OpenCode CLI for features and PR review.
-- **Pipeline:** Step 5 — used in preference to paid coding agents when
-  the task fits within free model capabilities. Routes through free chain.
+- **What:** Optional coding-harness integration for features and PR review.
+- **Pipeline:** Selected only when the CLI is installed, configured, and reachable.
 
 ### hermes-multiagent-team
 - **What:** Build a coordinated PM + 7-specialist multi-agent organization
@@ -526,28 +512,21 @@ Full GitHub workflow management — auth, repos, PRs, issues, code review.
 
 ---
 
-## Category: note-taking (3 skills — BUNDLE RULE)
+## Category: note-taking (on demand)
 
-Always loaded together. Never one in isolation. Mandatory post-execution
-phase for every project task.
+Use these skills independently when a task explicitly needs notes, vault mapping, or a graph update.
 
 ### obsidian
-- **What:** Reads, searches, creates, and edits notes in the Obsidian vault.
-  Core CRUD operations for the knowledge base.
-- **Pipeline:** Step 7 (post-execution documentation). Creates ATM-Machine
-  quality notes with wikilinks.
+- **What:** Reads, searches, creates, and edits notes in a configured Obsidian vault.
+- **Pipeline:** On demand when the user requests durable notes or the project needs them.
 
 ### obsidian-codebase-graph
-- **What:** Maps a codebase into an interconnected Obsidian vault as folder,
-  file, and symbol notes linked by code relationships.
-- **Trigger:** Project setup, codebase documentation, architecture mapping.
+- **What:** Maps a codebase into Obsidian notes when the vault and integration are configured.
+- **Trigger:** Project documentation or architecture mapping when requested.
 
 ### obsidian-knowledge-graph
-- **What:** Scans the Obsidian vault and produces an interactive knowledge
-  graph: nodes (folders, notes, code blocks, tags, concepts) plus edges
-  (contains, links_to, tagged, shared_concept, aliases, backlinks).
-- **Pipeline:** Step 8 (KG refresh after every vault update). Runs
-  scan_vault.py → kg_output.json → render_galaxy_kg.py → knowledge_graph.html.
+- **What:** Scans a configured Obsidian vault and produces an interactive knowledge graph.
+- **Pipeline:** On demand after a requested vault or graph update.
 
 ---
 
@@ -623,11 +602,9 @@ Advanced development workflow skills from the OpenCode ecosystem.
 - **Trigger:** Database operations, spreadsheet-like data management.
 
 ### api-mega-list
-- **What:** **SEARCH 26,005 READY-TO-USE APIs** — grep-based directory of
-  Apify Actors across 18 categories (AI, Social Media, E-commerce, Lead Gen,
-  Developer Tools, MCP Servers, Jobs, SEO, Real Estate, News, Travel, Videos,
-  Automation, Agents, Integrations, Open Source, Business, Other). Local clone
-  at ~/Documents/Projects/API-mega-list/.
+- **What:** Searches a categorized API reference when the catalog is installed
+  and the active workflow needs API discovery.
+- **Availability:** The source catalog and path are environment-specific; verify them before use.
 - **Trigger:** "Find an API that can/for", "search APIs for", "API directory",
   "Apify actor", "scraper for X", "MCP server for X".
 
@@ -763,10 +740,8 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
   model defaults, MCP port clashes.
 
 ### graphify-integrate
-- **What:** Runs Graphify on any project → builds code graph → creates
-  Obsidian-compatible notes. Covers graph build, manual Obsidian note
-  creation, vault cross-linking, and KG refresh.
-- **Pipeline:** Feeds into Token Saver (graph queries) and Obsidian docs.
+- **What:** Builds a code knowledge graph and exports documentation when the integration is installed.
+- **Pipeline:** Optional discovery or documentation step selected only when configured.
 
 ### hermes-agent-skill-authoring
 - **What:** Authors Hermes Agent SKILL.md files — validates frontmatter,
@@ -821,10 +796,8 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 - **Trigger:** "Write tests first", TDD workflow requests.
 
 ### update
-- **What:** One-command ecosystem integration. Takes a repo/tool URL,
-  clones it, sets it up, runs Graphify, exports to Obsidian, checks for
-  complementary integrations, creates cross-linked docs, refreshes KG.
-- **Trigger:** "Update my ecosystem with [repo]", one-shot integration.
+- **What:** Updates the repository and verifies the configured profile without assuming every optional integration is installed.
+- **Trigger:** "Update Hermes", "sync the repository", or "refresh the workflow".
 
 ### winforms-csharp
 - **What:** Scaffolds, builds, and runs WinForms C# applications using the
@@ -836,21 +809,16 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 ## Category: workflow (7 skills)
 
 ### free-ai-model-router
-- **What:** Routes every AI task to the best available free model across
-  Hermes, OpenCode, and OpenDesign. 5-layer fallback chain.
-- **Pipeline:** Step 6 (after domain skills execute — model selection).
+- **What:** Routes tasks through model and provider pairs configured in the active profile.
+- **Pipeline:** Selected only after the live route is inspected and verified.
 
 ### lightrag-skill-finder
-- **What:** Local TF-IDF skill search over all 665 skills — sub-second,
-  zero API calls. `python lightrag_index/find.py "<query>"`. Index
-  auto-rebuilds daily at 4am. Also serves as the /decide routing fallback
-  so no skill is ever orphaned.
-- **Trigger:** Skill discovery, /decide fallback routing.
+- **What:** Searches an installed local skill and reference index when configured.
+- **Trigger:** Skill discovery or /decide fallback routing; verify the service before use.
 
 ### model-recommender-workflow
-- **What:** Uses the Model Recommender CLI to select free models for any
-  of 6 task types. Integrates free-ai-tools provider data (238 models).
-- **Trigger:** Model selection queries, task routing, free model questions.
+- **What:** Recommends a model and provider from the configured catalog and task requirements.
+- **Trigger:** Model selection queries; verify the live route before use.
 
 ### session_memory
 - **What:** Retrieves missing context from prior session histories via
@@ -858,78 +826,32 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 - **Pipeline:** Step 1 (always the first operation).
 
 ### task_tier
-- **What:** Classifies every request as Tier 1 (atomic), Tier 2 (task),
-  or Tier 3 (project). Gates downstream pipeline steps — Tier 1 skips
-  everything, Tier 2 runs skills but skips Obsidian+KG, Tier 3 runs full
-  pipeline.
-- **Pipeline:** Step 3a (after guardrail, before /decide reasoning).
-  Structured output: TIER / REASON / OBSIDIAN / KG_REFRESH.
+- **What:** Classifies every request as Tier 1 (atomic), Tier 2 (task), or Tier 3 (project) so verification and orchestration scale with the work.
+- **Pipeline:** Used only when the request benefits from explicit routing; atomic work stays targeted.
 
 ### token-saver
-- **What:** Enforced 4-step probe chain before any file read:
-  Step A — detect project | Step B — CodeGraph MCP query (~300t) |
-  Step C — Graphify query (~300t) | Step D — read_file (last resort).
-  14/16 code projects have Graphify indices.
-- **Pipeline:** Step 4 (after /decide routes, before domain skills).
-  Verified savings: 56.2× average (max 157.7×).
+- **What:** Conditional discovery workflow: use an installed code or reference index before broader reads when it is relevant.
+- **Pipeline:** Verify the index first, then use the smallest sufficient read or query.
 
 ### orchestrator-profile-factory
-- **What:** Profile creation playbook for the kanban orchestrator — creates
-  specialized worker profiles on demand from the golden `learning` template.
-  `hermes profile create <role> --clone-from learning`. Decision flow:
-  check existing profiles → reuse or create → kanban_create.
+- **What:** Profile creation playbook that reuses an existing suitable profile or creates a specialized worker when needed.
 - **Trigger:** "create profile", "new worker", "spawn worker profile".
-- **Sync:** All 5 profiles share 19 skill dirs + 9 MCP servers; new profiles
-  inherit the same toolchain via `--clone-from learning`. Drift checked
-  daily at 6am by the profile config cron.
+- **Availability:** Check the installed Hermes CLI and existing profile configuration before choosing a template; shared skills, MCP servers, and schedules are environment-specific.
 
 ---
 
 ## Notes
 
-**Count Verification:**
-| Category | Count |
-|----------|-------|
-| root (includes custom + llmquant) | 32 |
-| apple | 5 |
-| autonomous-ai-agents | 5 |
-| creative | 16 |
-| data-science | 1 |
-| devops | 2 |
-| email | 1 |
-| github | 6 |
-| media | 5 |
-| mlops | 8 |
-| note-taking | 3 |
-| opencode-power-pack | 11 |
-| productivity | 12 |
-| red-teaming | 1 |
-| research | 5 |
-| smart-home | 1 |
-| social-media | 1 |
-| software-development | 16 |
-| workflow | 5 |
-| **Total** | **136** (per array sum; JSON declares 139) |
+**Count verification:** `find skills -name SKILL.md` currently returns 1,484 repository files. The active profile may expose a smaller or differently composed set. Use `hermes skills list` for live availability.
 
 **How /decide selects skills:**
-1. Decompose the user's prompt into explicit and implicit tasks
-2. Map each sub-task to a skill trigger
-3. Score confidence (High/Medium/Low)
-4. Execute all selected skills in pipeline order
-5. Self-correct if the result was wrong
-
-**The BUNDLE RULE:**
-Three note-taking skills (obsidian, obsidian-codebase-graph,
-obsidian-knowledge-graph) are always loaded together, never in isolation.
-This ensures every project produces comprehensive documentation.
+1. Classify the request and its complexity
+2. Shortlist only relevant skills
+3. Verify the skill and integration are available
+4. Execute the smallest sufficient workflow
+5. Verify the actual result and recover if needed
 
 **The GUARDRAIL:**
-core-identity-guard cannot be overridden by any skill or any instruction.
-It re-anchors every 10 exchanges.
+core-identity-guard cannot be overridden by any skill or instruction.
 
-**The TOKEN SAVER:**
-Before any file read, Graphify and CodeGraph are probed first.
-This saves 56.2× tokens on average (benchmark-verified).
-
-**Source of truth:** This catalog mirrors `.hermes_ecosystem.json` which
-defines 139 skills across exactly 19 categories. Last sync: June 2026.
+**Source of truth:** this repository's current `SKILL.md` tree is the inventory. The active Hermes profile and live tool registry determine what is usable.
