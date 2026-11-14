@@ -1,7 +1,7 @@
 [
   {
     "n": "21st",
-    "d": "UI component search, generation, and bookmarking via 21st.dev MCP.",
+    "d": "Optional UI-component MCP. Enable it only when the server is installed, authenticated, and configured in the active profile.",
     "t": [
       "UI",
       "Component Search",
@@ -11,7 +11,7 @@
   },
   {
     "n": "AgentMemory",
-    "d": "Persistent memory \u2014 save insights, recall past session observations, audit trails.",
+    "d": "Optional memory integration. Enable it only when the corresponding MCP or plugin is installed and configured.",
     "t": [
       "Memory",
       "Recall",
@@ -21,17 +21,17 @@
   },
   {
     "n": "CodeGraph",
-    "d": "On-demand symbol graph context for codebase Q&A.",
+    "d": "Optional symbol-graph context for codebase Q&A. Use it only when the CodeGraph MCP is installed, indexed, and enabled.",
     "t": [
       "Code Graph",
-      "144K Nodes",
+      "Symbol Context",
       "Indexed Files"
     ],
     "c": "#3ddc84"
   },
   {
     "n": "Graphify",
-    "d": "Code knowledge graph \u2014 communities, PR impact, shortest paths, god nodes.",
+    "d": "Optional code knowledge graph. Install and configure Graphify separately before using communities, PR-impact, or path analysis.",
     "t": [
       "Knowledge Graph",
       "Communities",
@@ -41,7 +41,7 @@
   },
   {
     "n": "LLMQuant Data",
-    "d": "Financial data MCP \u2014 SEC filings, 13F, macro, equities, options, prediction markets.",
+    "d": "Optional financial-data MCP for SEC filings, 13F, macro, equities, options, and prediction markets. Enable it only when installed and configured.",
     "t": [
       "Finance",
       "SEC",
@@ -52,7 +52,7 @@
   },
   {
     "n": "Obsidian KG",
-    "d": "Scan an Obsidian vault and produce a structured knowledge graph.",
+    "d": "Optional Obsidian integration. Scan a vault only when the Obsidian skill, vault path, and any required MCP are configured.",
     "t": [
       "Obsidian",
       "Knowledge Graph",
@@ -62,7 +62,7 @@
   },
   {
     "n": "OpenDesign",
-    "d": "Design-system MCP daemon (Open Design desktop app) \u2014 60+ design systems on demand.",
+    "d": "Optional design-system MCP daemon. Enable the OpenDesign app and MCP only when installed and configured.",
     "t": [
       "Design Systems",
       "Daemon",
@@ -72,7 +72,7 @@
   },
   {
     "n": "VS Code",
-    "d": "vscode-mcp-server \u2014 open files, run shell commands, create diffs in the editor.",
+    "d": "Optional VS Code MCP integration. Enable it only when the server is installed and configured in the active profile.",
     "t": [
       "Editor",
       "Files",
@@ -82,7 +82,7 @@
   },
   {
     "n": "Firecrawl",
-    "d": "Web scraping, crawling, searching, and monitoring via Firecrawl MCP.",
+    "d": "Optional web-research MCP. Use Firecrawl only when it is installed, authenticated, and enabled in the active profile.",
     "t": [
       "Web",
       "Scrape",
@@ -93,7 +93,7 @@
   },
   {
     "n": "Figma (Composio)",
-    "d": "Figma MCP via the Composio gateway (connect.composio.dev/mcp).",
+    "d": "Optional Figma MCP through a configured gateway. Enable it only after authenticating the chosen integration.",
     "t": [
       "Figma",
       "Composio",
@@ -103,7 +103,7 @@
   },
   {
     "n": "Flowbite",
-    "d": "flowbite-mcp \u2014 Flowbite UI components, themes, and Figma-to-code.",
+    "d": "Optional Flowbite MCP for UI components, themes, and Figma-to-code. Enable it only when installed and configured.",
     "t": [
       "UI",
       "Themes",
@@ -113,7 +113,7 @@
   },
   {
     "n": "Figma Dev",
-    "d": "figma-developer-mcp \u2014 read Figma file data, layouts, and assets.",
+    "d": "Optional Figma developer MCP for file data, layouts, and assets. Enable it only when installed and configured.",
     "t": [
       "Figma",
       "Dev Mode",
@@ -123,7 +123,7 @@
   },
   {
     "n": "oh-my-opencode-slim",
-    "d": "Pantheon multi-agent swarm \u2014 7 specialists (Orchestrator, Oracle, Explorer, Librarian, Designer, Fixer, Council) coordinated by GLM 5.2",
+    "d": "Optional multi-agent coding extension. Install and configure it separately; its availability and model routes depend on your runtime.",
     "t": [
       "Agent Swarm",
       "Parallel Coding",
@@ -133,10 +133,10 @@
   },
   {
     "n": "ECC Bridge",
-    "d": "64 specialized agents routed through free models (GLM 5.3 Flash for code and vision)",
+    "d": "Specialized agents connected through the configured bridge; model choice follows your Hermes profile.",
     "t": [
-      "64 Agents",
-      "Free Models",
+      "Specialist Agents",
+      "Profile-Configured Models",
       "Vision + Code"
     ],
     "c": "#6bc5e8"

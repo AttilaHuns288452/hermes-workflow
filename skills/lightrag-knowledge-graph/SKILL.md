@@ -19,7 +19,7 @@ graph. Use it for **semantic, cross-skill** questions. For exact name lookup use
 | WebUI | `http://127.0.0.1:9621/webui` |
 | Data | `~/.hermes/lightrag_db/` (JsonKV + NanoVectorDB + NetworkX) |
 | Repo | `~/Documents/Projects/lightrag` (venv `.venv`, v1.5.8) |
-| LLM | xKiro `mistralai/mistral-medium-3.5` (plan-covered) |
+| LLM | configured LightRAG extraction model; inspect the running service/config for the live route |
 | Embedding | local Ollama `nomic-embed-text` (768d) |
 
 ## CLI
@@ -87,15 +87,12 @@ curl -s -X POST -H 'X-API-Key: lr_local_hermes_9621' -H 'Content-Type: applicati
   `python3 ~/.hermes/scripts/lightrag_retry_failed.py`, which re-derives each
   file from its `file_source` and resubmits it. Both eventually reach
   `failed: 0`.
-- Indexing throughput ≈7 docs/min; full 573-skill corpus ≈70 min. Don't run it
-  in the foreground of a turn.
+- Large index syncs can take a while. Run them detached when they exceed the current turn budget; use `status` to verify completion.
 - Server RSS settles around 1.3 GB for a 32k-node graph; storage on disk ≈650 MB
   (the LLM response cache is most of it — drop `ENABLE_LLM_CACHE` only if disk
   matters more than re-extraction speed).
 - `pkill -f lightrag-server` kills the invoking shell too (pattern in its own
   argv). Use `pkill -f '[l]ightrag-server'` or `systemctl --user restart`.
-- Indexing throughput ≈7 docs/min; full 573-skill corpus ≈80 min. Don't run it
-  in the foreground of a turn.
 
 ## Cost
 
@@ -105,6 +102,4 @@ Embeddings are local via Ollama (nomic-embed-text, CPU).
 
 ## Corpus coverage
 
-Default corpus = `~/.hermes/skills` (573 SKILL.md → 32k graph nodes, 44k edges).
-`--with-references` adds `~/Documents/SkillReferences` (2,751 more files) —
-budget hours and check the LLM quota first.
+The default corpus is the live `~/.hermes/skills` tree. Use `status` for the current document and processing counts. `--with-references` expands the corpus with `~/Documents/SkillReferences`; its size and runtime are live values, so check capacity and status before starting a large sync.

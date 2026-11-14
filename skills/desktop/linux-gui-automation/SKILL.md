@@ -139,6 +139,27 @@ readings come from vision.** Never the reverse.
   daemon/socket/config control channel, read and set state there (see
   `linux-hardware-troubleshooting` for socket probing); if you must click
   through, capture the state before and normalize it after.
+- **Never `xdotool windowkill` a child window of an app you care about.** It
+  does not close the dialog; it destroys the resource, and the parent process
+  can go down with it — losing unsaved work. Close dialogs by clicking their
+  own Cancel/close control, or with `Escape` sent to that window.
+- **`getactivewindow` naming the right window does not mean no modal exists.**
+  An app can own several X windows at once, and a stray one (a shortcuts
+  editor, a leftover file picker, a text alert) swallows keystrokes and clicks
+  aimed at the main window while the focus check still passes. Enumerate them
+  all before blaming coordinates:
+  `xdotool search --onlyvisible --name '.' | while read w; do echo "$w $(xdotool getwindowname $w)"; done`
+  — an unexpected extra title from the same app IS the bug.
+- **When a synthetic click produces no state change, re-derive the target box
+  from a FRESH capture instead of nudging the last coordinate.** Guess-and-nudge
+  burns turns and lands on neighbouring controls. For a coloured primary
+  button, scan the capture for the exact fill colour and click the centre of
+  its bounding box; that is self-correcting against window moves that silently
+  invalidated every earlier offset.
+- **A few sampled pixels are not a UI state test.** Probing "is the centre of
+  the screen dark" to decide whether a dialog is open gives false answers both
+  ways and sends you debugging the wrong layer. Read a real signal: the window
+  list, a title, or the text of the control you changed.
 
 ## App-extension bridges (GUI-only integrations)
 

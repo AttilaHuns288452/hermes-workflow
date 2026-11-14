@@ -2,7 +2,11 @@
 
 # 🧞 Hermes Workflow
 
-**A battle-tested skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1484 skills, one decision layer, cheap-first model routing.**
+**A portable skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1,484 repository skills, one decision layer, and config-driven model routing.**
+
+This repository is licensed under **CC BY-NC 4.0**. It is a public reference and skill collection, not a bundled model provider or a guaranteed runtime environment.
+
+> **Live-state rule:** this public repository is a template and documentation surface. Your installed Hermes profile is authoritative for enabled skills, MCP servers, models, credentials, and subagent availability. Inspect it with `hermes config check`, `hermes config path`, `hermes config env-path`, `hermes mcp list`, and `hermes skills list`.
 
 [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-0b0f1c?style=flat&labelColor=0b0f1c&color=7aa9f7)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-1484-4a8cf4?style=flat&labelColor=0b0f1c)](#-skill-catalog)
@@ -10,9 +14,9 @@
 [![Site](https://img.shields.io/badge/docs-live-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
-**What is this?** A production skill library for Hermes Agent: install it, point Hermes at it, and your agent gains 1484 curated skills across 715 top-level directories — routed through a single decision layer (`/decide`) that probes cheap indexes before spending tokens.
+**What is this?** A portable skill library for Hermes Agent: point Hermes at it, and your agent can discover 1,484 repository skills routed through a decision layer (`/decide`). Actual availability depends on your active profile and installed tools.
 
-**Why?** Skills without routing rot. This repo pairs every skill with the orchestration that decides *when* to use it — plus a token-saver probe chain that cuts read costs by 50×–1,233× in live use.
+**Why?** Skills without routing rot. This repo pairs skills with guidance for deciding *when* they fit. Indexed discovery can reduce unnecessary file reads when the relevant index and MCP are available.
 
 </div>
 
@@ -23,8 +27,8 @@
 | Layer | What it does |
 |-------|--------------|
 | **🧠 `/decide`** | The routing brain: intent → capability class → skill shortlist → availability probe → execution → verification → recovery. See [`META_PROMPT.md`](META_PROMPT.md). |
-| **📚 Skills** | 1484 `SKILL.md` files in 715 top-level directories: software development, design systems, finance (LLMQuant), media, research, DevOps, security. |
-| **⚡ Token Saver** | Probe-before-read chain (CodeGraph → Graphify → LightRAG) so the agent queries indexes instead of raw-reading files. |
+| **📚 Skills** | 1,484 repository `SKILL.md` files across engineering, design, finance, media, research, DevOps, and security. Availability still depends on the installed profile. |
+| **⚡ Discovery** | Use CodeGraph for indexed project-code discovery and LightRAG for skill/reference lookup when those services are available; neither is assumed to be enabled everywhere. |
 | **🛡️ Guardrail** | 6 immutable rules — file protection, secrets safety, injection immunity, system integrity, re-anchoring, safe fallback. |
 | **🤝 Delegation** | Subagent orchestration patterns with mandatory read-back verification. |
 | **🔍 Verification** | Per-output-type gates: code → tests/build, research → citations, visual → render check. Nothing is "done" unverified. |
@@ -37,7 +41,8 @@
 git clone https://github.com/AttilaHuns288452/hermes-workflow.git
 cd hermes-workflow
 
-# 1. Point Hermes at these skills — add the repo's skills/ dir to your external_dirs
+# 1. Inspect the active profile, then merge the repo skills path into its external_dirs
+hermes config path
 hermes config edit
 #   skills:
 #     external_dirs:
@@ -50,7 +55,7 @@ hermes -z "List three skills you can use from the hermes-workflow catalog"
 hermes -z "What does the decide skill do?"
 ```
 
-For the full pipeline (model chain, MCP servers, gateway), see [`SETUP.md`](SETUP.md).
+For profile setup and optional integrations, see [`SETUP.md`](SETUP.md).
 
 ## 🏗️ How It Works
 
@@ -66,9 +71,9 @@ User request
               │                       │
       ┌───────▼───────┐      ┌────────▼────────┐
       │ Skills        │      │ MCPs / Tools    │
-      │ 1484 SKILL.md  │      │ 11 enabled      │
-      │ indexed by    │      │ codegraph,      │
-      │ LightRAG      │      │ firecrawl, ...  │
+      │ 1,484 files    │      │ optional tools  │
+      │ cataloged in  │      │ configured per  │
+      │ this repo     │      │ active profile  │
       └───────┬───────┘      └────────┬────────┘
               │                       │
               └───────────┬───────────┘
@@ -86,11 +91,11 @@ User request
                       Result
 ```
 
-**The rule that makes it work:** every capability is probed before use (`command -v`, `test -f`, `hermes mcp list`). A skill that isn't reachable is never routed to.
+**The rule that makes it work:** verify a binary, path, model, skill, or MCP before relying on it. A skill or integration that is not available in the active environment should not be presented as enabled.
 
 ## 🤝 Multi-Agent Team
 
-Beyond single-agent skills, this repo ships a **coordinated specialist team**: a Project Manager (the default Hermes profile) plus 7 domain specialists, each with its own role contract, shared charter, and cross-functional handoff rules. It works through **direct profile delegation and Kanban**; no group chat is required.
+Beyond single-agent skills, this repo documents a **coordinated specialist team**: a Project Manager role plus seven domain-specialist role contracts, a shared charter, and cross-functional handoff rules. These documents do not install Hermes profiles or configure delegation; direct profile delegation and Kanban require those capabilities to be set up in the active environment.
 
 | Specialist | Profile | Owns |
 |---|---|---|
@@ -124,17 +129,16 @@ All imported specialist skills were adapted for Hermes, corrected against upstre
 
 ## 📦 Skill Catalog
 
-Browse all 1484 skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
+Browse all 1,484 repository skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
 
-| Category | Count | Highlights |
-|----------|-------|------------|
-| External collections | 341 | claude-seo, superpowers, design systems, agent-skills |
-| OpenDesign | 66 | od-* brand design systems (Linear, Stripe, Notion…) |
-| Software Development | 47 | TDD, debugging, code review, planning |
-| Creative | 19 | excalidraw, p5.js, pixel art, memes |
-| Workflow | 18 | /decide, token-saver, kanban, cron |
-| Productivity | 17 | PDF, Office docs, Notion, Obsidian |
-| LLMQuant (finance) | 25 | equities, options, macro, prediction markets |
+| Area | Examples |
+|------|----------|
+| `external/` | Vendored upstream skill collections |
+| `opendesign/` | OpenDesign design-system skills |
+| `software-development/`, `development/` | Engineering, testing, debugging, and setup workflows |
+| `creative/`, `media/` | Design, creative coding, and media workflows |
+| `workflow/`, `productivity/` | Routing, task workflows, and integrations |
+| `llmquant-*` | Finance, markets, and quantitative-research topics |
 
 <details>
 <summary><strong>How skills are organized</strong></summary>
@@ -148,8 +152,10 @@ skills/
 │   ├── claude-seo/      # SEO suite
 │   └── superpowers/     # debugging, planning skills
 ├── autonomous-ai-agents/# hermes-agent skill + agent CLI ops
-└── ...                  # 715 top-level directories
+└── ...                  # see SKILLS_CATALOG.md for the current inventory
 ```
+
+The catalog is a repository inventory, not an installed-profile inventory. Run the repository validators after skill-tree changes.
 
 Each skill is a directory with a `SKILL.md` (YAML frontmatter: `name`, `description`, triggers) plus optional `references/` and `scripts/`. Hermes loads skills by frontmatter description — write it like a trigger, not a title.
 
@@ -157,46 +163,43 @@ Each skill is a directory with a `SKILL.md` (YAML frontmatter: `name`, `descript
 
 ## 🔌 MCP / Tool Ecosystem
 
-Configured in `config.yaml.template` (placeholders only). Live profile runs **11 enabled** MCP servers:
-
-`codegraph` · `firecrawl` · `llmquant-data` · `pagecast` · `supabase` · `vercel` · `blender` · `packet-tracer` · `rea` · `earshot` · `opensandbox` — plus 14 configured-but-disabled (21st, agentmemory, clawlink, demosmith, figma, figma-dev, flowbite, graphify, opendesign, stripe, twelve-data, vscode, artemis, roblox_studio). Disabled is not broken: each one is either credential-gated or duplicated by an enabled server.
+Configured in `config.yaml.template` (placeholders only). The template provides a small set of portable MCP examples, including an explicitly disabled OpenDesign example. Your installed profile may enable a different set. Always treat `hermes mcp list` as the live source of truth:
 
 ```bash
-hermes mcp list          # see what's enabled on your install
+hermes mcp list          # inspect enabled/disabled state now
 hermes mcp add NAME      # add a server (--url or --command)
 hermes mcp test NAME     # verify connectivity
 ```
 
+A server being present in this repository does not mean it is installed, authenticated, or enabled in your profile.
+
 ## 🔑 Configuration
 
-Copy the templates, fill in your own values — the repo ships **placeholders only**:
+Do not replace your active profile with a repository template. Inspect its paths and merge only the settings and credentials needed for integrations you choose to enable:
 
 ```bash
-cp config.yaml.template ~/.hermes/config.yaml   # model, providers, skills paths
-cp .env.example ~/.hermes/.env                  # API keys — never commit this
+hermes config path
+hermes config env-path
+hermes config check
 ```
 
-| Variable | Purpose |
-|----------|---------|
-| `XKIRO_API_KEY` | Daily-driver model access (GLM 5.3 Flash) |
-| `OPENROUTER_API_KEY` | Fallback provider pool |
-| `HERMES_USERNAME` | Your OS username (path templating) |
+[`config.yaml.template`](config.yaml.template) is merge guidance, not a drop-in replacement. [`.env.example`](.env.example) is a placeholder-only reference; add only the credential variables needed by integrations you explicitly configure. Keep secrets in the active profile's environment file or Hermes auth store, never in this repository.
 
-Full variable list: [`.env.example`](.env.example).
-
-## 🧬 Model Chain (cheap first)
+## 🧬 Model Routing (profile-configured)
 
 ```text
-GLM 5.3 Flash (xKiro API) ────── daily driver: chat, delegation, vision
+Configured primary route ─ `model.provider` + `model.default`
          │
-         ├── Free ladder ─────── local gateway fallbacks (Poolside, OpenRouter free)
+         ├── Fallback routes ──────── ordered `fallback_providers` (if configured)
          │
-         ├── Local Ollama ────── offline layer, localhost:11434
+         ├── Auxiliary routes ─────── only when configured
          │
-         └── Paid (last resort) ─ escape hatch when free tiers rate-limit
+         └── Local/offline routes ─── only when configured
+
+Model IDs, provider availability, and billing are runtime facts. Probe the exact pair before relying on it.
 ```
 
-Every provider is configured by name in `config.yaml.template` — API keys live in environment variables, never in the repo.
+Provider/model routes are profile-specific. Store credentials in the active profile's environment file or Hermes auth store; never commit them to the repository.
 
 ## 🛠️ Creating a Skill
 
@@ -224,13 +227,13 @@ Conventions:
 
 ```text
 hermes-workflow/
-├── skills/              # 1484 SKILL.md files, 715 top-level categories (the main event)
+├── skills/              # 1,484 SKILL.md files (the main event)
 ├── docs/                # built website (GitHub Pages — do not edit by hand)
 ├── src/                 # website source (React + Vite)
 ├── scripts/             # ecosystem utilities
 ├── config.yaml.template # sanitized Hermes config (placeholders only)
-├── .env.example         # every env var the pipeline understands
-├── META_PROMPT.md       # the /decide routing brain, in full
+├── .env.example         # placeholder-only optional environment reference
+├── META_PROMPT.md       # portable, profile-aware session context
 ├── SKILLS_CATALOG.md    # generated skill catalog
 ├── SETUP.md             # 10-step full pipeline setup
 ├── INTEGRATION.md       # how the layers connect + workflow operations
@@ -241,8 +244,8 @@ hermes-workflow/
 ## 🗺️ Roadmap
 
 - [x] `/decide` routing brain with probe-before-use enforcement
-- [x] Token Saver probe chain (live-benchmarked 50×–1,233× read reduction)
-- [x] 1,484-skill catalog across 715 top-level directories, no duplicate names inside a category (vendored upstream copies excepted)
+- [x] Indexed code and skill/reference discovery guidance, conditional on available integrations
+- [x] 1,484-skill catalog; duplicate-name checks report possible vendor/curated overlaps
 - [x] Live docs site (React + Vite → GitHub Pages)
 - [x] Skill drift detection (`scripts/repo_drift.py`; weekly audit runs it)
 - [ ] Catalog regeneration in CI on skill-tree changes (counts are checked by `repo_drift.py`; the 174-card site showcase is still hand-curated)

@@ -23,7 +23,7 @@
  * the intent layer's recipe check (hyperframes SKILL.md § 4).
  */
 import { parseArgs } from "node:util";
-import { freezeRecipe, listRecipes, useRecipe } from "./lib/recipe-store.mjs";
+import { freezeRecipe, listRecipes, useRecipe as applyRecipe } from "./lib/recipe-store.mjs";
 
 const { values: args, positionals } = parseArgs({
   options: {
@@ -80,7 +80,7 @@ try {
     }
   } else if (verb === "use") {
     if (!args.name) fail("use needs --name");
-    const used = useRecipe({ projectDir: args.hyperframes, name: args.name });
+    const used = applyRecipe({ projectDir: args.hyperframes, name: args.name });
     if (args.json) console.log(JSON.stringify({ ok: true, ...used }));
     else {
       console.log(
