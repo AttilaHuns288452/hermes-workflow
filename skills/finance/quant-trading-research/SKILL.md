@@ -190,6 +190,11 @@ Don't. Report, in this order:
 
 Keep the raw cost/edge arithmetic and the fill evidence in the same message as the summary. A status answer without the trade count and the executed-order evidence is an opinion.
 
+Two false alarms that routinely make a healthy system look broken:
+
+- **A missing cycle is usually uptime, not cron.** Compare `uptime -s` to the scheduled slot before diagnosing a dead job. A box that booted at 20:18 has not reached the next 08:05 run, so the ledger's last row is from the previous day for that reason alone — report "next cycle is tomorrow 08:05", not "the scheduler failed". Check `systemctl is-active cron` once, then stop; a missing row with the daemon active and uptime after the slot is explained.
+- **Run the self-check with the project interpreter before reporting any FAIL.** `python3 tools/selfcheck.py` against a bot venv produces `ModuleNotFoundError`-class failures plus downstream `no output` checks, which reads as two broken gates and sends you hunting a defect that does not exist. Re-run as `.venv/bin/python tools/selfcheck.py`. A failure that disappears under the project interpreter is a runner mistake; quote the interpreter you used next to the result.
+
 ## Diagnosing "it never trades"
 
 Zero trades in a ledger is a **bug report, not a market verdict**. Walk the gate chain in order — the first gate that fires for ~100% of rows is the answer, and it is almost never the one you assumed:
@@ -207,6 +212,64 @@ print(f"edge {edge_bps:.2f}bps vs cost {cost_bps:.1f}bps -> ratio {edge_bps/cost
 ```
 
 **A ratio well under 1.0 means the bot cannot trade by construction.** No threshold change fixes a negative-expectancy signal; the horizon or the instrument is wrong. Report it as `CANNOT trade`, with the ratio, instead of "the market is quiet".
+
+When the ledger has BOTH a `decision` column and an `action` column, the funnel is
+read off those two, not by re-deriving gates from the raw probability columns.
+`decision` is what the signal logic concluded; `action` is what survived the risk
+gates afterwards (already-in-position, protection state, portfolio risk, sizing).
+Bucket the action rows by their `note` text — that is the diagnosis. Two traps:
+
+- **Do not replay today's decision code against a historical ledger to find bugs.**
+  Rows were written by whatever version ran that day, so a replay against current
+  code mismatches on most of them and looks like a defect. The stored `decision`
+  column already records what the code decided at the time; compare *that* to
+  `action` instead.
+- **`decision = BUY` with `action = HOLD` is the normal case, not a bug.** It means
+  a position was already open and the risk gate skipped the entry. A large
+  `already in position` bucket is a capacity finding (see below), not a logic error.
+
+## "Should we just wait?" — price the wait before agreeing
+
+Waiting feels like the neutral answer and is usually the slowest one. It is
+arithmetic, not opinion, so compute it before replying:
+
+```
+slots             = MAX_TOTAL_EXPOSURE_USD / MAX_POSITION_USD   # the real cap
+ceiling_per_month = min(slots, n_symbols) * (30.44 / max_hold_days)
+months_to_gate    = (gate_trades - closed_trades) / observed_closes_per_month
+```
+
+**Slots cap the ceiling, not the symbol count.** Use `min(slots, n_symbols)`.
+Getting this wrong (multiplying by `n_symbols` alone) produces an optimistic
+number that the code cannot deliver: with 3 slots and a 20-day hold the ceiling
+is ~4.6 trades/month whether the universe holds 3 symbols or 60. Quote the
+revised number the moment you widen the universe, and re-derive `slots` from
+config every time rather than assuming it grew with the symbol list — the two
+usually disagree, and when they do the exposure arithmetic is the authority.
+
+A 30-closed-trade promotion gate is therefore ~6.1 months of *ideal* behaviour
+from 3 slots, and years at a typical observed rate (0.7/month). Quote the number
+of days, not "a while".
+
+The binding constraint is usually **capacity, not signal frequency**, which is why
+the `already in position` bucket dominates the gate walk. Confirm with the
+exposure arithmetic: `MAX_TOTAL_EXPOSURE_USD / MAX_POSITION_USD` is the real slot
+count (6.0 / 2.0 = exactly 3), and cross-check it against
+`RiskManager(max_concurrent=...)` — when the two disagree one of them is stale.
+Also measure `max concurrent positions ever observed`: if it never exceeded 1 of
+3, slots were never binding and the population gate (trend, regime) is the real
+blocker — widening either number will not help.
+
+The cheap fix is **more symbols, not more waiting** — but understand which term it
+moves. Widening the universe does **not** raise the slot ceiling; it removes the
+per-symbol `already in position` blocks so actual throughput can approach that
+ceiling (observed 0.7/month vs a 4.56 ceiling is a 6.5x gap, and that gap is what
+symbols close). If you want a higher ceiling you must raise slots or shorten the
+hold, and both are strategy decisions to put to the user, not config tweaks. Verify data availability
+per candidate before proposing it (`fetch(sym, years)` and count bars): a symbol
+with ~750 bars cannot feed a 4-year model, and a delisted one returns nothing.
+Widening the universe is a config change; raising max-hold to manufacture trades
+is not, because it changes the strategy itself.
 
 ## Exits are a separate system from entries
 
@@ -259,7 +322,7 @@ scoring code, replication rule and the lift test: `references/self-learning-audi
 1. **Overfitting**: A strategy that backtests well may fail live. Always use walk-forward validation.
 2. **Ignoring costs**: 5bps fees + 2bps slippage eat micro-edges. If edge is < 0.05% per trade, it's noise.
 3. **Wrong timeframe — and here is the mechanism**: execution cost is fixed per round trip while the predictable move scales roughly with `sqrt(time)`. A 5-minute horizon predicts sub-basis-point moves against a 16-20bps round trip; a multi-day horizon predicts tens to hundreds of bps against the same cost. That is why 1m/1h starves and 1d works, and it is a property of the cost model, not of the model's skill. Before tuning thresholds, compute the edge-to-cost ratio.
-4. **A closed trade is identified by `pnl`, not by the action label.** `len(df[df.action == "SELL"])` counts no-op SELLs ("no open position to close") as completed round-trips and inflates every downstream stat — the status line said `trades 9 (closed)` with zero real closes. Only a successful close writes `pnl`; make that the predicate, tolerate a missing `pnl` column without raising, and grep the pattern across every sibling trader before declaring it fixed.
+4. **A closed trade is identified by `pnl`, not by the action label.** `len(df[df.action == "SELL"])` counts no-op SELLs ("no open position to close") as completed round-trips and inflates every downstream stat — the status line said `trades 9 (closed)` with zero real closes. Only a successful close writes `pnl`; make that the predicate, tolerate a missing `pnl` column without raising, and grep the pattern across every sibling trader before declaring it fixed. **The same sweep covers the action VOCABULARY**: any audit, report or diagnostic filtering `action == "BUY"` / `== "SELL"` silently under-reports once a new verb exists, and a P&L sign that is not inverted per stored direction reports short losses as gains.
 5. **A reported PnL can be a hardcoded constant.** A status line printing `equity 200.00 | daily PnL +0.00` every run may be reading an `account` field set once in `__init__` and never mutated, plus a `daily_pnl` zeroed each day. Compute equity from ledger realized + live unrealized, label a bare baseline as "fixed baseline, NOT PnL", and never present a constant as a measurement.
 6. **Too many trades**: 400+ trades in 180 days = overtrading. Fewer, higher-quality trades win.
 7. **No stop loss**: A single -50% trade wipes out 10 small wins. Always use stops.
@@ -299,8 +362,121 @@ scoring code, replication rule and the lift test: `references/self-learning-audi
     entry point and reset it in the test's `setUp`, and make test doubles accept
     `**kwargs` so a new keyword cannot silently invalidate the suite. Both failures
     present as unrelated tests breaking after an unrelated optimisation.
+17. **A t-stat on NET PnL measures the cost, not the skill.** Subtracting a
+    constant round-trip cost from every trade leaves the variance untouched, so
+    `t(net)` mostly reports "cost > 0": several hundred near-zero-gross trades
+    always land around t ≈ −4, which reads like anti-skill and is arithmetic.
+    Compute significance on **gross** per-trade returns; report net separately as
+    the economic result. The same mistake in reverse inflates a result when the
+    cost assumption is too small.
+18. **Never `getattr(config, "NAME", default)` for a constant you have not
+    verified exists.** A guessed name silently yields the default forever, so the
+    cost model diverges from the real one with no error anywhere — a fabricated
+    `COST_BPS_PER_TRADE = 48` looked authoritative while the project's actual
+    authority was `costs.round_trip_bps("realistic")`. Grep the config for the
+    symbol first, and import the function that owns the number rather than
+    restating its value.
+19. **Correct multiple testing over the whole family, not per batch.** Running 45
+    hypotheses and then 30 more, each corrected separately, is more permissive
+    than one correction over all 75 — and the two batches will report different
+    survivor counts for identical evidence. If a search space is split across
+    scheduled runs, correct across the union at reporting time, or state plainly
+    that the count is per-batch and therefore optimistic.
+20. **A cross-asset feature pool derived from the target list is a model change
+    disguised as a config change.** Passing `pool=[t for t in TARGETS if t != sym]`
+    means every symbol added silently rewrites every existing symbol's
+    cross-asset features — `breadth_200`, `basket_ret_1`, the sibling returns and
+    therefore the whole regime label all shift, so a universe edit invalidates
+    prior results with no code diff to review. It also drifts live away from
+    validation: backtest tools and A/B sweeps default to a wider pool, so the bot
+    trains on a 2-sibling basis while the number that justified it came from 10.
+    Pin the pool to an explicit constant and assert it in a test — "POOL equals the
+    validated default and is not re-derived from TARGETS" — then let
+    `research_predictions`, which already drops the target itself, handle the rest.
+    Widening the universe also breaks tests that hardcode the old size; assert
+    against the source of truth (`len(trader.TARGETS)`, `set(trader.TARGETS)`) so
+    the next symbol does not fail a shard as an unrelated red.
+21. **A universe change only pays off if the population gate lets those symbols
+    in.** Widening from 3 to 6 symbols raised the theoretical trade rate but the
+    first live run opened nothing: every candidate sat below its 200-day (SMA
+    ratios 0.76–0.93, market-wide), and a long-only trend gate blocks 100% of
+    entries regardless of how many symbols you watch. Verify the gate state in the
+    same breath as the capacity fix, and report that the gain is *conditional* —
+    otherwise you have sold a throughput improvement that cannot fire until the
+    regime turns. Before proposing a wider universe, check each candidate's bars
+    (`>900` for a 4-year model); thin or delisted symbols silently produce NaN
+    features that surface as "cannot size -> no entry" and read like model caution.
+
+## A daily cron on a desktop is not a daily job
+
+`5 8 * * *` does not fire late. If the machine is off or asleep at that minute
+the day is silently skipped, and `anacron` does **not** cover user crontabs — so
+a "continuous" evidence loop only advances on days the box happens to be awake.
+On a workstation that is off most mornings this is a better explanation for a
+stalled trade count than anything in the strategy: check `last -x reboot` against
+the scheduled slot before blaming the model.
+
+Fix it in the job itself, not in cron:
+
+1. Give each daily wrapper an idempotent UTC date stamp — write the date **only
+   on a successful exit**, and skip when it already matches today. A failed run
+   must be retried, never recorded as done.
+2. Then add `@reboot` and hourly catch-up entries. The stamp makes every extra
+   invocation free, so over-scheduling becomes harmless.
+3. **Stamp in the wrapper, after the run.** `exec python ...` replaces the shell,
+   so anything written after it never executes and the stamp never lands — a job
+   that always re-runs looks like it never stamped.
+4. **Never add a catch-up entry to an order-placing job before it has a same-day
+   guard.** An hourly entry on a guardless bot sends 24 real orders a day. Add
+   the guard first, then prove it by invoking the wrapper twice and confirming
+   the second logs a skip. This is the one place where "add the safety measure
+   first" is not optional politeness.
+
+A log full of `already ran for <date>, skipping` is the healthy signal; a job
+whose log jumps dates by 2-3 days is the uptime problem, not a broken script.
 
 ## Verification
+
+### The overlap artifact, applied to SIGNIFICANCE (read before quoting any survivor count)
+
+Pitfall 9 covers overlap corrupting the *label*. It corrupts the **test** too, and
+that variant is far more dangerous because it manufactures winners instead of
+errors.
+
+AUC p-values and t-stats assume independent observations. A horizon-h label spans
+h bars, so consecutive rows share up to h−1 of their outcome — measured
+autocorrelation 0.645 at h=10. On ~290 test rows the test behaves as if there were
+290 independent trials when there are nearer 29, understating p by roughly a
+factor of h. The AUC itself is real (a genuine ranking of same-period rows); only
+the confidence is fake, so it survives any review that looks at the number and not
+the sample.
+
+```python
+def effective_n(n_rows, horizon):
+    return max(10, int(n_rows / max(1, horizon)))
+# recompute p on the effective split, preserving the class ratio;
+# and thin the net-of-cost test so a trade is taken only after the previous
+# one's holding period finished, or t inflates by ~sqrt(h).
+```
+
+The tell that you are looking at it: survivors cluster in one or two assets with
+implausibly high AUCs while siblings return zero, and the best-of-N p-value lands
+just under 0.05. Best-of-84 at p=0.03 is exactly what noise produces.
+
+Measured when applied retroactively to a full night of sweeps: 68/84 → **0**,
+24/79 → **0**, 10/84 → **0**, 7/45 → **0**, and a funding spec showing +55 to +90
+bps/trade net collapsed to gross t ≤ 1.36 on ~56 independent trades. Every
+"replicated edge" and every "worth a forward paper test" verdict was the artifact.
+
+Apply the fix once in the shared scoring layer so every search space inherits it,
+and guard it with a test that **measures** the autocorrelation rather than
+asserting a constant — if the label or horizon changes, the guard should fail
+loudly instead of silently permitting an inflated p-value.
+
+Corollary: **do not build a third search space to escape a null result from the
+first two.** Barrier labels and alternate target definitions share the same
+features and the same overlap structure; relabelling the same inputs answers
+nothing. Fix the statistic, then decide whether more spaces are worth opening.
 
 A strategy is "good" when:
 - Sharpe > 2.0 on walk-forward test
@@ -318,4 +494,4 @@ Before accepting any performance figure — the user's, a brief's, or a previous
 - **An empty PnL column means there is no performance history at all.** Scan the ledger for actual fills and closed round-trips; a file full of decisions (`HOLD`/`ABSTAIN`) is a decision log, not a track record. Say "not trading yet" when that is the truth rather than reporting a flat equity curve as stability.
 - **A docstring's method claim is not an implementation.** "Walk-forward", "out-of-sample", "purged", "embargoed" are specific mechanisms, not adjectives — open the function and find the index arithmetic before repeating any of them. Full reproduction recipe in `references/walk-forward-optimization.md`.
 
-Session-specific details in `references/bingx-api.md`, `references/walk-forward-optimization.md`, `references/zero-trade-diagnosis.md` (full worked gate-walk with commands), and `references/self-learning-audit.md` (skill measurement, feature discovery, replication rule).
+Session-specific details in `references/bingx-api.md`, `references/walk-forward-optimization.md`, `references/zero-trade-diagnosis.md` (full worked gate-walk with commands), `references/self-learning-audit.md` (skill measurement, feature discovery, replication rule), `references/funding-features.md` (funding as the first non-price data source: endpoints, lag rule, AUC and net-of-cost results), and `references/external-toolkit-evaluation.md` (whether a third-party trading skill/repo earns a place in the bot).

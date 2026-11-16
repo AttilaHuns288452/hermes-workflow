@@ -40,7 +40,14 @@ SECRET_PATTERNS = [
     r"pplx-[A-Za-z0-9_-]{20,}",         # Perplexity
     r"AIza[0-9A-Za-z_-]{20,}",          # Google API keys (short test keys too)
     r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
-    r"Bearer\s+[A-Za-z0-9._~+/=-]{24,}",  # bearer tokens
+    # Bearer tokens, with two documented exclusions:
+    #  1. Truncated examples ("eyJhbG...iJ9.") — security skills show elided tokens.
+    #  2. The canonical jwt.io sample (header decodes to {"alg":"none","typ":"JWT"},
+    #     payload to {"sub":"1234567890","name":"John Doe","admin":true}). Public
+    #     documentation, not a credential; appears in payload libraries.
+    # A real token has a different header and no triple dots, so it is still caught.
+    r"Bearer\s+(?![A-Za-z0-9._~+/=-]*\.\.\.)(?!eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0)"
+    r"[A-Za-z0-9._~+/=-]{24,}",  # bearer tokens
 
     r"postgres(?:ql)?://[^\s:@]+:[^\s@]+@",  # credentialed DB URLs
     r"mongodb(?:\+srv)?://[^\s:@]+:[^\s@]+@",

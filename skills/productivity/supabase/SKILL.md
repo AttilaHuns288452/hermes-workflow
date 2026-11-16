@@ -142,6 +142,9 @@ Do NOT use `apply_migration` to change a local database schema — it writes a m
 
 ## Reference Guides
 
+- **Security trap checklist (RLS / views / functions / auth)** → [references/security-trap-checklist.md](references/security-trap-checklist.md)
+  **Read when** writing or reviewing any policy, view, `SECURITY DEFINER` function, or JWT-based authorization check, before deploying a schema change. The traps that fail silently: `user_metadata` in authorization, views bypassing RLS without `security_invoker`, UPDATE policies missing `WITH CHECK` or a SELECT policy, `auth.role()` deprecated/unsafe with anonymous sign-ins, and every new function's default `EXECUTE` grant to `PUBLIC`.
+
 - **Live DB access when MCP is permission-denied** → [references/live-database-access.md](references/live-database-access.md)
   **Read when** project-scoped MCP calls return permission errors, a migration fails against a live database whose schema drifted from the repo, or an auth signup/sign-in fails with a generic "database error" (the auth-logs query recipe that reveals the real trigger message lives there). First settle the account identity (`list_projects` + re-auth) — a permission error on an account with zero visible projects is an auth problem, not an ACL — and never report the live database as blocked or unverifiable before both paths in that reference have been attempted: the user holds dashboard access and expects migrations and data fixes to be made through the SQL Editor when the MCP is permission-denied.
 
@@ -158,5 +161,9 @@ Do NOT use `apply_migration` to change a local database schema — it writes a m
   **Read when** an admin must set/rotate a third-party API key or credential through the app UI: AES-256-GCM at rest in `app_settings`, admin-only `is_admin()` RLS, and a runtime DB-first/env-fallback lookup so a saved key applies without a redeploy.
 - **Migration execution pitfalls** → [references/migration-execution-pitfalls.md](references/migration-execution-pitfalls.md)
   **Read when** writing or applying SQL/migrations through the MCP or CLI: what `apply_migration` actually executes, verification-query semantics, trigger shape across tables of different row types, and how to tell a real delete from an RLS-filtered no-op.
+- **Purging demo/QA accounts and their data** → [references/data-purge-and-auth-deletion.md](references/data-purge-and-auth-deletion.md)
+  **Read when** the user asks to clean up test users or demo data in a live project ("keep 1 per role"), a QA run has polluted a production database, or you are declaring an app handover-ready after a purge. Snapshot → dry-run counts → FK-graph ordering (auth users deleted last) → storage/notification orphan sweep → demo-data plausibility pass → invariant verification → fixture-dependent-suite blast radius.
+- **Handing the payment provider account to the client** → [references/payment-provider-handover.md](references/payment-provider-handover.md)
+  **Read when** a payment integration must stop settling into the developer's account and start settling into the client's (handover, "the client will give me the keys", go-live). What the client must register and submit (KYC IDs, DTI/BIR/SEC docs per entity type, the 30-day Individual→registered upgrade deadline), which three secrets plus mode flag to collect and where they land, the webhook URL + event list to pin from the handler's own string comparisons, the test-keys-first sequence that avoids waiting on KYB, and the pre-handover rule that the developer's live keys must leave the production database.
 - **Skill Feedback** → [references/skill-feedback.md](references/skill-feedback.md)
   **MUST read when** the user reports that this skill gave incorrect guidance or is missing information.

@@ -1,6 +1,6 @@
 ---
 name: task_tier
-description: Classify every incoming request into Tier 1 (atomic), Tier 2 (task), or Tier 3 (project) to gate Obsidian/KG refresh and token-saver probe execution.
+description: Use when classifying request scope. Gates probes.
 triggers:
   - task classification
   - tier
@@ -14,7 +14,7 @@ platforms: [windows, linux, macos]
 # Task Tier — Request Classification Gate
 
 ## Purpose
-Run before the Obsidian + KG refresh bundle in `/decide`. Classifies every incoming request into one of three tiers and produces a structured output that `/decide` uses to gate downstream steps — avoiding unnecessary Obsidian writes, KG refreshes, and token-saver probes on trivial requests.
+Run at the start of every request. Classifies it into one of three tiers and produces a structured output that `/decide` uses to gate downstream steps — mainly to avoid over-orchestration on trivial requests (unnecessary probes, skill loading, research, delegation). Note and graph writes are separate on-demand decisions, not tier outputs.
 
 ## Tier Definitions
 
@@ -55,9 +55,9 @@ Run before the Obsidian + KG refresh bundle in `/decide`. Classifies every incom
 - Workflow changes that affect the Hermes ecosystem routing
 
 **Actions:**
-- Full pipeline: Token Saver → domain skill → Obsidian bundle (all three: obsidian + obsidian-codebase-graph + obsidian-knowledge-graph) → KG refresh
-- Create or update the project's main Obsidian note with ATM-Machine quality
-- Refresh KG after note updates
+- Full pipeline: Token Saver → domain skill(s)
+- Obsidian bundle and KG refresh are **on demand only** — run them when the user asks, or when an approved project explicitly requires a note/graph update. A Tier 3 label alone never authorizes graph writes.
+- When a note update IS requested, write the project's note at full quality and refresh the KG after it.
 
 ## What Counts as a Structural Change
 

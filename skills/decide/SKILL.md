@@ -137,6 +137,8 @@ Durable user/context facts → `memory` tool (declarative, compact). Everything 
 
 Reading code under `~/Documents/Projects/` → probe CodeGraph first (`mcp__codegraph__codegraph_explore` with `projectPath`, or CLI `codegraph query`). `read_file` is last resort for project code. Exception: `~/.hermes/` and `~/.config/` system/config files — no probe needed. Graphify MCP for structural graph questions. Discovery is indexed across the board: skills/references → `python3 ~/.hermes/scripts/lightrag_find.py "<query>"` or `reference_find.py`; past context → `session_search`. Prefer one targeted index query over broad grep/find sweeps — wandering search sessions cost more than the reads they avoid and make small tasks feel big.
 
+**RAG before skill_view (measurable, do this every session):** `lightrag_find.py` returns the top-5 skill *paths* in 0.3s for ~100 tokens; one full SKILL.md body costs 2K-6K tokens. Query the index first, then open only the one or two paths it names. Use `lightrag_hermes.py ask` for a semantic cross-skill question the path list cannot answer. This ordering is the single largest per-turn saving available, and the indexes are kept current automatically (cron `d41d3840aec4`, 03:00: CodeGraph sync/init → `index-skills` → orphan purge → state reconcile).
+
 ## Self-Correction
 
 Wrong routing outcome → record what should have been selected → patch this file → tell the user. Update this file when: a new integration lands, a routing pattern proves wrong, a route target dies. Never add content that live state can answer.
