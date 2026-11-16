@@ -40,6 +40,20 @@ for f in sorted(repo_files & live_files):
 Both cases must make the checker exit non-zero. Missing-only is not enough:
 a file that exists but is stale is the more common state.
 
+**Do not let the root `SKILL.md` be counted twice.** The `SKILL.md` comparison
+above already reports a changed body as `stale`; a supporting-file walk over the
+same directory reports it again as `(differs)`, so one changed skill shows two
+findings and inflates every count you report. Skip the skill-root file in the
+supporting pass and compare only the rest:
+
+```python
+for f in sorted(repo_files & live_files):
+    if f.parent == pathlib.Path(".") and f.name == "SKILL.md":
+        continue  # already reported as stale by the body comparison
+    if not _same_bytes(repo_dir / f, live_dir / f):
+        report(f"{skill}/{f} (differs)")
+```
+
 ## 2. The live-root convention can silently empty the comparison
 
 The repo root and the live root are usually NOT the same shape:
