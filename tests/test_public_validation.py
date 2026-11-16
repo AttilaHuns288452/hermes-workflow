@@ -253,3 +253,55 @@ def test_drift_checker_reports_missing_live_root(tmp_path, capsys, monkeypatch):
     })())
     assert repo_drift.main() == 2
     assert "LIVE ROOT MISSING" in capsys.readouterr().out
+
+
+def _drift_fixture(tmp_path, repo_extra=None, live_extra=None):
+    """Build a repo/live pair; *extra* maps a relative path to bytes."""
+    repo = tmp_path / "repo"
+    live = tmp_path / "live"
+    for root in (repo, live):
+        skill = root / "skills" / "example"
+        skill.mkdir(parents=True)
+        (skill / "SKILL.md").write_text(
+            "---\nname: example\ndescription: Example skill\n---\n", encoding="utf-8")
+    for root, extra in ((repo, repo_extra or {}), (live, live_extra or {})):
+        for rel, data in extra.items():
+            target = root / "skills" / "example" / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+    for name in ("README.md", "SKILLS_CATALOG.md", "INTEGRATION.md"):
+        (repo / name).write_text("", encoding="utf-8")
+    return repo, live
+
+
+def test_drift_checker_flags_unpublished_reference_file(tmp_path, capsys, monkeypatch):
+    """A skill whose SKILL.md matches but whose references/ were never published."""
+    from scripts import repo_drift
+
+    repo, live = _drift_fixture(tmp_path, live_extra={"references/deep.md": b"content\n"})
+    # live_root is the skills ROOT: main() does live_root.resolve() then rglobs SKILL.md
+    # under it, so the fixture's live/skills must be what gets passed (same shape as
+    # the real ~/.hermes/skills, where repo is <root>/skills and live is <root>).
+    monkeypatch.setattr(repo_drift, "parse_args", lambda: type("Args", (), {
+        "repo_root": repo, "live_root": live / "skills"
+    })())
+    assert repo_drift.main() == 1
+    out = capsys.readouterr().out
+    assert "supporting files out of sync" in out
+    assert "references/deep.md (missing)" in out
+
+
+def test_drift_checker_ignores_crlf_only_difference(tmp_path, capsys, monkeypatch):
+    """Git autocrlf writes CRLF locally; that is not content drift."""
+    from scripts import repo_drift
+
+    repo, live = _drift_fixture(
+        tmp_path,
+        repo_extra={"scripts/a.ps1": b"line1\r\nline2\r\n"},
+        live_extra={"scripts/a.ps1": b"line1\nline2\n"},
+    )
+    monkeypatch.setattr(repo_drift, "parse_args", lambda: type("Args", (), {
+        "repo_root": repo, "live_root": live / "skills"
+    })())
+    assert repo_drift.main() == 0
+    assert "OK: repo matches the live tree" in capsys.readouterr().out

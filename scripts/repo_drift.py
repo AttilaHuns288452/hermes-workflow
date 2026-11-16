@@ -76,6 +76,18 @@ def advertised_counts(repo_root: pathlib.Path) -> list[tuple[str, int]]:
     return found
 
 
+def _same_bytes(a: pathlib.Path, b: pathlib.Path) -> bool:
+    """Byte comparison that ignores line-ending style.
+
+    Git's autocrlf converts CRLF->LF on checkout, so a PowerShell script that is
+    CRLF locally and LF in the repo is not real drift. Compare normalized bytes.
+    """
+    x, y = a.read_bytes(), b.read_bytes()
+    if x == y:
+        return True
+    return x.replace(b"\r\n", b"\n") == y.replace(b"\r\n", b"\n")
+
+
 def main() -> int:
     args = parse_args()
     repo_root = args.repo_root.resolve()
@@ -93,7 +105,7 @@ def main() -> int:
     shared_paths = set(repo_paths) & set(live_paths)
     stale_paths = sorted(
         rel for rel in shared_paths
-        if repo_paths[rel].read_bytes() != live_paths[rel].read_bytes()
+        if not _same_bytes(repo_paths[rel], live_paths[rel])
     )
     # Name-based output preserves the old useful summary, while path-based comparison
     # prevents duplicate frontmatter names from hiding a changed copy.
@@ -123,7 +135,7 @@ def main() -> int:
         for f in sorted(live_files - repo_files):
             ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (missing)")
         for f in sorted(repo_files & live_files):
-            if (repo_dir / f).read_bytes() != (live_dir / f).read_bytes():
+            if not _same_bytes(repo_dir / f, live_dir / f):
                 ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (differs)")
     if ref_drift:
         print(f"supporting files out of sync: {len(ref_drift)}")
