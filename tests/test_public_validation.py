@@ -183,7 +183,12 @@ def test_readme_and_meta_prompt_are_profile_neutral():
     assert "not proof" in security
     assert "npm run lint:skills" in security
     catalog = (ROOT / "SKILLS_CATALOG.md").read_text(encoding="utf-8")
-    assert "1,484 repository skills" in catalog
+    # Assert the advertised count MATCHES the tree instead of pinning a literal:
+    # a hardcoded number turns every legitimate skill addition into a red test.
+    actual = len(list((ROOT / "skills").rglob("SKILL.md")))
+    assert f"{actual:,} repository skills" in catalog, (
+        f"SKILLS_CATALOG.md must advertise {actual:,} (the real SKILL.md count)")
+    assert "1,484 repository skills" not in catalog or actual == 1484
     assert "715 top-level directories" not in catalog
     assert "run: python scripts/audit_public_secrets.py" in workflow
     assert "npm run lint:skills" in workflow
