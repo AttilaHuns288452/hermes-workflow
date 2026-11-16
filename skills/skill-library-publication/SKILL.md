@@ -35,6 +35,7 @@ Syncing the public repo of skills (the workflow shared with classmates, friends,
 4. **Scan every staged file** before committing: key shapes (`sk-`, `osb_`, `sbp_`, `ghp_`, `AKIA`, PRIVATE KEY blocks), private paths (`~/.hermes/mcp-tokens`, `~/.ssh`), and absolute home paths (report those; rewrite only if asked).
 5. **Publish on a branch**: `git checkout -b sync/<topic>-<date>`, commit with the counts and what was held, `git push -u origin <branch>`. Merging to the default branch is the owner's call.
 6. **Run the repo's own gate** (e.g. `scripts/audit_skills.py`): frontmatter, duplicate names, secret hits. Fix hard failures before pushing.
+7. **When hosted CI is unavailable, gate the push locally instead of dropping the gate.** A pre-push hook is the smallest thing that keeps the checks real: `scripts/pre-push.sh` runs the same scripts the workflow runs, symlinked into `.git/hooks/pre-push` (`ln -sf ../../scripts/pre-push.sh .git/hooks/pre-push`), bypassable per-push with `--no-verify`. Do NOT attach a payment method to unblock runners just to run free-tier checks; the hook is free and runs the failure at the moment you can still fix it. Expect the hook to catch real drift on its first run — that is the gate working, and the fix belongs in the skill it flags, not in the hook.
 
 ## Pitfalls
 
