@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import skillsData from './data-skills.json'
 import agentsData from './data-agents.json'
 import catEmojiData from './data-cat-emoji.json'
@@ -18,7 +18,7 @@ const SKILL_ICONS = {
   'Media & Content': 'PlayCircle',
   'Research & MLOps': 'Brain',
   'GitHub & DevOps': 'Github',
-  'OpenCode Power Pack': 'Zap',
+  'Optional Specialist Packs': 'Zap',
   'More Categories': 'Grid3x3',
 }
 
@@ -31,19 +31,8 @@ const SKILL_CAT_COLORS = {
   'Media & Content': '#e4686a',
   'Research & MLOps': '#4dc9b8',
   'GitHub & DevOps': '#e4eaf5',
-  'OpenCode Power Pack': '#7aa9f7',
+  'Optional Specialist Packs': '#7aa9f7',
   'More Categories': '#8895b8',
-}
-
-const AGENT_CAT_ICONS = {
-  'Reviewers': 'Search',
-  'Build Resolvers': 'Wrench',
-  'Architects & Planners': 'Compass',
-  'Security & Testing': 'Shield',
-  'ML & Data Science': 'Database',
-  'Infrastructure & DevOps': 'Globe',
-  'Language Specialists': 'Code',
-  'Specialized Agents': 'Target',
 }
 
 const AGENT_CAT_COLORS = {
@@ -72,39 +61,6 @@ function getAgentCat(a) {
 }
 
 const AGENT_CATS = [...new Set(agentsData.map(getAgentCat))].sort()
-
-/* ── Animated Counter ─────────────────────────────────────────────────── */
-function AnimatedCounter({ value, suffix = '', duration = 1500, className = '' }) {
-  const [display, setDisplay] = useState(0)
-  const ref = useRef(null)
-  const counted = useRef(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !counted.current) {
-          counted.current = true
-          const start = performance.now()
-          const step = (now) => {
-            const p = Math.min((now - start) / duration, 1)
-            const eased = 1 - Math.pow(1 - p, 3)
-            setDisplay(Math.floor(eased * value))
-            if (p < 1) requestAnimationFrame(step)
-          }
-          requestAnimationFrame(step)
-          obs.unobserve(el)
-        }
-      },
-      { threshold: 0.3 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [value, duration])
-
-  return <span ref={ref} className={className}>{display}{suffix}</span>
-}
 
 function CategoryIcon({ name, className = 'w-4 h-4' }) {
   const icons = {
@@ -265,9 +221,7 @@ function Nav() {
 }
 
 function Hero() {
-  const [mounted, setMounted] = useState(false)
   const [copied, setCopied] = useState('')
-  useEffect(() => { setMounted(true) }, [])
   const copyCmd = (text, key) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(key)
@@ -286,7 +240,7 @@ function Hero() {
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] mb-8 animate-fade-up bg-[rgba(12,20,40,0.55)] border border-[rgba(255,255,255,0.06)] text-[#7aa9f7]">
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse-slow shadow-[0_0_12px_rgba(61,220,132,0.5)]" />
-          {ALL_SKILLS.length}+ Skills · /decide v3 · Model-agnostic · Kanban · LightRAG
+          {ALL_SKILLS.length}+ Skills · /decide · Model-agnostic · Optional integrations
         </div>
 
         <h1 className="text-[clamp(2.4rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance mb-6 animate-fade-up" style={{ animationDelay: '0.15s' }}>
@@ -342,30 +296,19 @@ function Hero() {
             { v: ALL_SKILLS.length, l: 'Skills', suffix: '+' },
             { v: agentsData.length, l: 'Agents' },
             { v: Object.keys(skillsData).length, l: 'Domains' },
-            { v: 35, l: 'Token Savings', suffix: '×–1,233×', highlight: true, prefix: true },
-            { v: 165, l: 'Free Models', suffix: '+' },
-            { v: 52747, l: 'CodeGraph Nodes', suffix: '+', compact: true },
           ].map((s, i) => (
             <div
               key={i}
-              className={`px-4 py-2.5 rounded-xl text-center min-w-[110px] border backdrop-blur-md ${s.highlight ? 'border-[rgba(61,220,132,0.2)] bg-[rgba(61,220,132,0.05)]' : 'border-white/[0.05] bg-[rgba(12,20,40,0.55)]'}`}
+              className="px-4 py-2.5 rounded-xl text-center min-w-[110px] border border-white/[0.05] bg-[rgba(12,20,40,0.55)] backdrop-blur-md"
             >
-              <div className={`text-lg font-extrabold ${s.highlight ? 'text-gradient-green' : 'text-[#e4eaf5]'}`}>
-                {s.prefix ? (
-                  <>{s.v}<span className="text-sm">{s.suffix}</span></>
-                ) : s.compact ? (
-                  mounted ? <AnimatedCounter value={s.v} suffix={s.suffix || ''} duration={2000} /> : <>{s.v}{s.suffix || ''}</>
-                ) : (
-                  mounted ? <AnimatedCounter value={s.v} suffix={s.suffix || ''} /> : <>{s.v}{s.suffix || ''}</>
-                )}
-              </div>
+              <div className="text-lg font-extrabold text-[#e4eaf5]">{s.v}{s.suffix || ''}</div>
               <div className="text-[10px] text-[#8895b8] uppercase tracking-[0.12em] mt-0.5">{s.l}</div>
             </div>
           ))}
         </div>
 
         <div className="flex gap-2 flex-wrap justify-center mt-6 animate-fade-up" style={{ animationDelay: '0.7s' }}>
-          {['Open Source', 'MIT License', 'Free Models', 'No API Key Required'].map((b) => (
+          {['Source Available', 'CC BY-NC 4.0', 'Choose Your Provider', 'No Model Vendor Bundled'].map((b) => (
             <span key={b} className="text-[10px] uppercase tracking-[0.12em] border border-white/[0.06] bg-[rgba(12,20,40,0.55)] text-[#8895b8] rounded-full px-3 py-1">
               {b}
             </span>
@@ -379,10 +322,10 @@ function Hero() {
 function InstallSection() {
   const steps = [
     { n: 'Install Hermes Agent', num: '01', desc: 'macOS, Linux, or Windows — pick your method:', code: ['# macOS / Linux\ncurl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh', '# Windows PowerShell\nirm https://hermes-agent.nousresearch.com/install.ps1 | iex'], verify: 'hermes --version' },
-    { n: 'Connect the Workflow Skills', num: '02', desc: `${ALL_SKILLS.length} curated skills in this repository, with reference material discoverable on demand:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'hermes config set skills.external_dirs "[\"$PWD/skills\"]"\nhermes skills list'] },
-    { n: 'Install Core Tools', num: '03', desc: 'Power the free model chain and code knowledge graph:', code: ['npm install -g opencode              # coding agent CLI\nuv tool install graphifyy            # AST code graph\nnpm install -g @colbymchenry/codegraph  # Live MCP index'] },
-    { n: 'Pick your daily driver', num: '04', badge: '★', desc: 'Set your primary model — your configured provider, or any OpenAI-compatible provider:', code: ['cp config.yaml.template ~/.hermes/config.yaml  # then edit model.default'], highlight: true, extra: 'Or run: <code class="text-[#3ddc84]">hermes -z "What does the decide skill do?"</code>' },
-    { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Copy the config template and replace YOUR_USERNAME. This wires up the bundled skill externals, MCP servers, Kanban, LightRAG, and delegation:', code: ['cp config.yaml.template ~/.hermes/config.yaml', '# Replace YOUR_USERNAME and API keys\\n# Then: hermes kanban init && hermes gateway start'], verify: 'hermes skills list | wc -l && hermes mcp list' },
+    { n: 'Connect the Workflow Skills', num: '02', desc: `${ALL_SKILLS.length} curated skills featured on this site; connect the repository to browse the full library:`, code: ['git clone https://github.com/AttilaHuns288452/hermes-workflow.git\ncd hermes-workflow', 'export HERMES_WORKFLOW_ROOT="$PWD"\n# Add ${HERMES_WORKFLOW_ROOT}/skills to skills.external_dirs'] },
+    { n: 'Inspect Optional Tools', num: '03', desc: 'Use live discovery to see which indexes and MCP servers are installed and enabled:', code: ['hermes skills list\nhermes mcp list\nhermes config check'] },
+    { n: 'Pick your route', num: '04', badge: '★', desc: 'Set a reachable model/provider pair in the copied template:', code: ['cp config.yaml.template /tmp/hermes-workflow-config.yaml\n# Merge the sections you use; do not overwrite an existing profile'], highlight: true, extra: 'Verify with: <code class="text-[#3ddc84]">hermes config check</code>' },
+    { n: 'Apply Config + Skills', num: '05', badge: '★', desc: 'Enable only installed MCP servers and verify the active profile:', code: ['hermes config check', 'hermes skills list && hermes mcp list'], verify: 'hermes config get model.default && hermes config get model.provider' },
   ]
 
   return (
@@ -391,10 +334,10 @@ function InstallSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">Quick Start</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            From zero to orchestration in 4 steps
+            From zero to orchestration in 5 steps
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Install Hermes Agent, clone the workflow repo with {ALL_SKILLS.length} bundled skills, and run your first pipeline — all for free.
+            Install Hermes Agent, connect the repository's full skill library, and run your first pipeline with a model/provider you choose.
           </p>
         </div>
       </Reveal>
@@ -430,6 +373,21 @@ function AIPipelineVisual() {
   const [messageIndex, setMessageIndex] = useState(0)
   const [workflows, setWorkflows] = useState(1247)
 
+  const messages = [
+    'Received: "Summarize the codebase architecture..."',
+    'Retrieving past session context (session_memory)',
+    'Core Identity Guard: 6 rules verified',
+    'Decomposing request into sub-tasks',
+    'Discovery probe: indexed context when available',
+    'Loading relevant skills when available',
+    'Skill/reference lookup when an index is available',
+    'Optional task-board step when configured',
+    'Routing to configured model',
+    'Executing the requested workflow',
+    'Optional documentation step when configured',
+    'Workflow complete. Verification passed.'
+  ]
+
   useEffect(() => {
     const messageInterval = setInterval(() => {
       setMessageIndex(prev => (prev + 1) % messages.length)
@@ -441,22 +399,7 @@ function AIPipelineVisual() {
       clearInterval(messageInterval)
       clearInterval(workflowInterval)
     }
-  }, [])
-
-  const messages = [
-    'Received: "Summarize the codebase architecture..."',
-    'Retrieving past session context (session_memory)',
-    'Core Identity Guard: 6 rules verified',
-    'Decomposing request into sub-tasks',
-    'Token Saver probe: CodeGraph + Graphify',
-    'Loading domain skills: /decide, firecrawl, github',
-    'LightRAG fallback: 1484 skills indexed, 0 API calls',
-    'Kanban: task auto-decomposed → worker assigned',
-    'Routing to configured model',
-    'Executing pipeline across 3 skills',
-    'Documenting to Obsidian + KG refresh',
-    'Workflow complete. 3 skills in 342ms.',
-  ]
+  }, [messages.length])
 
   const paths = {
     p1: 'M116,90 L158,90',
@@ -473,7 +416,7 @@ function AIPipelineVisual() {
           <span className="w-2 h-2 rounded-full bg-[#3ddc84] animate-pulse" />
           <span className="text-[10px] text-white/30 tracking-[0.1em] font-mono uppercase">Agent Pipeline · Live</span>
         </div>
-        <span className="text-[10px] text-white/[0.18] font-mono">/decide v3 · 0 errors</span>
+        <span className="text-[10px] text-white/[0.18] font-mono">/decide · profile-aware</span>
       </div>
 
       <svg width="100%" viewBox="0 0 580 220" className="block">
@@ -523,7 +466,7 @@ function AIPipelineVisual() {
         {[
           { x: 448, y: 28, label: 'Skills', color: '#3ddc84' },
           { x: 448, y: 74, label: 'Guardrail', color: '#f0d060', pulse: true },
-          { x: 448, y: 120, label: 'Obsidian', color: '#6bc5e8', pulse: true },
+          { x: 448, y: 120, label: 'Docs', color: '#6bc5e8', pulse: true },
         ].map((node, i) => (
           <g key={i}>
             <rect x={node.x} y={node.y} width="116" height="36" rx="7" fill="#111" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
@@ -557,7 +500,7 @@ function AIPipelineVisual() {
         </div>
         <div className="ml-auto text-right">
           <div className="text-[9px] text-white/[0.18] tracking-[0.09em] mb-0.5">STACK</div>
-          <div className="text-[10px] text-[#4a8cf4]/55 font-mono">/decide · CodeGraph</div>
+          <div className="text-[10px] text-[#4a8cf4]/55 font-mono">/decide · profile-aware</div>
         </div>
       </div>
     </div>
@@ -566,14 +509,14 @@ function AIPipelineVisual() {
 
 function PipelineSection() {
   const nodes = [
-    { n: 'session_memory', c: '#4a8cf4', t: 'RETRIEVE', d: 'Prior context retrieval from past sessions' },
+    { n: 'session_memory', c: '#4a8cf4', t: 'RETRIEVE', d: 'Prior context retrieval when the active profile provides it' },
     { n: 'Core Identity Guard', c: '#e4686a', t: 'GUARD', d: '6 immutable rules · always active' },
     { n: 'Decompose & Score', c: '#4a8cf4', t: 'DECOMPOSE', d: 'Sub-task breakdown & dependency detection' },
-    { n: 'Token Saver', c: '#3ddc84', t: 'PROBE', d: 'CodeGraph indexed code graph and project context' },
-    { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ skills across 8 categories` },
-    { n: 'LightRAG Fallback', c: '#6bc5e8', t: 'FIND', d: 'TF-IDF over 1484 skills · sub-second · 0 API calls' },
-    { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'configured model · 4-layer fallback chain' },
-    { n: 'Obsidian + KG Refresh', c: '#4dc9b8', t: 'DOCUMENT', d: 'Mandatory docs & knowledge graph refresh' },
+    { n: 'Discovery', c: '#3ddc84', t: 'PROBE', d: 'Indexed code and skill/reference context when available' },
+    { n: 'Domain Skills', c: '#4a8cf4', t: 'EXECUTE', d: `${ALL_SKILLS.length}+ repository skills across the catalog` },
+    { n: 'Skill Finder', c: '#6bc5e8', t: 'FIND', d: 'Search the repository catalog when the local index is available' },
+    { n: 'Model Router', c: '#f0d060', t: 'ROUTE', d: 'Active profile route · optional fallbacks only when configured' },
+    { n: 'Optional documentation', c: '#4dc9b8', t: 'DOCUMENT', d: 'Refresh notes or a knowledge graph only when explicitly configured and requested' },
   ]
 
   return (
@@ -585,7 +528,7 @@ function PipelineSection() {
             /decide — the routing brain
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Every request runs through a 6-step reasoning protocol. /decide is the master orchestrator — it never skips context retrieval or the guardrail.
+            The `/decide` skill provides a reusable routing protocol. The installed Hermes profile determines which context, skills, integrations, and verification steps are available.
           </p>
         </div>
       </Reveal>
@@ -612,15 +555,15 @@ function PipelineSection() {
   )
 }
 
-/* ── New Features (Kanban, LightRAG, Profile Factory, automation) ─────── */
+/* ── Optional profile features ────────────────────────────────────────── */
 function FeaturesSection() {
   const features = [
-    { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Built-in SQLite-backed task board with dispatcher, worker profiles, and auto-decomposition. `hermes kanban init`, `hermes kanban create`, or open `hermes dashboard` → Kanban tab.', code: 'hermes kanban create "Ship landing page" --assign worker-web' },
-    { t: 'FINDER', c: '#6bc5e8', n: 'LightRAG Skill Finder', d: 'TF-IDF over all 1484 skills — sub-second, zero API calls, fully local. Index auto-rebuilds daily at 4am.', code: 'python lightrag_index/find.py "deploy nextjs site"' },
-    { t: 'FACTORY', c: '#f0d060', n: 'Orchestrator Profile Factory', d: 'Auto-creates worker profiles from the golden template. Decision flow: check profiles → reuse or create → kanban_create.', code: 'hermes profile create <role> --clone-from learning' },
-    { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: '4 local cron jobs: LightRAG daily rebuild, gateway health every 30m, profile config drift daily 6am, state backup daily 3am. Silence = healthy.', code: 'hermes cron list # all 4 green' },
-    { t: 'ROUTING', c: '#e4686a', n: '/decide + LightRAG Fallback', d: 'Static routing table (~40 entries) first, LightRAG TF-IDF fallback for everything else. Every one of the 1484 skills is reachable — none orphaned.', code: 'decide → match table → fallback → execute' },
-    { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'Profiles inherit skills + MCP servers from the root config. New profiles share the same toolchain via --clone-from learning.', code: 'hermes profile create researcher --clone-from learning' },
+    { t: 'KANBAN', c: '#3ddc84', n: 'Hermes Kanban', d: 'Optional built-in task board. Use the live Hermes CLI help and active profile to confirm whether Kanban is installed and enabled.', code: 'hermes kanban --help' },
+    { t: 'FINDER', c: '#6bc5e8', n: 'Skill Finder', d: 'Search the repository catalog when the local index is available; otherwise use the installed profile tools.', code: 'hermes skills list' },
+    { t: 'FACTORY', c: '#f0d060', n: 'Profile Factory', d: 'Optional profile-management workflow. Use it only when the relevant Hermes command and profile template are installed.', code: 'hermes profile --help' },
+    { t: 'CRON', c: '#4a8cf4', n: 'Automated Maintenance', d: 'Optional cron workflows. Inspect the live scheduler before relying on any job, interval, or health claim.', code: 'hermes cron --help' },
+    { t: 'ROUTING', c: '#e4686a', n: '/decide Routing', d: 'The decision layer selects relevant skills and verifies available integrations; exact routing behavior follows the installed profile.', code: 'hermes skills list' },
+    { t: 'SYNC', c: '#4dc9b8', n: 'Profile Sync', d: 'When profiles are enabled, keep their skills and MCP settings consistent with the active configuration. Verify the live profile after changes.', code: 'hermes config check' },
   ]
 
   return (
@@ -629,10 +572,10 @@ function FeaturesSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">What&apos;s New</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            Built-in orchestration, zero API calls
+            Profile-aware orchestration, optional integrations
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Kanban task board, local skill search, on-demand worker profiles, and hands-off maintenance — all running on your machine, all free.
+            The catalog and orchestration guidance are portable. Optional boards, search indexes, profiles, and maintenance jobs depend on your installed Hermes setup.
           </p>
         </div>
       </Reveal>
@@ -843,10 +786,10 @@ function SkillsSection() {
 
 function ModelsSection() {
   const tiers = [
-    { n: 'configured model', badge: 'DAILY DRIVER', price: 'primary', desc: 'Main model via the xKiro API — chat, subagent delegation, and vision in one model. Fast and budget-friendly.', tags: ['z-ai/glm-5.3-flash', 'default'], color: '#3ddc84' },
-    { n: 'OmniRoute Gateway', badge: 'fallback', price: 'free', desc: 'Local gateway on localhost:20128 — 24 models across 7 providers (Poolside, OpenRouter free, MiniMax) as a free fallback ladder.', tags: ['localhost:20128', 'free ladder'], color: '#f0d060' },
-    { n: 'Local Ollama', badge: 'offline', price: '$0', desc: 'Fully local inference for offline work — qwen3.5:4b for code, phi4-mini for speed. Zero API cost, nothing leaves the machine.', tags: ['localhost:11434', 'local'], color: '#e4686a' },
-    { n: 'Paid (last resort)', badge: 'premium', price: 'premium', desc: 'Paid escape hatch when free tiers are rate-limited — stdcmpt, z.ai GLM.', tags: ['stdcmpt/*', 'zai/*'], color: '#7aa9f7' },
+    { n: 'Configured primary route', badge: 'PRIMARY', price: 'profile', desc: 'The model and provider selected in your active Hermes profile. Verify the exact pair before relying on it.', tags: ['model.default', 'model.provider'], color: '#3ddc84' },
+    { n: 'Configured fallback routes', badge: 'OPTIONAL', price: 'profile', desc: 'Fallback providers run only when you explicitly configure them in order and verify their credentials and reachability.', tags: ['fallback_providers', 'config check'], color: '#f0d060' },
+    { n: 'Local or offline route', badge: 'OPTIONAL', price: 'local', desc: 'A local provider can be used when installed and configured. This repository does not assume a specific local runtime or model.', tags: ['profile-configured', 'offline'], color: '#e4686a' },
+    { n: 'Auxiliary and delegation routes', badge: 'OPTIONAL', price: 'profile', desc: 'Vision, delegation, and auxiliary routes are profile-specific. Use live configuration and a smoke test, not this template, as evidence.', tags: ['auxiliary', 'delegation'], color: '#7aa9f7' },
   ]
 
   return (
@@ -855,10 +798,10 @@ function ModelsSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">Model Chain</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            4-Layer Free Model Routing
+            Profile-Configured Model Routing
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            Every task is routed through a fallback chain — xKiro configured model first, then a local OmniRoute gateway ladder, then local Ollama, paid only as a last resort.
+            Every task uses the active Hermes profile's configured model and provider routes. Optional fallbacks run only when you configure them and verify they are reachable.
           </p>
         </div>
       </Reveal>
@@ -928,30 +871,8 @@ function GuardrailSection() {
 
       <Reveal>
         <div className="mt-8 card-core p-6 md:p-8">
-          <h3 className="text-lg font-bold mb-6 text-[#e4eaf5]">Token Saver — CodeGraph First</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {[
-              { v: 'On-demand', l: 'CodeGraph context' },
-              { v: 'Local', l: 'LightRAG search' },
-              { v: '0', l: 'API calls for local search' },
-              { v: '12', l: 'MCP Servers' },
-            ].map((s, i) => (
-              <div key={i} className="text-center p-3 rounded-xl bg-black/30 border border-[#1e3058]">
-                <div className="text-gradient-green text-xl font-extrabold">{s.v}</div>
-                <div className="text-[10px] text-[#8895b8] uppercase tracking-[0.08em] mt-1">{s.l}</div>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            {['CodeGraph Explore', 'Graphify Query', 'Targeted Read'].map((label, i, arr) => (
-              <Fragment key={i}>
-                <div className="px-3 py-2 rounded-lg bg-[rgba(12,20,40,0.4)] border border-white/[0.05] text-center">
-                  <strong className="block text-xs text-[#e4eaf5]">{label}</strong>
-                </div>
-                {i < arr.length - 1 && <span className="text-xs text-[#1e3058]">→</span>}
-              </Fragment>
-            ))}
-          </div>
+        <h3 className="text-lg font-bold mb-6 text-[#e4eaf5]">Optional indexed discovery</h3>
+          <p className="text-sm text-[#a0aec8] leading-relaxed">Use any installed and enabled code, skill, or reference index only when it is relevant. Otherwise use the active Hermes profile's available tools.</p>
         </div>
       </Reveal>
     </section>
@@ -997,10 +918,10 @@ function AgentsSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">Agent Roster</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            {agentsData.length} ECC Agents + OpenCode
+            Configured Specialist Agents
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            The Agency agent roster: specialized agents across {AGENT_CATS.length} categories — coding, research, creative, DevOps, data science, and more.
+            The repository documents specialist roles and handoff contracts. Each card uses the active profile's route.
           </p>
         </div>
       </Reveal>
@@ -1045,10 +966,7 @@ function AgentsSection() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-2">
                       <span className="text-sm font-bold text-[#e4eaf5]">{a.n}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: a.m !== 'opus' ? 'rgba(61,220,132,0.12)' : 'rgba(228,104,106,0.12)', color: a.m !== 'opus' ? '#3ddc84' : '#e4686a' }}>
-                        {a.m !== 'opus' ? 'Free' : 'Limited'}
-                      </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full font-mono border border-[#1e3058] bg-black/30 text-[#6bc5e8]">{a.m}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-mono border border-[#1e3058] bg-black/30 text-[#6bc5e8]">Profile-configured route</span>
                     </div>
                     <p className="text-sm text-[#a0aec8] leading-relaxed mb-3">{a.d}</p>
                     <div className="flex flex-wrap gap-1">{a.t.map((t, ti) => <span key={ti} className="text-[10px] px-2 py-0.5 rounded-md font-mono border border-[#1e3058] bg-black/30 text-[#6bc5e8]">{t}</span>)}</div>
@@ -1100,7 +1018,7 @@ function IntegrationsSection() {
           <div className="eyebrow mb-5">PLUGINS</div>
           <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.15] tracking-[-0.02em] text-gradient mb-4">Integrations</h2>
           <p className="text-[#8895b8] text-[15px] max-w-2xl leading-relaxed">
-            Three new pillars that extend what Hermes can do — multi-agent coding, self-improving skills, and free-model agent routing.
+            Optional profile capabilities can extend Hermes with delegation, maintenance, and routing workflows.
           </p>
         </Reveal>
 
@@ -1130,10 +1048,10 @@ function IntegrationsSection() {
 
 function KGSection() {
   const stats = [
-    { v: '8,267', l: 'Graph Nodes', c: '#7aa9f7' },
-    { v: '775', l: 'Communities', c: '#9b7cf7' },
-    { v: '13K+', l: 'Graph Edges', c: '#6bc5e8' },
-    { v: '3min', l: 'Refresh Time', c: '#3ddc84' },
+    { v: 'optional', l: 'Indexed Context', c: '#7aa9f7' },
+    { v: 'profile', l: 'Documentation Route', c: '#9b7cf7' },
+    { v: 'on demand', l: 'Graph Refresh', c: '#6bc5e8' },
+    { v: 'verified', l: 'Before Use', c: '#3ddc84' },
   ]
 
   return (
@@ -1142,10 +1060,10 @@ function KGSection() {
         <div className="text-center mb-16">
           <div className="eyebrow mb-4">Knowledge Graph</div>
           <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-tight leading-tight text-balance mb-4 text-[#e4eaf5]">
-            Graphify + Obsidian Bundle
+            Optional Documentation Bundle
           </h2>
           <p className="text-[#a0aec8] max-w-[600px] mx-auto text-base leading-relaxed text-pretty">
-            AST code graph with community detection — knowledge graph refresh and ATM-Machine quality documentation.
+            Use notes, graphs, or indexed context only when the relevant skills, paths, and integrations are configured.
           </p>
         </div>
       </Reveal>
@@ -1177,7 +1095,7 @@ function FooterCTA() {
               Ready to build?
             </h2>
             <p className="text-[#a0aec8] max-w-[500px] mx-auto text-base leading-relaxed text-pretty mb-10">
-              One command. {ALL_SKILLS.length}+ skills. Zero config. Your AI assistant gets a brain upgrade in under 60 seconds.
+              Browse {ALL_SKILLS.length} featured skills, connect the repository to your Hermes profile, and verify the tools you choose to use.
             </p>
             <div className="liquid-glass rounded-2xl border border-white/[0.08] p-6 max-w-[600px] mx-auto">
               <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8895b8] mb-3">Quick Install</div>

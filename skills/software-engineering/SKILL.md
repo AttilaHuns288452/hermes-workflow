@@ -10,7 +10,7 @@ triggers: [build software, fix bug, refactor, architecture, database, API, auth,
 
 Method for engineering production-grade systems in any stack or domain. **Composable:** this skill carries the generic method; the project-specific skill carries schema, routes, business rules, and constraints. Load both — never let this skill overwrite project business rules, and never let project habits replace this discipline.
 
-Depth on demand: `references/production-domains.md` (domain checklists). Live self-check: `bash scripts/verify.sh`.
+Depth on demand: `references/production-domains.md` (domain checklists). Live self-check: `bash scripts/verify.sh`. Handing a repo to another AI agent (AGENTS.md entry point, stale-status doc triage, verified claims, private-repo QA handoff): `references/agent-handoff.md`.
 
 ## Mental Model — reason in this order
 

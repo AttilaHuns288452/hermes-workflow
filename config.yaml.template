@@ -1,174 +1,93 @@
 # =============================================================================
 # Hermes Workflow — config.yaml.template
 # =============================================================================
-# Copy to ~/.hermes/config.yaml (Windows: %APPDATA%/hermes/config.yaml).
-# Replace YOUR_USERNAME with your OS username. Add API keys where noted.
-# Structure mirrors the live install (14 MCP servers); all values are
-# placeholders — never commit real keys or paths.
+# Review and merge into the active profile config; never overwrite an existing profile.
+# Use `hermes config path` and `hermes config env-path` to locate the active files.
+# Hermes expands ${VAR_NAME} references from the profile .env; keep credentials there.
+# Replace portable path placeholders for your operating system. Add API keys
+# in the profile .env or Hermes auth, never in this file.
+# This is a portable example, not a copy of any one live installation.
 # =============================================================================
 #
-# REPLACE THESE:
-#   XKIRO_API_KEY              → sk-xt-... from xkiro.com (daily-driver model)
-#   OMNIROUTE_API_KEY          → local OmniRoute gateway key (optional, localhost)
-#   YOUR_USERNAME              → your Windows username (the C:\Users\<name> folder)
-#   LLMQUANT_API_KEY           → lqd_data_... from llmquant.com (llmquant-data MCP)
-#   FIGMA_API_KEY              → figd_... from figma.com/developers (figma-dev MCP)
-#   TWENTY_FIRST_API_KEY       → 21st_... from 21st.dev (21st MCP)
-#   FIRECRAWL_API_KEY          → fc-... from firecrawl.dev (firecrawl MCP)
-#   STDCMT_API_KEY             → sk_live_... from stdcmpt.com (paid fallback provider)
-#   ZAI_API_KEY                → from z.ai (paid fallback provider)
-#   COMPOSIO_API_KEY           → ck_... from app.composio.dev (figma via Composio)
-#   FREELMAPI_API_KEY          → from FreeLLMAPI dashboard (localhost proxy)
+# Replace provider and path placeholders for your machine. Keep credentials in
+# the active profile's environment file (see `hermes config env-path`) or the
+# Hermes auth store. The template intentionally avoids
+# embedding model IDs or vendor-specific defaults as operational promises.
+#
+# Portable path variables used below:
+#   HERMES_WORKFLOW_ROOT          → absolute path to this checkout
+#   HERMES_EXTERNAL_SKILLS_ROOT   → optional root for additional skill libraries
+#
+# Provider credentials are referenced by environment variable names only.
 
-  clawlink:
-    url: https://claw-link.dev/api/mcp
-    headers:
-      x-clawlink-api-key: YOUR_CLAWLINK_API_KEY
-    timeout: 180
-  demosmith:
-    command: npx
-    args: ["-y", "demosmith-mcp"]
-
+# Select a model/provider pair that exists in your installation.
+# This placeholder is intentionally not an operational default.
 model:
-  default: z-ai/glm-5.3-flash
-  provider: xkiro
-  key_env: XKIRO_API_KEY
-  context_length: 524288
+  default: YOUR_MODEL_ID
+  provider: YOUR_PROVIDER_ID
+  key_env: YOUR_PROVIDER_KEY_ENV
+  # Add context_length only when required, using the selected model's verified limit.
 
 providers:
-  xkiro:
-    base_url: https://api.xkiro.com/v1
-    default_model: z-ai/glm-5.3-flash
-    key_env: XKIRO_API_KEY
-    discover_models: true
-  omniroute:
-    base_url: http://localhost:20128/v1
-    default_model: Free Ladder - Spark Safety
-    key_env: OMNIROUTE_API_KEY
+  YOUR_PROVIDER_ID:
+    base_url: https://YOUR_PROVIDER_HOST/v1
+    default_model: YOUR_MODEL_ID
+    key_env: YOUR_PROVIDER_KEY_ENV
     discover_models: false
-  freellmapi:
-    base_url: http://localhost:3001/v1
-    default_model: auto
-    discover_models: true
-    key_env: FREELMAPI_API_KEY
   local-ollama:
     base_url: http://localhost:11434/v1
-    default_model: qwen3:4b
+    default_model: YOUR_LOCAL_OLLAMA_MODEL
     discover_models: true
-  ollama:
-    base_url: http://localhost:11434/v1
-    default_model: qwen2.5-coder:3b
-    discover_models: true
-  stdcmpt:
-    base_url: https://api.stdcmpt.com/v1
-    default_model: standardcompute
-    key_env: STDCMT_API_KEY
-    discover_models: false
-  zai:
-    base_url: https://zcode.z.ai/api/v1/zcode-plan/anthropic
-    default_model: glm-5.2
-    key_env: ZAI_API_KEY
-    discover_models: false
 
-fallback_providers:
-  - provider: omniroute
-    model: Free Ladder - Spark Safety
-  - provider: local-ollama
-    model: qwen3.5:4b
+fallback_providers: []
 
 toolsets: [hermes-cli]
 
 # --- SKILLS ---------------------------------------------------------------
+# Add only directories that exist on the target machine. Hermes expands ~ and
+# ${ENV_VAR} in external_dirs. The repository checkout is the portable default.
 skills:
   external_dirs:
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/superpowers/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/agent-skills/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/garden-skills/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/claude-seo/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/obsidian-skills/skills
-    - C:/Users/YOUR_USERNAME/.agents/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/design-skills-ihlamury/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/awesome-design-skills/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/ui-skills-ibelick/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/emilkowalski-skills/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/designer-toolkit/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-ops/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-research/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/design-systems/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/interaction-design/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/prototyping-testing/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/ui-design/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/ux-strategy/skills
-    - C:/Users/YOUR_USERNAME/Documents/Repos/external-skills/designer-skills/visual-critique/skills
+    - ${HERMES_WORKFLOW_ROOT}/skills
+    # - ${HERMES_EXTERNAL_SKILLS_ROOT}/superpowers/skills
+    # - ${HERMES_EXTERNAL_SKILLS_ROOT}/agent-skills/skills
+    # - ${HERMES_EXTERNAL_SKILLS_ROOT}/claude-seo/skills
+    # - ${HERMES_EXTERNAL_SKILLS_ROOT}/obsidian-skills/skills
 
-# --- MCP SERVERS (12) -----------------------------------------------------
+# --- MCP SERVERS -----------------------------------------------------------
+# Every example is disabled by default. Enable a server only after installing,
+# authenticating, and testing that exact integration on the target machine.
 mcp_servers:
-  21st:
-    url: https://21st.dev/api/mcp
-    headers:
-      x-api-key: YOUR_TWENTY_FIRST_API_KEY
-    connect_timeout: 60
-  agentmemory:
-    command: npx
-    args: ["-y", "@agentmemory/agentmemory", "mcp"]
-    connect_timeout: 60
-    env:
-      PATH: C:\Users\YOUR_USERNAME\.local\bin;C:\Program Files\nodejs;C:\Users\YOUR_USERNAME\AppData\Roaming\npm;%PATH%
   codegraph:
+    enabled: false
     command: codegraph
     args: [serve, --mcp]
     connect_timeout: 60
     timeout: 120
-  graphify:
-    # Hermes venv python + wrapper script, cwd = graphify project root
-    command: C:/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
-    args: [C:/Users/YOUR_USERNAME/Documents/Projects/graphify/graphify_mcp_wrapper.py]
-    cwd: C:/Users/YOUR_USERNAME/Documents/Projects/graphify
-    connect_timeout: 90
-    env:
-      PYTHONPATH: C:/Users/YOUR_USERNAME/Documents/Projects/graphify;%PYTHONPATH%
   llmquant-data:
+    enabled: false
     command: npx
     args: ["-y", "@llmquant/data-mcp"]
     connect_timeout: 60
     env:
-      LLMQUANT_API_KEY: LLMQUANT_API_KEY
-  obsidian-kg:
-    command: C:/Users/YOUR_USERNAME/AppData/Local/hermes/hermes-agent/venv/Scripts/python.exe
-    args: [C:/Users/YOUR_USERNAME/.hermes/tools/obsidian_kg_mcp.py]
-    cwd: C:/Users/YOUR_USERNAME/.hermes/tools
-    connect_timeout: 60
+      LLMQUANT_API_KEY: ${LLMQUANT_API_KEY}
   opendesign:
-    command: C:/Users/YOUR_USERNAME/AppData/Local/Programs/Open Design release-stable-win/Open Design.exe
-    env:
-      ELECTRON_RUN_AS_NODE: '1'
-      OD_DATA_DIR: C:/Users/YOUR_USERNAME/AppData/Roaming/Open Design/namespaces/release-stable-win/data
-      OD_SIDECAR_IPC_PATH: \\.\pipe\open-design-release-stable-win-daemon
-    args[0]: C:/Users/YOUR_USERNAME/AppData/Local/Programs/Open Design release-stable-win/resources/app/prebundled/daemon/daemon-cli.mjs
-    args[1]: mcp
+    # Optional. Install OpenDesign first and replace these paths for the target OS.
+    enabled: false
+    command: ${OPENDESIGN_EXECUTABLE}
+    args: ["${OPENDESIGN_DAEMON_CLI}", "mcp"] # portable argv; keep both entries quoted
     connect_timeout: 60
-  vscode:
-    command: npx
-    args: ["-y", "vscode-mcp-server"]
-    connect_timeout: 60
-    env: {}
   firecrawl:
-    url: https://mcp.firecrawl.dev/YOUR_FIRECRAWL_API_KEY/v2/mcp
-    connect_timeout: 60
-  figma:
-    # Figma via Composio gateway
-    url: https://connect.composio.dev/mcp
-    connect_timeout: 60
-  flowbite:
-    command: npx
-    args: ["-y", "flowbite-mcp"]
+    enabled: false
+    url: https://mcp.firecrawl.dev/${FIRECRAWL_API_KEY}/v2/mcp
     connect_timeout: 60
   figma-dev:
+    enabled: false
     command: npx
     args: ["-y", "figma-developer-mcp", "--stdio"]
-    env:
-      FIGMA_API_KEY: FIGMA_API_KEY
     connect_timeout: 90
+    env:
+      FIGMA_API_KEY: ${FIGMA_API_KEY}
 
 # --- KANBAN ---------------------------------------------------------------
 kanban:
@@ -182,19 +101,23 @@ kanban:
 # --- AUXILIARY MODELS -----------------------------------------------------
 auxiliary:
   vision:
-    provider: xkiro
-    model: z-ai/glm-5.3-flash
+    provider: YOUR_VISION_PROVIDER_ID
+    model: YOUR_VISION_MODEL_ID
   kanban_decomposer:
     provider: auto
     timeout: 180
 
 # --- DELEGATION -----------------------------------------------------------
+# Keep concurrency bounded. Increase only after measuring provider limits,
+# child success rate, wall-clock time, and cost on your own workload.
 delegation:
-  model: z-ai/glm-5.3-flash
-  provider: xkiro
+  model: YOUR_DELEGATION_MODEL_ID
+  provider: YOUR_DELEGATION_PROVIDER_ID
   inherit_mcp_toolsets: true
-  max_concurrent_children: 50
+  max_concurrent_children: 4
   max_spawn_depth: 1
+  max_iterations: 50
+  child_timeout_seconds: 600
 
 # --- BACKUP ---------------------------------------------------------------
 backup:

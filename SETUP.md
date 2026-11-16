@@ -1,10 +1,12 @@
 # Hermes Workflow — Full Setup Guide
 
-> **10 steps** to get the complete free-model AI agent pipeline running.
+> **Source of truth:** this repository publishes portable templates and workflow guidance. Your installed Hermes profile, `hermes mcp list`, `hermes config check`, and live runtime probes determine what is actually enabled and working.
+
+> **10 steps** to get a configured Hermes workflow running. Optional provider and MCP steps are conditional.
 
 ---
 
-> **Model choice: `config.yaml` is truth** — set your daily driver in `model.default`. This pipeline was built on GLM 5.3 Flash via [xKiro](https://xkiro.com) (chat + delegation + vision in one model); any OpenAI-compatible provider works. See Step 10.
+> **Model choice: `config.yaml` is truth** — set your primary route in `model.default` and `model.provider`. This guide does not assume a specific vendor, model, quota, or billing plan. Verify the exact route with a fresh `hermes chat` probe. See Step 9.
 
 ---
 
@@ -36,113 +38,45 @@ cd hermes-workflow
 
 ## Step 3: Configure Hermes
 
+Do not overwrite an existing profile. Start from a copy or merge the portable
+sections into your current config:
+
 ```bash
-cp config.yaml.template ~/.hermes/config.yaml
-# Edit ~/.hermes/config.yaml — replace YOUR_USERNAME and paths everywhere
+cp config.yaml.template /tmp/hermes-workflow-config.yaml
+# Add HERMES_WORKFLOW_ROOT to the file returned by: hermes config env-path
+hermes config check
 ```
 
-Key things to change:
-- `C:\Users\YOUR_USERNAME\Documents\Projects` → your project root
-- `C:\Users\YOUR_USERNAME\AppData\Roaming\npm` → your npm bin path
-- `C:\Users\YOUR_USERNAME\.local\bin` → your local bin path
+The template uses `${ENV_VAR}` references and leaves the model/provider pair as
+placeholders. Enable only MCP servers you have installed and authenticated. A
+successful YAML parse does not prove a provider or server is reachable.
 
 ---
 
-## Step 4: Set Environment Variables
+## Step 4: Configure Environment Variables
 
-```bash
-cp .env.example .env
-# Edit .env — fill in your API keys and paths
-source .env
-```
+Run `hermes config env-path` to locate the active profile's environment file. Add only the variables required by the provider and MCP servers you enable. Do not overwrite an existing environment file or commit credentials; `.env.example` is a placeholder reference.
 
 ---
 
-## Step 5: Install Core Tools
+## Step 5: Install Optional Tools
 
-| Tool | Purpose | Install Command |
-|------|---------|-----------------|
-| **OpenCode** | Free Model Layer 1 (★ recommended) | `npm install -g opencode` |
-| **Graphify** | Code Knowledge Graph | `uv tool install graphifyy` |
-| **CodeGraph** | Live MCP Code Index | `npm install -g @colbymchenry/codegraph` |
-| **FreeLLMAPI** | Free Model Layer 3 | (see Step 6) |
+The template's MCP examples are disabled by default. Install a tool only if you intend to enable its matching server; for example, CodeGraph is needed only for `mcp_servers.codegraph`:
 
 ```bash
-# Verify
-hermes --version && codegraph --version && graphify --version
+npm install -g @colbymchenry/codegraph
+codegraph --version
 ```
 
 ---
 
-## Step 6: Install & Configure FreeLLMAPI
+## Step 6: Optional Provider
 
-FreeLLMAPI aggregates **107 free models** from 16 providers behind one endpoint.
-
-### 6a. Clone & Install
-
-```bash
-git clone https://github.com/tashfeenahmed/freellmapi.git ~/Documents/Projects/freellmapi
-cd ~/Documents/Projects/freellmapi
-npm install
-```
-
-### 6b. Start Both Services
-
-```bash
-npm run dev
-# Starts: API on :3001, Dashboard on :5173
-```
-
-### 6c. Create Admin Account
-
-1. Open **http://localhost:5173**
-2. Click **Sign Up** (first signup = admin)
-3. Default: `admin@freellmapi.local` / `freellmapi-admin`
-4. Log in
-
-### 6d. Add Provider API Keys
-
-1. Go to **Keys** page in dashboard
-2. Add keys: Google AI Studio, Groq, Together AI, DeepInfra, Cerebras, etc.
-3. Providers appear as model sources automatically
-
-### 6e. Get Your Unified API Key
-
-1. Go to **Settings** page → copy **Unified API Key** (`freellmapi-<hex>`)
-2. This single key authenticates everything
-
-### 6f. Wire Into Hermes
-
-```bash
-# Option A: hermes auth
-hermes auth add freellmapi --type api-key --api-key "your-unified-key-here"
-```
-
-```bash
-# Option B: config.yaml
-# custom_providers:
-#   freellmapi:
-#     type: openai
-#     api_base: http://localhost:3001/v1
-#     api_key: "your-unified-key-here"
-#     default_model: auto
-```
-
-```bash
-# Option C: .env
-# FREELMAPI_API_KEY="your-unified-key-here"
-```
-
-### 6g. Verify
-
-```bash
-curl -s -H "Authorization: Bearer $FREELMAPI_API_KEY" http://localhost:3001/v1/models | \
-  python -c "import sys,json; d=json.load(sys.stdin); print(f'{len([m for m in d[\"data\"] if m.get(\"available\")])} available / {len(d[\"data\"])} total')"
-```
+This step is optional and provider-specific. The project template does not include third-party proxy URLs, model counts, or bootstrap credentials. If you choose a local or hosted OpenAI-compatible proxy, follow its current upstream documentation, configure its provider/model pair using the installed Hermes version, and store credentials in the active profile's environment file returned by `hermes config env-path` or in Hermes auth. Do not reuse published default credentials or expose development-only ports to untrusted networks.
 
 ---
 
-## Step 7: Load the Skills (1484 total)
+## Step 7: Load the Skills
 
 Do **not** copy skills into `~/.hermes/skills/` — point Hermes at the repo via `external_dirs` so skills stay synced with `git pull`:
 
@@ -159,19 +93,35 @@ Then reload and verify:
 hermes -z "List five skills you can use from the hermes-workflow catalog"
 ```
 
-> The 1484 SKILL.md files span 715 top-level directories: the `/decide` routing brain, core identity guardrail, token-saver probe chain, LLMQuant finance skills, OpenDesign systems, creative/media/research workflows, and vendored upstream collections (claude-seo, superpowers, agent-skills).
+> The repository carries a large SKILL.md library spanning many categories: the `/decide` routing brain, core identity guardrail, token-saver probe chain, LLMQuant finance skills, OpenDesign systems, creative/media/research workflows, and vendored upstream collections (claude-seo, superpowers, agent-skills).
 
 ---
 
-## Step 8: Set Up Obsidian Vault
+## Step 8: Optional Obsidian Vault
+
+Create or select a vault only if you intend to use the on-demand Obsidian skills. Hermes and this workflow repository work without one; follow Obsidian's current instructions for choosing a vault location.
+
+---
+
+## Step 9: Verify the Configured Route
+
+The live config, not this document, decides the model chain. Verify the exact primary route and fallback behavior from a fresh process:
 
 ```bash
-mkdir -p ~/Documents/Obsidian\ Vault
+hermes config check
+hermes config get model.default
+hermes config get model.provider
+hermes config get fallback_providers
+hermes chat -Q -q "Reply with exactly: ROUTE_OK"
 ```
+
+A successful chat proves the primary path can answer. It does not prove every fallback provider is available. Probe fallback pairs separately before relying on them, and never copy a model ID from this guide into production config without checking the provider's current catalog.
 
 ---
 
-## Step 9: Test the Pipeline
+## Step 10: Test the Pipeline
+
+After the route check succeeds, run a couple of real prompts through the installed workflow:
 
 ```bash
 hermes -z "What does the decide skill do?"
@@ -180,30 +130,13 @@ hermes -z "Summarize this repo structure"
 
 ---
 
-## Step 10: Verify the Model Chain
-
-| Layer | Provider | Role |
-|-------|----------|------|
-| 1 | ★ GLM 5.3 Flash (xKiro) | Daily driver — chat, delegation, vision |
-| 2 | Free ladder (gateway) | Local fallbacks when free tiers rate-limit |
-| 3 | Local Ollama (:11434) | Offline layer |
-| 4 | Paid BYOK | Last resort |
-
-```
-hermes -z "What model layer are you using?"
-```
-
----
-
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
-| "Invalid API key" from FreeLLMAPI | Check `.env` for duplicate `FREELMAPI_API_KEY` lines. Shell uses LAST definition. |
-| 0 available models | No provider keys added. Open `:5173` → Keys → add at least one. |
-| Dashboard won't load | Ensure `npm run dev` is running. Server may have crashed. |
-| `api_key: none` in template | **Replace it** with your real unified API key from Settings page. |
-| Port 3001 in use | `kill $(lsof -ti:3001)` or change port. |
+| "Invalid API key" from selected provider | Check the configured key environment variable and provider base URL without printing the key. |
+| No model available | Verify the configured provider/model pair and that the provider process is reachable. |
+| Local provider UI won't load | Check the upstream service's current port, bind address, and logs. |
 
 ## Related Docs
 

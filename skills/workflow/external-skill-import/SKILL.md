@@ -19,6 +19,29 @@ Provision capability, not novelty. An external skill is justified only by a **pr
 
 If the gap is coordination/alignment/traceability rather than a concrete tool, the answer is usually a small local skill plus shared charter rules — not an external orchestration framework.
 
+## Link indexes are not skill repos (audit them differently)
+
+A curated `awesome-*` list is a set of LINKS to hundreds of separate owners, not a tree you clone. A tree-shaped audit (inventory `SKILL.md`s, map directories) does not apply and wastes turns. Measure the index itself before reading a single candidate:
+
+```bash
+curl -sL https://raw.githubusercontent.com/<owner>/<repo>/main/README.md -o /tmp/index.md
+# entries are usually: - **[owner/name](url)** - description
+grep -cE '^-\s+\*\*\[' /tmp/index.md          # candidate count
+```
+
+Four numbers decide whether it is worth pursuing at all:
+
+1. **Duplicate rate** — entries whose basename already matches an installed skill dir or frontmatter `name`. High means the index mostly re-sells what you own.
+2. **Vendor share** — entries from big-vendor orgs publishing their own SDK guides (24% in one 1,279-entry list). Those teach one product's plumbing, not a capability.
+3. **Dead-link rate** — sample 30-40 repo URLs with `curl -o /dev/null -w '%{http_code}' -L`. A non-zero rate means entries rot; a curated list also routinely links org repos that no longer exist, so resolve each candidate's real repo (`gh api repos/<owner>/<repo>`) before planning around it.
+4. **Coverage delta by your own priority areas** — bucket entries by the areas the user actually works in, then compare each bucket against installed skills. The only actionable candidates are buckets with real entries and zero local coverage.
+
+Then the normal capability-gap gate applies, with one addition: a `officialskills.sh`-style redirector is not the source of truth — resolve it to the GitHub path it mirrors and pin that.
+
+Full procedure with the commands and the reject-with-numbers report shape: `references/link-index-audit.md`.
+
+Also treat the index's own disclaimer as binding: curated ≠ audited. Skills arrive by PR and change after listing, so scan any candidate you adopt before writing it into the library.
+
 ## Hard rules (every import)
 
 - **Adapt, don't copy.** Convert source-runtime assumptions (tool names, invocation style, install plumbing, frontmatter fields) to Hermes equivalents before anything lands. See `references/import-transforms.md` for the mechanical map.
@@ -49,16 +72,19 @@ IMPORT / ADAPT / MERGE / SKIP / KEEP-BOTH with a rationale each. SKIP: skills du
 - Rename upstream-branded skill names to descriptive class-level names, then grep-rename EVERY reference, including inside previously-imported skills.
 - Keep per-repo contracts existing skills already consume (e.g. `docs/agents/issue-tracker.md`) and import the glue skill when imported cross-references need it.
 - Keep provenance credits, remove runtime dependencies: an attribution line is not an assumption.
+- **Collapse a family of sibling skills into ONE umbrella + `references/`.** When upstream ships dozens of single-topic skills for one domain (a framework, a platform, a vendor SDK), importing them as N catalog rows makes the user pay for N rows on EVERY turn forever while folding them into one costs a single row. Measured rates: a catalog row is ~19 tokens per turn, a loaded SKILL.md body is 2-6K tokens per load, and a 226-file reference corpus is free until read. So the right shape is one SKILL.md with a routing table plus `references/<topic>.md` per topic: the cheap table always loads, the expensive depth loads only for the matching topic. Reserve separate skills for domains whose triggers are genuinely disjoint.
+- **Preserve upstream's nested `references/` trees; rewrite the paths.** A flattened copy breaks every link upstream nested under a per-topic subdirectory. Write the tree as-is, then rewrite each top-level file's links to point into its own subdirectory, and resolve each link against BOTH the skill root and the linking file's own directory before calling it broken — a tree-preserving copy validates relative to two bases. Do NOT annotate bare sibling-skill names inline (backticked name → backticked name plus a parenthesised path): it is noise, it can corrupt fenced code blocks, and the SKILL.md routing table already carries the mapping. Fetch nested files from the API tree listing (`gh api repos/<o>/<r>/contents/<skill>/references`) rather than guessing filenames — one upstream skill carried **85** files and a percentage of a batch curl silently 404s, so re-list-and-retry the misses instead of trusting the first fetch count.
 - Never import upstream's install/refresh commands (`claude plugins install`, `npx skills add`, updater CLIs) into skill bodies — use the system's own mechanism; record the upstream-refresh recipe in memory instead.
 
 ### 5. Validate (all must pass before reporting)
 1. YAML frontmatter parses for every touched skill; name + description present.
 2. Relative-link check: every referenced `.md`/`.sh` resolves. Example tree paths inside format templates are false positives.
-3. Name-collision scan: extract frontmatter `name:` (not directory names) across all roots; every new import must be unique.
+3. Name-collision scan across all roots: extract **both** frontmatter `name:` **and each skill's directory basename**, then also check each new name against every existing *directory* name. Hermes resolves a skill by three aliases — declared name, directory name, and path relative to the root — so a skill whose name equals another skill's directory name is marked `ambiguous` and `skill_view` refuses it by that name. Renaming the directory (never the skill) is the fix. Confirmed live: `skills/creative/hyperframes` (declared `hyperframes-html-render`) vs a `skills/hyperframes` symlink made the HyperFrames entry point unloadable.
 4. Residual-reference grep: upstream brand names, `Skill tool` phrasing, runtime flags, install commands.
 5. Discovery: `hermes skills list` shows each new skill enabled. The name column truncates at ~14 chars + `…`, so full-name AND `name[:15]` greps falsely read "not discovered". Grep a prefix that fits INSIDE the visible window (e.g. `name[:13]`) or a distinctive substring from the first ~14 chars. Before concluding a skill is absent, confirm against the on-disk `SKILL.md` count and LightRAG — display truncation is not registration failure.
-5b. **Dead-weight gate:** `python3 ~/.hermes/scripts/skills_health.py` must exit 0. It fails on unparseable frontmatter, empty descriptions, duplicate names inside one root, and plugin skills registered without a description. Import scripts that join YAML keys onto one line (see the 2026-11 roblox repair) pass a file count but leave the skill unroutable — the gate is what catches that.
-6. Rebuild the lightrag index (`python3 ~/.hermes/scripts/lightrag_build_index.py`) so reference discovery sees the new set.
+5b. **Dead-weight gate:** `python3 ~/.hermes/scripts/skills_health.py` must exit 0. It fails on unparseable frontmatter, empty descriptions, duplicate names inside one root, plugin skills registered without a description, and any skill Hermes' own resolver marks unloadable (no `load_name`). It walks with symlinks followed, so a skill dir symlinked in from another tool's tree is scanned exactly as Hermes scans it. Import scripts that join YAML keys onto one line (see the 2026-11 roblox repair) pass a file count but leave the skill unroutable — the gate is what catches that.
+6. Rebuild the BM25 skill index (`python3 ~/.hermes/scripts/lightrag_build_index.py`). It indexes **SKILL.md bodies only** — `references/`, `templates/` and `scripts/` content is invisible to it, and CodeGraph ignores Markdown entirely (it indexes code symbols). So a reference-heavy skill can only win a query its SKILL.md body does not cover via the `triggers:` frontmatter field, which the indexer weights 2x. Populate `triggers:` with the vocabulary the references cover, then re-probe with `lightrag_find.py` using natural requests and confirm the new skill ranks first.
+6b. **Reference reachability:** every top-level file under `references/` must be named in SKILL.md by its FULL path. Shorthand like a partial filename beside one full path in the same cell reads fine to a human and resolves to nothing for an agent following the table — the file is on disk but unreachable. Assert it programmatically: for each top-level reference, expect its full path string in SKILL.md, and for each markdown link, expect the target file to exist. Both missing-counts must be zero before calling the import complete.
 7. Spot-check the synced content landed by asserting real body strings from the write plan — keyed per (file, needle) pair.
 8. **Routing** — discoverable is not the same as fires. Put the trigger nouns in the first 60 chars of the description AND add a one-line pointer in each existing skill that is already open when the capability is needed; the domain skill the agent loaded mid-task beats a catalog row it stopped scanning. Record that wiring inside the new skill so a later rewrite of the pointed-from skills cannot silently kill the trigger. Prove it the way routing actually works: run a fresh single-query session with a natural request (no skill named), then read the session transcript for a `skill_view` of the new skill — a passing in-process load proves nothing about selection.
 

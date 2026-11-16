@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "oxlint",
+    "lint": "oxlint src",
+    "lint:skills": "oxlint skills --quiet --no-error-on-unmatched-pattern",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -18,6 +18,10 @@ Engineer a 9:16 video that survives the swipe. Short-form is not a small launch 
 - Retention editing: fixing drop-off, adding pattern interrupts, tightening pacing.
 - Hooks, seamless loops, repeatable short-form templates (one design, many topics).
 
+Working from someone else's video as the reference? Run the `rea-video` skill first: it gives a
+shot-level live / AI / 3D / code verdict plus a remake plan, so the timeline you write matches how
+the original was actually produced instead of guessing from the finished frames.
+
 ## Story structure (the retention contract)
 
 Short-form storytelling is a contract with the viewer's thumb: every second must re-earn the next one. The narrative is shaped *backwards from the retention curve*, not forwards from an intro. Lock these before touching the timeline.

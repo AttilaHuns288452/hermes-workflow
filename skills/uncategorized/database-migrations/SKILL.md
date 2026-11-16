@@ -417,6 +417,45 @@ Day 3: Deploy app v3 — reads from new_status only
 Day 7: Migration drops old status column
 ```
 
+## Reproducibility gate
+
+- **The migrations folder must rebuild the live schema on a clean database.**
+  A migration that is only a comment ("applied via the management API, see git
+  history") is a stub, not a migration: a fresh reset dies at the first file
+  referencing the missing table, and every environment drifts silently after
+  that. Capture the live schema as a baseline migration instead of stubbing it,
+  and gate CI on a clean reset over the folder. Never edit numbered history to
+  insert the baseline — add it as a new forward file.
+- **Hand-applied SQL leaves live-only objects.** Diff the folder against the
+  live catalog (`pg_get_functiondef`, `pg_policies`, `pg_trigger`,
+  `pg_indexes`) before trusting either side as source of truth: a migration
+  that claims to define a guard is not evidence that the guard exists live, and
+  a fresh environment will silently lack it. Capture live-only guards in their
+  own migration (create-or-replace pattern), the same way any other drift is
+  captured.
+
+## Schema-object pitfalls
+
+- **Status-vocabulary remaps leave dead predicates.** When renaming an enum or
+  status literal, sweep every partial index, CHECK constraint, trigger branch,
+  and RPC for the old literal — a partial index `WHERE status = '<old>'` matches
+  zero rows after the remap and the uniqueness it enforced is silently gone
+  while every query still looks healthy.
+- **Gate trigger revalidation on the actual assignment change, not on "anything
+  changed".** A guard trigger that reruns the full invariant on every UPDATE
+  aborts unrelated status transitions (a payment settlement marking a row paid,
+  a cancellation) whenever external state drifted since insert (schedule
+  edited, an overlap appeared). Compute an explicit changed-columns /
+  new-assignment predicate and `RETURN NEW` early for status-only updates;
+  enforce the invariant at INSERT and at the transition that actually holds the
+  resource. Otherwise captured money (or any terminal transition) can never be
+  recorded and the caller retries the same abort forever.
+- **One authoritative trigger per table per invariant.** Layered migrations can
+  leave two triggers firing the same guard function — behavior stays identical
+  today, but every write pays double and neither is clearly authoritative. Check
+  `pg_trigger WHERE NOT tgisinternal` after stacked migrations and drop the
+  stale one in the next forward migration.
+
 ## Anti-Patterns
 
 | Anti-Pattern | Why It Fails | Better Approach |

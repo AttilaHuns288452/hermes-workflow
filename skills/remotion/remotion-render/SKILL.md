@@ -1,0 +1,28 @@
+---
+name: remotion-render
+description: "Export a Remotion video"
+---
+
+> Source: remotion-dev/remotion @ b486861 (official codex-plugin skills) (v4.0.519)
+
+## General rendering strategy
+
+Render a video using:
+
+```
+npx remotion render
+```
+
+Full list of options: https://www.remotion.dev/docs/cli/render.md
+
+Render a still using:
+
+```
+npx remotion still
+```
+
+Full list of options: https://www.remotion.dev/docs/cli/still.md
+
+## Transparent videos
+
+See [Transparent videos](./transparent-videos.md) for rendering out a video with transparency.

@@ -1,0 +1,54 @@
+# `~/RobloxDocs/`: the local API reference
+
+[← README](../README.md)
+
+The skill integrates with a **local API reference hub** for token-efficient lookups:
+
+```
+~/RobloxDocs/
+├── RobloxAPI/
+│   ├── dumps/                         # Full-API-Dump.json per version
+│   │   └── latest.json → (symlink)
+│   ├── classes/                       # one JSON per class (950 on 0.746, ~2 KB median)
+│   ├── enums/                         # one JSON per enum (656 on 0.746)
+│   ├── services/                      # service classes (267 on 0.746)
+│   ├── deprecated/                    # 48 deprecated class JSONs
+│   ├── class-index.json               # Lightweight index for quick lookup
+│   ├── enum-index.json
+│   ├── service-index.json
+│   ├── deprecated-index.json
+│   └── diffs/                         # member-level diffs between consecutive dumps
+├── scripts/
+│   ├── roblox-api-monitor.py          # check → download → validate → diff → split → audit
+│   ├── roblox-api-monitor.sh          # shim for the above (keeps the documented path working)
+│   ├── split-api-dump.py              # one-pass splitter (no jq)
+│   ├── diff-api-dumps.py              # member-level diff + grep-back into the skill's docs
+│   └── audit-skill-examples.py        # validates the skill's code examples against the dump
+├── config                             # SKILL_REFS=…, AUDIT_MODE=warn|strict|off
+└── README.md
+```
+
+**Why?** Re-measured 2026-11-05 on 0.746.0.7461264: the full dump is **8,721,015 bytes**, while the
+950 split class files are **101 B min / 2,074 B median / 4,897 B mean / 105,756 B max**. A typical
+class lookup therefore reads about **0.02%** of the dump. (An earlier README claimed "845× smaller"
+from a "~10KB" class file; neither number is reproducible — the median class file is ~2 KB.
+`SKILL.md` carries the command that re-measures both. It is a portable `python3` one-liner that
+follows the `latest.json` symlink with `os.path.realpath`; `stat` is avoided because `stat -f`
+means different things on macOS and Linux.)
+
+## Setting up and refreshing RobloxDocs
+
+The installer sets it up (`--docs-only` / `-DocsOnly` to do only that). To refresh it to a new
+engine version later:
+
+```bash
+~/RobloxDocs/scripts/roblox-api-monitor.sh                      # macOS, Linux, WSL, Git Bash
+python "%USERPROFILE%\RobloxDocs\scripts\roblox-api-monitor.py"    # Windows without bash
+```
+
+It checks the current Studio version, downloads the dump only when it changed, validates it before
+it replaces anything, diffs it member-by-member against the previous one, re-splits it, and audits
+the skill's code examples against it. It needs **Python 3.6+** — no `jq`, no zsh. `curl` is used only as a fallback when Python has no
+usable TLS certificates, and bash only to run the `.sh` shim.
+Roblox ships roughly weekly; the skill tells you when the local dump looks stale and never refreshes
+on its own.

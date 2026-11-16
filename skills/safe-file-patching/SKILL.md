@@ -252,6 +252,38 @@ When using `python -c "..."` for multi-line string replacement, the escaping cha
 
 **Fix:** use `\\\n` (triple-escaped) in `-c`, or avoid `-c` entirely and use a Python script file or execute_code.
 
+## Read-Modify-Write Self-Truncation (silent, destroys the file)
+
+`open(p, "w")` truncates the file the instant it is called — BEFORE the arguments to `.write()` are evaluated. So a one-liner that reads and writes the same path destroys the content and writes the wreckage of a 0-byte read:
+
+```python
+# WRONG — open(...,"w") fires first and truncates, so the read returns ""
+open(p, "w").write(re.sub(r"[ \t]+$", "", open(p).read(), flags=re.M))
+
+# RIGHT — bind the read before opening for write
+content = open(p).read()
+open(p, "w").write(fix(content))
+```
+
+The tell is nastier than an error: the write "succeeds", the tool reports bytes written, and the next `read_file` returns `total_lines: 0`. Only inspection of the file size catches it.
+
+**Rule:** never open a path for writing in the same expression that reads it. Bind the read to a name first, then write:
+
+```python
+content = open(p).read()                 # or path.read_text()
+open(p, "w").write(fix(content)).
+```
+
+Better: for whitespace cleanup and similar cosmetic normalization, prefer `patch`/`write_file`, which enforce read-before-write. When a programmatic pass is genuinely needed, assert the result before trusting it:
+
+```python
+assert new_len > 0.5 * old_len, f"suspicious shrink {old_len} -> {new_len}"
+```
+
+A file that shrinks by more than half during an "edit" was truncated, not edited. This applies to every read-modify-write loop over many files (whitespace stripping, link rewriting, frontmatter normalization) — one bad line empties every file the loop touches.
+
+**Recovering a truncated file.** The damage is silent, so the first symptom is usually a downstream failure (frontmatter parse, `assert` in a verify script, a tool refusing the file). Recovery order: `read_file` the target once (it returns `total_lines: 0` — that read is what clears the read-before-write guard), then `write_file` the full correct content from the copy still in context. A bare `write_file` attempts FIRST is refused with `stale_write_blocked: file was modified since you last read it`, because the truncating write bumped the mtime — that refusal is expected here, not a second bug, so do not go hunting for a lock. If no correct copy survives in context, restore from the git/backup copy instead of reconstructing from memory.
+
 ## Red Flags
 
 - Using `replace_all=True` on a JSX file — almost certainly matches unintended content

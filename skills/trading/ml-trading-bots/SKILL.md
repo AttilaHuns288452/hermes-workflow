@@ -27,6 +27,17 @@ Class: building/validating ML signal bots (daily bars). Governed by the user's q
 ## Architecture (user's standard)
 `signal_engine.py` (pure logic, no I/O) → `risk_manager.py` (sizing + kill switches) → `backtester.py` (imports signal_engine — never a duplicated backtest-only signal) → `paper_trader.py` / `executor.py` (exchange, gated by key + flag). Pine v5 mirror for TradingView alerts if requested.
 
+**The cross-asset feature basis must be identical in backtest and live.** If the
+pool is derived from the traded list (`pool = targets - self`), adding one traded
+symbol silently changes every existing symbol's cross-asset features (breadth,
+basket return, and therefore the regime label) — a model change disguised as a
+config change — and live can end up training on a 2-sibling pool while the
+backtest tools use a 10-symbol default. Pin the pool explicitly to the validated
+default and assert in a test that it is not re-derived from the target list. When
+the universe does change, derive each test's expected row count from the constant
+(`len(TARGETS)`), never a literal — a widened universe otherwise fails a dozen
+tests that were really asserting "3".
+
 ## Liveness invariants (a bot that is "running" is not a bot that trades)
 
 Check these before believing any status line. Each one has silently produced a
@@ -44,7 +55,11 @@ bot that logged signals for weeks while executing nothing.
 2. **Counters must count realized closes, not rows that look like closes.** A
    SELL row only closes something when it carries `pnl`; no-op "no open position
    to close" rows otherwise inflate `trades` forever. Grep every consumer of a
-   trade count — the same bug lives in sibling bots until you sweep them.
+   trade count — the same bug lives in sibling bots until you sweep them. The
+   same sweep applies to the action VOCABULARY: an audit/report/diagnostic that
+   filters `action == "BUY"` or `== "SELL"` keeps running and silently
+   under-reports the moment a new verb (SHORT/COVER) exists, and a P&L sign that
+   is not inverted for shorts reports losses as gains.
 3. **Size to the risk envelope the venue client actually enforces.** If sizing
    asks for `equity * pct` while the client caps notional, every order is
    rejected before reaching the exchange and the bot never trades. Clamp sizing
@@ -79,6 +94,35 @@ bot that logged signals for weeks while executing nothing.
    negative. Integrate it only where the input is something the code has not
    already compressed into a number; see `references/adaptive-loop.md` for the
    measured scorecard of which slots it wins and which it loses.
+7. **A one-sided gate is a throughput ceiling, not a filter.** A long-only bot
+   with "enter only above the 200-day" takes ZERO trades in a downtrend — not
+   fewer, none — so the evidence loop cannot advance however long it runs. Before
+   concluding a strategy has no edge, check it was ever allowed to take the other
+   side: tabulate the funnel (decision-layer entries → blocked-by-each-gate →
+   actual opens) and name the gate that eats the rows. Compute the ceiling too:
+   slots x (365/hold_days) is max trades/year, and the slot count is
+   `total_exposure_cap / position_size` — so adding symbols adds setups but NOT
+   throughput. Enabling shorts is a code change, not a flag: the ledger needs
+   distinct verbs (BUY/SELL open+close long, SHORT/COVER open+close short) or a
+   restart cannot tell "SELL that closed a long" from "SELL that opened a
+   short" and silently forgets or duplicates every short. Route both directions
+   through the SAME gate function so a short can never take a weaker path into
+   the market, and invert P&L/MTM from the stored direction rather than at each
+   call site.
+8. **A daily cron on a desktop is not a daily job.** `5 8 * * *` does not fire
+   late: if the machine is off or asleep at that minute the day is silently
+   skipped, and `anacron` does not cover user crontabs. On a desktop that is off
+   most mornings the "continuous" loop only runs on days it happens to be awake —
+   a much better explanation for a stalled trade count than the strategy. Give
+   each daily job an idempotent date stamp (write the UTC date on success only,
+   skip when it already matches today), then add `@reboot` and hourly catch-up
+   entries; the stamp makes the extra invocations free.
+   - Stamp in the WRAPPER, after the run. `exec python ...` replaces the shell,
+     so anything written after it never executes and the stamp never lands.
+   - **Never add a catch-up entry to an order-placing job before it has a
+     same-day guard** — an hourly entry on a guardless bot fires 24 real orders a
+     day. Add the guard first, then prove it by running the wrapper twice and
+     confirming the second invocation logs a skip.
 
 ## Optimizing a bot without changing its signals
 
@@ -131,7 +175,15 @@ selection loop; calling it learning is how "self-improving" gets faked. Verify
 the claim by grepping for readers of the results file and for any mutation/
 sampling code.
 
-See `references/validation-pitfalls.md` §9-13 for the measured numbers.
+See `references/validation-pitfalls.md` §9-13 for the measured numbers, and §7b
+before quoting any survivor count: significance computed on overlapping windows
+manufactures winners rather than errors, so it survives review.
+
+**A third search space is not worth building until the first two are clean.**
+Barrier labels, alternate target definitions, and new feature groups all share
+the same features and the same overlap structure — if price and funding both
+test at chance under a corrected statistic, a path-based relabelling of the same
+inputs answers nothing. Build the corrected statistic first, then the space.
 
 ## Making it actually learn (evidence → behaviour)
 
@@ -178,13 +230,30 @@ check should map to a defect that once ran silently.
 
 ## Project state
 `~/Documents/Projects/signal-bot/` — all modules built and verified. Paper:
-BTC/ETH/SOL-USD, 2 USDT/trade, $200 paper. `~/Documents/Projects/scalper-bot/`
-holds the exchange-bound bot (`production_bot.py` is the only file that calls
-`place_order`). Do NOT re-run the whole config search — see
-`references/results-log.md`.
+6 symbols (BTC/ETH/SOL/ADA/XRP/DOGE-USD), 2 USDT/trade, $200 paper, shorts
+enabled behind `SB_ALLOW_SHORTS` (0 restores long-only).
+`~/Documents/Projects/scalper-bot/` holds the exchange-bound bot
+(`production_bot.py` is the only file that calls `place_order`). The cross-asset
+pool is pinned to the validated 10-symbol default, NOT derived from the traded
+list. Do NOT re-run the whole config search — see `references/results-log.md`.
+
+Both daily wrappers carry a UTC date stamp (`.paper_daily.last`,
+`.production_run.last`) with `@reboot` and hourly catch-up cron entries, because
+this desktop is off across most scheduled slots. Re-invoking them is a no-op.
+
+## Reporting a negative result (this user's standard)
+When a corrected statistic destroys an earlier finding, **go back and rewrite the
+report in place** — do not append a correction while leaving the inflated table
+above it as the headline. Also rewrite any generated log that a human will open
+first; a stale log file with good numbers is worse than no log, because it is
+the artifact they will read. Keep the superseded version under an obvious name
+(`*_STALE_*`) rather than deleting it, so the discrepancy stays auditable, and
+say plainly which number was wrong, why, and what replaced it. "I found a bug in
+my own significance testing" is the most valuable sentence in such a report —
+lead with it rather than burying it.
 
 ## References
 - `references/adaptive-loop.md` — continuous allocation vs promotion cliffs, precision-weighted evidence blending, and the measured scorecard for a decision-model (Jev) judgment layer: which slots it wins, which it loses, and how to probe for it
-- `references/validation-pitfalls.md` — metric/target bugs that cost real debugging time: the overlapping-window artifact, the overfit measurement battery, and §9-13 on data-source triage, collector-noise measurement, the replication and lift gates, feature dilution, and search-space hygiene
+- `references/validation-pitfalls.md` — metric/target bugs that cost real debugging time: §7b on the overlap artifact corrupting significance tests (read before quoting any survivor count), the overfit measurement battery, and §9-13 on data-source triage, collector-noise measurement, the replication and lift gates, feature dilution, and search-space hygiene
 - `references/fincept-llmquant-data.md` — Fincept/LLMQuant MCP access + credit tiers
 - `references/results-log.md` — backtest matrix by config, cross-tests, significance status

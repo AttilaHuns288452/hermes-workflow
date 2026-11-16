@@ -255,6 +255,19 @@ the only evidence you had.
 ❌ check fails -> change the measured data until the old expectation passes
 ```
 
+## An environment-readiness claim needs the build, not a directory listing
+
+"The toolchain is installed / X is buildable here" is a completion claim like any other, and the evidence it usually gets offered is far too weak: `ls` of an SDK directory, `command -v` of one binary, a version string, or the presence of an env var. All of these can be true while the actual build fails — an SDK present for one purpose (an emulator, a language server) routinely lacks the platform/build-tools/NDK a compile needs, and a directory that exists with four of its eight expected subdirectories looks installed in `ls` output.
+
+Prove readiness with the real artifact: run the build/compile/install command end to end and point at the produced output (the binary, the archive, exit 0 with an artifact path and its size). Enumerate the specific components the build requires and check EACH, rather than "the SDK exists". When you cannot run the build yet, the honest status is *Not tested*, never *ready*.
+
+The same applies to exported configuration a build will read: environment variables set only in an interactive-shell rc file are invisible to the scripts and build tools that run non-interactively. Verify from a clean login shell (`env -i HOME=$HOME PATH=/usr/bin:/bin bash -lc '...'`) rather than from your own already-loaded session, and set the variable in the file that non-interactive shells actually read.
+
+```
+✅ install -> run the real build -> artifact path + size + exit 0 -> "buildable"
+❌ ls the SDK / command -v one binary -> "toolchain is ready"
+```
+
 ## When To Apply
 
 **ALWAYS before:**

@@ -19,7 +19,7 @@ graph. Use it for **semantic, cross-skill** questions. For exact name lookup use
 | WebUI | `http://127.0.0.1:9621/webui` |
 | Data | `~/.hermes/lightrag_db/` (JsonKV + NanoVectorDB + NetworkX) |
 | Repo | `~/Documents/Projects/lightrag` (venv `.venv`, v1.5.8) |
-| LLM | xKiro `mistralai/mistral-medium-3.5` (plan-covered) |
+| LLM | configured LightRAG extraction model; inspect the running service/config for the live route |
 | Embedding | local Ollama `nomic-embed-text` (768d) |
 
 ## CLI
@@ -63,6 +63,19 @@ curl -s -X POST -H 'X-API-Key: lr_local_hermes_9621' -H 'Content-Type: applicati
 - **`file_source` is reduced to a basename** and is the document identity. Two
   files both called `SKILL.md` collapse into one doc. Always send unique flat
   names (`skills__decide.md`). `/` and `:` are rejected outright.
+- **Never index archived or vendored trees.** `~/.hermes/skills/.archive/**` holds
+  retired copies of skills that still exist live, so every archived file collides
+  with its live twin and lands as `failed` with `Identical content already exists
+  under another filename. Original doc_id: …`. Those failures are permanent —
+  reprocessing cannot fix them. Filter them in the collector
+  (`if ".archive" in path.parts or "node_modules" in path.parts: continue`),
+  and delete any already-indexed ones (see *Keeping the corpus honest*).
+- **`indexed_files.json` stamps outlive their documents.** The incremental sync
+  skips a source whose `size:mtime` stamp matches, so after any delete the skill
+  stays invisible forever: the stamp says "unchanged", the document is gone, and
+  `index-skills` reports `0 new/changed` while the graph is missing it. Never
+  trust a skip decision without also diffing the stamp keys against the live
+  document list (see *Keeping the corpus honest*).
 - **`PYTHONPATH` must be empty** when starting the server. This shell exports a
   Python 3.14 site-packages dir that shadows the venv's pydantic and crashes
   startup with `ImportError: cannot import name 'ArgsKwargs'`. The systemd unit
@@ -72,9 +85,13 @@ curl -s -X POST -H 'X-API-Key: lr_local_hermes_9621' -H 'Content-Type: applicati
 - **Embeddings are local-only.** No provider in `config.yaml` serves
   `/v1/embeddings` (xKiro/stdcmpt/commandcode all 404). Do not try to point
   `EMBEDDING_BINDING_HOST` at a chat gateway.
-- **Delete/clear waits on the pipeline.** `DELETE /documents` returns
-  `{"status":"busy"}` while ingesting; poll `/documents/pipeline_status` for
-  `busy:false` first.
+- **Delete/clear is serialized and silently partial.** `DELETE /documents/delete_document`
+  with `{"doc_ids": [...]}` answers `{"status":"deletion_started"}` or
+  `{"status":"busy"}`. A `busy` reply still consumes the request but deletes only
+  part of the batch (observed: 10 ids requested, 1-2 removed), so a big batch loop
+  looks like progress while the count barely moves. Wait for
+  `/health` → `pipeline_busy: false` before each round, delete **3 ids per round**,
+  sleep ~30s, and re-scan for remaining ids rather than assuming the batch landed.
 - **Chat-model choice matters for extraction.** DeepSeek routes are PAYG-only
   (403) on xKiro; the plan-covered Mistral models work until the **daily
   free-model token quota** is spent, after which every xKiro free model answers
@@ -87,15 +104,12 @@ curl -s -X POST -H 'X-API-Key: lr_local_hermes_9621' -H 'Content-Type: applicati
   `python3 ~/.hermes/scripts/lightrag_retry_failed.py`, which re-derives each
   file from its `file_source` and resubmits it. Both eventually reach
   `failed: 0`.
-- Indexing throughput ≈7 docs/min; full 573-skill corpus ≈70 min. Don't run it
-  in the foreground of a turn.
+- Large index syncs can take a while. Run them detached when they exceed the current turn budget; use `status` to verify completion.
 - Server RSS settles around 1.3 GB for a 32k-node graph; storage on disk ≈650 MB
   (the LLM response cache is most of it — drop `ENABLE_LLM_CACHE` only if disk
   matters more than re-extraction speed).
 - `pkill -f lightrag-server` kills the invoking shell too (pattern in its own
   argv). Use `pkill -f '[l]ightrag-server'` or `systemctl --user restart`.
-- Indexing throughput ≈7 docs/min; full 573-skill corpus ≈80 min. Don't run it
-  in the foreground of a turn.
 
 ## Cost
 
@@ -105,6 +119,31 @@ Embeddings are local via Ollama (nomic-embed-text, CPU).
 
 ## Corpus coverage
 
-Default corpus = `~/.hermes/skills` (573 SKILL.md → 32k graph nodes, 44k edges).
-`--with-references` adds `~/Documents/SkillReferences` (2,751 more files) —
-budget hours and check the LLM quota first.
+The default corpus is the live `~/.hermes/skills` tree. Use `status` for the current document and processing counts. `--with-references` expands the corpus with `~/Documents/SkillReferences`; its size and runtime are live values, so check capacity and status before starting a large sync.
+
+## Keeping the corpus honest
+
+A single document per live skill directory is the invariant. Three things break it
+— archived trees, deleted skills left behind as orphan docs, and stale
+`indexed_files.json` stamps — and they fail in opposite directions (ghost docs vs
+silently missing skills), so checking one number is never enough. Compare both sets:
+
+```bash
+python3 ~/.hermes/scripts/discovery_refresh.py            # sync + purge + reconcile, silent when clean
+python3 ~/.hermes/scripts/discovery_refresh.py --selftest  # 3 assert-based checks
+```
+
+That script runs nightly (cron `d41d3840aec4`, 03:00) and does, in order:
+`codegraph sync`/`init` → `lightrag_hermes.py index-skills` → purge archived and
+orphaned docs → drop state stamps whose document is gone, then re-index. The last
+step is the one people forget: purging documents without forgetting their stamps
+leaves live skills unindexed and every later sync reports success.
+
+Manual verification — both sides must match before you declare the graph healthy:
+
+```bash
+# documents, by status (GET)
+curl -s -H 'X-API-Key: lr_local_hermes_9621' http://127.0.0.1:9621/documents/status_counts
+# live skill dirs on disk
+grep -rl . ~/.hermes/skills --include=SKILL.md | grep -vc '/.archive/'
+```

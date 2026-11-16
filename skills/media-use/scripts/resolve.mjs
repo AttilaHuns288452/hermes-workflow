@@ -231,11 +231,11 @@ if (args.analyze) {
 // Delegates to lib/recipe-store.mjs the way grade/lut delegate to resolveColor;
 // freeze/list live in scripts/recipe.mjs.
 if (type === "recipe") {
-  const { useRecipe } = await import("./lib/recipe-store.mjs");
+  const { useRecipe: applyRecipe } = await import("./lib/recipe-store.mjs");
   const name = (entity || intent || "").trim();
   if (!name) exitError("--type recipe needs --entity <name> (or --intent <name>)", 2);
   try {
-    const used = useRecipe({ projectDir, name });
+    const used = applyRecipe({ projectDir, name });
     if (args.json) {
       console.log(JSON.stringify({ ok: true, ...used }));
     } else {

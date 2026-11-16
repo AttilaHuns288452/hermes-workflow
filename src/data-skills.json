@@ -6,11 +6,11 @@
     },
     {
       "n": "Update",
-      "d": "One-command ecosystem onboarding: clone→setup→Graphify→Obsidian→KG."
+      "d": "One-command ecosystem onboarding: clone, setup, and profile-aware verification."
     },
     {
       "n": "Graphify Integrate",
-      "d": "Build code knowledge graph → export → register MCP."
+      "d": "Build a code knowledge graph when the integration is installed; export and register its MCP."
     },
     {
       "n": "Test-Driven Dev",
@@ -283,8 +283,8 @@
       "d": "Cross-functional owner / dependency / acceptance-criteria contract for every handoff."
     },
     {
-      "n": "Token Saver",
-      "d": "Pre-file-read probe. 56.2× token reduction."
+      "n": "Indexed Discovery",
+      "d": "Use an installed code or reference index before broader reads when it is relevant."
     },
     {
       "n": "Session Memory",
@@ -295,8 +295,8 @@
       "d": "Classify requests into Tiers 1-3 for depth."
     },
     {
-      "n": "Free AI Model Router",
-      "d": "Route tasks to the best available free model."
+      "n": "Profile-Configured Model Routing",
+      "d": "Select model and provider routes from the active Hermes profile."
     },
     {
       "n": "Model Recommender",
@@ -312,7 +312,7 @@
     },
     {
       "n": "ECC Bridge",
-      "d": "Wire 57/64 ECC agents through free model chain."
+      "d": "Connect specialized agent roles through the configured bridge; route choice follows the active profile."
     },
     {
       "n": "Doubt-Driven Dev",
@@ -330,7 +330,7 @@
   "Productivity & Comms": [
     {
       "n": "API Mega List",
-      "d": "10,498 APIs across 18 categories — searchable."
+      "d": "Search categorized API references when the source catalog is installed."
     },
     {
       "n": "Airtable",
@@ -712,7 +712,7 @@
     },
     {
       "n": "LightRAG Skill Finder",
-      "d": "TF-IDF semantic search over indexed skill and reference documents, with 0 API calls."
+      "d": "Search indexed skill and reference documents when the service is configured."
     }
   ]
 }

@@ -1,41 +1,29 @@
 # Security
 
-## 🔒 This Repo Has Been Security-Audited
+This repository is public. Automated scanners are useful safeguards, not proof that every file or history revision is free of secrets.
 
-**Last audit:** 2026-09-16 (full modernization pass)
+## Automated checks
 
-- **History rewrite (2026-09-16):** git history contained two real Capafy (`am_sk_…`) access tokens in `skills/capafy-publisher/config.json` and `skills/capafy-user/api-docs/01_auth.md` from earlier skill-mirror syncs. All 5 token-bearing blobs were purged from every commit via `git-filter-repo` (patterns replaced with `***`), and the branch was force-pushed. **Tokens were exposed while public — rotate them at the provider.** Clone caches older than 2026-09-16 still contain the old history.
-- **Skill dedupe (2026-09-16):** removed 4 duplicate/misplaced `SKILL.md` files (an `agent-browser` copy inside `skills/vercel/`, a frontmatter-less `karpathy-guidelines` copy, and 2 identical claude-seo mirror copies). Zero duplicate skill names remain in the catalog.
-- **2026-08-14:** Removed `graphify-out/` build artifacts (3.8MB) from git tracking — contained local filesystem paths in AST cache JSON files. Added `.gitignore` to prevent re-occurrence.
-- **2026-08-14 re-audit:** Re-synced all skills from the live Hermes install, redacted a personal email address (→ `YOUR_EMAIL@gmail.com`) and rclone remote names (→ `YOUR_RCLONE_REMOTE`) found in skill docs/config, regenerated a tracked `.pyc` bytecode cache that embedded the local username in its source path, and added `__pycache__/` to `.gitignore`.
+The `public-quality` CI workflow runs:
 
-This repository is a public mirror of a Hermes Agent skill ecosystem. The following security measures have been taken:
+- `scripts/audit_skills.py` to validate skill frontmatter and scan `SKILL.md` files for credential-shaped values.
+- `scripts/audit_public_secrets.py` to scan Git-tracked and non-ignored working-tree text files, including docs and generated site assets. It does not follow symlinks, skips binary files, and fails if a text file exceeds its scan-size limit or cannot be read.
+- Repository tests, configuration validation, frontend lint, `npm run lint:skills`, and the frontend production build.
 
-### ✅ Secrets Scrubbed
-All mirrored skill files have been scanned for:
-- API keys (OpenAI `sk-*`, FreeLLMAPI, GitHub tokens, OpenRouter, and 16+ provider-specific patterns)
-- Authentication tokens and bearer tokens
-- Passwords, database credentials, and private URLs
-- Hardcoded environment variable values
+Secret-scan output contains file locations and pattern names only, not matched values. Detection is heuristic: unknown formats, encoded values, binary payloads, ignored files, or credentials present only in remote history may not be detected. Review findings before publishing, and do not treat a clean scan as a guarantee.
 
-### 🚫 What Is NOT in This Repo
-- Real `.env` files or actual API keys
-- Hermes auth credentials
-- SSH keys, certificates, or private signing material
-- Personally identifying information (beyond what the user's GitHub profile already exposes)
+## Historical remediation
 
-### 🛡️ Pre-Commit Security Gate
-Every ecosystem documentation export now runs **Phase 0.5 — Security Audit** before generating docs or committing. This scans all mirrored skill files for >16 provider-specific API key patterns and blocks the commit if any real secrets are detected.
+- **2026-09-16:** A prior public-history incident involving provider access tokens was recorded. The repository history was rewritten at that time; clones or caches created before that rewrite may still contain old blobs. Revoke any credential that may remain valid, and do not copy credentials from historical commits.
+- **2026-08-14:** Local build artifacts containing machine-specific paths were removed from tracking, and ignore rules were added to reduce recurrence.
+- **2026-08-14:** Earlier skill-sync material was reviewed for personal paths and credential-bearing configuration; a tracked bytecode cache was removed.
 
-### 🔑 Key Rotation
-If you find a real secret in this repo:
-1. **Rotate the key** on the service provider immediately
-2. **Open an issue** in this repo so the leak location is documented
-3. Submit a PR scrubbing the key, or the maintainer will handle it
+These are historical notes, not a statement that a comprehensive independent security audit has passed for the current revision.
 
-### Providers Covered by Scanning
-OpenAI, Anthropic, Google/Gemini, GitHub (PAT, OAuth, App tokens), Slack, AWS, OpenRouter, HuggingFace, Groq, DeepSeek, Cerebras, Together AI, FreeLLMAPI, and generic bearer tokens.
+## If you find a secret
 
----
+1. Revoke or rotate it with the issuing provider immediately.
+2. Remove it from the working tree and, if committed, follow the repository's history-remediation process.
+3. Report the file location without pasting the value into a public issue, commit, or chat.
 
-*Security is a process, not a one-time fix. If you notice something suspicious, please open an issue.*
+For setup, keep credentials in the active Hermes profile's environment file or auth store. Do not commit `.env` files, tokens, passwords, certificates, or private keys.

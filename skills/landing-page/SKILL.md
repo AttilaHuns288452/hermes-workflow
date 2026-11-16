@@ -188,6 +188,10 @@ Optional:
 - **Promotional CTAs in sub-sections** — cross-utility CTAs (shadows, animations, components) belong on the first-view landing page, not buried inside component template tabs.
 - **Dead-end CTAs behind a login** — when every path on the page ultimately requires sign-in, buttons promising actions ("Book a visit", "Patient portal") that only bounce to the sign-in card read as broken, not gated. Collapse to ONE honest CTA (e.g. "Sign in to book") pointing at the auth card; action-verb CTAs belong to post-login surfaces.
 - **Desktop-only hero** — an H1/hero band wrapped in `hidden md:block` (or a desktop-only style) leaves the mobile page headless while desktop looks complete. Mobile-first means the hero AND its CTA must render at ~390px; verify with a mobile screenshot before calling the page done.
+- **Sticky nav covers every anchor target** — the nav links jump but the heading lands underneath the bar. One rule fixes all of them: `section[id], main[id]{scroll-margin-top:84px}` (nav height + room). Verify numerically (heading `top` vs nav `bottom`), never by eye.
+- **Nav and footer links are the smallest tap targets on the page** — they inherit a ~20px line box. Give them `display:inline-flex; align-items:center; min-height:44px` or a mobile audit fails on the most-tapped controls.
+- **Entrance animations hide content from a full-page capture** — sections held at `opacity:0` until they intersect the viewport read as blank bands. Release the reveals before capturing, and never conclude an element is missing without reading its computed opacity and its position against the viewport height.
+- **A handful of real defects hides behind "the product render looks fine"** — for inline-SVG product visuals, verify the actual geometry against the object's real anatomy, and check that gradients are applied to `fill` on a non-degenerate shape rather than as a `stroke` on a perfectly vertical/horizontal line (a zero-width bbox paints nothing).
 
 ---
 
@@ -212,3 +216,11 @@ Return:
 
 ## Psychology review (after building)
 Once the page is written, load the `ux-psychology` skill and run it as a review layer: pull the 3-5 principles for a landing page (first impressions, anchoring, social proof, information scent), apply them to the actual markup and copy, and check the anti-pattern list.
+
+## Single-file HTML artifacts
+When the deliverable is one self-contained `.html` file (no build step, no network
+deps) — the fastest way to show a design — follow
+`references/single-file-html-artifact.md`: token setup, the product-render
+approach, the concrete verification probes (opacity, overflow, anchor offset, tap
+targets, reduced motion, tag-tree parse), and the SVG/geometry pitfalls that make
+a render look broken when it is only mis-specified.

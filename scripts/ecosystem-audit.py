@@ -23,6 +23,7 @@ Changelog: ~/.hermes/ecosystem-changelog.md
 Capability: CAPABILITY_GRAPH.md (updated on deep when topology changes)
 """
 import argparse, json, hashlib, subprocess, sys, os, re, datetime, pathlib
+import yaml
 
 HERMES = pathlib.Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
 REGISTRY = HERMES / "ecosystem-registry.json"
@@ -57,6 +58,15 @@ def list_skills():
     # external dirs from config
     return {"hermes_skills_list_lines": cnt, "dir_count_approx": dirs}
 
+
+def provider_names():
+    # ponytail: identifiers only; never persist credential-bearing provider blocks.
+    path = HERMES / "config.yaml"
+    if not path.exists():
+        return []
+    providers = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("providers", {})
+    return sorted(str(name) for name in providers)
+
 def snapshot():
     """Collect lightweight environment fingerprint."""
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat()
@@ -85,7 +95,7 @@ def snapshot():
             mirrors[mirror.name] = {"exists": True, "head": head or "not-a-git-repo"}
     snap["four_repo_mirrors"] = mirrors
     # tools
-    snap["providers"] = sh("hermes config get providers 2>&1 | head -n 30", 10)[:2000]
+    snap["providers"] = provider_names()
     snap["model_default"] = sh("hermes config get model.default 2>&1 | head -n 5", 10).strip()
     # plugins / cron
     snap["plugins"] = sh(f'ls "{HERMES}/plugins/" 2>&1 | tr "\\n" " " | head -c 500', 10).strip()

@@ -82,7 +82,23 @@ Use the agent's file tools (`write_file`, `patch`) to make changes, then commit:
 ```bash
 # Stage specific files
 git add src/auth.py src/models/user.py tests/test_auth.py
+```
 
+Stage explicit paths, never `git add <dir>/` — a directory add skips root-level
+siblings that share the stem (`git add server/` misses `server.js`), which ships a
+half-deployed feature. Check `git diff --cached --name-only` before committing.
+
+For a multi-line commit message, write it to a file and pass `-F`:
+
+```bash
+git commit -F ~/.hermes/cache/scratch/commit-msg.txt
+```
+
+A heredoc piped into `git commit -F -` can trip the terminal tool's
+long-lived-process guard, so the commit silently never happens while the tool
+reports an error about starting a server.
+
+```bash
 # Commit with a conventional commit message
 git commit -m "feat: add JWT-based user authentication
 
@@ -150,6 +166,13 @@ The response JSON includes the PR `number` — save it for later commands.
 To create as a draft, add `"draft": true` to the JSON body.
 
 ## 4. Monitoring CI Status
+
+**Read the annotation before the logs.** A job that fails in ~2 seconds with zero
+executed steps was never started — CI infrastructure or an account gate refused it,
+and no amount of fixing the workflow YAML will change that. `gh run view <RUN_ID>`
+prints an `ANNOTATIONS` block; check it first, then decide whether this is a code
+problem or a host problem. See `references/ci-troubleshooting.md` → *Job Never
+Started*.
 
 ### Check CI Status
 

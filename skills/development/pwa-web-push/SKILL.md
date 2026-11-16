@@ -39,6 +39,8 @@ Assert the end-to-end chain with NO polling by the app: create a business event 
 
 Browser/testing pitfalls live in `references/testing-web-push.md` — load it before writing push tests; the default Playwright setup cannot register push subscriptions at all.
 
+**Shipping this PWA inside a native shell instead?** Load the `capacitor-mobile` skill first: Capacitor adds real APNs/FCM push, and web push does not carry over to the wrapper unchanged.
+
 ## Output Pattern
 
 [code] → skipped: [X], add when [Y].

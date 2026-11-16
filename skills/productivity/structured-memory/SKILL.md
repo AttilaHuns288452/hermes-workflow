@@ -57,10 +57,30 @@ Memory is injected into every turn and every subagent, so its size is a per-call
 
 1. **Measure before touching.** Entry count (split on `\n§\n`), total chars, and the biggest entries with their sizes and first line. Decide from that table, not from impressions.
 2. **Archive first, always.** Copy to `memories/archive/MEMORY-<stamp>-pre-trim.md` plus a `.gz`, and a `.bak` beside the live file. Removed facts stay recoverable, which is what makes dropping narration safe.
-3. **Edit by index, not by regex.** Read the file once, split on the separator, then apply a drop-index set and a replace-index map in one script. Keep the `\n§\n` separator — the loader depends on it.
+3. **Edit by index, not by regex.** Read the file once, split on the exact separator
+   `"\n§\n"`, then apply a drop-index set and a replace-index map in one script. Keep the
+   `\n§\n` separator — the loader depends on it. **Splitting on a bare `§` corrupts the
+   file:** entries legitimately contain that character mid-sentence (a section reference
+   like "§5"), so a naive `split("§")` invents fake entry boundaries and the count comes
+   out wrong. Confirm the real separator with `raw.count("\n§\n")` before trusting any
+   parse.
 4. **Drop completed-task narration:** finished project logs, shipped-deliverable details, one-off benchmark results, superseded status reports. **Keep** environment facts, paths and commands, standing preferences, recurring pitfalls, integration recipes, and the contracts of projects still active.
 5. **Compress what remains big.** A 2–3K-char narrative usually has ~500 chars of durable content (paths, invariants, the commands that work). Rewrite that entry rather than deleting it.
-6. **Assert, then report:** named key facts still present, new entry count, char delta and percent. State the archive path.
+6. **Verify identifiers, not just count.** Compression may freely rewrite prose, but
+   paths, cron ids, function names and config keys are the load-bearing part. Diff the
+   identifier sets before vs after and restore every dropped one by hand:
+
+   ```python
+   import re
+   pat = r"[A-Za-z0-9_][A-Za-z0-9_.:/-]{5,}"
+   dropped = set(re.findall(pat, old)) - set(re.findall(pat, new))
+   lost = [t for t in dropped if "/" in t or "_" in t or "." in t or re.search(r"\d", t)]
+   # every remaining slug that looks like a path/id/function is a real loss — put it back
+   ```
+
+   A first pass reliably drops a few identifiers that read as narration but were the only
+   copy of an operational detail. Then assert the named key facts are still present and
+   report entry count, char delta and percent, plus the archive path.
 7. **Report the cost, not just the chars.** Print memory chars and the fixed prompt in tokens per turn (memory + skill catalog + SOUL + USER, ~4 chars/token). A 20K-char cut is roughly 5K tokens off every call and every subagent; that number is the point of the exercise.
 8. **Check skills before keeping a fact.** If the same procedure or pitfall already lives in a skill, or only mattered for one finished task, drop it from memory: memory holds facts that apply to every session, skills hold how to do the work. Duplicated guidance is the most common bloat after project logs.
 9. **One pass is rarely enough.** A conservative first pass typically leaves another 20-25% available in oversized entries; re-measure and run a second pass rather than declaring the file trimmed.
