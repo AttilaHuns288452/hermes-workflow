@@ -135,6 +135,8 @@ def main() -> int:
         for f in sorted(live_files - repo_files):
             ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (missing)")
         for f in sorted(repo_files & live_files):
+            if f.name == "SKILL.md" and f.parent == pathlib.Path("."):
+                continue  # already reported as `stale` above; don't double count
             if not _same_bytes(repo_dir / f, live_dir / f):
                 ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (differs)")
     if ref_drift:

@@ -82,12 +82,44 @@ if guild_id in getattr(adapter, "_auto_voice_guilds", set()):
         return
 ```
 
-### 6. Voice key-rotation fix — OBSOLETE (do not apply)
+### 6. Rejoin live meetings on boot (adapter.py) — patch 6
+
+Auto-join is purely event-driven (fires on a member JOIN), so a gateway restart during a meeting leaves the bot outside the room for the rest of the meeting and the minutes are lost. `_rejoin_live_meetings()` is called from `on_ready` and rescans every watched channel (bounded 6 x 10s) for humans already in it, then joins through the normal `_auto_join_meeting` path. It skips empty rooms, unwatched channels, and guilds already connected. Self-check: `python3 ~/.hermes/scripts/test_meeting_rejoin.py` (4 checks).
+
+### 7. Capture-health instrumentation (adapter.py) — patch 7
+
+"The bot is in the room but the minutes channel is empty" is unanswerable from a log that only reports joins: DAVE decrypt failures were logged for the **first 10 packets only**, and a failed STT returned **silently**. Patch 7 adds `_dave_failed` / `_stt_failed` / `_utterances` / `_transcripts` counters, logs DAVE failures 1-in-250 forever and STT failures 1-in-25, and emits a `[VoiceCapture]` heartbeat on the 15s keepalive tick:
+
+```
+[VoiceCapture] decoded=812 decode_failed=0 dave_failed=9 buffered={5513: 2.3, 5473: 0.7} utterances=4 transcripts=4 stt_failed=0
+```
+
+`buffered` seconds per SSRC is the only positive proof audio is arriving. Read the verdict with `python3 ~/.hermes/scripts/probe_capture_now.py --watch 90` → ACQUIRING / DEAF / SILENT / NO-HEARTBEAT. Self-check: `python3 ~/.hermes/scripts/test_capture_health.py` (2 checks; fails if a deaf receiver is reported healthy). Installer: `~/.hermes/scripts/instrument_capture.py`, called by `ensure_meeting_patches.py` on every run.
+
+Before blaming patches, prove audio reaches the process at all: `ss -unp | grep <gateway pid>` for the voice UDP socket, then watch its receive queue (`ss -un` column 1) grow and drain while people talk. A growing queue with no `[VoiceCapture]` decode progress means the receiver thread is stuck, not the network.
+
+### 8. Empty-room presence poll (adapter.py) — patch 8
+
+Auto-leave fires only on a `voice_state_update` LEAVE. A post-restart rejoin (or a cache that never saw the leave) can therefore strand the bot in a room whose humans already went home: no leave event ever arrives, `_auto_leave_and_minutes` never runs, and `_post_meeting_summary` is never called, so the minutes silently vanish. Patch 8 polls presence on the same 15s heartbeat: for an auto-joined guild with no humans left and no leave already pending, it schedules the usual leave+minutes task at `max(grace_seconds, 60)`. It never touches a manual `/voice join` (guild absent from `_auto_voice_guilds`). Self-check: `python3 ~/.hermes/scripts/test_empty_room_poll.py` (4 checks).
+
+### 9. Record the whole room, not just the allowlist (adapter.py + run_voice.py) — patch 9
+
+`DISCORD_ALLOWED_USERS` is the **assistant** auth boundary: who may talk to the agent. It is not the boundary for who a silent recorder hears. Two gates applied it to audio anyway, so with a one-person allowlist only that one person ever appeared in the minutes:
+
+1. `_voice_listen_loop` skipped the speaker before STT.
+2. `run_voice._handle_voice_channel_input` refused the transcript at route canonicalization / auth.
+
+Patch 9 makes a silent auto-joined meeting record every speaker, and accumulates the line at the top of `_handle_voice_channel_input` (before canonicalization). `handle_message` stays allowlist-gated, so a stranger in the room **can be recorded but can never instruct the bot**. Interactive voice mode (`silent: false`) and manual `/voice join` keep the old allowlist behavior. Self-check: `python3 ~/.hermes/scripts/test_record_all_speakers.py` (4 checks — asserts all speakers recorded in a silent meeting, and that the stranger gets 0 agent turns).
+
+If teammates still do not appear, confirm the identity exists at all: `grep -oE 'Voice state: .*' gateway.log` will list joiners, while `[VoiceCapture] utterances` increments only when someone actually speaks.
+
+### 10. Voice key-rotation fix — OBSOLETE (do not apply)
 
 Upstream `VoiceReceiver` now re-resolves credentials at runtime (`_resolve_credentials`, invoked on every session description, DAVE epoch prepare, membership change, or decrypt-failure streak). The old patch is unnecessary; `~/.hermes/patches-discord-voice-key-rotation.patch` no longer applies to current upstream and would break the read-only `_secret_key` property. Verified 2026-10-08.
 
-### 7. STT Model Setup
+### 11. STT Model Setup
 
+**The local backend must exist in the environment the gateway actually boots from.** Since Hermes moved to PM-managed 
 ```yaml
 stt:
   provider: local
@@ -95,7 +127,22 @@ stt:
     model: large-v3-turbo
 ```
 
+Install it into the LIVE environment (not the legacy `hermes-agent/venv`, which is ignored):
+```bash
+cd ~/.hermes/hermes-agent && ./.hermes/bin/hermes pm install --extra stt-whisper
+```
+Then verify from that same environment: `.hermes/bin/hermes` boot preamble + `import faster_whisper`. Models cache under `~/.cache/huggingface/hub` and survive environment rebuilds.
+
 Pre-download: `python3 -c "from faster_whisper import WhisperModel; WhisperModel('large-v3-turbo', device='cpu', compute_type='int8')"`
+
+### Silence failure mode: "no minutes anymore" with a healthy-looking gateway
+
+Symptom: auto-join logs still fire, `VoiceReceiver started` appears, members join/leave normally, but the minutes channel gets nothing. `grep -c 'Voice input from user' ~/.hermes/logs/gateway.log` is 0. Cause: STT resolution fails for every utterance, so `_process_voice_input` returns before the transcript callback and no line is ever accumulated. Confirm in one shot:
+```bash
+cd ~/.hermes/hermes-agent && PYTHONPATH=<selected venv>/lib/python3.14/site-packages \
+  <store python> -c "import tools.transcription_tools as t; print(t._detect_local_backend())"
+```
+`None` + a `STT provider 'local' configured but unavailable` warning means faster-whisper is missing from the boot environment. `security.allow_lazy_installs: false` blocks the runtime self-heal, so it never installs itself. Fix with the `pm install --extra stt-whisper` line above, then restart. Note the gateway restart refuses while live sessions exist; pass `-y` or run it detached.
 
 ## Troubleshooting
 
@@ -146,6 +193,8 @@ Transcripts were collected but nothing posted; log shows `[AutoVoice] No minutes
 2. Verify with `grep AutoVoice ~/.hermes/logs/gateway.log`
 
 If the script reports "end state incomplete", the upstream anchors drifted — update the anchors in `ensure_meeting_patches.py` from the patch text below, then re-run.
+
+Current managed set: patches 1-5 (adapter + run_voice), patch 6 (post-restart rejoin), patch 7 (capture instrumentation), patch 8 (empty-room poll), plus an STT availability check that reinstalls `stt-whisper` when the boot environment lost it. Each has a self-check script next to it (`test_meeting_rejoin.py`, `test_capture_health.py`, `test_empty_room_poll.py`) and the live proof lives in `~/.hermes/scripts/verify_meeting_bot.py` / `probe_capture_now.py`.
 
 **This skill's patch list is the spec; the repair script must install and check every patch documented here.** When adding a patch section to this skill, extend `ensure_meeting_patches.py`'s `check_patches()` and `reapply_patches()` in the same change — a documented-but-unmanaged patch dies silently on the next update.
 
