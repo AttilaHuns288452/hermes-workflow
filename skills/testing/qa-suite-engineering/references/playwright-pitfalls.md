@@ -100,9 +100,35 @@ Each rule: the trap, then the mechanism.
   innocent). Bisect with a micro-probe (step markers + hard timeout +
   `page.on('crash')`) that calls the suspect handler directly, with and
   without its argument.
+- **Retry/regenerate request context is a payload contract with two boundaries.** In chat UIs with edit-and-resend or regenerate-in-place, request history must be the turns strictly BEFORE the retried question (the question itself rides as `message`) and must exclude the stale assistant answer plus every diverged later turn; the natural off-by-one double-counts the question or keeps the stale answer in context. Assert on the captured request body (`history.map(h => h.text)`): contains earlier turns, excludes the question and everything after it — UI-only assertions pass while the payload is wrong.
 - **A TypeError reading a property of undefined far from the action usually
   traces to a 404'd `<script src>`.** A wrong path (e.g. `demos/x.js` vs
   `js/demos/x.js`) leaves that module's globals undefined and the crash lands
   wherever one is first dereferenced. Log `response` 404s in EVERY probe; when
   a global is unexpectedly undefined, grep the HTML's script srcs against the
   served tree.
+- **"Global is undefined in evaluate" has a second cause: top-level `const`/
+  `let` in classic scripts are lexical bindings, not `window` properties.**
+  `page.evaluate(() => window.Store)` reads undefined while the bare `Store`
+  resolves fine (`window.X` is correct only for `var`/function assignments).
+  Check the binding form before suspecting the script path — the two causes
+  look identical at the crash site.
+- **A backdrop/scrim click at a viewport corner is not a backdrop test.**
+  Corners land on fixed chrome (a sticky header painted above the scrim) — use
+  real gutter points, and when a point fails, run `document.elementFromPoint(x,
+  y)` to see what is actually on top before blaming either side. The result
+  forks diagnosis: the harness picked a point on fixed chrome, OR the scrim
+  genuinely stacks below app chrome — a real bug whose fix is portal-ing the
+  dialog to `document.body` (a `position: fixed` scrim inside a stacking/
+  transformed parent cannot cover a sibling header).
+- **Demo/seeded auto-login rewrites every route.** When the app injects a demo
+  session, logged-out surface tests (landing, sign-in, register) silently
+  start on the app shell — clear the session or use a fresh context and assert
+  the logged-out landmark before writing checks against it.
+- **Placeholder-heuristic form walkers silently skip fields.** A phone regex
+  misses `+63…`-style placeholders, and the missed fill surfaces later as a
+  validation error far from the cause — after walking, assert every required
+  input has a non-empty `inputValue()` before submitting. Likewise, never key
+  a selector on placeholder text for an input whose type/placeholder mutates
+  (password eye toggles); capture the locator BEFORE the toggle and compare
+  through it.

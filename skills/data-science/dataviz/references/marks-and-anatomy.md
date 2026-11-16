@@ -64,6 +64,16 @@ one swatch restates the title and costs space.
   detaches them from their lines and reads as noise - instead use **leader lines**
   (a thin connector from label to line-end), facet into **small multiples**, or fall
   back to the legend + tooltip. Past ~4 converging series, small multiples is usually right.
+- **Naming many marks (scatter dots) - resolve collisions geometrically, not by dropping
+  names.** When every point carries a name, three mechanical moves keep it readable:
+  (1) truncate long names to ~16 chars with an ellipsis so a label never pushes into its
+  neighbor; (2) stagger each label vertically above/below its dot by index parity
+  (e.g. `dy = i % 2 ? +14 : -9`) so adjacent dots in a dense cluster don't share one
+  baseline; (3) flip the label to the LEFT of the dot (`textAnchor="end"`,
+  `x = cx - pad`) when the dot is within a label-width of the right edge, so it never
+  clips off the plot. Then render and LOOK at the densest cluster: a residual overlap
+  there is acceptable, but nothing may be clipped or unreadable. Escalation is a leader
+  line or hover-only name - never `overflow: hidden` on the label.
 
 ## Figures - when the form is a number
 

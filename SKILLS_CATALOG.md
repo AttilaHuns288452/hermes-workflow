@@ -1,10 +1,10 @@
 # 🧠 Skill Catalog — Hermes Workflow Repository
 
-**1,606 repository skills · profile-aware routing**
+**1,608 repository skills · profile-aware routing**
 
 Every skill below lives in this repository. The active Hermes profile may expose only a configured subset through its skill directories, so this catalog is an inventory, not a guarantee that every skill is loaded or available.
 
-The full tree currently holds **1,606** `SKILL.md` files across all categories. Category totals and active-profile counts can differ when profiles select subsets or when collections contain overlapping names.
+The full tree currently holds **1,608** `SKILL.md` files across all categories. Category totals and active-profile counts can differ when profiles select subsets or when collections contain overlapping names.
 
 > **Count rule:** the repository count is the number of `SKILL.md` files in the current skill tree. Verify the live profile with `hermes skills list`.
 
@@ -842,7 +842,7 @@ Agent harness integration, code graph, debugging, setup, planning, testing.
 
 ## Notes
 
-**Count verification:** `find skills -name SKILL.md` currently returns 1,606 repository files. The active profile may expose a smaller or differently composed set. Use `hermes skills list` for live availability.
+**Count verification:** `find skills -name SKILL.md` currently returns 1,608 repository files. The active profile may expose a smaller or differently composed set. Use `hermes skills list` for live availability.
 
 **How /decide selects skills:**
 1. Classify the request and its complexity

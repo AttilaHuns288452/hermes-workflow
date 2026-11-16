@@ -38,8 +38,11 @@ sudo insmod src/linuwu_sense.ko
 # Restart daemon to pick up module
 sudo systemctl restart damx-daemon
 
-# Persist across reboots
+# Persist across reboots (still dies on kernel updates)
 sudo make install
+
+# Persist across kernel updates: copy Makefile/src/dkms.conf to
+# /usr/src/linuwu_sense-25.701, then dkms add/build/install linuwu_sense/25.701
 ```
 
 ## After Fix
@@ -65,7 +68,7 @@ Available features: battery_limiter, backlight_timeout, battery_calibration,
 ## Lessons
 
 1. A running systemd service ≠ its kernel module is loaded
-2. `insmod` is volatile; `make install` persists across reboots
+2. `insmod` is volatile; `make install` persists across reboots; only DKMS persists across kernel updates
 3. Kernel modules may have dependencies (`sparse-keymap`) that must be loaded first
-4. Pre-built `.ko` files from GitHub may be for a different kernel — always `make clean && make` for current kernel
+4. Pre-built `.ko` files from GitHub may be for a different kernel — always `make clean && make` for current kernel, then register with DKMS so the next kernel update doesn't silently break it again
 5. `dmesg | grep "Unknown symbol"` tells you exactly what's missing

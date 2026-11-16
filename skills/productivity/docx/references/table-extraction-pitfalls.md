@@ -1,0 +1,6 @@
+# docx table-extraction pitfalls
+
+1. python-docx `doc.element.body.iterchildren()` misses tables wrapped in `w:sdt` / `w:customXml` content controls and tables inside text boxes. Symptom: only ~11 of 25 `<w:tbl>` elements appear in extracted text while captions like "Table 5.4" show with no rows. Fix: recursive walk of the body XML that treats `tbl` as a leaf and descends through `sdt`/`sdtContent`/`customXml`/`tc`/`tr`, or better: ask the user for their text export (Google Docs -> .docx.md keeps every table).
+2. Verify extraction completeness first: count `<w:tbl>` in word/document.xml vs tables captured. A multi-MB docx with few text tables usually means the tables are images (vision/OCR path) or wrapped tables (recursive walk).
+3. Large docx (100K+ chars) exceed read_file's 100K budget: extract tables to a separate file with captions, then read the table file.
+4. Conversion QA: pypandoc-binary (`uv run --with pypandoc-binary`) converts markdown -> docx with no system pandoc needed; LibreOffice recalc of openpyxl formula cells (which carry no cached values) is a real formula-verification loop (`soffice --headless --convert-to xlsx` then read back with `data_only=True`).

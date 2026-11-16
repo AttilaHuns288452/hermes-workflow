@@ -2,6 +2,8 @@
 
 Read this reference when installing or updating skills, diagnosing unexpected workflow behavior, or running HyperFrames setup in CI.
 
+For a plugin installation, follow [plugin execution rules](plugin-installation.md); the plugin manager owns updates and all workflows are bundled. The commands below apply only to standalone skills.
+
 HyperFrames installs the core set eagerly and workflow skills lazily.
 
 - **Core set:** `/hyperframes`, the `hyperframes-*` domain skills, and `/media-use`.
@@ -12,6 +14,8 @@ HyperFrames installs the core set eagerly and workflow skills lazily.
 `npx hyperframes init` checks GitHub and refreshes the core set plus other skills already installed. It does not install workflows that have never been used. A current install is a no-op. Offline or rate-limited checks degrade gracefully and do not fail project scaffolding.
 
 The `--skip-skills` CLI flag is temporarily ignored. CI and tests may opt out with `HYPERFRAMES_SKIP_SKILLS=1`.
+
+`HYPERFRAMES_SKIP_SKILLS=1` also makes `skills update` (bare or named) and bare `skills` exit 0 without installing or pruning, so an install pinned to one commit stays pinned.
 
 ## Diagnose and update
 

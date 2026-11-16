@@ -1,0 +1,10 @@
+# Stdio MCP server: silent connect failures
+
+Escalation chain for a server whose `hermes mcp test` / runtime connect returns `Connection closed` with no error and an empty child stderr. Work top-down; each layer either fixes it or moves the fault. The failure is deterministic (argv, PATH, bin shim) — never "solve" it by re-running the same registration.
+
+1. **Confirm the argv reaching the child.** `--args` is a last-option: every flag after it (`--env`, `--connect-timeout`, ...) is swallowed into the SERVER's argv, so the server launches in its CLI mode with junk arguments and exits cleanly. Silent death with empty stderr is the signature. Re-add with all flags BEFORE `--args`: `--command <abs> --env K=V --connect-timeout N --args <argv...>`.
+2. **Probe the launch command standalone.** `scripts/probe_mcp_stdio.py -- <command> [args...]`. Fail = launch problem (missing package, broken bin shim, PATH, bad args) — fix before touching config. Pass = server and argv are good; keep going.
+3. **Read the child's stderr: `~/.hermes/logs/mcp-stderr.log`.** Stdio servers log there. Completely empty for a child that never exec'd points at the shebang/PATH class (next step); protocol-level errors appear as server logs.
+4. **Shebang/bin-shim class (npm).** `#!/usr/bin/env node` dies when the spawn PATH lacks the interpreter dir, and some packages never link their bin (`npx <pkg>` → `<bin>: not found`). Fix: absolute interpreter + absolute entry script in `--command`/`--args` (step 3b of the main procedure).
+5. **Isolate Hermes from the server with the SDK round-trip.** `scripts/mcp_sdk_roundtrip.py <command> [args...] [--call TOOL '{"k":"v"}']` runs the same MCP client stack Hermes uses (run it with a python that has the `mcp` package — the Hermes generation venv ships it). SDK success + Hermes failure ⇒ the difference is the launch (argv/env/timeout), not the server. Both fail ⇒ revisit step 2.
+6. **Protocol-version negotiation is rarely the culprit.** A server that answers `initialize` over raw JSON-RPC (step 2) is version-compatible; suspect it last.

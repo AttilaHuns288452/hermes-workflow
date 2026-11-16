@@ -6,11 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = next((parent for parent in Path(__file__).resolve().parents
-             if (parent / "scripts/evaluate-relevance.py").exists()), None)
-if ROOT is None:
-    import pytest
-    pytest.skip("optional relevance evaluator is not included in the Hermes runtime port", allow_module_level=True)
+ROOT = next(parent for parent in Path(__file__).resolve().parents
+            if (parent / "scripts/evaluate-relevance.py").exists())
 MODULE_PATH = ROOT / "scripts/evaluate-relevance.py"
 SPEC = importlib.util.spec_from_file_location("evaluate_relevance", MODULE_PATH)
 evaluator = importlib.util.module_from_spec(SPEC)

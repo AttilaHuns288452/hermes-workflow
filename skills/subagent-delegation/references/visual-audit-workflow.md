@@ -60,6 +60,25 @@ Include in `delegate_task` goal:
 - Build + deploy instructions
 - "Do NOT modify data files" constraint
 
+## Ground-Truth Triage Before Fixing
+
+Vision reviews over-report. Before patching anything one flags, verify each checkable claim against DOM measurement and classify it:
+
+- **Measurable defect** (computed color, `getBoundingClientRect` widths, `scrollWidth > clientWidth` overflow, element width vs column width): fix at the owning layer.
+- **Appearance claim** ("looks clipped", "superimposed", "orphan line"): confirm at full resolution or drop. Known false-positive classes: full-page screenshots stitch fixed bars mid-image, "occluded text" is usually the natural viewport fold, symmetric moving parts alias in sampled frames, currency glyphs OCR as bare letters (₱ reads as "P"), hairline progress-bar fill percentages are misread at any size, line-art SVG icons read as "broken image placeholders", and small pill/counter numbers get miscounted.
+
+When a prose report asserts a state inconsistency (badge counts, which rows carry an accent), re-ask the SAME image with pointed per-element questions — then settle with a DOM probe. Prose counts drift; computed values do not. Probe recipes (computed-style, min-content clone): `frontend-patterns` → `references/tailwind-jsx-defect-pitfalls.md`.
+
+## Local Dev-App Probe Harness (Playwright against localhost)
+
+- Dev servers started as background jobs die between turns — restart and wait for readiness inside the SAME command that runs the probe.
+- `waitUntil: 'networkidle'` flakes while HMR is recompiling (or another consumer hits the server) — use `domcontentloaded` plus a fixed settle wait, and retry once on timeout before treating navigation as broken.
+- Set `localStorage` only AFTER a first navigation: evaluating on a fresh page targets `about:blank`, which throws `SecurityError` on storage access.
+- Demo/mock builds that auto-inject a session on boot cannot reach their logged-out screens by clearing storage — they re-create the session on reload. Log out through the in-app flow first, then screenshot.
+- Full-page screenshots of fixed bottom bars and FABs: see the stitching false-positive class above — verify clipping claims with a viewport-only screenshot at full scroll.
+
+Keep the QA harness (screenshot + check scripts) in the repo (`qa/`, `scripts/`) — scratch dirs get pruned between turns, and a rebuilt harness silently drifts from the one that passed.
+
 ## Cross-Reference
 
 For the full vision audit checklist with before/after scores, specific fixes that worked, and second-pass improvements, see `hermes-workflow-documentation` skill → `references/vision-audit-checklist.md`.

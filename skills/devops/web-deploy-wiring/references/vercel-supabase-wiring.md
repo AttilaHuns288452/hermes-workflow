@@ -25,6 +25,14 @@ Exact calls behind the `web-deploy-wiring` procedure. Values marked `<...>` are 
 
 3. First build: `git commit --allow-empty -m "Trigger Vercel deploy" && git push`. `gitRepository` at creation wires push-to-deploy — no CLI deploy needed. Poll `GET /v6/deployments?projectId=<id>&limit=3` until `readyState` is READY or ERROR.
 4. Manual deploy without any CLI (session-cookie auth, see auth section below): `POST https://api.vercel.com/v13/deployments?teamId=<id>&forceNew=1` with body `{"name": "<project>", "project": "<project>", "gitSource": {"type": "github", "ref": "master", "repoId": <numeric id>, "repo": "owner/name", "orgId": <numeric id>}, "target": "production"}`. The body schema is strict — any extra property is rejected with `should NOT have additional property`. `teamId` comes from `GET /v2/teams` (use `id`, not `id.name`). A `gitSource` deploy builds the pushed repo HEAD, not the local working tree.
+   To verify WHICH commit shipped, poll the deployment's `meta.githubCommitSha` until it matches the pushed SHA — the v13 deployment GET `state` field can come back absent, so live behavior (SKILL.md rules 5–6) is the verdict, not the poll field.
+
+## Vercel: env vars + redeploy on an existing project (no CLI)
+
+- List: `GET /v9/projects/<name>/env?teamId=<id>` (entries carry `id` + `key`). Add: `POST /v10/projects/<id>/env` (body `{key, value, target: ["production","preview","development"], type: "plain"}`). Update: `PATCH /v9/projects/<id>/env/<envId>`.
+- Set every env var BEFORE triggering the deployment that needs it — the build bakes values in.
+- Env changes take effect only on a NEW deployment: `POST /v13/deployments?...&forceNew=1` with `gitSource` (rebuilds pushed HEAD; a dashboard "Redeploy" reuses the build cache and may not pick env changes up).
+- After setting env + redeploying, verify the FEATURE behaves on the production URL (e.g. the LLM-enrichment flag is true), not just that the health endpoint echoes the var name.
 
 ## Vercel: domain verification (never skip)
 

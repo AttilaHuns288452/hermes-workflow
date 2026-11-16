@@ -15,13 +15,9 @@ import unittest
 from pathlib import Path
 
 REPO = next(
-    (parent for parent in Path(__file__).resolve().parents
-     if (parent / "scripts" / "generate-catalog-summary.py").is_file()),
-    None,
+    parent for parent in Path(__file__).resolve().parents
+    if (parent / "scripts" / "generate-catalog-summary.py").is_file()
 )
-if REPO is None:
-    import pytest
-    pytest.skip("optional catalog generator is not included in the Hermes runtime port", allow_module_level=True)
 DATA = REPO / "src/ui-ux-pro-max/data"
 SNAPSHOT_FILES = (
     "google-fonts.csv",

@@ -55,6 +55,8 @@ Shape rules: immutability + transitions are OLD-vs-NEW — never policy `WITH CH
 
 ## Policy / privilege traps
 
+- **Self-update policies must pin the ownership column in `WITH CHECK`, not just `USING`.** `USING (user_id = auth.uid())` without `WITH CHECK (user_id = auth.uid())` lets the row's owner re-link it to another account; every mutable link column (`user_id`, `patient_id`, `tenant_id`) belongs in the check.
+- **Ledger/money tables get NO direct client UPDATE or DELETE policy at all** — corrections travel through audited RPCs that carry the reason and write the audit row in the same transaction. Delete the direct policy; adding conditions to it keeps the bypass alive, and a UI that calls the RPC is not enforcement.
 - **Denied writes are silent**: RLS-blocked UPDATE/DELETE matching 0 rows returns `error: null` + empty result. Verify with `.select()` + row count.
 - **Column `REVOKE SELECT` is a no-op under a table-level `GRANT SELECT`.** To hide columns: `REVOKE SELECT ON t FROM role;` then `GRANT SELECT (safe_cols) ON t TO role;`. `select('*')` then errors for that role → client must list safe columns explicitly; staff read a privileged view for full rows:
 

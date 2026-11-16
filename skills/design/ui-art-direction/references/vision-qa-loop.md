@@ -9,6 +9,7 @@ How to run screenshot → vision critique → fix → re-verify on UI work witho
 - **Settle rule**: wait 600-1200ms after load (or for entrance animations to finish) before `screenshot()`. Mid-entrance content is faded/offset and vision calls it invisible/missing.
 - When saving grayscale analysis copies, keep the RGB original as the delivered file (a `.convert('L')` copy that overwrites the original reads as "no color").
 - After any fix that changes page height, re-crop analysis strips from the fresh full-page shot — a stale crop boundary shifts content out of frame and reads as a missing section / false FAIL.
+- **Detail verdicts need zoomed captures**: a thin strip (binding texture, icon strokes, fine borders) judged from a full-width screenshot downscales to a few pixels and vision reports the detail as flat or missing even when it renders correctly. Capture a tight `clip` at `deviceScaleFactor: 2-4` and critique THAT crop; only rebuild a detail after the zoomed crop confirms the verdict.
 
 ## Critique
 
@@ -24,6 +25,8 @@ How to run screenshot → vision critique → fix → re-verify on UI work witho
   - **Lazy images in full-page shots**: below-the-fold `loading="lazy"` images never enter the viewport during a full-page capture, so they render as gray placeholders in the PNG while the live page loads them fine. "Missing images" from a full-page shot are usually this.
   - **Crop boundaries**: a strip cut mid-section reads as "content cut off" or a cramped edge. Check the un-cropped full-page shot before believing an edge verdict.
   - **Scroll boundaries**: an element partially hidden at a scroll container's bottom edge in a full-page shot reads as "clipped" or "covered by the composer". Scroll the container to its end and re-measure the element rect before treating it as overflow.
+  - **Sticky/fixed elements relocate in full-page stitches**: a sticky rail renders at its stuck scroll position and a fixed header appears mid-image, so a side rail reads as "floating at the bottom, disconnected from the graph". Position claims need a plain VIEWPORT screenshot (and/or `getBoundingClientRect`), never the stitched capture.
+  - **Hover tooltips when the mouse parks at (0,0)**: automation leaves the pointer over the left rail, so its hover tooltip renders as a "floating pill overlapping the content" in every shot. Move the mouse to a neutral content point before each `screenshot()`.
   - **Probing the wrong convention**: a negative claim ("nav has no active state") is only as good as the probe's assumed styling convention. Read how the element is actually styled (its class pattern / framework primitive like NavLink isActive) before concluding absence.
   - **Misalignment is measurable**: compare `getBoundingClientRect()` tops of the suspect rows; identical tops = claim wrong (auto-layout like `mt-auto` holds alignment the eye misses at downscale).
 - **Taste coin-flip rule**: if vision flags the same block in opposite directions across rounds ("center the heading", then "heading sits low" after centering), the model is expressing taste, not reporting a bug. Decide once by the page's own convention (what sibling sections do) and move on; do not churn the loop.
@@ -42,6 +45,7 @@ JSON.stringify(el.getBoundingClientRect())
 ```
 
 - If computed styles/pixels contradict the vision verdict, REJECT the critique, keep the design, and state the numbers in the report.
+- **Bind every probe to the intended element, never the first generic match**: `querySelector('svg')` finds a 24px icon, `querySelector('h4')` finds the FIRST section's heading — both yield confident wrong numbers (a "map width" of 24px, a "jump error" of -2352px) that then get debugged as product bugs. Select by role/aria (`svg[role=img]`, the ACTIVE item's heading) or resolve the handle from the clicked element, and log each QA step as it completes so one late crash cannot hide the earlier steps' results.
 - If numbers confirm it, fix and re-verify with the same probe (numbers again), not just a re-look.
 - For truncation: find every node containing the string, filter `offsetWidth > 0`, measure `scrollWidth > clientWidth` on the visible one. A zero-width match = hidden duplicate; a fix there is a no-op for the user.
 
@@ -49,3 +53,4 @@ JSON.stringify(el.getBoundingClientRect())
 
 - Re-shoot settled screenshots after fixes; run project QA gates; one final targeted vision check on the fixed items only.
 - Deliver proof: gate counts (e.g. panel-qa 51/51, route-crawl 40/40), final screenshot path (also copied to `~/Downloads/`), and which vision claims were confirmed vs rejected. The loop converges when the reviewer's verdict is "ship" on both desktop and mobile.
+- **"Loop until it's a 10" requests get an external-critique loop, not self-praise.** Each round: an independent design-director critique with honest 1-10 scores per dimension, its named defects, and "the single biggest remaining weakness". Fix what it names at the owning layer (probe geometry/pixels first, per Arbitration), re-run the IDENTICAL critique, and rescore. Stop when the verdict stops moving; then report the honest score table and DISCLOSE what still separates it from 10. Never award a 10 without a fresh independent read of the final render.

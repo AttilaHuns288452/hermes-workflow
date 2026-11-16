@@ -12,7 +12,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8743/index.html
 
 The Hermes cloud browser_exec blocks private/internal addresses — use local Playwright for localhost QA.
 
-Multi-page static sites: start the server with an EXPLICIT working directory (the terminal tool's `workdir` param) — a server started from a stale cwd serves the wrong tree and every page 404s. Verify liveness with `curl` against a real file URL, never `pgrep -f 'http.server <port>'` — the pattern matches the probe's own wrapper shell and reports phantom survivors. If Python playwright is unavailable, Node works identically: `npm init -y && npm i playwright` in a scratch dir, `npx playwright install chromium`, then `require('playwright')` from a `.js` script (use `page.waitForTimeout` after navigations for apps that render on DOMContentLoaded timers).
+Multi-page static sites: start the server with an EXPLICIT working directory (the terminal tool's `workdir` param) — a server started from a stale cwd serves the wrong tree and every page 404s. Verify liveness with `curl` against a real file URL, never `pgrep -f 'http.server <port>'` — the pattern matches the probe's own wrapper shell and reports phantom survivors. If Python playwright is unavailable, Node works identically: `npm init -y && npm i playwright` in a scratch dir, `npx playwright install chromium`, then `require('playwright')` from a `.js` script (use `page.waitForTimeout` after navigations for apps that render on DOMContentLoaded timers). ESM `.mjs` scripts must import the package ENTRY (`.../node_modules/playwright/index.mjs` for an absolute path, or bare `playwright` under node resolution) — hand-guessed paths under the package's `lib/` tree are internals that usually do not exist and cost an ERR_MODULE_NOT_FOUND cycle.
 
 ## Syntax gate (before the browser)
 
@@ -71,6 +71,7 @@ print("CONSOLE ERRORS:", errors[:5] or "none")
 - Computed math: assert one known input/output pair (e.g. monthly cost = price / lifespan / 12).
 - Geometry-sensitive interactions: derive the expected affected set from the model, assert that only members of the selected region change, then apply the inverse operation and assert the full state is restored. For a 3×3 surface-only Rubik model that omits the hidden core, a face layer contains 9 cubies while a middle slice contains 8; do not reuse one expected count for every layer.
 - Pointer-driven controls: test mouse and touch as distinct input paths; on mobile, use a touch-capable Playwright context or CDP touch dispatch and assert the resulting pointer event reports `pointerType === 'touch'`, then verify the application state changed.
+- Orbit/zoom/pause camera controls: assert STATE DELTAS through the page's test hook, not screenshots — pause must freeze the rotation angle while time passes (auto flag flips and yaw stays constant), wheel must move camera distance in the expected direction, a drag must change yaw/pitch, and reset must restore the exact initial snapshot. Screenshots cannot prove rotation.
 - Mobile viewport: hamburger visible, nav opens, primary table usable.
 - Console + pageerror clean at the end — passing assertions with console errors still means broken.
 

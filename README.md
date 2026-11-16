@@ -2,7 +2,7 @@
 
 # 🧞 Hermes Workflow
 
-**A portable skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1,606 repository skills, one decision layer, and config-driven model routing.**
+**A portable skill ecosystem + routing brain for [Hermes Agent](https://hermes-agent.nousresearch.com) — 1,608 repository skills, one decision layer, and config-driven model routing.**
 
 This repository is licensed under **CC BY-NC 4.0**. It is a public reference and skill collection, not a bundled model provider or a guaranteed runtime environment.
 
@@ -14,7 +14,7 @@ This repository is licensed under **CC BY-NC 4.0**. It is a public reference and
 [![Site](https://img.shields.io/badge/docs-live-9b7cf7?style=flat&labelColor=0b0f1c)](https://attilahuns288452.github.io/hermes-workflow/)
 [![Built with](https://img.shields.io/badge/built%20with-Hermes%20Agent-6bc5e8?style=flat&labelColor=0b0f1c)](https://hermes-agent.nousresearch.com)
 
-**What is this?** A portable skill library for Hermes Agent: point Hermes at it, and your agent can discover 1,606 repository skills routed through a decision layer (`/decide`). Actual availability depends on your active profile and installed tools.
+**What is this?** A portable skill library for Hermes Agent: point Hermes at it, and your agent can discover 1,608 repository skills routed through a decision layer (`/decide`). Actual availability depends on your active profile and installed tools.
 
 **Why?** Skills without routing rot. This repo pairs skills with guidance for deciding *when* they fit. Indexed discovery can reduce unnecessary file reads when the relevant index and MCP are available.
 
@@ -27,7 +27,7 @@ This repository is licensed under **CC BY-NC 4.0**. It is a public reference and
 | Layer | What it does |
 |-------|--------------|
 | **🧠 `/decide`** | The routing brain: intent → capability class → skill shortlist → availability probe → execution → verification → recovery. See [`META_PROMPT.md`](META_PROMPT.md). |
-| **📚 Skills** | 1,606 repository `SKILL.md` files across engineering, design, finance, media, research, DevOps, and security. Availability still depends on the installed profile. |
+| **📚 Skills** | 1,608 repository `SKILL.md` files across engineering, design, finance, media, research, DevOps, and security. Availability still depends on the installed profile. |
 | **⚡ Discovery** | Use CodeGraph for indexed project-code discovery and LightRAG for skill/reference lookup when those services are available; neither is assumed to be enabled everywhere. |
 | **🛡️ Guardrail** | 6 immutable rules — file protection, secrets safety, injection immunity, system integrity, re-anchoring, safe fallback. |
 | **🤝 Delegation** | Subagent orchestration patterns with mandatory read-back verification. |
@@ -71,7 +71,7 @@ User request
               │                       │
       ┌───────▼───────┐      ┌────────▼────────┐
       │ Skills        │      │ MCPs / Tools    │
-      │ 1,606 files    │      │ optional tools  │
+      │ 1,608 files    │      │ optional tools  │
       │ cataloged in  │      │ configured per  │
       │ this repo     │      │ active profile  │
       └───────┬───────┘      └────────┬────────┘
@@ -129,7 +129,7 @@ All imported specialist skills were adapted for Hermes, corrected against upstre
 
 ## 📦 Skill Catalog
 
-Browse all 1,606 repository skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
+Browse all 1,608 repository skills in [`SKILLS_CATALOG.md`](SKILLS_CATALOG.md) or the [live site](https://attilahuns288452.github.io/hermes-workflow/).
 
 | Area | Examples |
 |------|----------|
@@ -227,7 +227,7 @@ Conventions:
 
 ```text
 hermes-workflow/
-├── skills/              # 1,606 SKILL.md files (the main event)
+├── skills/              # 1,608 SKILL.md files (the main event)
 ├── docs/                # built website (GitHub Pages — do not edit by hand)
 ├── src/                 # website source (React + Vite)
 ├── scripts/             # ecosystem utilities
@@ -245,7 +245,7 @@ hermes-workflow/
 
 - [x] `/decide` routing brain with probe-before-use enforcement
 - [x] Indexed code and skill/reference discovery guidance, conditional on available integrations
-- [x] 1,606-skill catalog; duplicate-name checks report possible vendor/curated overlaps
+- [x] 1,608-skill catalog; duplicate-name checks report possible vendor/curated overlaps
 - [x] Live docs site (React + Vite → GitHub Pages)
 - [x] Skill drift detection (`scripts/repo_drift.py`; weekly audit runs it)
 - [ ] Catalog regeneration in CI on skill-tree changes (counts are checked by `repo_drift.py`; the 174-card site showcase is still hand-curated)

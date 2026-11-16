@@ -97,8 +97,62 @@ npm ERR! Could not resolve dependency
 
 ---
 
-### Permission / Auth Failures
+### Job Never Started (account/host gate, not a workflow bug)
 
+**Signature in logs / annotations:**
+```
+The job was not started because your account is locked due to a billing issue.
+```
+
+**Diagnosis:** the job failed in ~2s with zero steps executed. That timing is the
+tell: a real workflow failure takes longer and shows step output. Confirm the repo
+side is innocent before touching the YAML:
+
+```bash
+gh api repos/$OWNER/$REPO --jq '{private,visibility}'            # public repos still need a valid billing record for Actions
+gh api repos/$OWNER/$REPO/actions/permissions                    # enabled:true, allowed_actions:all
+gh api repos/$OWNER/$REPO/branches/$(git branch --show-current)/protection  # 404 = nothing blocking the merge
+gh run list -R $OWNER/$REPO --limit 3                            # older runs succeeded -> the account changed, not the workflow
+```
+
+**Do not** retry with an empty commit, `gh run rerun`, or adding
+`workflow_dispatch` and dispatching — all three reach the same gate and fail
+identically in 2s. Adding `workflow_dispatch` is still worth keeping for manual
+runs once the gate clears, but it is not a workaround.
+
+**Prove it is account-wide, not repo-scoped, with a throwaway probe repo.** This
+is the decisive test and it takes about a minute — it converts "probably billing"
+into a fact, which is what the user needs before spending time in their dashboard:
+
+```bash
+cd /tmp && rm -rf ci-probe && mkdir ci-probe && cd ci-probe && git init -q
+mkdir -p .github/workflows
+printf 'name: t\non: [push, workflow_dispatch]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: echo ok\n' > .github/workflows/t.yml
+git add -A && git -c user.email=t@t -c user.name=t commit -qm t
+gh repo create <name>-ci-probe --public --source=. --push
+sleep 35 && gh run list -R $OWNER/<name>-ci-probe --limit 1 --json status,conclusion
+gh repo delete $OWNER/<name>-ci-probe --yes      # always clean up
+```
+
+If the empty public repo with a one-step workflow fails with the same annotation,
+the gate is on the account and no repo change can fix it. Report the elimination
+evidence too, because it stops the user from chasing the wrong thing: check that
+private-repo Actions usage is negligible (`gh api repos/$OWNER/$REPO/actions/runs?per_page=1 --jq .total_count`
+per private repo — public minutes are free), that the workflow requests only
+`contents: read` with no paid/larger runner, and that `gh api /user/marketplace_purchases`
+is empty. Those three rule out usage, runner, and paid product, leaving the payment
+method as the remaining cause.
+
+**What to do instead:** reproduce every workflow step locally, in order, and report
+the exact commands and their output to the user, then state plainly that clearing
+the billing lock is theirs (the billing API answers `403 Resource not accessible by
+personal access token`, and the browser profile may be signed out, so there is no
+agent-side fix). A green local reproduction plus an open, mergeable PR is the
+deliverable.
+
+---
+
+### Permission / Auth Failures
 **Signatures in logs:**
 ```
 fatal: could not read Username for 'https://github.com': No such device or address
@@ -181,3 +235,8 @@ git add <fixed_files> && git commit -m "fix: resolve CI failure" && git push
 gh pr checks --watch 2>/dev/null || \
   echo "Poll with: curl -s -H 'Authorization: token ...' https://api.github.com/repos/.../commits/$(git rev-parse HEAD)/status"
 ```
+
+For a multi-line commit message, write the body to a file first and pass `-F`
+(`git commit -F ~/.hermes/cache/scratch/msg.txt`). A heredoc piped into
+`git commit -F -` can trip the terminal tool's long-lived-process guard and the
+commit silently never runs.

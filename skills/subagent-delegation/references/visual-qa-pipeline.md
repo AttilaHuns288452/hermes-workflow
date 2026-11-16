@@ -94,4 +94,4 @@ This is less thorough than visual QA but catches logic bugs (like the total++ in
 - **`$` signs in bash**: PowerShell variables with `$` get eaten by bash. Always write scripts to .ps1 files, never inline.
 - **Serve port mismatch**: `npx serve -l 9876` may bind to a different port if 9876 is taken. Always read the actual port from the process output.
 - **Firecrawl blocks localhost**: Don't waste time retrying. Use the PowerShell screenshot approach instead.
-- **vision_analyze directly from orchestrator**: Don't. Delegate to MiMo subagent. Follows the Vision Delegation Rule.
+- **Heavy multi-image visual audits**: delegate to a vision-capable subagent per the Vision Delegation Rule. Simple inline checks may use `vision_analyze` directly — the orchestrator sees the DOM context and can verify claims on the spot.

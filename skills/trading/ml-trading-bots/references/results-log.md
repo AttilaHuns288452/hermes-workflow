@@ -1,5 +1,10 @@
 # Backtest results log (signal-bot, walk-forward, 10bps/side, out-of-sample)
 
+**Read the significance caveat at the bottom before trusting any Sharpe here.**
+Most of this table was produced before `references/validation-pitfalls.md` §7b
+(the overlap artifact) was understood; the per-asset Sharpes are ranking
+measurements, not evidence of edge, and none of them cleared t>2.
+
 Config abbreviations: HGB = HistGradientBoosting; ENS = soft-vote HGB+LR+RF50; trend = 200d SMA gate; thr = probability threshold.
 
 ## Config search (Sharpe, 4y unless noted — do not re-run this whole search)
@@ -34,3 +39,25 @@ Config abbreviations: HGB = HistGradientBoosting; ENS = soft-vote HGB+LR+RF50; t
 ## Final quant report (backtester.py, cross mode, all `[not significant]` t<2)
 BTC-USD Sharpe 0.50 t=1.00 · ETH-USD 0.09 t=0.19 · SOL-USD 0.65 t=1.31 · NVDA 0.97 t=1.43.
 Live (2026-08-09): NVDA BUY 61%, BTC/ETH/SOL HOLD. Paper: 2 USDT/trade, $200, 3 concurrent max.
+
+## Status after the full search (search closed, no edge)
+
+Three search spaces have been swept under corrected statistics, and **none
+produced an edge**:
+
+| Space | Hypotheses | Survivors after overlap correction |
+|---|---|---|
+| price-derived feature groups | 123 | 0 |
+| funding rate (BTC/ETH/SOL) | 165 | 0 |
+| triple-barrier labels | 504 | 0 |
+
+Under the UNCORRECTED statistic the same runs reported 7/45, 24/79, 68/84 and
+10/84 survivors, and a funding spec showing +55 to +90 bps/trade net. All of it
+dissolved once the effective sample size was divided by the horizon. The lesson
+is not "funding/breadth/barrier are bad features" — it is that none of them has
+demonstrated tradeable direction at the costs this venue charges (48bps round
+trip realistic, measured 36-39).
+
+Do not reopen a search space without first confirming the statistic you will
+score it with is overlap-corrected, and do not build a third space to escape a
+null result from the first two.

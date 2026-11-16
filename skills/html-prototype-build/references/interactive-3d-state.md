@@ -1,6 +1,6 @@
 # Interactive 3D state and gesture recipe
 
-Use this reference when a single-file 3D prototype must be manipulated, not merely viewed.
+Use this reference when a single-file 3D prototype must be manipulated, not merely viewed. View-only scenes (orbit/zoom planets, product viewers) need only the pointer pipeline, the deterministic control path, and the browser assertions below — the command/model layers apply to manipulable objects, not camera state.
 
 ## Build order
 
@@ -33,3 +33,4 @@ Use this reference when a single-file 3D prototype must be manipulated, not mere
 - Do not let a drag end outside the canvas lose the command; pointer capture is required for touch and fast mouse drags.
 - Do not validate only button clicks; a polished interactive 3D artifact can pass static tests while its pointer path is dead.
 - Do not claim full layer-drag interaction when only buttons or keyboard commands work. Report the implemented interaction scope precisely and list gesture extensions separately.
+- Do not assert exact state snapshots while the scene auto-animates; the advected channel (orbit angle) changes between reads and the assert fails against a working reset. Pause the animation or seek a frozen time (`?t=<seconds>`) before comparing, or compare only non-advected channels.

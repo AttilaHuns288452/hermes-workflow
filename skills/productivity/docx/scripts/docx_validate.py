@@ -95,7 +95,10 @@ def validate(path: str) -> dict:
             if resolved not in names:
                 _issue(issues, "error", "dangling-rel",
                        f"{rels_name}: {rid} -> {target} (missing part)")
-        rel_ids_by_source[source_part or "_package"] = ids
+        # merge, don't overwrite: multiple .rels parts can share one source
+        # key (word/_rels/document.xml.rels + word/_rels/header1.xml.rels both
+        # resolve to "word"), and set-iteration order made results flaky.
+        rel_ids_by_source.setdefault(source_part or "_package", {}).update(ids)
 
     # --- r:id / r:embed references in document.xml -----------------------
     doc_root = etree.fromstring(zf.read("word/document.xml"))

@@ -23,3 +23,9 @@ The Supabase Management API endpoint `POST /v1/projects/:ref/database/query` run
 
 ## Default values
 `ALTER TABLE t ADD COLUMN IF NOT EXISTS c BOOLEAN DEFAULT false` — safe for idempotent migrations. New columns with defaults don't lock large tables in Postgres 11+.
+
+## Changing a function's parameter list creates an OVERLOAD, not a replacement
+`CREATE OR REPLACE FUNCTION` with a different argument list creates a second function; the old signature survives with its body and its ACLs. PostgREST named-RPC calls and any caller still using the old shape keep hitting the stale one, and two candidates for one named call break resolution. In the same transaction: create the new signature, `DROP FUNCTION IF EXISTS` the old identity args, and restate REVOKE/GRANT for the NEW signature — a freshly created function gets default EXECUTE for PUBLIC regardless of how locked-down the replaced one was. Verify with `has_function_privilege` per role plus a pg_proc count for the name.
+
+## New authoritative column over a derived one: mirror, don't rewrite
+When a new column (e.g. explicit `end_at`) must coexist with the legacy derived value (`scheduled_at + duration_minutes`) because old expressions, notifications, and triggers still read the old one, put ONE derivation point in the trigger that owns both: an explicit new-column value wins and re-mirrors the legacy column to it; otherwise project the new column from the legacy one. Backfill first, then the CHECK. Every legacy expression stays accurate with zero rewrites, and one trigger means no writer can desync the pair.

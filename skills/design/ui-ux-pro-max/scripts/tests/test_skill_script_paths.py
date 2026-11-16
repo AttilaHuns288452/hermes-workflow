@@ -23,13 +23,9 @@ import unittest
 from pathlib import Path
 
 REPO = next(
-    (parent for parent in Path(__file__).resolve().parents
-     if (parent / "scripts" / "generate-catalog-summary.py").is_file()),
-    None,
+    parent for parent in Path(__file__).resolve().parents
+    if (parent / "scripts" / "generate-catalog-summary.py").is_file()
 )
-if REPO is None:
-    import pytest
-    pytest.skip("optional catalog generator is not included in the Hermes runtime port", allow_module_level=True)
 SKILL_TREES = ("cli/assets/skills", ".claude/skills")
 # The only file that may use the plugin-root form: hand-authored for the plugin install
 # and not shipped by the CLI (sync-assets.mjs mirrors data/ and scripts/, never SKILL.md).

@@ -108,11 +108,33 @@ def main() -> int:
     for n in local_only[:5]:
         print(f"  unpublished: {n}")
 
+    # SKILL.md-only comparison misses reference files: a skill whose body is in sync
+    # can still be missing a dozen references/ files locally published (found 2026-11-16
+    # on productivity/supabase - 2 refs in the repo vs 13 live). Compare every tracked
+    # file under each shared skill dir, and report additions/changes/deletions.
+    ref_drift: list[str] = []
+    for rel in sorted(shared_paths):
+        repo_dir = repo_paths[rel].parent
+        live_dir = live_paths[rel].parent
+        if not live_dir.is_dir():
+            continue
+        repo_files = {p.relative_to(repo_dir) for p in repo_dir.rglob("*") if p.is_file()}
+        live_files = {p.relative_to(live_dir) for p in live_dir.rglob("*") if p.is_file()}
+        for f in sorted(live_files - repo_files):
+            ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (missing)")
+        for f in sorted(repo_files & live_files):
+            if (repo_dir / f).read_bytes() != (live_dir / f).read_bytes():
+                ref_drift.append(f"{rel.rsplit('/', 1)[0]}/{f} (differs)")
+    if ref_drift:
+        print(f"supporting files out of sync: {len(ref_drift)}")
+        for x in ref_drift[:5]:
+            print(f"  ref: {x}")
+
     bad_counts = [(repo_root / f, n) for f, n in advertised_counts(repo_root) if n != actual_files]
     for f, n in bad_counts:
         print(f"COUNT DRIFT: {f} advertises {n}, repo holds {actual_files}")
 
-    if bad_counts or stale_paths:
+    if bad_counts or stale_paths or ref_drift:
         print("DRIFT: repo needs a sync (skill-library-publication)")
         return 1
     print("OK: repo matches the live tree" + (" (new local work pending publication)" if local_only else ""))

@@ -7,7 +7,7 @@ Rules for writing/maintaining the QA scripts that verify a shipped SPA against a
 - **Regression guards assert ABSENCE.** When a feature was removed by user demand, the suite must fail if it reappears (scan page text + routes for the banned strings). A check asserting the removed feature EXISTS is a bug in the check.
 - **Scope text assertions to the region that can contain the string.** Whole-page `includes()` matches history sections and other cards; split textContent on a section header and assert within the relevant part (e.g. the pending list only, not the approved-history list).
 - **Locators must match visible copy exactly.** Role/name substring matching treats `Male` as matching `Female` — use `text-is`/`exact`. Prefer `getByLabel` over positional `input` fills (restyling moves fields). CSS `text-transform` does not affect `textContent` but DOES affect `innerText` — pick one deliberately.
-- **Submit-button selectors like `form button).last()` break whenever the form grows a trailing button** (a "Log in" link inside the form silently becomes the clicked target). Click the submit button by its own label text.
+- **Submit-button selectors like `form button).last()` break whenever the form grows a trailing button** (a "Log in" link inside the form silently becomes the clicked target). Click the submit button by its own label text. When a tab toggle and a real submit share the EXACT visible label (a "Sign In" mode tab beside a "Sign In" submit button), `has-text`/`getByText` matches both and strict-mode throws — submit by pressing Enter inside a form field (e.g. `locator('input[type="password"]').press('Enter')`) or target the exact submit role, never the ambiguous label.
 - **Never bulk-regex a suite without context review.** A credential/selector fix aimed at registered-user steps also rewrites demo-account steps that share the pattern. Patch by surrounding context, then grep the file for BOTH variants to confirm each landed where intended.
 
 ## Test data
@@ -19,4 +19,4 @@ Rules for writing/maintaining the QA scripts that verify a shipped SPA against a
 ## Triage
 
 - **Suite crash ≠ app bug.** Before patching app code: does the assertion's target still exist (the UI may have been intentionally redesigned)? Reproduce the flow by hand once. Most "broken app" suite crashes during a redesign are stale locators or stale expectations.
-- Keep suites in the repo, not /tmp; update them in the same commit as intentional behavior changes so a red run always means a real regression.
+- Keep suites in the repo, not /tmp — Playwright resolves from the project's `node_modules`, so a script copied under `/tmp` dies with `Cannot find package 'playwright'`; run scripts from the frontend dir. Update them in the same commit as intentional behavior changes so a red run always means a real regression.

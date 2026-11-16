@@ -23,3 +23,6 @@ The lens: resources CONSUMED by the project vs economic benefits/resources gaine
 - Discount rate: if zero, say nominal totals are undiscounted and state what discounting would do directionally.
 - FX and escalation assumptions: one value everywhere; an inconsistency between the narrative and tables is a fix (ground 4).
 - Scope line: which costs are project resource use vs routine business costs the clinic already bears (e.g. internet/electricity) — list the excluded ones so the boundary is explicit.
+
+## Scope
+- The with/without comparison frames do-nothing vs the project. Comparing against alternative PRODUCTS (a cheaper commercial device, a generic substitute) is out of CBA scope unless the user asks — decline a reviewer's request for a third product option with this ruling named.

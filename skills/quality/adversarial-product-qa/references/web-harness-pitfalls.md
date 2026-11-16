@@ -44,6 +44,35 @@
   silently and deliver dead screens; update them with the same component
   change and re-shoot.
 
+## Interaction probes
+
+- Backdrop/dismissal clicks: derive click points from the dialog's bounding box
+  (a real gutter inside the viewport), never hardcoded corner pixels — corners
+  land on sticky headers or edge decorations and false-fail the close handler.
+  Confirm the hit target with `document.elementFromPoint`; if app chrome
+  (header/nav) is still topmost while a modal is open, that is a real stacking
+  bug (scrim must portal above fixed chrome), not a test artifact to route
+  around.
+- A click timeout on a visible, enabled, in-viewport element is interception
+  until proven otherwise: hit-test `elementFromPoint` at the target's center
+  to name the interceptor. Toast/badge overlays are harness artifacts — dodge
+  in the helper by re-targeting at top level (a dodge inside a scroll
+  container can defeat itself). But when the window is at MAX SCROLL and
+  fixed chrome covers the target's band, no dodge exists for a real finger
+  either — that is a real UI trap, and the fix belongs to the app: deepen the
+  page's bottom clearance so content never rests inside the fixed band, and
+  make any negative margin that cancels that clearance share its exact
+  `calc()` expression — a hardcoded rem detaches silently when the formula
+  changes (pinned panels drift, pages start scrolling).
+- A control that mutates its own attributes (password visibility toggle swaps
+  `type`, can clear placeholder) kills selectors keyed to those attributes
+  mid-assert — hold element handles before the toggle and compare
+  `boundingBox()`/value through the handles instead of re-querying.
+- Form-walker scripts that assume a `<form>` wrapper silently match nothing on
+  component-built forms (inputs in divs, submit outside any form) — query
+  visible inputs and buttons document-wide, scoped to the open dialog when one
+  exists.
+
 ## Cross-role sync tests
 
 Use separate browser contexts (one per role) so sessions can't bleed. Pattern:

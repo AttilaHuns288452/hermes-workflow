@@ -161,6 +161,19 @@ assets/logos/
 | Favicon | Icon only | 32x32px |
 | Apple Touch | Icon only | 180x180px |
 
+### Favicon wiring (web apps)
+Ship the tab icon from the product's EXISTING brand mark (the header/topbar SVG) —
+never invent a new mark for the favicon.
+1. Copy the mark into `favicon.svg`; if it is stroke-only or transparent, add a solid
+   rounded background tile so it reads on both light and dark browser tabs.
+2. Add `<link rel="icon" type="image/svg+xml" href="/favicon.svg" />` to EVERY HTML
+   entry point in the repo. Legacy static trees and modern SPA templates routinely
+   ship side by side (`public/index.html` + `web/index.html`); missing one leaves that
+   surface on the browser default globe. Copy `favicon.svg` into every static root
+   (the SPA's `public/` dir AND the server's static dir).
+3. Rebuild and verify the icon file AND the link tag landed in the build output —
+   a template-only edit that never reaches the served build is invisible.
+
 ### Documents
 | Document | Variant | Placement |
 |----------|---------|-----------|

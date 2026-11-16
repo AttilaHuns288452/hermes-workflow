@@ -220,6 +220,195 @@ Use an `aborted` / `mounted` ref, or prefer async/await with try/finally inside 
 
 ---
 
+## Pattern 8: Load Error Rendered as Empty State
+
+### Detection
+Find loaders where the error path clears/ignores the data and the empty branch renders unconditionally:
+
+```bash
+rg "setItems\(\[\]\)|setMessages\(\[\]\)" src/ -A3 -B3
+```
+
+### Example (bad)
+
+```typescript
+load().then(({ data, error }) => {
+  if (error) { setItems([]); return; }  // ← failure becomes "No messages yet"
+  setItems(data);
+});
+```
+
+### Example (good)
+
+```typescript
+load().then(({ data, error }) => {
+  if (error) { setLoadError(error.message); return; }  // distinct error state + retry
+  setItems(data ?? []);
+});
+// render: error ? <InlineError onRetry={load}/> : items.length ? <List/> : <EmptyState/>
+```
+
+### Impact
+🔴 HIGH — User cannot tell "nothing here" from "load failed"; acts on false emptiness.
+
+---
+
+## Pattern 9: Input Cleared Before Mutation Resolves
+
+### Detection
+Compare the draft-clearing call site against the await of the send/create mutation:
+
+```bash
+rg "setBody\(''\)|setDraft\(''\)|reset\(\)" src/ -B5
+```
+
+### Example (bad)
+
+```typescript
+setBody('');          // cleared first
+await sendChat(body); // if this fails the typed text is gone
+```
+
+### Example (good)
+
+```typescript
+const ok = await sendChat(body);
+if (ok?.error) { setSendError(ok.error); return; }  // body preserved for retry
+setBody('');
+```
+
+### Impact
+🟡 MEDIUM — Failed send/submit silently destroys the user's typed input.
+
+---
+
+## Pattern 10: Revalidation Clobbers User Selection
+
+### Detection
+Effects whose dependency array includes a visibility/refresh trigger AND re-initialize selection state:
+
+```bash
+rg "useEffect" src/ -A6 | rg "setVisible|visible|refresh"
+```
+
+### Example (bad)
+
+```typescript
+useEffect(() => { setDay(firstAvailableDay); }, [visible]);  // tab-return resets the user's chosen day
+```
+
+### Example (good)
+
+```typescript
+useEffect(() => {
+  if (!day) setDay(firstAvailableDay);  // initialize once, never overwrite user choice
+  refetch();                            // revalidation refreshes DATA, not selection
+}, [visible]);
+```
+
+Same rule for cached navigation state vs the URL: on money/stateful deep links the URL id is
+authoritative — a stale React Router `location.state` must never select which record is fetched or
+charged; fall back to it only when the URL carries no id.
+
+### Impact
+🔴 HIGH on money/stateful routes (wrong record acted on). 🟡 MEDIUM otherwise (selection jumps).
+
+---
+
+## Pattern 11: Unguarded Background Loop Dies Permanently
+
+### Detection
+Find every fire-and-forget periodic worker and check whether the loop body is inside a try/catch:
+
+```bash
+rg "setInterval\(|while \(true\)|while true do|schedule\.repeat|@Scheduled" src/ -A2
+```
+
+### Example (bad)
+
+```typescript
+setInterval(() => {
+  for (const job of dueJobs) process(job); // one throw and the interval is dead forever
+}, 60_000);
+```
+
+### Example (good)
+
+```typescript
+const tick = () => {
+  try { for (const job of dueJobs) process(job); }
+  catch (e) { log.error("worker tick failed", e); }   // keep the loop alive
+};
+setInterval(tick, 60_000);
+tick();
+```
+
+### Impact
+🔴 HIGH — No crash, no error surfaced. That subsystem silently stops for the process's lifetime: no notifications, no payouts, no cleanup. The classic tell is "it worked for an hour and then never again".
+
+---
+
+## Pattern 12: Counter That Nobody Reads
+
+### Detection
+For each persisted/accumulated stat, grep for a READER (not just the writer):
+
+```bash
+rg "friendship|streak|mastery|reputation" src/ --stats | head
+# then, per key, count sites that COMPARE or BRANCH on it
+rg "(friendship|streak|mastery) *(>=|>|<|\? |&&)" src/
+```
+
+### Example (bad)
+
+```typescript
+user.pet.friendship += 2;   // written every feed
+// no threshold check, no reward, no display gate anywhere
+```
+
+### Example (good)
+
+```typescript
+const reached = Math.floor(f.points / THRESHOLD);
+if (reached > f.claimed) { grant(reached - f.claimed); f.claimed = reached; }
+```
+
+### Impact
+🟡 MEDIUM — An unimplemented feature disguised as a mechanic: the UI shows a bar that fills and means nothing. Same for a step the loop never reaches. Grep the reader, every time.
+
+---
+
+## Pattern 13: Cross-Cutting Init Trapped in a Lazy Path
+
+### Detection
+List modules that create process-wide singletons (audio, telemetry, socket, error reporter) and check who imports them — if the only importer is a lazily-mounted route/menu, the layer does not exist until a user visits it:
+
+```bash
+rg "^import .*(audio|telemetry|socket|init)" src/ -l
+rg "lazy\(|dynamic\(|import\(" src/ -A1 | rg -B1 "audio|telemetry|socket"
+```
+
+### Example (bad)
+
+```typescript
+// settings-panel.tsx  ← only importer
+import { audio } from "@/lib/audio";
+audio.start();   // nobody hears anything until Settings is opened
+```
+
+### Example (good)
+
+```typescript
+// app-shell.tsx / root layout — the always-loaded entry
+import { audio } from "@/lib/audio";
+audio.start();   // idempotent start; panels only read state
+```
+
+### Impact
+🟡 MEDIUM — Feature works perfectly in the one path you tested and is absent everywhere else. Same shape as a load-time `FindFirstChild` scan that races the data it is looking for: wait for the resource, then also hook its subsequent additions.
+
+---
+
 ## Severity Summary
 
 | Pattern | Severity | What's at stake |
@@ -231,6 +420,12 @@ Use an `aborted` / `mounted` ref, or prefer async/await with try/finally inside 
 | Handler ignores error | 🟡 MEDIUM | Operation "succeeds" on screen, fails in DB |
 | Missing error state | 🟡 MEDIUM | User stuck on loading spinner |
 | Unmounted setState | 🟢 LOW | Dev warnings, stale updates |
+| Load error → empty state | 🔴 HIGH | Failure indistinguishable from "nothing here" |
+| Input cleared pre-mutation | 🟡 MEDIUM | Typed input silently destroyed on failure |
+| Revalidation resets selection | 🔴 HIGH on money/stateful routes | Wrong record acted on |
+| Unguarded loop death | 🔴 HIGH | Whole subsystem stops forever, no error |
+| Counter with no reader | 🟡 MEDIUM | UI mechanic that means nothing |
+| Init in a lazy path | 🟡 MEDIUM | Feature absent outside the one path tested |
 
 ## Tooling
 

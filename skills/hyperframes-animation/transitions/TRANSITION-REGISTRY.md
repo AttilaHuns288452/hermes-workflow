@@ -1,10 +1,19 @@
 # Transition Registry — machine source of truth
 
+## Contents
+
+- [How the injector applies a transition](#how-the-injector-applies-a-transition)
+- [Template placeholders](#template-placeholders)
+- [Registry](#registry)
+- [Default-derivation (used by prep.mjs when the planner omits `**Transition:**`)](#default-derivation-used-by-prepmjs-when-the-planner-omits-transition)
+- [Choosing as a planner (the only agent touchpoint)](#choosing-as-a-planner-the-only-agent-touchpoint)
+
 Single source of truth for **PLV scene-to-scene transitions**. The deterministic
-injector (`product-launch-video/scripts/inject-transitions.mjs`) reads the JSON
-block below and stamps the matching `gsap_template` onto the master timeline.
-The planner (`product-launch-video/agents/visual-design.md`) names a transition
-by its `name`; everything else is harness.
+injector (`product-launch-video/scripts/transitions.mjs inject`) reads its vendored
+copy of the JSON block below (`product-launch-video/scripts/lib/transitions.json`)
+and stamps the matching `gsap_template` onto the master timeline.
+The planner (`product-launch-video/references/story-design.md`) names a transition
+by its `name` in each frame's `transition_in`; everything else is harness.
 
 This file is **not** the catalog of all transitions — that is `catalog.md` +
 `css-*.md` (≈40 CSS + shader). This registry is the curated subset that is
@@ -23,7 +32,8 @@ injector:
 2. Pulls `#el-<to>` wrapper `data-start` earlier by `duration_s` (creates the
    overlap window).
 3. Reassigns **all** clip `data-track-index` as a 0/1 ping-pong so the two
-   overlapping wrappers never share a track (same-track overlap is illegal —
+   overlapping wrappers never share a track (a readability convention, not a
+   render constraint,
    `core/src/lint/rules/composition.ts`). Higher track composites on top.
 4. Stamps the `gsap_template` into `window.__timelines["main"]` at `T = overlap-start`.
 
@@ -96,11 +106,11 @@ whitelist is a _scene-worker_ prompt rule only — it does not bind index.html).
       "note": "Directional. The injector picks __DX__/__DY__ from the direction and emits the horizontal OR vertical pair (not both).",
       "gsap_template_horizontal": [
         "tl.to(__OLD__, { x: __DX__, duration: __DUR__, ease: \"power3.inOut\" }, __T__);",
-        "tl.fromTo(__NEW__, { x: __DXIN__, opacity: 1 }, { x: 0, duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
+        "tl.fromTo(__NEW__, { x: __DXIN__, opacity: 1 }, { x: 0, opacity: 1, duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
       ],
       "gsap_template_vertical": [
         "tl.to(__OLD__, { y: __DY__, duration: __DUR__, ease: \"power3.inOut\" }, __T__);",
-        "tl.fromTo(__NEW__, { y: __DYIN__, opacity: 1 }, { y: 0, duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
+        "tl.fromTo(__NEW__, { y: __DYIN__, opacity: 1 }, { y: 0, opacity: 1, duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
       ]
     },
     {
@@ -127,7 +137,7 @@ whitelist is a _scene-worker_ prompt rule only — it does not bind index.html).
       "note": "Old compresses to a vertical line on the left edge; new expands from the right edge. Incoming starts off (scaleX 0) so its higher-track stacking is harmless.",
       "gsap_template": [
         "tl.to(__OLD__, { scaleX: 0, transformOrigin: \"left center\", duration: __DUR__, ease: \"power3.inOut\" }, __T__);",
-        "tl.fromTo(__NEW__, { scaleX: 0, transformOrigin: \"right center\", opacity: 1 }, { scaleX: 1, transformOrigin: \"right center\", duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
+        "tl.fromTo(__NEW__, { scaleX: 0, transformOrigin: \"right center\", opacity: 1 }, { scaleX: 1, transformOrigin: \"right center\", opacity: 1, duration: __DUR__, ease: \"power3.inOut\" }, __T__);"
       ]
     }
   ],

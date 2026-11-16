@@ -1,0 +1,14 @@
+[Unit]
+Description=Ensure <module> kernel module is loaded (self-healing)
+After=systemd-modules-load.service
+# Ordering is the fix, not just repair: the daemon must never start before
+# the module exists, or it latches onto limited/unknown mode until restarted.
+Before=<daemon>.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/<vendor>/boot-guard.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

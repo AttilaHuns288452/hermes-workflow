@@ -14,6 +14,11 @@ Translate upstream's core artifact names to this system's established ones at wr
 | Slash commands `/x` as run instructions | `load the \`x\` skill` / prose (skills are not slash commands here) |
 | Claude Code tools `Read`, `Write`, `Edit`, `Bash` | `read_file`, `write_file`, `patch`, `terminal` |
 | `skill_view(name=...)`-style already correct | leave as-is |
+| the source runtime's own name in prose (`Claude Code` as the agent) | `the coding agent` / `the agent` |
+
+## Path and interpreter placeholders
+
+Upstream skills ship install placeholders: `{{PY}}`, `/path/to/<tool>`, `/path/to/venv/bin/python`, `<repo>/...`. Rewrite every one to the machine's actual installed path (repo checkout + its venv interpreter), across the WHOLE tree — `templates/` prompt files and `scripts/` helpers carry them too, and a missed placeholder ships guidance that cannot run. Grep the tree for the placeholder tokens after the pass; a transform that only touched SKILL.md is incomplete.
 
 ## Frontmatter
 
@@ -34,7 +39,8 @@ Upstream-branded skill names (`setup-<author>-skills`, `<author>-foo`) get descr
 ```
 'Skill tool', 'disable-model-invocation', 'argument-hint',
 'claude plugins install', 'npx skills add', 'openai.yaml',
-upstream brand names, upstream install command names
+upstream brand names, upstream install command names,
+'{{PY}}', '/path/to/' install placeholders
 ```
 
 Acceptable non-zero hits: provenance attribution lines ("Source: ... skill by ...") — they document origin and are not runtime dependencies.

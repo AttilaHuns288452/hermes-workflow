@@ -11,6 +11,27 @@ This document captures patterns for diagnosing and fixing MCP server failures th
 - MCP servers failing initial connection after 3 retries
 - Errors like: `dictionary update sequence element #0 has length 1; 2 is required`
 
+## Remote / Hosted MCP — Auth, Project Scope, and Tool Loading
+
+Hosted OAuth MCPs (Supabase, Vercel, and similar) fail in ways stdio servers never do. These cost real time to rediscover — check here before deep-diving a hosted MCP that "won't cooperate."
+
+### "No permission" on BOTH reads and writes = wrong project/org scope
+A project-scoped MCP returning "You do not have permission" for **both** reads and writes (e.g. Supabase `execute_sql`, `apply_migration`, `list_tables` all failing) is almost never a missing grant — the OAuth token is scoped to a **different project/org** than the one you're targeting. Diagnose with the MCP's own inventory tool (Supabase `list_projects`, Vercel `list_projects`): if it returns a different project id/slug than your target, the account is wrong. Do not keep retrying individual calls hoping one sticks.
+
+Fix: re-auth the MCP to switch accounts (below). After re-auth it may now see the intended project.
+
+### Re-auth switches the account and stores a fresh token
+`hermes mcp reauth <name>` starts an OAuth flow. Capture the authorization URL from its output and relay it to the user to open in their browser; the localhost callback completes automatically and stores the token. Re-auth is how you move a hosted MCP to a different account/project — it is not only for expired tokens. It does NOT load the tools into an already-running session (next point).
+
+### Authenticated MCP tools absent from the current session
+Hosted/deferred MCP tools are discovered at session start. If you add or re-auth an MCP mid-session, its tools may not appear in THIS session even though `hermes mcp test <name>` reports connected. Don't conclude the tools are missing — spawn a fresh instance that loads the now-stored token and its tools:
+
+```bash
+hermes chat --provider custom:<provider> -m <model> -q "<task>"
+```
+
+Pin **both** the provider and the model: an unpinned fresh instance can resolve a provider with no credential and fail before doing any work. The fresh instance sees the stored MCP token and can call the tools your current session cannot.
+
 ## Root Causes Found (June 2026)
 
 ### 1. AgentMemory MCP Server

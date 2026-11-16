@@ -47,6 +47,10 @@ Good: Status tokens only when the color *means* good/bad; categorical when it's 
 
 ## Form
 
+**Bad: A linear scale on data spanning orders of magnitude** (prices, costs, latency, review counts).
+Why: the dense cheap cluster smears into a solid blob against the axis while the expensive tail eats the canvas - the chart's loudest shape becomes its least informative part, and the insight ranks last in reading order.
+Good: Log scale for that axis (disclose it: "log scale" on the axis title), decade ticks. Keep linear for bounded scales (ratings, percentages, 0-100 scores).
+
 **Bad: Eight categorical hues when the story is one number.** The most common way a
 chart misses its point.
 Good: Emphasis (highlight one, gray the rest), or a stat tile / hero number.
@@ -70,6 +74,14 @@ for small marks and accents, never large blocks.
 **Bad: Dashed gridlines or axis rules.** Dashing adds visual noise and reads as
 "projection" or "threshold" when it's just a grid.
 Good: Gridlines and axes are solid hairlines, one shade off the surface.
+
+**Bad: The computed insight carrying the same visual weight as the noise** (frontier/outlier marks sized like the 200 dominated ones).
+Why: the eye goes to the largest mass first; when the highlight is visually demoted the chart's whole purpose ranks behind the smear and the empty canvas.
+Good: Emphasize the insight (larger mark, surface ring/halo, direct value label) AND recede the noise (smaller, lower opacity). The first fixation should be the answer.
+
+**Bad: A shaded region with no visible boundary and no stated basis** ("most attractive quadrant" with arbitrary edges).
+Why: the reader cannot tell which threshold defines the region, so it reads as decoration or an unbacked claim.
+Good: Draw the divider(s) - median or threshold lines - label them ("median ₱1,620"), and place the region label in the empty part of the region, clear of data marks and other labels.
 
 **Bad: A number on every data point.** A value beside every dot or segment is chaos and goes unread.
 Good: A legend is always present for >= 2 series; direct-label *selectively* (the endpoint, the extreme, the one series that matters) and let the axis + tooltip carry the rest.
@@ -105,6 +117,10 @@ value scales.
 **Bad: A tooltip as the only way to read a value.**
 Good: Tooltips enhance, never gate - every value is also reachable via direct labels or
 the table view; keyboard focus shows the same as hover.
+
+**Bad: A tooltip printing layout coordinates instead of data values.**
+Why: hover state carrying only screen position feeds the formatter a plausible-looking wrong number ("₱437" rendered from a pixel x), and users trust it as the price.
+Good: Store the DATA value on the hover record (e.g. `{vx, vy}`) separately from the screen position used to place the tooltip; QA-assert the tooltip text against the source data.
 
 **Bad: Pinpoint hover targets - an 8px scatter dot you must land on dead-center.**
 Good: The hit area includes the 2px gap and meets a ~24px minimum; dense scatter uses a nearest-point / Voronoi layer.

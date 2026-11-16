@@ -7,6 +7,15 @@ metadata:
 
 # Vertical Spring Ticker (Slot Machine)
 
+## Contents
+
+- [How It Works](#how-it-works)
+- [Recipe](#recipe)
+- [Variations](#variations)
+- [Values](#values)
+- [Critical Constraints](#critical-constraints)
+- [See also](#see-also)
+
 Multiple spring tweens are ADDED TOGETHER to produce total Y translation — each spring contributes one discrete "step", so instead of a single linear scroll you get the slot-machine "click click click" rhythm with natural settling. Distinct from a continuous marquee: this rule's semantics are discrete steps that land; for endless linear motion see [sine-wave-loop.md](sine-wave-loop.md).
 
 ## How It Works
@@ -87,7 +96,7 @@ springs.forEach((spring, i) => {
 | STEP_SPACING  | 0.3–0.5s              | **≤ STEP_DUR** so springs overlap (additive); wider gaps read as a lazy linear scroll |
 | BOUNCE_FACTOR | 1.4–2.5               | 1.4 gentle click / 2.0 firm / 2.5+ casino spin-and-land for a climax step             |
 
-Reference: `../../examples/proof-logo-chain.html` (204px, 1 step, 0.45s).
+Reference: `../examples/proof-logo-chain.html` (204px, 1 step, 0.45s).
 
 ## Critical Constraints
 
